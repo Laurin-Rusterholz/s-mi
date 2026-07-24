@@ -53,7 +53,6 @@
       --bone:#e9edf5;
       --bone-dim:#8b93a6;
       --spark:#2e6bff;
-      --spark-soft:rgba(46,107,255,.14);
       --line:#1a2133;
       --line-2:#252e44;
       --nav-h:72px;
@@ -76,17 +75,6 @@
     ::selection{background:var(--spark);color:var(--ink);}
     :focus-visible{outline:2px solid var(--spark);outline-offset:3px;}
 
-    /* film grain */
-    body::after{
-      content:"";position:fixed;inset:-50%;pointer-events:none;z-index:999;opacity:.05;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
-      animation:grain 8s steps(10) infinite;
-    }
-    @keyframes grain{
-      0%,100%{transform:translate(0,0)}10%{transform:translate(-5%,-8%)}30%{transform:translate(3%,-12%)}
-      50%{transform:translate(-9%,4%)}70%{transform:translate(7%,8%)}90%{transform:translate(-4%,3%)}
-    }
-
     h1,h2,h3{font-family:var(--font-d);text-transform:uppercase;line-height:.92;}
     h2 i,.smash i{font-style:normal;color:var(--spark);}
     .mono{font-family:var(--font-m);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);}
@@ -94,9 +82,6 @@
     img{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.92) contrast(1.04);}
     section{position:relative;scroll-margin-top:var(--nav-h);}
     .wrap{max-width:1280px;margin:0 auto;padding:0 clamp(20px,4vw,56px);}
-
-    /* ---------- SCROLL PROGRESS ---------- */
-    .progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--spark);z-index:120;transition:width .1s linear;}
 
     /* ---------- NAV ---------- */
     header{
@@ -112,8 +97,7 @@
       -webkit-backdrop-filter:blur(14px) saturate(1.3);
       border-bottom-color:var(--line);
     }
-    .logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;display:flex;align-items:center;gap:9px;}
-    .logo::before{content:"";width:9px;height:9px;background:var(--spark);border-radius:50%;box-shadow:0 0 14px var(--spark);}
+    .logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;}
     nav ul{display:flex;gap:34px;list-style:none;}
     nav a{font-family:var(--font-m);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;position:relative;padding:4px 0;color:var(--bone-dim);transition:color .25s;}
     nav a:hover{color:var(--bone);}
@@ -132,8 +116,6 @@
     /* ---------- HERO ---------- */
     .hero{height:100svh;min-height:640px;display:flex;align-items:flex-end;overflow:hidden;}
     .hero-bg{position:absolute;inset:0;z-index:-1;}
-    .hero-bg img{transform:scale(1.06);animation:heroZoom 18s var(--ease) forwards;}
-    @keyframes heroZoom{to{transform:scale(1);}}
     .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--ink) 3%,rgba(5,7,14,.35) 42%,rgba(5,7,14,.55) 100%);}
     .hero-inner{width:100%;padding:0 clamp(20px,4vw,56px) clamp(30px,6vh,72px);}
     .hero h1{
@@ -153,14 +135,6 @@
     }
     .hero-cta:hover{background:var(--bone);color:var(--ink);transform:translateY(-2px);}
     @media(max-width:640px){.hero-cta{margin-left:0;}}
-    .scroll-cue{
-      position:absolute;left:clamp(20px,4vw,56px);bottom:22px;z-index:2;
-      display:flex;align-items:center;gap:12px;font-family:var(--font-m);font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-dim);
-    }
-    .scroll-cue .line{width:46px;height:1px;background:var(--bone-dim);position:relative;overflow:hidden;}
-    .scroll-cue .line::after{content:"";position:absolute;inset:0;width:40%;background:var(--spark);animation:cue 2.2s var(--ease) infinite;}
-    @keyframes cue{0%{transform:translateX(-120%)}60%,100%{transform:translateX(320%)}}
-    @media(max-width:640px){.scroll-cue{display:none;}}
 
     /* ---------- MARQUEE ---------- */
     .ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden;padding:14px 0;background:var(--ink);}
@@ -200,7 +174,7 @@
     }
     .genre-list li:first-child{border-top:1px solid var(--line);}
     .genre-list li:hover{padding-left:12px;color:var(--spark);}
-    .mix-card{border:1px solid var(--line);padding:clamp(26px,4vw,44px);background:linear-gradient(180deg,var(--spark-soft),transparent 60%);}
+    .mix-card{border:1px solid var(--line);padding:clamp(26px,4vw,44px);background:var(--ink);}
     .mix-card h3{font-size:1.15rem;font-variation-settings:'wdth' 116,'wght' 720;margin:14px 0 8px;}
     .mix-card p{color:var(--bone-dim);font-size:.95rem;max-width:44ch;}
     .btn{
@@ -286,20 +260,17 @@
     .foot .mono{font-size:.65rem;}
     .foot .claim{font-variation-settings:'wdth' 122,'wght' 700;text-transform:uppercase;font-size:.8rem;color:var(--bone-dim);}
 
-    /* reveal */
-    .rv{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease);}
+    /* reveal — kept deliberately subtle */
+    .rv{opacity:0;transform:translateY(12px);transition:opacity .5s ease,transform .5s ease;}
     .rv.on{opacity:1;transform:none;}
     @media(prefers-reduced-motion:reduce){
       .rv{opacity:1;transform:none;transition:none;}
-      .ticker-track,.hero-bg img,.scroll-cue .line::after{animation:none;}
-      body::after{animation:none;}
+      .ticker-track{animation:none;}
       html{scroll-behavior:auto;}
     }
   </style>
 </head>
 <body>
-
-  <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header id="header">
     <a class="logo" href="#top">Sam Sparking</a>
@@ -330,7 +301,6 @@
         <a class="hero-cta" href="#booking">Book Sam</a>
       </div>
     </div>
-    <div class="scroll-cue"><span>Scroll</span><span class="line"></span></div>
   </section>
 
   <!-- ============ TICKER ============ -->
@@ -512,14 +482,9 @@
       nav.classList.remove('open');burger.textContent='Menu';burger.setAttribute('aria-expanded','false');
     }));
 
-    // header scroll state + scroll progress
-    const header=document.getElementById('header'),progress=document.getElementById('progress');
-    const onScroll=()=>{
-      const y=window.scrollY;
-      header.classList.toggle('scrolled',y>40);
-      const h=document.documentElement.scrollHeight-window.innerHeight;
-      progress.style.width=(h>0?(y/h)*100:0)+'%';
-    };
+    // header scroll state
+    const header=document.getElementById('header');
+    const onScroll=()=>header.classList.toggle('scrolled',window.scrollY>40);
     onScroll();
     window.addEventListener('scroll',onScroll,{passive:true});
 
