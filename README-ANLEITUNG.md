@@ -1,41 +1,110 @@
 # Sam Sparking — Website
 
-Statische One-Page-Website, bereit für Netlify. Inhalte 1:1 aus dem offiziellen Presskit 2026.
+Statische One-Page-Website, generiert aus einer Inhalts-Datei. Inhalte pflegst du
+**nicht** in der HTML, sondern in der Verwaltung:
 
-## Echte Fotos einsetzen (wichtig!)
+> **Verwaltung:** Repo [`verwaltung-djsamsparkling`](https://github.com/Laurin-Rusterholz/verwaltung-djsamsparkling)
+> — dort loggst du dich mit Google ein und stellst Texte, Bilder, Shows, Rider und
+> SEO ein. Beim Klick auf **Publizieren** wird diese Website neu gebaut.
 
-Die Bilder in `img/` sind momentan **Platzhalter** (dunkle Bühnenlicht-Grafiken).
-Ersetze sie einfach durch die Sarto-Photography-Fotos — **gleicher Dateiname, Datei überschreiben**, fertig:
+---
 
-| Datei              | Empfehlung                                              |
-|--------------------|---------------------------------------------------------|
-| `img/hero.jpg`     | Bestes Querformat-Bild: Sam am Pult, Crowd/Laser (ca. 2000px breit) |
-| `img/about.jpg`    | Portrait im Hochformat                                   |
-| `img/gallery-01..12.jpg` | 12 Lieblingsbilder gemischt (03, 06, 09, 12 = Hochformat, Rest Querformat) |
+## Wie das zusammenspielt
 
-Tipp: Bilder vorher auf max. ~2000px Breite verkleinern und als JPG (Qualität ~80) speichern, dann lädt die Seite schnell (gut für SEO).
+```
+Verwaltung (Admin)  ──schreibt──▶  Firebase Realtime Database
+                                    samsparking/content
+                                          │
+                        Netlify-Build ────┘  (liest den Knoten)
+                                          │
+                                    node scripts/build.mjs
+                                          │
+                            index.html · sitemap.xml · robots.txt
+```
 
-## Presskit
+- **`content/site.json`** — der Inhalt. Wird beim Build automatisch mit dem Stand
+  aus der Verwaltung überschrieben; ist die Datenbank nicht erreichbar, baut
+  Netlify mit dieser eingecheckten Datei weiter (mit Warnung im Build-Log).
+- **`scripts/build.mjs`** — der Generator. Keine Abhängigkeiten, reines Node.
+- **`index.html`** — **generiert, nicht von Hand bearbeiten.** Änderungen hier
+  gehen beim nächsten Build verloren.
+- **`assets/site.css` / `assets/site.js`** — Aussehen und Interaktion. Das ist der
+  richtige Ort für Design-Änderungen.
 
-Lege das PDF unter `presskit/sam-sparking-presskit-2026.pdf` ab (Download-Button im Booking-Bereich verweist darauf).
+## Lokal bauen und anschauen
 
-## Mixcloud
+```bash
+node scripts/build.mjs          # baut aus content/site.json
+npx http-server -p 8080 .       # http://localhost:8080
+```
 
-Der "Listen on Mixcloud"-Button zeigt auf `mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/`.
-Falls der Mix unter einem anderen Namen veröffentlicht ist, den Link in `index.html` (Abschnitt "Sound") anpassen.
+Mit Inhalt direkt aus der Verwaltung bauen:
+
+```bash
+CONTENT_API_URL="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json" \
+  node scripts/build.mjs
+```
 
 ## Deploy auf Netlify
 
-1. Auf app.netlify.com → "Add new site" → "Deploy manually" → diesen Ordner (bzw. das ZIP entpackt) reinziehen.
-2. Domain verbinden: Site settings → Domain management → Custom domain → `samsparking.ch` eintragen und beim Registrar die angezeigten DNS-Einträge setzen. HTTPS macht Netlify automatisch.
-3. Nach dem ersten Deploy bei Google Search Console die Domain anmelden und `https://www.samsparking.ch/sitemap.xml` einreichen.
+1. Site aus diesem Repo erstellen (Build-Command und Publish-Verzeichnis stehen
+   in `netlify.toml`, es ist nichts weiter einzustellen).
+2. Domain verbinden: Site settings → Domain management → Custom domain →
+   `samsparking.ch`, DNS beim Registrar setzen. HTTPS macht Netlify automatisch.
+3. **Build-Hook anlegen:** Site configuration → Build & deploy → Build hooks →
+   „Add build hook" → URL kopieren und in der Verwaltung unter *Einstellungen*
+   eintragen. Erst dann wirkt der Publizieren-Knopf.
+4. Bei Google Search Console `https://www.samsparking.ch/sitemap.xml` einreichen.
 
-## SEO — schon eingebaut
+Wenn die Domain nicht `samsparking.ch` wird: in der Verwaltung unter
+*Einstellungen → Domain* ändern — Canonical, Open Graph, JSON-LD, `sitemap.xml`
+und `robots.txt` ziehen automatisch nach.
 
-- Title, Meta-Description, Canonical, Open-Graph/Twitter-Tags
-- Strukturierte Daten (schema.org Person mit Genres, Kontakt, Ort)
-- `sitemap.xml` + `robots.txt`
-- Semantisches HTML (h1/h2-Struktur), Alt-Texte auf allen Bildern, Lazy-Loading
-- Cache-Header über `netlify.toml`
+## Bilder
 
-Wenn die Domain nicht `samsparking.ch` wird: die Domain in `index.html` (canonical + og:url + JSON-LD), `sitemap.xml` und `robots.txt` ersetzen.
+Bilder lädst du in der Verwaltung unter **Medien** hoch (Firebase Storage). Sie
+werden direkt von dort ausgeliefert; im Repo muss nichts abgelegt werden.
+
+Die Dateien in `img/` sind der **Fallback-Stand** (aktuell Platzhalter-Grafiken).
+Wer ohne Verwaltung arbeiten will, kann sie weiterhin überschreiben —
+gleicher Dateiname, Datei ersetzen:
+
+| Datei | Empfehlung |
+|---|---|
+| `img/hero.jpg` | Bestes Querformat: Sam am Pult, Crowd/Laser (~2000 px breit) |
+| `img/about.jpg` | Portrait im Hochformat |
+| `img/gallery-01..12.jpg` | 12 Lieblingsbilder gemischt |
+
+Tipp: vorher auf max. ~2000 px Breite verkleinern, JPG Qualität ~80.
+
+## Presskit
+
+PDF unter `presskit/sam-sparking-presskit-2026.pdf` ablegen — oder in der
+Verwaltung eine beliebige URL als Presskit-Link eintragen.
+
+## Was drin ist
+
+**Inhalt & Funktion**
+- Hero (Bild **oder** Video als Hintergrund), Lauftext-Ticker
+- About mit Fakten-Leiste, Genres, Mixe (Link + optionales Embed)
+- **Shows** — kommende Termine mit Datum, Venue, Ticket-Link, „Sold out";
+  vergangene Termine klappen separat auf. Abgelaufene Termine verschwinden
+  automatisch, auch ohne neuen Build.
+- Referenzen, Galerie mit Lightbox (Pfeiltasten, Wischen, Zähler)
+- Booking mit Rider und **Anfrage-Formular** → landet direkt in der Verwaltung
+- Kontakt mit beliebig vielen Social-Links
+- Jeder Abschnitt lässt sich in der Verwaltung ausschalten und umsortieren;
+  Nummerierung und Navigation passen sich automatisch an.
+
+**SEO**
+- Title, Description, Canonical, Open Graph, Twitter Cards
+- Strukturierte Daten als `@graph`: Person + WebSite + **MusicEvent je Show**
+  (Chance auf Event-Rich-Results in der Google-Suche)
+- `sitemap.xml` + `robots.txt` werden mitgeneriert, `lastmod` automatisch
+- Semantisches HTML, Alt-Texte, Lazy-Loading, Hero-Preload
+
+**Technik**
+- Keine Frameworks, keine Cookies, keine Tracker
+- Barrierefrei: Skip-Link, Fokus-Ringe, ARIA am Menü/Lightbox,
+  `prefers-reduced-motion`, Tastaturbedienung überall
+- Scroll-Fortschritt, aktiver Menüpunkt, Druck-Stylesheet

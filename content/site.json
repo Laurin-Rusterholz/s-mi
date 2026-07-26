@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 2,
+  "updatedAt": "2026-07-26T00:00:00.000Z",
+  "site": {
+    "lang": "en",
+    "domain": "https://www.samsparking.ch",
+    "artist": "Sam Sparking",
+    "logoText": "Sam Sparking",
+    "title": "Sam Sparking — Hardstyle DJ & Producer from St. Gallen, Switzerland",
+    "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle — available for clubs, venues and festivals across Switzerland and Europe. Booking: info@samsparking.ch",
+    "keywords": [
+      "Sam Sparking",
+      "Hardstyle DJ",
+      "Euphoric Hardstyle",
+      "Melodic Hardstyle",
+      "DJ St. Gallen",
+      "Hardstyle Schweiz",
+      "DJ Booking Switzerland"
+    ],
+    "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
+    "ogDescription": "Hardstyle DJ & producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs & festivals in Switzerland & Europe.",
+    "ogImage": "img/hero.jpg",
+    "themeColor": "#05070e",
+    "accentColor": "#2e6bff",
+    "claim": "Turning energy into euphoria",
+    "photoCredit": "Sarto Photography",
+    "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json"
+  },
+  "hero": {
+    "kicker": "DJ & Producer — St. Gallen, Switzerland",
+    "nameSpaced": "S A M",
+    "nameMain": "Sparking",
+    "tagline": "Turning energy into euphoria.",
+    "meta": "Euphoric Hardstyle / Melodic Hardstyle",
+    "ctaLabel": "Book Sam",
+    "ctaHref": "#booking",
+    "media": {
+      "type": "image",
+      "src": "img/hero.jpg",
+      "alt": "Sam Sparking behind the decks, lasers and crowd in front of the stage",
+      "poster": ""
+    }
+  },
+  "ticker": {
+    "enabled": true,
+    "items": [
+      { "text": "Turning", "accent": "Energy" },
+      { "text": "Into", "accent": "Euphoria" },
+      { "text": "Euphoric", "accent": "Hardstyle" },
+      { "text": "Melodic", "accent": "Hardstyle" },
+      { "text": "2026", "accent": "Edition" }
+    ]
+  },
+  "layout": ["about", "sound", "shows", "references", "gallery", "booking", "contact"],
+  "sections": {
+    "about": {
+      "enabled": true,
+      "navLabel": "About",
+      "title": "About",
+      "titleAccent": "Me.",
+      "photo": {
+        "src": "img/about.jpg",
+        "alt": "Portrait of Sam Sparking",
+        "credit": "Photo — Sarto Photography"
+      },
+      "lede": "Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.",
+      "paragraphs": [
+        "Growing up watching festival videos and discovering the world of hardstyle at a young age, it was a Defqon.1 video that first showed him what music could really do. The energy, the atmosphere, the connection between DJ and crowd — it hit him immediately and never let go. At 15, seeing a DJ own a dancefloor in a live club setting turned fascination into direction. From that moment, producing and performing wasn't a side project. It was the only path that made sense.",
+        "Four years later, Sam is grinding daily, sharpening his sound track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, he focuses on euphoric hardstyle — powerful kicks combined with emotional melodies that pull you in and keep you there.",
+        "The name **Sparking** is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.",
+        "His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right."
+      ],
+      "words": ["Emotional", "Powerful", "Euphoric"],
+      "facts": [
+        { "value": "2021", "label": "First set" },
+        { "value": "7+", "label": "Clubs & festivals" },
+        { "value": "150", "label": "BPM home base" }
+      ]
+    },
+    "sound": {
+      "enabled": true,
+      "navLabel": "Sound",
+      "title": "Gen",
+      "titleAccent": "res.",
+      "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
+      "genres": [
+        { "name": "Euphoric Hardstyle", "meta": "Genre" },
+        { "name": "Melodic Hardstyle", "meta": "Genre" }
+      ],
+      "mixes": [
+        {
+          "kicker": "Latest Mix",
+          "title": "Euphoric & Melodic Hardstyle — Recorded Set",
+          "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
+          "linkLabel": "Listen on Mixcloud",
+          "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
+          "embedUrl": ""
+        }
+      ]
+    },
+    "shows": {
+      "enabled": true,
+      "navLabel": "Shows",
+      "title": "Sh",
+      "titleAccent": "ows.",
+      "emptyText": "No dates announced right now. New shows land here first — or get in touch to book one.",
+      "pastLabel": "Played before",
+      "items": []
+    },
+    "references": {
+      "enabled": true,
+      "navLabel": "References",
+      "title": "Refe",
+      "titleAccent": "rences.",
+      "note": "Your club or festival next?",
+      "noteLinkLabel": "Get in touch →",
+      "items": [
+        { "name": "Kugl", "city": "St. Gallen", "url": "" },
+        { "name": "Sektor 11", "city": "Zürich", "url": "" },
+        { "name": "The Q", "city": "Schaan, FL", "url": "" },
+        { "name": "IVY", "city": "St. Gallen", "url": "" },
+        { "name": "BBC", "city": "Gossau", "url": "" },
+        { "name": "B9", "city": "St. Gallen", "url": "" },
+        { "name": "Ultrawild Festival", "city": "St. Gallen", "url": "" }
+      ]
+    },
+    "gallery": {
+      "enabled": true,
+      "navLabel": "Gallery",
+      "title": "Gal",
+      "titleAccent": "lery.",
+      "items": [
+        { "src": "img/gallery-01.jpg", "alt": "Sam Sparking live — crowd with hands up", "credit": "Sarto Photography" },
+        { "src": "img/gallery-02.jpg", "alt": "Sam Sparking mixing on CDJs", "credit": "Sarto Photography" },
+        { "src": "img/gallery-03.jpg", "alt": "Stage lights during a hardstyle set", "credit": "Sarto Photography" },
+        { "src": "img/gallery-04.jpg", "alt": "Sam Sparking behind the booth", "credit": "Sarto Photography" },
+        { "src": "img/gallery-05.jpg", "alt": "Crowd at a Sam Sparking show", "credit": "Sarto Photography" },
+        { "src": "img/gallery-06.jpg", "alt": "Sam Sparking portrait at the venue", "credit": "Sarto Photography" },
+        { "src": "img/gallery-07.jpg", "alt": "Hands in the air on the dancefloor", "credit": "Sarto Photography" },
+        { "src": "img/gallery-08.jpg", "alt": "Sam Sparking during his set", "credit": "Sarto Photography" },
+        { "src": "img/gallery-09.jpg", "alt": "Light show over the dancefloor", "credit": "Sarto Photography" },
+        { "src": "img/gallery-10.jpg", "alt": "Sam Sparking on stage", "credit": "Sarto Photography" },
+        { "src": "img/gallery-11.jpg", "alt": "Booth view over the crowd", "credit": "Sarto Photography" },
+        { "src": "img/gallery-12.jpg", "alt": "Closing moment of the night", "credit": "Sarto Photography" }
+      ]
+    },
+    "booking": {
+      "enabled": true,
+      "navLabel": "Booking",
+      "title": "Boo",
+      "titleAccent": "king.",
+      "availableKicker": "Available for",
+      "available": ["Clubs & Venues", "Festivals", "Switzerland & Europe"],
+      "presskitLabel": "Presskit (PDF)",
+      "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
+      "form": {
+        "enabled": true,
+        "kicker": "Booking request",
+        "title": "Tell me about your event",
+        "successText": "Thanks — your request landed. You'll hear back within 48 hours.",
+        "errorText": "Something went wrong. Please write directly to info@samsparking.ch.",
+        "submitLabel": "Send request"
+      },
+      "rider": {
+        "kicker": "Preferred Setup",
+        "groups": [
+          {
+            "title": "CDJs — 4× required",
+            "items": [
+              { "name": "Pioneer CDJ-3000X", "meta": "1st choice" },
+              { "name": "Pioneer CDJ-3000", "meta": "2nd choice" },
+              { "name": "Pioneer CDJ-2000NXS2", "meta": "3rd choice" }
+            ]
+          },
+          {
+            "title": "Mixer — one of the following",
+            "items": [
+              { "name": "Pioneer DJM-V10", "meta": "1st choice" },
+              { "name": "Pioneer DJM-A9", "meta": "2nd choice" },
+              { "name": "Pioneer DJM-2000NXS", "meta": "3rd choice" }
+            ]
+          }
+        ],
+        "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
+      }
+    },
+    "contact": {
+      "enabled": true,
+      "navLabel": "Contact",
+      "title": "Contact",
+      "titleAccent": "Me.",
+      "kicker": "Bookings & inquiries",
+      "email": "info@samsparking.ch",
+      "phone": "+41 77 509 11 71",
+      "base": "St. Gallen, Switzerland",
+      "socials": [
+        { "label": "Mixcloud", "url": "https://www.mixcloud.com/samsparking/" }
+      ]
+    }
+  }
+}
