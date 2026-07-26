@@ -142,13 +142,30 @@ function picture(media, { className = "", eager = false, sizes = "" } = {}) {
   return `<img ${attrs.join(" ")}>`;
 }
 
+/** MIME-Typ aus der Dateiendung (Firebase-URLs tragen die Endung im Pfad). */
+const videoType = (url) => {
+  const u = String(url || "").toLowerCase();
+  if (/\.webm(\?|#|$)/.test(u)) return "video/webm";
+  if (/\.(mov|m4v)(\?|#|$)/.test(u)) return "video/quicktime";
+  return "video/mp4";
+};
+
+const isVideoUrl = (url) => /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(String(url || ""));
+
+/**
+ * Hero-Hintergrund. Video läuft stumm in Dauerschleife — anders erlaubt kein
+ * Browser Autoplay. Das Poster wird sofort angezeigt (und bleibt stehen, wenn
+ * jemand „Bewegung reduzieren" eingestellt hat, siehe assets/site.js).
+ */
 function heroMedia(hero) {
   const m = hero.media || {};
   if (m.type === "video" && safeUrl(m.src)) {
     const poster = href(m.poster);
-    return `<video autoplay muted loop playsinline${poster ? ` poster="${poster}"` : ""} aria-label="${esc(
-      m.alt || ""
-    )}"><source src="${href(m.src)}" type="video/mp4"></video>`;
+    return `<video class="hero-video" autoplay muted loop playsinline preload="auto"${
+      poster ? ` poster="${poster}"` : ""
+    } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}" type="${videoType(
+      m.src
+    )}"></video>`;
   }
   return picture(m, { eager: true, sizes: "100vw" });
 }
@@ -338,22 +355,32 @@ function renderReferences(n, s) {
 
 function renderGallery(n, s) {
   const items = list(s.items).filter((i) => safeUrl(i?.src));
+  // Bilder zählen für die Lightbox-Beschriftung; Videos laufen dort nicht mit.
+  const photos = items.filter((i) => !isVideoUrl(i.src));
+
+  const cell = (g, i) => {
+    if (isVideoUrl(g.src)) {
+      return `<figure class="gal-video">
+          <video src="${href(g.src)}" muted loop playsinline autoplay preload="metadata"${
+        g.poster ? ` poster="${href(g.poster)}"` : ""
+      } aria-label="${esc(g.alt || "")}"></video>
+          ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
+        </figure>`;
+    }
+    const idx = photos.indexOf(g) + 1;
+    return `<figure>
+          <button type="button" class="gal-btn" aria-label="Open image ${idx} of ${photos.length} in full size">
+            ${picture(g, { sizes: "(max-width:700px) 100vw, 33vw" })}
+            ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
+          </button>
+        </figure>`;
+  };
+
   return `
   <section class="pad" id="gallery" aria-labelledby="gallery-h">
     <div class="wrap">${sectionHead(n, s, "gallery")}
       <div class="gal rv" id="gal">
-        ${items
-          .map(
-            (g, i) => `<figure>
-          <button type="button" class="gal-btn" data-i="${i}" aria-label="Open image ${
-              i + 1
-            } of ${items.length} in full size">
-            ${picture(g, { sizes: "(max-width:700px) 100vw, 33vw" })}
-            ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
-          </button>
-        </figure>`
-          )
-          .join("\n        ")}
+        ${items.map(cell).join("\n        ")}
       </div>
     </div>
   </section>`;
@@ -686,9 +713,14 @@ ${jsonScript(structuredData(c, sections))}
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 ${
-  c.hero?.media?.type !== "video" && safeUrl(c.hero?.media?.src)
-    ? `  <link rel="preload" as="image" href="${href(c.hero.media.src)}" fetchpriority="high">\n`
-    : ""
+  // Beim Video ist das Poster das Bild, das sofort sichtbar sein muss.
+  (() => {
+    const m = c.hero?.media || {};
+    const first = m.type === "video" ? m.poster : m.src;
+    return safeUrl(first)
+      ? `  <link rel="preload" as="image" href="${href(first)}" fetchpriority="high">\n`
+      : "";
+  })()
 }
   <link rel="stylesheet" href="assets/site.css">
   <style>:root{--ink:${ink};--spark:${accent};}</style>

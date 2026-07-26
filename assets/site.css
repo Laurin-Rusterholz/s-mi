@@ -220,6 +220,13 @@ nav a:hover::after,nav a[aria-current="true"]::after{width:100%;}
 }
 .gal figure:hover figcaption,.gal-btn:focus-visible figcaption{opacity:1;}
 
+.gal-video{position:relative;background:var(--ink-2);}
+.gal-video video{width:100%;height:auto;display:block;}
+.gal-video figcaption{
+  position:absolute;left:12px;bottom:10px;font-family:var(--font-m);font-size:.62rem;
+  letter-spacing:.12em;color:rgba(233,237,245,.78);text-transform:uppercase;pointer-events:none;
+}
+
 /* lightbox */
 .lb{position:fixed;inset:0;background:rgba(5,7,14,.97);z-index:200;display:none;align-items:center;justify-content:center;}
 .lb.open{display:flex;}

@@ -4,8 +4,9 @@ Statische One-Page-Website, generiert aus einer Inhalts-Datei. Inhalte pflegst d
 **nicht** in der HTML, sondern in der Verwaltung:
 
 > **Verwaltung:** Repo [`verwaltung-djsamsparkling`](https://github.com/Laurin-Rusterholz/verwaltung-djsamsparkling)
-> — dort loggst du dich mit Google ein und stellst Texte, Bilder, Shows, Rider und
-> SEO ein. Beim Klick auf **Publizieren** wird diese Website neu gebaut.
+> — dort meldest du dich mit dem gemeinsamen Passwort an und stellst Texte,
+> Bilder, Videos, Shows, Rider und SEO ein. Beim Klick auf **Publizieren** wird
+> diese Website neu gebaut.
 
 ---
 
@@ -62,8 +63,15 @@ und `robots.txt` ziehen automatisch nach.
 
 ## Bilder
 
-Bilder lädst du in der Verwaltung unter **Medien** hoch (Firebase Storage). Sie
-werden direkt von dort ausgeliefert; im Repo muss nichts abgelegt werden.
+Bilder **und Videos** lädst du in der Verwaltung unter **Medien** hoch (Firebase
+Storage, max. 48 MB pro Datei). Sie werden direkt von dort ausgeliefert; im Repo
+muss nichts abgelegt werden.
+
+Als Hero-Hintergrund kann ein MP4 laufen — automatisch, stumm, in Dauerschleife
+(anders erlaubt kein Browser Autoplay). Dazu gehört ein Poster-Bild: es ist
+sofort sichtbar, während das Video lädt, und ersetzt es bei „Bewegung
+reduzieren". Kurzer Loop von 5–15 Sekunden, gut komprimiert — Details stehen im
+README der Verwaltung.
 
 Die Dateien in `img/` sind der **Fallback-Stand** (aktuell Platzhalter-Grafiken).
 Wer ohne Verwaltung arbeiten will, kann sie weiterhin überschreiben —
@@ -85,7 +93,7 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 ## Was drin ist
 
 **Inhalt & Funktion**
-- Hero (Bild **oder** Video als Hintergrund), Lauftext-Ticker
+- Hero (Bild **oder** automatisch laufendes Video als Hintergrund), Lauftext-Ticker
 - About mit Fakten-Leiste, Genres, Mixe (Link + optionales Embed)
 - **Shows** — kommende Termine mit Datum, Venue, Ticket-Link, „Sold out";
   vergangene Termine klappen separat auf. Abgelaufene Termine verschwinden

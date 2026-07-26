@@ -164,6 +164,51 @@
     }, { passive: true });
   }
 
+  /* ----------------------------------------------------------- hero-video */
+  // Wer "Bewegung reduzieren" eingestellt hat, sieht das Poster statt des
+  // laufenden Videos. Läuft das Autoplay ins Leere (manche Browser blocken es
+  // trotz muted), bleibt ebenfalls das Poster stehen.
+  var heroVideo = document.querySelector(".hero-video");
+  if (heroVideo) {
+    if (reduce) {
+      heroVideo.removeAttribute("autoplay");
+      heroVideo.pause();
+    } else {
+      var tryPlay = heroVideo.play();
+      if (tryPlay && typeof tryPlay.catch === "function") tryPlay.catch(function () {});
+      // Im Hintergrund-Tab nicht weiterlaufen lassen
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) heroVideo.pause();
+        else heroVideo.play().catch(function () {});
+      });
+    }
+  }
+
+  // Galerie-Videos nur abspielen, solange sie sichtbar sind
+  var galVideos = Array.prototype.slice.call(document.querySelectorAll(".gal-video video"));
+  if (galVideos.length) {
+    if (reduce) {
+      galVideos.forEach(function (v) {
+        v.removeAttribute("autoplay");
+        v.pause();
+        v.setAttribute("controls", "");
+      });
+    } else if ("IntersectionObserver" in window) {
+      var vio = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) e.target.play().catch(function () {});
+            else e.target.pause();
+          });
+        },
+        { threshold: 0.25 }
+      );
+      galVideos.forEach(function (v) {
+        vio.observe(v);
+      });
+    }
+  }
+
   /* ------------------------------------------------- Shows: abgelaufene weg */
   // Die Seite ist statisch generiert. Falls seit dem letzten Build Termine
   // verstrichen sind, werden sie hier clientseitig ausgeblendet.
