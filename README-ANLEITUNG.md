@@ -193,6 +193,8 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
   automatisch. Ohne Seiten-Definition wird eine einzelne Seite gebaut.
 - **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte,
   gebuchte Tage blau, mit Legende darunter)
+- **Equalizer** — tanzende Pegel-Balken im Kopf jeder Seite (reines CSS,
+  steht still bei „Bewegung reduzieren“)
 - **Hintergrundbild** hinter der ganzen Seite (in der Verwaltung wählbar) — die
   Inhalte stehen als freie, **eckige** Kacheln darauf, Bilder ohne Rahmen und
   ohne Rundungen, nur mit weichem Schatten

@@ -227,6 +227,22 @@ function geoMeta(contact) {
 }
 
 /**
+ * Bewegtes Equalizer-Element — die Balken tanzen wie eine Pegelanzeige.
+ * Höhen, Tempi und Versätze sind fest eingerechnet, damit jeder Build
+ * dieselbe Datei erzeugt; animiert wird rein in CSS.
+ */
+function eqBars(n = 44) {
+  let out = "";
+  for (let i = 0; i < n; i++) {
+    const h = (0.25 + (((i * 37) % 17) / 17) * 0.75).toFixed(2);
+    const d = (((i * 13) % 9) * 0.09).toFixed(2);
+    const t = (0.8 + ((i * 29) % 7) * 0.12).toFixed(2);
+    out += `<span style="--h:${h};--d:${d}s;--t:${t}s"></span>`;
+  }
+  return out;
+}
+
+/**
  * Hintergrundbild der ganzen Seite. Liegt hinter allem, bewegt sich nicht mit
  * und ist stark abgedunkelt — die Inhalte stehen darauf frei, ohne dass der
  * Text an Kontrast verliert.
@@ -1177,6 +1193,7 @@ function renderPage(c, page, pages, lang, langs) {
     <div class="wrap">
       <p class="mono">${esc(str(c.hero?.kicker, site.artist))}</p>
       <h1>${esc(str(page.title, page.navLabel))}</h1>
+      <div class="eq eq-slim" aria-hidden="true">${eqBars(30)}</div>
     </div>
   </section>`
       : `
@@ -1201,6 +1218,7 @@ function renderPage(c, page, pages, lang, langs) {
         }
       </div>
     </div>
+    <div class="eq" aria-hidden="true">${eqBars()}</div>
     <a class="hero-scroll mono" href="#${esc(order[0] || "top")}" aria-hidden="true" tabindex="-1">${esc(ui.scroll)}</a>
   </section>`;
 
