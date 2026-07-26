@@ -33,14 +33,18 @@
   if ("IntersectionObserver" in window && !reduce) {
     var io = new IntersectionObserver(
       function (entries) {
+        // Elemente, die gemeinsam ins Bild kommen, leicht versetzt einblenden —
+        // das wirkt ruhiger als ein gleichzeitiges Aufpoppen.
+        var shown = 0;
         entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            e.target.classList.add("on");
-            io.unobserve(e.target);
-          }
+          if (!e.isIntersecting) return;
+          var delay = Math.min(shown++, 4) * 70;
+          if (delay) e.target.style.transitionDelay = delay + "ms";
+          e.target.classList.add("on");
+          io.unobserve(e.target);
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.1, rootMargin: "0px 0px -8% 0px" }
     );
     rv.forEach(function (el) {
       io.observe(el);
@@ -51,9 +55,37 @@
     });
   }
 
+  /* ------------------------------------------------- seitenwechsel vorladen */
+  // Interne Seiten beim Überfahren des Links vorladen: der Wechsel fühlt sich
+  // danach an, als wäre die Seite schon da.
+  var prefetched = {};
+  function prefetch(url) {
+    if (!url || prefetched[url]) return;
+    prefetched[url] = true;
+    var l = document.createElement("link");
+    l.rel = "prefetch";
+    l.href = url;
+    document.head.appendChild(l);
+  }
+  if (!(navigator.connection && navigator.connection.saveData)) {
+    document.addEventListener(
+      "pointerover",
+      function (e) {
+        var a = e.target.closest && e.target.closest('a[href^="/"]');
+        if (a && a.origin === location.origin && a.pathname !== location.pathname) {
+          prefetch(a.href);
+        }
+      },
+      { passive: true }
+    );
+  }
+
   /* -------------------------------------------- scroll progress + active nav */
   var progress = document.getElementById("progress");
-  var links = nav ? Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]')) : [];
+  var subnav = document.querySelector(".subnav");
+  var links = Array.prototype.slice.call(
+    document.querySelectorAll('.subnav a[href^="#"]')
+  );
   var targets = links
     .map(function (a) {
       return { link: a, el: document.getElementById(a.getAttribute("href").slice(1)) };
@@ -112,16 +144,24 @@
       opener = from || null;
       lb.hidden = false;
       lb.classList.add("open");
+      requestAnimationFrame(function () {
+        lb.classList.add("shown");
+      });
       document.body.style.overflow = "hidden";
       show(i);
       var close = document.getElementById("lb-close");
       if (close) close.focus();
     }
     function close() {
-      lb.classList.remove("open");
-      lb.hidden = true;
+      lb.classList.remove("shown");
       document.body.style.overflow = "";
-      lbImg.src = "";
+      var finish = function () {
+        lb.classList.remove("open");
+        lb.hidden = true;
+        lbImg.src = "";
+      };
+      if (reduce) finish();
+      else setTimeout(finish, 200);
       if (opener) opener.focus();
     }
 
@@ -206,6 +246,101 @@
       galVideos.forEach(function (v) {
         vio.observe(v);
       });
+    }
+  }
+
+  /* ------------------------------------------------------------- kalender */
+  // Monatsraster über die Termine. Die Liste darunter bleibt die Quelle für
+  // Suchmaschinen; der Kalender ist die bequemere Ansicht daneben.
+  var calBox = document.getElementById("shows-calendar");
+  var showsRaw = document.getElementById("shows-data");
+  if (calBox && showsRaw) {
+    var shows = [];
+    try {
+      shows = JSON.parse(showsRaw.textContent) || [];
+    } catch (e) {
+      shows = [];
+    }
+
+    if (shows.length) {
+      var lang = document.documentElement.lang || "en";
+      var grid = document.getElementById("cal-grid");
+      var monthLabel = document.getElementById("cal-month");
+      var byDate = {};
+      shows.forEach(function (s) {
+        (byDate[s.date] = byDate[s.date] || []).push(s);
+      });
+
+      var todayStr = new Date().toISOString().slice(0, 10);
+      var next = shows
+        .filter(function (s) { return s.date >= todayStr; })
+        .sort(function (a, b) { return a.date < b.date ? -1 : 1; })[0];
+      var start = new Date((next ? next.date : todayStr) + "T12:00:00Z");
+      var year = start.getUTCFullYear();
+      var month = start.getUTCMonth();
+
+      var pad = function (n) { return String(n).padStart(2, "0"); };
+      var weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+      if (lang === "de") weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+
+      function draw() {
+        var first = new Date(Date.UTC(year, month, 1));
+        var days = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+        var lead = (first.getUTCDay() + 6) % 7; // Woche beginnt am Montag
+
+        monthLabel.textContent = first.toLocaleDateString(lang, {
+          month: "long",
+          year: "numeric",
+          timeZone: "UTC",
+        });
+
+        var html = weekdays
+          .map(function (d) { return '<span class="cal-wd" role="columnheader">' + d + "</span>"; })
+          .join("");
+        for (var i = 0; i < lead; i++) html += '<span class="cal-day empty"></span>';
+
+        for (var day = 1; day <= days; day++) {
+          var iso = year + "-" + pad(month + 1) + "-" + pad(day);
+          var list = byDate[iso];
+          var classes = "cal-day";
+          if (iso === todayStr) classes += " today";
+          if (iso < todayStr) classes += " past";
+          if (list) classes += " has-show";
+          if (list) {
+            var s = list[0];
+            var label = [s.name, s.city].filter(Boolean).join(", ");
+            var inner =
+              '<b>' + day + "</b><span class=\"cal-dot\"></span>" +
+              '<span class="cal-tip">' + escapeHtml(label) +
+              (list.length > 1 ? " +" + (list.length - 1) : "") + "</span>";
+            html += s.url
+              ? '<a class="' + classes + '" href="' + escapeHtml(s.url) +
+                '" target="_blank" rel="noopener" title="' + escapeHtml(label) + '">' + inner + "</a>"
+              : '<span class="' + classes + '" role="gridcell" title="' + escapeHtml(label) + '">' + inner + "</span>";
+          } else {
+            html += '<span class="' + classes + '" role="gridcell"><b>' + day + "</b></span>";
+          }
+        }
+        grid.innerHTML = html;
+      }
+
+      function escapeHtml(v) {
+        return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      calBox.addEventListener("click", function (e) {
+        var btn = e.target.closest("[data-cal]");
+        if (!btn) return;
+        month += btn.getAttribute("data-cal") === "next" ? 1 : -1;
+        if (month > 11) { month = 0; year++; }
+        if (month < 0) { month = 11; year--; }
+        draw();
+      });
+
+      draw();
+      calBox.hidden = false;
     }
   }
 

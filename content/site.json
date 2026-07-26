@@ -44,14 +44,106 @@
   "ticker": {
     "enabled": true,
     "items": [
-      { "text": "Turning", "accent": "Energy" },
-      { "text": "Into", "accent": "Euphoria" },
-      { "text": "Euphoric", "accent": "Hardstyle" },
-      { "text": "Melodic", "accent": "Hardstyle" },
-      { "text": "2026", "accent": "Edition" }
+      {
+        "text": "Turning",
+        "accent": "Energy"
+      },
+      {
+        "text": "Into",
+        "accent": "Euphoria"
+      },
+      {
+        "text": "Euphoric",
+        "accent": "Hardstyle"
+      },
+      {
+        "text": "Melodic",
+        "accent": "Hardstyle"
+      },
+      {
+        "text": "2026",
+        "accent": "Edition"
+      }
     ]
   },
-  "layout": ["about", "sound", "shows", "references", "gallery", "booking", "contact"],
+  "layout": [
+    "about",
+    "sound",
+    "shows",
+    "references",
+    "gallery",
+    "booking",
+    "contact"
+  ],
+  "pages": [
+    {
+      "slug": "",
+      "navLabel": "Home",
+      "title": "Home",
+      "enabled": true,
+      "hero": "full",
+      "ticker": true,
+      "inNav": true,
+      "sections": [
+        "about",
+        "sound"
+      ],
+      "seo": {
+        "title": "",
+        "description": ""
+      }
+    },
+    {
+      "slug": "shows",
+      "navLabel": "Shows",
+      "title": "Shows",
+      "enabled": true,
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "sections": [
+        "shows",
+        "references"
+      ],
+      "seo": {
+        "title": "Shows & Tour Dates — Sam Sparking",
+        "description": "Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe."
+      }
+    },
+    {
+      "slug": "gallery",
+      "navLabel": "Gallery",
+      "title": "Gallery",
+      "enabled": true,
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "sections": [
+        "gallery"
+      ],
+      "seo": {
+        "title": "Gallery — Sam Sparking live",
+        "description": "Live photos of Sam Sparking behind the decks — clubs and festivals, shot by Sarto Photography."
+      }
+    },
+    {
+      "slug": "booking",
+      "navLabel": "Booking",
+      "title": "Booking",
+      "enabled": true,
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "sections": [
+        "booking",
+        "contact"
+      ],
+      "seo": {
+        "title": "Booking — Sam Sparking, Hardstyle DJ",
+        "description": "Book Sam Sparking for your club or festival. Technical rider, presskit and booking request form."
+      }
+    }
+  ],
   "sections": {
     "about": {
       "enabled": true,
@@ -70,11 +162,24 @@
         "The name **Sparking** is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.",
         "His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right."
       ],
-      "words": ["Emotional", "Powerful", "Euphoric"],
+      "words": [
+        "Emotional",
+        "Powerful",
+        "Euphoric"
+      ],
       "facts": [
-        { "value": "2021", "label": "First set" },
-        { "value": "7+", "label": "Clubs & festivals" },
-        { "value": "150", "label": "BPM home base" }
+        {
+          "value": "2021",
+          "label": "First set"
+        },
+        {
+          "value": "7+",
+          "label": "Clubs & festivals"
+        },
+        {
+          "value": "150",
+          "label": "BPM home base"
+        }
       ]
     },
     "sound": {
@@ -84,8 +189,14 @@
       "titleAccent": "res.",
       "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
       "genres": [
-        { "name": "Euphoric Hardstyle", "meta": "Genre" },
-        { "name": "Melodic Hardstyle", "meta": "Genre" }
+        {
+          "name": "Euphoric Hardstyle",
+          "meta": "Genre"
+        },
+        {
+          "name": "Melodic Hardstyle",
+          "meta": "Genre"
+        }
       ],
       "mixes": [
         {
@@ -105,7 +216,8 @@
       "titleAccent": "ows.",
       "emptyText": "No dates announced right now. New shows land here first — or get in touch to book one.",
       "pastLabel": "Played before",
-      "items": []
+      "items": [],
+      "view": "calendar"
     },
     "references": {
       "enabled": true,
@@ -115,13 +227,41 @@
       "note": "Your club or festival next?",
       "noteLinkLabel": "Get in touch →",
       "items": [
-        { "name": "Kugl", "city": "St. Gallen", "url": "" },
-        { "name": "Sektor 11", "city": "Zürich", "url": "" },
-        { "name": "The Q", "city": "Schaan, FL", "url": "" },
-        { "name": "IVY", "city": "St. Gallen", "url": "" },
-        { "name": "BBC", "city": "Gossau", "url": "" },
-        { "name": "B9", "city": "St. Gallen", "url": "" },
-        { "name": "Ultrawild Festival", "city": "St. Gallen", "url": "" }
+        {
+          "name": "Kugl",
+          "city": "St. Gallen",
+          "url": ""
+        },
+        {
+          "name": "Sektor 11",
+          "city": "Zürich",
+          "url": ""
+        },
+        {
+          "name": "The Q",
+          "city": "Schaan, FL",
+          "url": ""
+        },
+        {
+          "name": "IVY",
+          "city": "St. Gallen",
+          "url": ""
+        },
+        {
+          "name": "BBC",
+          "city": "Gossau",
+          "url": ""
+        },
+        {
+          "name": "B9",
+          "city": "St. Gallen",
+          "url": ""
+        },
+        {
+          "name": "Ultrawild Festival",
+          "city": "St. Gallen",
+          "url": ""
+        }
       ]
     },
     "gallery": {
@@ -130,18 +270,66 @@
       "title": "Gal",
       "titleAccent": "lery.",
       "items": [
-        { "src": "img/gallery-01.jpg", "alt": "Sam Sparking live — crowd with hands up", "credit": "Sarto Photography" },
-        { "src": "img/gallery-02.jpg", "alt": "Sam Sparking mixing on CDJs", "credit": "Sarto Photography" },
-        { "src": "img/gallery-03.jpg", "alt": "Stage lights during a hardstyle set", "credit": "Sarto Photography" },
-        { "src": "img/gallery-04.jpg", "alt": "Sam Sparking behind the booth", "credit": "Sarto Photography" },
-        { "src": "img/gallery-05.jpg", "alt": "Crowd at a Sam Sparking show", "credit": "Sarto Photography" },
-        { "src": "img/gallery-06.jpg", "alt": "Sam Sparking portrait at the venue", "credit": "Sarto Photography" },
-        { "src": "img/gallery-07.jpg", "alt": "Hands in the air on the dancefloor", "credit": "Sarto Photography" },
-        { "src": "img/gallery-08.jpg", "alt": "Sam Sparking during his set", "credit": "Sarto Photography" },
-        { "src": "img/gallery-09.jpg", "alt": "Light show over the dancefloor", "credit": "Sarto Photography" },
-        { "src": "img/gallery-10.jpg", "alt": "Sam Sparking on stage", "credit": "Sarto Photography" },
-        { "src": "img/gallery-11.jpg", "alt": "Booth view over the crowd", "credit": "Sarto Photography" },
-        { "src": "img/gallery-12.jpg", "alt": "Closing moment of the night", "credit": "Sarto Photography" }
+        {
+          "src": "img/gallery-01.jpg",
+          "alt": "Sam Sparking live — crowd with hands up",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-02.jpg",
+          "alt": "Sam Sparking mixing on CDJs",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-03.jpg",
+          "alt": "Stage lights during a hardstyle set",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-04.jpg",
+          "alt": "Sam Sparking behind the booth",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-05.jpg",
+          "alt": "Crowd at a Sam Sparking show",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-06.jpg",
+          "alt": "Sam Sparking portrait at the venue",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-07.jpg",
+          "alt": "Hands in the air on the dancefloor",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-08.jpg",
+          "alt": "Sam Sparking during his set",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-09.jpg",
+          "alt": "Light show over the dancefloor",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-10.jpg",
+          "alt": "Sam Sparking on stage",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-11.jpg",
+          "alt": "Booth view over the crowd",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "img/gallery-12.jpg",
+          "alt": "Closing moment of the night",
+          "credit": "Sarto Photography"
+        }
       ]
     },
     "booking": {
@@ -150,7 +338,11 @@
       "title": "Boo",
       "titleAccent": "king.",
       "availableKicker": "Available for",
-      "available": ["Clubs & Venues", "Festivals", "Switzerland & Europe"],
+      "available": [
+        "Clubs & Venues",
+        "Festivals",
+        "Switzerland & Europe"
+      ],
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
       "form": {
@@ -167,17 +359,35 @@
           {
             "title": "CDJs — 4× required",
             "items": [
-              { "name": "Pioneer CDJ-3000X", "meta": "1st choice" },
-              { "name": "Pioneer CDJ-3000", "meta": "2nd choice" },
-              { "name": "Pioneer CDJ-2000NXS2", "meta": "3rd choice" }
+              {
+                "name": "Pioneer CDJ-3000X",
+                "meta": "1st choice"
+              },
+              {
+                "name": "Pioneer CDJ-3000",
+                "meta": "2nd choice"
+              },
+              {
+                "name": "Pioneer CDJ-2000NXS2",
+                "meta": "3rd choice"
+              }
             ]
           },
           {
             "title": "Mixer — one of the following",
             "items": [
-              { "name": "Pioneer DJM-V10", "meta": "1st choice" },
-              { "name": "Pioneer DJM-A9", "meta": "2nd choice" },
-              { "name": "Pioneer DJM-2000NXS", "meta": "3rd choice" }
+              {
+                "name": "Pioneer DJM-V10",
+                "meta": "1st choice"
+              },
+              {
+                "name": "Pioneer DJM-A9",
+                "meta": "2nd choice"
+              },
+              {
+                "name": "Pioneer DJM-2000NXS",
+                "meta": "3rd choice"
+              }
             ]
           }
         ],
@@ -194,7 +404,10 @@
       "phone": "+41 77 509 11 71",
       "base": "St. Gallen, Switzerland",
       "socials": [
-        { "label": "Mixcloud", "url": "https://www.mixcloud.com/samsparking/" }
+        {
+          "label": "Mixcloud",
+          "url": "https://www.mixcloud.com/samsparking/"
+        }
       ]
     }
   }

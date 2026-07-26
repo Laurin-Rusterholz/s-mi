@@ -13,12 +13,16 @@
  * Aufruf:  node scripts/build.mjs
  */
 
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir, rm } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LOCAL_CONTENT = resolve(ROOT, "content/site.json");
+
+/** Verzeichnisse, die der Generator nie anfasst. */
+const KEEP_DIRS = new Set(["assets", "img", "content", "scripts", "presskit", "node_modules"]);
 
 /* ------------------------------------------------------------------ utils */
 
@@ -39,7 +43,7 @@ const safeUrl = (v) => {
   return s;
 };
 
-const href = (v) => esc(safeUrl(v));
+const href = (v) => esc(rooted(v));
 
 /** Mini-Markdown im Fliesstext: **fett** und [Label](url). */
 const inline = (v) =>
@@ -122,6 +126,7 @@ async function loadContent() {
 /* --------------------------------------------------------------- bausteine */
 
 function sectionHead(n, s, key) {
+  if (CTX.hideHead === key) return "";
   return `
       <div class="shead rv">
         <span class="num">${num(n)}</span>
@@ -298,9 +303,28 @@ function renderShows(n, s) {
     .filter((i) => isoDate(i.date) && isoDate(i.date) < t)
     .sort((a, b) => String(b.date).localeCompare(String(a.date)));
 
+  // Der Kalender wird von assets/site.js aufgebaut (aus #shows-data) und erst
+  // dann eingeblendet — ohne JavaScript bleibt die Liste allein stehen.
+  const calendar =
+    str(s.view, "calendar") !== "list" && items.length
+      ? `
+      <div class="cal rv" id="shows-calendar" hidden>
+        <div class="cal-head">
+          <button type="button" class="cal-nav" data-cal="prev" aria-label="${esc(
+            str(s.prevLabel, "Previous month")
+          )}">‹</button>
+          <strong class="cal-month" id="cal-month"></strong>
+          <button type="button" class="cal-nav" data-cal="next" aria-label="${esc(
+            str(s.nextLabel, "Next month")
+          )}">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
+      </div>`
+      : "";
+
   return `
   <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
-    <div class="wrap">${sectionHead(n, s, "shows")}
+    <div class="wrap">${sectionHead(n, s, "shows")}${calendar}
       ${
         upcoming.length
           ? `<ul class="show-list rv" id="show-list">
@@ -332,7 +356,7 @@ function renderReferences(n, s) {
       <ul class="venue-list rv">
         ${items
           .map((v, i) => {
-            const url = safeUrl(v.url) || "#booking";
+            const url = safeUrl(v.url) || anchor("#booking");
             const ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener"' : "";
             return `<li><a href="${esc(url)}"${ext}><span class="venue-idx">${num(
               i + 1
@@ -344,7 +368,9 @@ function renderReferences(n, s) {
       </ul>
       ${
         str(s.note)
-          ? `<p class="live-note rv">${inline(s.note)} <a class="accent" href="#contact">${esc(
+          ? `<p class="live-note rv">${inline(s.note)} <a class="accent" href="${anchorHref(
+              "#contact"
+            )}">${esc(
               str(s.noteLinkLabel, "Get in touch →")
             )}</a></p>`
           : ""
@@ -405,7 +431,9 @@ function renderBooking(n, s, site) {
               .join("\n            ")}
           </ul>
           <div class="btn-row">
-            <a class="btn solid" href="${formEnabled ? "#booking-form" : "#contact"}">${esc(
+            <a class="btn solid" href="${
+              formEnabled ? "#booking-form" : anchorHref("#contact")
+            }">${esc(
     str(f.submitLabel, "Request a date")
   )}</a>
             ${
@@ -527,7 +555,7 @@ function renderContact(n, s) {
 
 /* ------------------------------------------------------------ json-ld */
 
-function structuredData(c, sections) {
+function structuredData(c, sections, page, pages) {
   const site = c.site;
   const base = site.domain.replace(/\/+$/, "");
   const contact = sections.contact || {};
@@ -566,6 +594,27 @@ function structuredData(c, sections) {
     },
   ];
 
+  if (page && page.slug) {
+    graph.push({
+      "@type": "WebPage",
+      "@id": `${base}${pagePath(page.slug)}#page`,
+      url: `${base}${pagePath(page.slug)}`,
+      name: page.navLabel,
+      isPartOf: { "@id": `${base}/#website` },
+      about: { "@id": `${base}/#artist` },
+      breadcrumb: {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Start", item: `${base}/` },
+          { "@type": "ListItem", position: 2, name: page.navLabel },
+        ],
+      },
+    });
+  }
+
+  // Termine nur auf der Seite auszeichnen, die sie auch anzeigt
+  if (page && !list(page.sections).includes("shows")) return { "@context": "https://schema.org", "@graph": graph };
+
   const t = today();
   for (const sh of list(sections.shows?.items)) {
     const date = isoDate(sh.date);
@@ -589,7 +638,7 @@ function structuredData(c, sections) {
         },
       },
       performer: { "@id": `${base}/#artist` },
-      url: safeUrl(sh.ticketUrl) || `${base}/#shows`,
+      url: safeUrl(sh.ticketUrl) || `${base}${page ? pagePath(page.slug) : "/"}#shows`,
       ...(safeUrl(sh.ticketUrl)
         ? {
             offers: {
@@ -610,11 +659,109 @@ function structuredData(c, sections) {
 
 /* ------------------------------------------------------------- dokument */
 
-function renderPage(c) {
+/* ------------------------------------------------------------------ seiten */
+
+/**
+ * Seitenstruktur. Fehlt sie (alter Inhalt), wird aus dem bisherigen `layout`
+ * eine einzelne Startseite gebaut — die Website bleibt damit eine One-Pager.
+ */
+function pagesOf(c) {
+  const sections = c.sections || {};
+  const known = (keys) => list(keys).filter((k) => sections[k] && sections[k].enabled !== false);
+
+  const pages = list(c.pages)
+    .filter((p) => p && p.enabled !== false)
+    .map((p, i) => ({
+      slug: i === 0 ? "" : slugify(p.slug),
+      navLabel: str(p.navLabel, str(p.title, "Seite")),
+      title: str(p.title, str(p.navLabel, "")),
+      sections: known(p.sections),
+      hero: str(p.hero, i === 0 ? "full" : "compact"),
+      ticker: p.ticker !== undefined ? p.ticker !== false : i === 0,
+      inNav: p.inNav !== false,
+      seo: p.seo || {},
+    }));
+
+  if (pages.length) {
+    // Doppelte Slugs entschärfen, sonst überschreiben sich die Dateien.
+    const seen = new Set();
+    pages.forEach((p, i) => {
+      let sl = p.slug;
+      while (sl !== "" && seen.has(sl)) sl += "-2";
+      if (i > 0 && sl === "") sl = "seite-" + i;
+      p.slug = sl;
+      seen.add(sl);
+    });
+    return pages;
+  }
+
+  return [
+    {
+      slug: "",
+      navLabel: "Start",
+      title: "",
+      sections: known(c.layout),
+      hero: "full",
+      ticker: true,
+      inNav: true,
+      seo: {},
+    },
+  ];
+}
+
+const slugify = (v) =>
+  String(v || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9/-]+/g, "-")
+    .replace(/^[-/]+|[-/]+$/g, "")
+    .slice(0, 60);
+
+/** Adresse einer Seite: "" → "/", "shows" → "/shows/" */
+const pagePath = (slug) => (slug ? `/${slug}/` : "/");
+
+/* Welche Seite wird gerade gebaut — damit Sprungmarken wie #booking auch dann
+   ankommen, wenn der Abschnitt inzwischen auf einer anderen Seite liegt. */
+let CTX = { page: null, pages: [] };
+
+/**
+ * Verweis auf einen Abschnitt: auf derselben Seite ein Anker, sonst der Link
+ * auf die Seite, die den Abschnitt zeigt. Findet sich der Abschnitt nirgends,
+ * bleibt der Anker stehen (schadet nicht, springt nur nicht).
+ */
+function anchor(target) {
+  const t = String(target || "").trim();
+  if (!t.startsWith("#")) return rooted(t);
+  const key = t.slice(1);
+  const page = CTX.page;
+  if (!page || list(page.sections).includes(key)) return t;
+  const other = CTX.pages.find((p) => list(p.sections).includes(key));
+  return other ? `${pagePath(other.slug)}${t}` : t;
+}
+
+const anchorHref = (v) => esc(anchor(v));
+
+/**
+ * Pfade in Inhalten sind relativ gedacht (img/hero.jpg). Auf Unterseiten
+ * würden sie ins Leere zeigen, deshalb werden sie ab Wurzel geschrieben.
+ */
+function rooted(url) {
+  const u = safeUrl(url);
+  if (!u) return "";
+  if (/^(https?:|mailto:|tel:|#|\/)/i.test(u)) return u;
+  return "/" + u.replace(/^\.?\//, "");
+}
+
+/* --------------------------------------------------------------- dokument */
+
+function renderPage(c, page, pages) {
+  CTX = { page, pages, hideHead: null };
   const site = c.site;
   const base = site.domain.replace(/\/+$/, "");
   const sections = c.sections || {};
-  const order = list(c.layout).filter((k) => sections[k] && sections[k].enabled !== false);
+  const order = page.sections;
+  const isHome = !page.slug;
 
   const renderers = {
     about: renderAbout,
@@ -626,27 +773,62 @@ function renderPage(c) {
     contact: renderContact,
   };
 
+  const norm = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const firstKey = order[0];
+  CTX.hideHead =
+    page.hero === "compact" &&
+    firstKey &&
+    norm(str(sections[firstKey].navLabel, firstKey)) === norm(page.navLabel)
+      ? firstKey
+      : null;
+
   const body = order
     .map((key, i) => (renderers[key] ? renderers[key](i + 1, sections[key]) : ""))
     .join("\n");
 
-  const nav = order
+  const navPages = pages.filter((p) => p.inNav);
+  const nav = navPages
     .map(
-      (key) =>
-        `<li><a href="#${esc(key)}">${esc(
-          str(sections[key].navLabel, sections[key].title + sections[key].titleAccent)
-        )}</a></li>`
+      (p) =>
+        `<li><a href="${esc(pagePath(p.slug))}"${
+          p.slug === page.slug ? ' aria-current="page"' : ""
+        }>${esc(p.navLabel)}</a></li>`
     )
     .join("\n          ");
 
+  // Auf einer Seite mit mehreren Abschnitten zusätzlich Sprungmarken anbieten
+  const subNav =
+    order.length > 1
+      ? `
+    <nav class="subnav" aria-label="Auf dieser Seite">
+      <div class="wrap subnav-inner">
+        ${order
+          .map(
+            (key) =>
+              `<a href="#${esc(key)}">${esc(
+                str(sections[key].navLabel, sections[key].title + sections[key].titleAccent)
+              )}</a>`
+          )
+          .join("")}
+      </div>
+    </nav>`
+      : "";
+
   const accent = color(site.accentColor, "#2e6bff");
   const ink = color(site.themeColor, "#05070e");
-  const ogImage = absolute(base, site.ogImage);
+  const ogImage = absolute(base, rooted(site.ogImage));
   const ticker = c.ticker || {};
   const tickerItems = list(ticker.items).filter((t) => str(t?.text) || str(t?.accent));
 
+  const url = base + pagePath(page.slug);
+  const title = str(
+    page.seo?.title,
+    isHome ? site.title : `${page.navLabel} — ${site.artist}`
+  );
+  const description = str(page.seo?.description, site.description);
+
   const tickerBlock =
-    ticker.enabled !== false && tickerItems.length
+    page.ticker && ticker.enabled !== false && tickerItems.length
       ? `
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track">
@@ -664,82 +846,18 @@ function renderPage(c) {
   </div>`
       : "";
 
-  return `<!DOCTYPE html>
-<!--
-  Diese Datei wird generiert — NICHT direkt bearbeiten.
-  Inhalte pflegst du in der Verwaltung (oder in content/site.json),
-  danach "node scripts/build.mjs" bzw. ein Netlify-Deploy.
--->
-<html lang="${esc(site.lang || "en")}">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Primary SEO -->
-  <title>${esc(site.title)}</title>
-  <meta name="description" content="${esc(site.description)}">
-  <meta name="keywords" content="${esc(list(site.keywords).join(", "))}">
-  <link rel="canonical" href="${esc(base)}/">
-  <meta name="robots" content="index, follow, max-image-preview:large">
-  <meta name="author" content="${esc(site.artist)}">
-
-  <!-- Open Graph / Social -->
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="${esc(site.artist)}">
-  <meta property="og:url" content="${esc(base)}/">
-  <meta property="og:title" content="${esc(str(site.ogTitle, site.title))}">
-  <meta property="og:description" content="${esc(str(site.ogDescription, site.description))}">
-  <meta property="og:image" content="${esc(ogImage)}">
-  <meta property="og:image:alt" content="${esc(c.hero?.media?.alt || site.artist)}">
-  <meta property="og:locale" content="${esc((site.lang || "en") === "de" ? "de_CH" : "en_US")}">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${esc(str(site.ogTitle, site.title))}">
-  <meta name="twitter:description" content="${esc(str(site.ogDescription, site.description))}">
-  <meta name="twitter:image" content="${esc(ogImage)}">
-
-  <!-- Structured data -->
-  <script type="application/ld+json">
-${jsonScript(structuredData(c, sections))}
-  </script>
-
-  <meta name="theme-color" content="${esc(ink)}">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='${encodeURIComponent(
-    ink
-  )}'/%3E%3Cpath d='M36 6 14 38h14l-4 20 26-34H34z' fill='${encodeURIComponent(
-    accent
-  )}'/%3E%3C/svg%3E">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-${
-  // Beim Video ist das Poster das Bild, das sofort sichtbar sein muss.
-  (() => {
-    const m = c.hero?.media || {};
-    const first = m.type === "video" ? m.poster : m.src;
-    return safeUrl(first)
-      ? `  <link rel="preload" as="image" href="${href(first)}" fetchpriority="high">\n`
-      : "";
-  })()
-}
-  <link rel="stylesheet" href="assets/site.css">
-  <style>:root{--ink:${ink};--spark:${accent};}</style>
-</head>
-<body>
-  <a class="skip" href="#about">Skip to content</a>
-  <div class="progress" id="progress" aria-hidden="true"></div>
-
-  <header>
-    <a class="logo" href="#top">${esc(str(site.logoText, site.artist))}</a>
-    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">Menu</button>
-    <nav id="nav">
-      <ul>
-          ${nav}
-      </ul>
-    </nav>
-  </header>
-
-  <!-- ============ HERO ============ -->
+  const hero =
+    page.hero === "none"
+      ? ""
+      : page.hero === "compact"
+      ? `
+  <section class="hero hero-compact" id="top">
+    <div class="wrap">
+      <p class="mono">${esc(str(c.hero?.kicker, site.artist))}</p>
+      <h1>${esc(str(page.title, page.navLabel))}</h1>
+    </div>
+  </section>`
+      : `
   <section class="hero" id="top">
     <div class="hero-bg">
       ${heroMedia(c.hero || {})}
@@ -754,7 +872,7 @@ ${
         ${c.hero?.meta ? `<span class="mono">${esc(c.hero.meta)}</span>` : ""}
         ${
           c.hero?.ctaLabel
-            ? `<a class="hero-cta" href="${href(str(c.hero.ctaHref, "#booking"))}">${esc(
+            ? `<a class="hero-cta" href="${anchorHref(str(c.hero.ctaHref, "#booking"))}">${esc(
                 c.hero.ctaLabel
               )}</a>`
             : ""
@@ -762,8 +880,105 @@ ${
       </div>
     </div>
     <a class="hero-scroll mono" href="#${esc(order[0] || "top")}" aria-hidden="true" tabindex="-1">Scroll ↓</a>
-  </section>
-${tickerBlock}
+  </section>`;
+
+  const heroPreload = (() => {
+    if (page.hero !== "full") return "";
+    const m = c.hero?.media || {};
+    const first = m.type === "video" ? m.poster : m.src;
+    return safeUrl(first)
+      ? `  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">\n`
+      : "";
+  })();
+
+  // Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf)
+  const showsData =
+    order.includes("shows") && list(sections.shows?.items).length
+      ? `
+  <script type="application/json" id="shows-data">${jsonScript(
+    list(sections.shows.items)
+      .filter((i) => str(i?.name) && isoDate(i.date))
+      .map((i) => ({
+        date: isoDate(i.date),
+        name: str(i.name),
+        venue: str(i.venue),
+        city: str(i.city),
+        url: safeUrl(i.ticketUrl),
+        status: str(i.status, "confirmed"),
+      }))
+  )}</script>`
+      : "";
+
+  return `<!DOCTYPE html>
+<!--
+  Diese Datei wird generiert — NICHT direkt bearbeiten.
+  Inhalte pflegst du in der Verwaltung (oder in content/site.json),
+  danach "node scripts/build.mjs" bzw. ein Netlify-Deploy.
+-->
+<html lang="${esc(site.lang || "en")}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary SEO -->
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(description)}">
+  <meta name="keywords" content="${esc(list(site.keywords).join(", "))}">
+  <link rel="canonical" href="${esc(url)}">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="${esc(site.artist)}">
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="${esc(site.artist)}">
+  <meta property="og:url" content="${esc(url)}">
+  <meta property="og:title" content="${esc(isHome ? str(site.ogTitle, title) : title)}">
+  <meta property="og:description" content="${esc(
+    isHome ? str(site.ogDescription, description) : description
+  )}">
+  <meta property="og:image" content="${esc(ogImage)}">
+  <meta property="og:image:alt" content="${esc(c.hero?.media?.alt || site.artist)}">
+  <meta property="og:locale" content="${esc((site.lang || "en") === "de" ? "de_CH" : "en_US")}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${esc(isHome ? str(site.ogTitle, title) : title)}">
+  <meta name="twitter:description" content="${esc(
+    isHome ? str(site.ogDescription, description) : description
+  )}">
+  <meta name="twitter:image" content="${esc(ogImage)}">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+${jsonScript(structuredData(c, sections, page, pages))}
+  </script>
+
+  <meta name="theme-color" content="${esc(ink)}">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='${encodeURIComponent(
+    ink
+  )}'/%3E%3Cpath d='M36 6 14 38h14l-4 20 26-34H34z' fill='${encodeURIComponent(
+    accent
+  )}'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+${heroPreload}
+  <link rel="stylesheet" href="/assets/site.css">
+  <style>:root{--ink:${ink};--spark:${accent};}</style>
+</head>
+<body data-page="${esc(page.slug || "home")}">
+  <a class="skip" href="#${esc(order[0] || "top")}">Skip to content</a>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <header>
+    <a class="logo" href="/">${esc(str(site.logoText, site.artist))}</a>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav">
+      <ul>
+          ${nav}
+      </ul>
+    </nav>
+  </header>
+${hero}${tickerBlock}${subNav}
 ${body}
 
   <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
@@ -786,8 +1001,8 @@ ${body}
       }
     </div>
   </footer>
-
-  <script src="assets/site.js" defer></script>
+${showsData}
+  <script src="/assets/site.js" defer></script>
 </body>
 </html>
 `;
@@ -795,16 +1010,20 @@ ${body}
 
 /* ------------------------------------------------------------------ main */
 
-function renderSitemap(c) {
+function renderSitemap(c, pages) {
   const base = c.site.domain.replace(/\/+$/, "");
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${esc(base)}/</loc>
+${pages
+  .map(
+    (p) => `  <url>
+    <loc>${esc(base)}${esc(pagePath(p.slug))}</loc>
     <lastmod>${today()}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-  </url>
+    <priority>${p.slug ? "0.8" : "1.0"}</priority>
+  </url>`
+  )
+  .join("\n")}
 </urlset>
 `;
 }
@@ -825,19 +1044,42 @@ async function main() {
   }
   await mkdir(resolve(ROOT, "content"), { recursive: true });
 
-  const files = {
-    "index.html": renderPage(content),
-    "sitemap.xml": renderSitemap(content),
-    "robots.txt": renderRobots(content),
-  };
-  for (const [name, body] of Object.entries(files)) {
-    await writeFile(resolve(ROOT, name), body);
-    console.log(`[build] ${name} — ${(body.length / 1024).toFixed(1)} kB`);
+  const pages = pagesOf(content);
+
+  // Seiten schreiben: Start nach index.html, alle anderen nach <slug>/index.html
+  for (const page of pages) {
+    const rel = page.slug ? `${page.slug}/index.html` : "index.html";
+    const file = resolve(ROOT, rel);
+    await mkdir(dirname(file), { recursive: true });
+    const html = renderPage(content, page, pages);
+    await writeFile(file, html);
+    console.log(
+      `[build] ${rel.padEnd(28)} ${(html.length / 1024).toFixed(1).padStart(5)} kB  ` +
+        `(${page.sections.join(", ") || "keine Abschnitte"})`
+    );
+  }
+
+  await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages));
+  await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));
+  console.log("[build] sitemap.xml, robots.txt");
+
+  // Verzeichnisse aufräumen, die zu keiner Seite mehr gehören
+  const wanted = new Set(pages.filter((p) => p.slug).map((p) => p.slug.split("/")[0]));
+  for (const entry of await readdir(ROOT, { withFileTypes: true })) {
+    if (!entry.isDirectory() || KEEP_DIRS.has(entry.name) || entry.name.startsWith(".")) continue;
+    if (wanted.has(entry.name)) continue;
+    // Nur entfernen, was eindeutig eine generierte Seite ist
+    if (existsSync(resolve(ROOT, entry.name, "index.html"))) {
+      await rm(resolve(ROOT, entry.name), { recursive: true, force: true });
+      console.log(`[build] entfernt: ${entry.name}/ (keine Seite mehr)`);
+    }
   }
 
   const shows = list(content.sections?.shows?.items).length;
   const gal = list(content.sections?.gallery?.items).length;
-  console.log(`[build] fertig — ${shows} Show(s), ${gal} Galeriebild(er)`);
+  console.log(
+    `[build] fertig — ${pages.length} Seite(n), ${shows} Show(s), ${gal} Galeriebild(er)`
+  );
 }
 
 main().catch((err) => {

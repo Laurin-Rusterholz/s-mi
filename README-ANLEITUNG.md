@@ -20,15 +20,16 @@ Verwaltung (Admin)  ──schreibt──▶  Firebase Realtime Database
                                           │
                                     node scripts/build.mjs
                                           │
-                            index.html · sitemap.xml · robots.txt
+         index.html · shows/ · gallery/ · … · sitemap.xml · robots.txt
 ```
 
 - **`content/site.json`** — der Inhalt. Wird beim Build automatisch mit dem Stand
   aus der Verwaltung überschrieben; ist die Datenbank nicht erreichbar, baut
   Netlify mit dieser eingecheckten Datei weiter (mit Warnung im Build-Log).
 - **`scripts/build.mjs`** — der Generator. Keine Abhängigkeiten, reines Node.
-- **`index.html`** — **generiert, nicht von Hand bearbeiten.** Änderungen hier
-  gehen beim nächsten Build verloren.
+- **`index.html`** und die Seiten-Verzeichnisse (`shows/`, `gallery/`, …) —
+  **generiert, nicht von Hand bearbeiten.** Änderungen hier gehen beim nächsten
+  Build verloren; Verzeichnisse gelöschter Seiten räumt der Build weg.
 - **`assets/site.css` / `assets/site.js`** — Aussehen und Interaktion. Das ist der
   richtige Ort für Design-Änderungen.
 
@@ -64,7 +65,7 @@ und `robots.txt` ziehen automatisch nach.
 ## Bilder
 
 Bilder **und Videos** lädst du in der Verwaltung unter **Medien** hoch (Firebase
-Storage, max. 48 MB pro Datei). Sie werden direkt von dort ausgeliefert; im Repo
+Storage, max. 250 MB pro Datei). Sie werden direkt von dort ausgeliefert; im Repo
 muss nichts abgelegt werden.
 
 Als Hero-Hintergrund kann ein MP4 laufen — automatisch, stumm, in Dauerschleife
@@ -98,6 +99,10 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 - **Shows** — kommende Termine mit Datum, Venue, Ticket-Link, „Sold out";
   vergangene Termine klappen separat auf. Abgelaufene Termine verschwinden
   automatisch, auch ohne neuen Build.
+- **Mehrere Seiten** — welche Seiten es gibt und welcher Abschnitt auf welcher
+  steht, kommt aus der Verwaltung; Menü, Sitemap und Sprungmarken folgen
+  automatisch. Ohne Seiten-Definition wird eine einzelne Seite gebaut.
+- **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte)
 - Referenzen, Galerie mit Lightbox (Pfeiltasten, Wischen, Zähler)
 - Booking mit Rider und **Anfrage-Formular** → landet direkt in der Verwaltung
 - Kontakt mit beliebig vielen Social-Links
@@ -116,3 +121,5 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 - Barrierefrei: Skip-Link, Fokus-Ringe, ARIA am Menü/Lightbox,
   `prefers-reduced-motion`, Tastaturbedienung überall
 - Scroll-Fortschritt, aktiver Menüpunkt, Druck-Stylesheet
+- Weiche Seitenwechsel (View Transitions), interne Seiten werden beim
+  Überfahren des Links vorgeladen
