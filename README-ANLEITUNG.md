@@ -58,6 +58,11 @@ unter `/`, die anderen unter `/<sprache>/`. Vor dem Rendern wird der Inhaltsbaum
 einmal übersetzt (`localize`), deshalb kennen die einzelnen Bausteine keine
 Sprachen. Fehlt eine Übersetzung, bleibt der deutsche Text stehen.
 
+Steht in der Verwaltung noch ein alter Stand **ohne** `i18n` und mit einer
+anderen Hauptsprache, übernimmt der Build die Texte aus `content/site.json` und
+schreibt das ins Log. Sobald in der Verwaltung einmal gespeichert wurde, gilt
+wieder ausschliesslich der Stand von dort.
+
 `i18n.<lang>` darf verschachtelt (so schreibt es die Verwaltung — die Realtime
 Database erlaubt keine Punkte in Schlüsseln) oder flach mit Punkt-Pfaden
 (`"sections.about.lede"`) stehen; `flattenI18n()` versteht beides. Welche Felder
@@ -189,12 +194,13 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 - **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte,
   gebuchte Tage blau, mit Legende darunter)
 - **Hintergrundbild** hinter der ganzen Seite (in der Verwaltung wählbar) — die
-  Inhalte stehen als freie Kacheln darauf, Bilder ohne Rahmen mit weichem Schatten
+  Inhalte stehen als freie, **eckige** Kacheln darauf, Bilder ohne Rahmen und
+  ohne Rundungen, nur mit weichem Schatten
 - Alle Texte in der **Ich-Form** — die Website spricht als Sam, nicht über ihn
 - **Drei Sprachen** — Deutsch unter `/`, Englisch unter `/en/`, Französisch
-  unter `/fr/`. Umschalter im Kopf, `hreflang`-Verweise und `xhtml:link` in der
-  Sitemap. Übersetzt wird in der Verwaltung (auf Wunsch von Claude); fehlt eine
-  Stelle, steht dort der deutsche Text.
+  unter `/fr/`. Umschalter im **Fussbereich**, `hreflang`-Verweise und
+  `xhtml:link` in der Sitemap. Übersetzt wird in der Verwaltung (auf Wunsch von
+  Claude); fehlt eine Stelle, steht dort der deutsche Text.
 - Referenzen, Galerie mit Lightbox (Pfeiltasten, Wischen, Zähler)
 - Booking mit Rider und **Anfrage-Formular** → landet direkt in der Verwaltung
 - Kontakt mit beliebig vielen Social-Links

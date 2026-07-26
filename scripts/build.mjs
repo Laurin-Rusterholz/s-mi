@@ -105,6 +105,26 @@ function withDefaults(target, defaults) {
   return target === undefined ? defaults : target;
 }
 
+/**
+ * Texte der Vorlage übernehmen — nur dort, wo es das Feld im Live-Inhalt schon
+ * gibt. Bilder, Videos, Termine, Farben und Links bleiben unangetastet.
+ * Dieselbe Regel wie der Knopf „Texte umstellen" in der Verwaltung.
+ */
+function adoptTexts(live, template) {
+  for (const [path, text] of collectStrings(template)) {
+    const keys = path.split(".");
+    let cur = live;
+    for (let i = 0; i < keys.length - 1 && cur != null; i++) cur = cur[keys[i]];
+    const last = keys[keys.length - 1];
+    if (cur && typeof cur === "object" && cur[last] !== undefined) cur[last] = text;
+  }
+  live.site.lang = template.site.lang;
+  live.site.languages = list(template.site.languages).slice();
+  live.i18n = template.i18n;
+  live.i18nHash = template.i18nHash;
+  if (template.ui) live.ui = template.ui;
+}
+
 async function loadContent() {
   const apiUrl = process.env.CONTENT_API_URL;
   if (apiUrl) {
@@ -121,7 +141,20 @@ async function loadContent() {
       }
       let content = live;
       try {
-        content = withDefaults(live, JSON.parse(await readFile(LOCAL_CONTENT, "utf8")));
+        const template = JSON.parse(await readFile(LOCAL_CONTENT, "utf8"));
+        // Alter Stand: die Verwaltung hat noch nie Übersetzungen geschrieben
+        // und läuft auf einer anderen Hauptsprache als die Vorlage. Dann
+        // stünden auf der Website in jeder Sprache dieselben Texte — also die
+        // Texte aus der Vorlage übernehmen. Sobald in der Verwaltung einmal
+        // gespeichert wurde, greift das nicht mehr.
+        if (!live.i18n && String(live.site?.lang) !== String(template.site?.lang)) {
+          console.log(
+            `[build] Verwaltung steht noch auf "${live.site?.lang}" ohne Übersetzungen — ` +
+              `Texte aus der Vorlage (${template.site?.lang}) übernommen.`
+          );
+          adoptTexts(live, template);
+        }
+        content = withDefaults(live, template);
       } catch (e) {
         console.warn("[build] Vorlage content/site.json nicht lesbar:", e.message);
       }
@@ -790,6 +823,7 @@ const UI_DEFAULTS = {
   soldOut: "Ausverkauft",
   booked: "Gebucht",
   calShow: "Termin",
+  language: "Sprache",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
   notFoundCta: "Zur Startseite",
@@ -1268,22 +1302,6 @@ ${pageBackground(site)}
       <ul>
           ${nav}
       </ul>
-      ${
-        langs.length > 1
-          ? `<div class="langs" role="group" aria-label="Sprache">
-        ${langs
-          .map(
-            (l) =>
-              `<a href="${esc(
-                langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
-              )}" lang="${esc(l)}"${l === lang ? ' aria-current="true"' : ""}>${esc(
-                l.toUpperCase()
-              )}</a>`
-          )
-          .join("")}
-      </div>`
-          : ""
-      }
     </nav>
   </header>
 ${hero}${tickerBlock}${subNav}
@@ -1298,6 +1316,23 @@ ${body}
 
   <footer>
     <div class="wrap foot">
+      ${
+        langs.length > 1
+          ? `<nav class="langs" aria-label="${esc(ui.language)}">
+        <span class="mono">${esc(ui.language)}</span>
+        ${langs
+          .map(
+            (l) =>
+              `<a href="${esc(
+                langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
+              )}" lang="${esc(l)}"${l === lang ? ' aria-current="true"' : ""}>${esc(
+                LANG_NAMES[l] || l.toUpperCase()
+              )}</a>`
+          )
+          .join("")}
+      </nav>`
+          : ""
+      }
       <span class="mono">© <span id="yr">${today().slice(0, 4)}</span> ${esc(
     site.artist
   )} — ${esc(ui.rights)}</span>

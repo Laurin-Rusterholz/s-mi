@@ -21,7 +21,7 @@
     "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Buch mich für deinen Club oder dein Festival — Schweiz und Europa.",
     "ogImage": "img/hero.jpg",
     "backgroundImage": "img/hero.jpg",
-    "themeColor": "#05070e",
+    "themeColor": "#0d1119",
     "accentColor": "#2e6bff",
     "claim": "Aus Energie wird Euphorie",
     "photoCredit": "Sarto Photography",
@@ -450,7 +450,8 @@
     "fHoneypot": "Bitte leer lassen",
     "notFoundTitle": "Nichts hier.",
     "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
-    "notFoundCta": "Zur Startseite"
+    "notFoundCta": "Zur Startseite",
+    "language": "Sprache"
   },
   "i18n": {
     "en": {
@@ -770,7 +771,8 @@
         "calShow": "Show",
         "notFoundTitle": "Nothing here.",
         "notFoundText": "This page doesn't exist (any more). Head back to the start — everything current is there.",
-        "notFoundCta": "Back to start"
+        "notFoundCta": "Back to start",
+        "language": "Language"
       },
       "hero": {
         "kicker": "DJ & producer — St. Gallen, Switzerland",
@@ -1099,7 +1101,8 @@
         "calShow": "Date",
         "notFoundTitle": "Rien ici.",
         "notFoundText": "Cette page n'existe pas (ou plus). Retour à l'accueil — tout ce qui est actuel s'y trouve.",
-        "notFoundCta": "Retour à l'accueil"
+        "notFoundCta": "Retour à l'accueil",
+        "language": "Langue"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -1430,7 +1433,8 @@
         "calShow": "12c12fbc",
         "notFoundTitle": "f280d90c",
         "notFoundText": "4bae6292",
-        "notFoundCta": "51d280ee"
+        "notFoundCta": "51d280ee",
+        "language": "99efb25b"
       },
       "hero": {
         "kicker": "00cd226e",
@@ -1759,7 +1763,8 @@
         "calShow": "12c12fbc",
         "notFoundTitle": "f280d90c",
         "notFoundText": "4bae6292",
-        "notFoundCta": "51d280ee"
+        "notFoundCta": "51d280ee",
+        "language": "99efb25b"
       },
       "hero": {
         "kicker": "00cd226e",
