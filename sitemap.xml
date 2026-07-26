@@ -8,24 +8,6 @@
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/shows/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/gallery/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
     <image:image>
       <image:loc>https://www.samsparking.ch/img/gallery-01.jpg</image:loc>
       <image:title>Sam Sparkling live — Crowd mit erhobenen Händen</image:title>
@@ -74,15 +56,6 @@
       <image:loc>https://www.samsparking.ch/img/gallery-12.jpg</image:loc>
       <image:title>Letzter Moment der Nacht</image:title>
     </image:image>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/booking/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/booking/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/booking/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/booking/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.samsparking.ch/en/</loc>
@@ -92,24 +65,6 @@
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/en/shows/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/en/gallery/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
     <image:image>
       <image:loc>https://www.samsparking.ch/img/gallery-01.jpg</image:loc>
       <image:title>Sam Sparkling live — Crowd mit erhobenen Händen</image:title>
@@ -158,15 +113,6 @@
       <image:loc>https://www.samsparking.ch/img/gallery-12.jpg</image:loc>
       <image:title>Letzter Moment der Nacht</image:title>
     </image:image>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/en/booking/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/booking/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/booking/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/booking/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.samsparking.ch/fr/</loc>
@@ -176,24 +122,6 @@
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/fr/shows/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/fr/gallery/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
     <image:image>
       <image:loc>https://www.samsparking.ch/img/gallery-01.jpg</image:loc>
       <image:title>Sam Sparkling live — Crowd mit erhobenen Händen</image:title>
@@ -242,14 +170,5 @@
       <image:loc>https://www.samsparking.ch/img/gallery-12.jpg</image:loc>
       <image:title>Letzter Moment der Nacht</image:title>
     </image:image>
-  </url>
-  <url>
-    <loc>https://www.samsparking.ch/fr/booking/</loc>
-      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/booking/"/>
-      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/booking/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/booking/"/>
-    <lastmod>2026-07-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
 </urlset>

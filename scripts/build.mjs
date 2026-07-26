@@ -123,6 +123,28 @@ function adoptTexts(live, template) {
   live.i18n = template.i18n;
   live.i18nHash = template.i18nHash;
   if (template.ui) live.ui = template.ui;
+  // Seitenaufteilung und Reihenfolge der Vorlage übernehmen — die alten
+  // englischen Stände tragen noch die Vier-Seiten-Struktur mit sich.
+  if (template.pages !== undefined) live.pages = JSON.parse(JSON.stringify(template.pages));
+  if (template.layout !== undefined) live.layout = list(template.layout).slice();
+}
+
+/**
+ * Steckt in der Datenbank noch der englische Werks-Stand? Verglichen wird
+ * Text für Text mit den alten Auslieferungs-Texten (content/legacy-en.json).
+ * Ab 10 Treffern gilt der Stand als "nie inhaltlich angefasst" — eigene
+ * Bilder, Videos, Termine und Links zählen nicht mit und bleiben erhalten.
+ */
+function looksLikeLegacy(live, legacy) {
+  if (!legacy) return 0;
+  let hits = 0;
+  for (const [path, text] of collectStrings(legacy)) {
+    const keys = path.split(".");
+    let cur = live;
+    for (let i = 0; i < keys.length - 1 && cur != null; i++) cur = cur[keys[i]];
+    if (cur && typeof cur === "object" && String(cur[keys[keys.length - 1]] ?? "").trim() === text.trim()) hits++;
+  }
+  return hits;
 }
 
 async function loadContent() {
@@ -142,15 +164,24 @@ async function loadContent() {
       let content = live;
       try {
         const template = JSON.parse(await readFile(LOCAL_CONTENT, "utf8"));
-        // Alter Stand: die Verwaltung hat noch nie Übersetzungen geschrieben
-        // und läuft auf einer anderen Hauptsprache als die Vorlage. Dann
-        // stünden auf der Website in jeder Sprache dieselben Texte — also die
-        // Texte aus der Vorlage übernehmen. Sobald in der Verwaltung einmal
-        // gespeichert wurde, greift das nicht mehr.
-        if (String(live.site?.lang || "") !== String(template.site?.lang || "")) {
+        let legacy = null;
+        try {
+          legacy = JSON.parse(await readFile(resolve(ROOT, "content/legacy-en.json"), "utf8"));
+        } catch (e) {
+          /* keine Legacy-Datei — dann entscheidet nur die Sprach-Einstellung */
+        }
+        // Alter Stand in der Datenbank? Zwei Anzeichen: (a) die Hauptsprache
+        // weicht von der Vorlage ab, oder (b) die Texte sind noch die alten
+        // englischen Werkstexte — auch wenn in der Verwaltung längst
+        // "Deutsch" eingestellt wurde. In beiden Fällen kommen Texte,
+        // Übersetzungen und Seitenaufteilung aus der Vorlage; Bilder, Videos,
+        // Termine und Links bleiben unangetastet.
+        const legacyHits = looksLikeLegacy(live, legacy);
+        if (String(live.site?.lang || "") !== String(template.site?.lang || "") || legacyHits >= 10) {
           console.log(
-            `[build] Verwaltung steht auf "${live.site?.lang}", die Vorlage auf ` +
-              `"${template.site?.lang}" — Texte und Übersetzungen aus der Vorlage übernommen.`
+            `[build] Datenbank trägt noch den alten Stand ` +
+              `(Sprache "${live.site?.lang}", ${legacyHits} Werkstexte erkannt) — ` +
+              `Texte, Übersetzungen und Seitenaufteilung aus der Vorlage übernommen.`
           );
           adoptTexts(live, template);
         }
@@ -227,17 +258,20 @@ function geoMeta(contact) {
 }
 
 /**
- * Bewegtes Equalizer-Element — die Balken tanzen wie eine Pegelanzeige.
- * Höhen, Tempi und Versätze sind fest eingerechnet, damit jeder Build
- * dieselbe Datei erzeugt; animiert wird rein in CSS.
+ * Aufsteigende Funken — das bewegte Element der Seite, passend zum Namen
+ * Sparkling. Position, Grösse, Tempo und Drift jedes Funkens sind fest
+ * eingerechnet, damit jeder Build dieselbe Datei erzeugt; animiert wird rein
+ * in CSS, negative Verzögerungen lassen die Funken schon beim Laden fliegen.
  */
-function eqBars(n = 44) {
+function sparks(n = 16) {
   let out = "";
   for (let i = 0; i < n; i++) {
-    const h = (0.25 + (((i * 37) % 17) / 17) * 0.75).toFixed(2);
-    const d = (((i * 13) % 9) * 0.09).toFixed(2);
-    const t = (0.8 + ((i * 29) % 7) * 0.12).toFixed(2);
-    out += `<span style="--h:${h};--d:${d}s;--t:${t}s"></span>`;
+    const x = ((i * 61) % 97) + 2;
+    const size = 2 + ((i * 7) % 3);
+    const t = (7 + ((i * 13) % 8)).toFixed(1);
+    const d = (-(((i * 17) % 20) / 20) * 7).toFixed(2);
+    const dx = ((i * 29) % 11) - 5;
+    out += `<span style="--x:${x}%;--s:${size}px;--t:${t}s;--d:${d}s;--dx:${dx}vw"></span>`;
   }
   return out;
 }
@@ -1125,18 +1159,30 @@ function renderPage(c, page, pages, lang, langs) {
     .join("\n");
 
   const navPages = pages.filter((p) => p.inNav);
-  const nav = navPages
-    .map(
-      (p) =>
-        `<li><a href="${esc(pagePath(p.slug))}"${
-          p.slug === page.slug ? ' aria-current="page"' : ""
-        }>${esc(p.navLabel)}</a></li>`
-    )
-    .join("\n          ");
+  // Eine einzige Seite: das Menü springt direkt zu den Abschnitten.
+  const nav =
+    navPages.length > 1
+      ? navPages
+          .map(
+            (p) =>
+              `<li><a href="${esc(pagePath(p.slug))}"${
+                p.slug === page.slug ? ' aria-current="page"' : ""
+              }>${esc(p.navLabel)}</a></li>`
+          )
+          .join("\n          ")
+      : order
+          .map(
+            (key) =>
+              `<li><a href="#${esc(key)}">${esc(
+                str(sections[key]?.navLabel, str(sections[key]?.title, key))
+              )}</a></li>`
+          )
+          .join("\n          ");
 
   // Auf einer Seite mit mehreren Abschnitten zusätzlich Sprungmarken anbieten
+  // — nur im Mehrseiten-Betrieb; als Einseiter springt schon das Hauptmenü.
   const subNav =
-    order.length > 1
+    navPages.length > 1 && order.length > 1
       ? `
     <nav class="subnav" aria-label="Auf dieser Seite">
       <div class="wrap subnav-inner">
@@ -1193,7 +1239,7 @@ function renderPage(c, page, pages, lang, langs) {
     <div class="wrap">
       <p class="mono">${esc(str(c.hero?.kicker, site.artist))}</p>
       <h1>${esc(str(page.title, page.navLabel))}</h1>
-      <div class="eq eq-slim" aria-hidden="true">${eqBars(30)}</div>
+      <div class="sparks" aria-hidden="true">${sparks(8)}</div>
     </div>
   </section>`
       : `
@@ -1218,7 +1264,7 @@ function renderPage(c, page, pages, lang, langs) {
         }
       </div>
     </div>
-    <div class="eq" aria-hidden="true">${eqBars()}</div>
+    <div class="sparks" aria-hidden="true">${sparks()}</div>
     <a class="hero-scroll mono" href="#${esc(order[0] || "top")}" aria-hidden="true" tabindex="-1">${esc(ui.scroll)}</a>
   </section>`;
 
@@ -1521,6 +1567,21 @@ async function main() {
     if (existsSync(resolve(ROOT, entry.name, "index.html"))) {
       await rm(resolve(ROOT, entry.name), { recursive: true, force: true });
       console.log(`[build] entfernt: ${entry.name}/ (keine Seite mehr)`);
+    }
+  }
+
+  // Dasselbe innerhalb der Sprachverzeichnisse (en/, fr/, …)
+  const keepSlugs = new Set(pages.map((p) => p.slug).filter(Boolean));
+  for (const lang of langs.slice(1)) {
+    const dir = resolve(ROOT, lang);
+    if (!existsSync(dir)) continue;
+    for (const entry of await readdir(dir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      if (keepSlugs.has(entry.name)) continue;
+      if (existsSync(resolve(dir, entry.name, "index.html"))) {
+        await rm(resolve(dir, entry.name), { recursive: true, force: true });
+        console.log(`[build] entfernt: ${lang}/${entry.name}/ (keine Seite mehr)`);
+      }
     }
   }
 

@@ -46,10 +46,47 @@
   to = "/404.html"
   status = 404
 
-# Alte One-Pager-Anker auf die neuen Seiten umlenken (Links aus Posts, Presskits)
 [[redirects]]
   from = "/index.html"
   to = "/"
+  status = 301
+
+# Die Website ist ein Einseiter — fruehere Unterseiten-Adressen auf die Anker umlenken.
+[[redirects]]
+  from = "/shows/*"
+  to = "/#shows"
+  status = 301
+[[redirects]]
+  from = "/gallery/*"
+  to = "/#gallery"
+  status = 301
+[[redirects]]
+  from = "/booking/*"
+  to = "/#booking"
+  status = 301
+[[redirects]]
+  from = "/en/shows/*"
+  to = "/en/#shows"
+  status = 301
+[[redirects]]
+  from = "/en/gallery/*"
+  to = "/en/#gallery"
+  status = 301
+[[redirects]]
+  from = "/en/booking/*"
+  to = "/en/#booking"
+  status = 301
+[[redirects]]
+  from = "/fr/shows/*"
+  to = "/fr/#shows"
+  status = 301
+[[redirects]]
+  from = "/fr/gallery/*"
+  to = "/fr/#gallery"
+  status = 301
+[[redirects]]
+  from = "/fr/booking/*"
+  to = "/fr/#booking"
   status = 301
 
 # Ohne www und mit www duerfen nicht beide indexiert werden — Netlify leitet

@@ -78,7 +78,8 @@ header{
   position:fixed;top:0;left:0;right:0;z-index:100;height:var(--head);
   display:flex;justify-content:space-between;align-items:center;
   padding:0 clamp(20px,4vw,56px);
-  text-shadow:0 1px 14px rgba(5,7,14,.55);
+  background:rgba(8,11,20,.62);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(233,237,245,.07);
 }
 .logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;}
 header nav ul{display:flex;gap:clamp(18px,2.4vw,34px);list-style:none;}
@@ -139,22 +140,24 @@ header nav a:hover::after,header nav a[aria-current="page"]::after{width:100%;}
 }
 @media(max-width:900px){.hero-cta{margin-left:0;}.hero-scroll{display:none;}}
 
-/* ---------- EQUALIZER ---------- */
-/* Tanzende Pegel-Balken — das bewegte Element der Seite. Höhe/Tempo je Balken
-   kommen als CSS-Variablen aus dem Generator. */
-.eq{
-  position:absolute;left:50%;bottom:30px;transform:translateX(-50%);
-  width:min(620px,72%);height:44px;display:flex;gap:3px;align-items:flex-end;
-  pointer-events:none;
+/* ---------- FUNKEN ---------- */
+/* Aufsteigende Funken, passend zum Namen. Position/Tempo je Funke kommen als
+   CSS-Variablen aus dem Generator; bei "Bewegung reduzieren" bleiben sie weg. */
+.sparks{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.sparks span{
+  position:absolute;left:var(--x,50%);bottom:-8px;width:var(--s,3px);height:var(--s,3px);
+  border-radius:50%;background:var(--spark);
+  box-shadow:0 0 6px 1px var(--spark),0 0 20px 3px rgba(46,107,255,.3);
+  opacity:0;
+  animation:spark-rise var(--t,9s) linear var(--d,0s) infinite;
 }
-.eq span{
-  flex:1;height:100%;background:var(--spark);opacity:.8;transform-origin:bottom;
-  transform:scaleY(.12);
-  animation:eqb var(--t,1s) ease-in-out var(--d,0s) infinite alternate;
+@keyframes spark-rise{
+  0%{transform:translate(0,0) scale(1);opacity:0}
+  8%{opacity:.9}
+  60%{opacity:.6}
+  100%{transform:translate(var(--dx,0),-105vh) scale(.35);opacity:0}
 }
-.eq-slim{position:static;transform:none;margin:30px auto 0;height:26px;width:min(380px,68%);opacity:.9;}
-@keyframes eqb{from{transform:scaleY(.12)}to{transform:scaleY(var(--h,.8))}}
-@media(prefers-reduced-motion:reduce){.eq span{animation:none;transform:scaleY(var(--h,.5));}}
+@media(prefers-reduced-motion:reduce){.sparks{display:none;}}
 
 /* ---------- HERO (Unterseiten) ---------- */
 .hero-compact{
@@ -250,13 +253,13 @@ a.cal-day.has-show:hover .cal-dot{animation:pulse 1.2s ease-out infinite;}
 /* Liegt fix hinter allem. Der Verlauf darueber haelt den Text lesbar. */
 .page-bg{
   position:fixed;inset:0;z-index:-3;background-size:cover;background-position:center;
-  opacity:.34;filter:saturate(.75) contrast(1.02);
+  opacity:.5;filter:saturate(.85) contrast(1.02);
 }
 .page-bg::after{
   content:"";position:absolute;inset:0;
-  background:radial-gradient(120% 90% at 50% 0%,rgba(5,7,14,.2) 0%,rgba(5,7,14,.72) 55%,rgba(5,7,14,.92) 100%);
+  background:radial-gradient(130% 100% at 50% 0%,rgba(5,7,14,.1) 0%,rgba(5,7,14,.55) 55%,rgba(5,7,14,.82) 100%);
 }
-@media(max-width:700px){.page-bg{opacity:.26;}}
+@media(max-width:700px){.page-bg{opacity:.4;}}
 
 /* Freistehende Bilder: kein Rahmen, keine Flaeche — nur ein weicher Schatten,
    damit sie ueber dem Hintergrund zu schweben scheinen. */

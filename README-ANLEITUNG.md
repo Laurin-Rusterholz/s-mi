@@ -188,13 +188,14 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
   Abgelaufene Termine verschwinden automatisch, auch ohne neuen Build.
   Bestätigt jemand in der Verwaltung eine Booking-Anfrage, steht der Termin
   ab dem nächsten Build als **gebucht** im Kalender.
-- **Mehrere Seiten** — welche Seiten es gibt und welcher Abschnitt auf welcher
-  steht, kommt aus der Verwaltung; Menü, Sitemap und Sprungmarken folgen
-  automatisch. Ohne Seiten-Definition wird eine einzelne Seite gebaut.
+- **Einseiter** — ausgeliefert wird alles auf einer Seite, das Menü springt zu
+  den Abschnitten. Unter *Seiten* in der Verwaltung lässt sich die Website
+  jederzeit wieder in mehrere Seiten aufteilen; Menü, Sitemap und Sprungmarken
+  folgen automatisch.
 - **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte,
   gebuchte Tage blau, mit Legende darunter)
-- **Equalizer** — tanzende Pegel-Balken im Kopf jeder Seite (reines CSS,
-  steht still bei „Bewegung reduzieren“)
+- **Funken** — aufsteigende, leuchtende Funken im Kopfbereich (reines CSS,
+  passend zum Namen; ausgeblendet bei „Bewegung reduzieren“)
 - **Hintergrundbild** hinter der ganzen Seite (in der Verwaltung wählbar) — die
   Inhalte stehen als freie, **eckige** Kacheln darauf, Bilder ohne Rahmen und
   ohne Rundungen, nur mit weichem Schatten

@@ -85,69 +85,19 @@
     {
       "slug": "",
       "navLabel": "Start",
-      "title": "Start",
-      "enabled": true,
+      "title": "",
       "hero": "full",
       "ticker": true,
       "inNav": true,
       "sections": [
         "about",
-        "sound"
-      ],
-      "seo": {
-        "title": "",
-        "description": ""
-      }
-    },
-    {
-      "slug": "shows",
-      "navLabel": "Shows",
-      "title": "Shows",
-      "enabled": true,
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
-      "sections": [
+        "sound",
         "shows",
-        "references"
-      ],
-      "seo": {
-        "title": "Shows & Tourdaten — Sam Sparkling",
-        "description": "Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparkling — Clubs und Festivals in der Schweiz und Europa."
-      }
-    },
-    {
-      "slug": "gallery",
-      "navLabel": "Galerie",
-      "title": "Galerie",
-      "enabled": true,
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
-      "sections": [
-        "gallery"
-      ],
-      "seo": {
-        "title": "Galerie — Sam Sparkling live",
-        "description": "Livefotos von Sam Sparkling hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography."
-      }
-    },
-    {
-      "slug": "booking",
-      "navLabel": "Booking",
-      "title": "Booking",
-      "enabled": true,
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
-      "sections": [
+        "references",
+        "gallery",
         "booking",
         "contact"
-      ],
-      "seo": {
-        "title": "Booking — Sam Sparkling, Hardstyle-DJ",
-        "description": "Sam Sparkling für Club oder Festival buchen. Technischer Rider, Presskit und Anfrageformular."
-      }
+      ]
     }
   ],
   "sections": {
@@ -498,32 +448,7 @@
       },
       "pages": {
         "0": {
-          "navLabel": "Home",
-          "title": "Home"
-        },
-        "1": {
-          "navLabel": "Shows",
-          "title": "Shows",
-          "seo": {
-            "title": "Shows & Tour Dates — Sam Sparkling",
-            "description": "Upcoming hardstyle shows and past gigs of Sam Sparkling — clubs and festivals in Switzerland and Europe."
-          }
-        },
-        "2": {
-          "navLabel": "Gallery",
-          "title": "Gallery",
-          "seo": {
-            "title": "Gallery — Sam Sparkling live",
-            "description": "Live photos of Sam Sparkling behind the decks — clubs and festivals, shot by Sarto Photography."
-          }
-        },
-        "3": {
-          "navLabel": "Booking",
-          "title": "Booking",
-          "seo": {
-            "title": "Booking — Sam Sparkling, Hardstyle DJ",
-            "description": "Book Sam Sparkling for your club or festival. Technical rider, presskit and booking request form."
-          }
+          "navLabel": "Home"
         }
       },
       "sections": {
@@ -828,32 +753,7 @@
       },
       "pages": {
         "0": {
-          "navLabel": "Accueil",
-          "title": "Accueil"
-        },
-        "1": {
-          "navLabel": "Dates",
-          "title": "Dates",
-          "seo": {
-            "title": "Dates & tournée — Sam Sparkling",
-            "description": "Prochaines dates hardstyle et concerts passés de Sam Sparkling — clubs et festivals en Suisse et en Europe."
-          }
-        },
-        "2": {
-          "navLabel": "Galerie",
-          "title": "Galerie",
-          "seo": {
-            "title": "Galerie — Sam Sparkling en live",
-            "description": "Photos live de Sam Sparkling aux platines — clubs et festivals, par Sarto Photography."
-          }
-        },
-        "3": {
-          "navLabel": "Booking",
-          "title": "Booking",
-          "seo": {
-            "title": "Booking — Sam Sparkling, DJ hardstyle",
-            "description": "Réservez Sam Sparkling pour votre club ou festival. Rider technique, presskit et formulaire de demande."
-          }
+          "navLabel": "Accueil"
         }
       },
       "sections": {
@@ -1160,32 +1060,7 @@
       },
       "pages": {
         "0": {
-          "navLabel": "0ae8097f",
-          "title": "0ae8097f"
-        },
-        "1": {
-          "navLabel": "70e4b3fd",
-          "title": "70e4b3fd",
-          "seo": {
-            "title": "ac5a537d",
-            "description": "cd0fc1c7"
-          }
-        },
-        "2": {
-          "navLabel": "0909a4e2",
-          "title": "0909a4e2",
-          "seo": {
-            "title": "f641f97e",
-            "description": "7f661316"
-          }
-        },
-        "3": {
-          "navLabel": "12a938f0",
-          "title": "12a938f0",
-          "seo": {
-            "title": "e4f99289",
-            "description": "7b8f7a5c"
-          }
+          "navLabel": "0ae8097f"
         }
       },
       "sections": {
@@ -1490,32 +1365,7 @@
       },
       "pages": {
         "0": {
-          "navLabel": "0ae8097f",
-          "title": "0ae8097f"
-        },
-        "1": {
-          "navLabel": "70e4b3fd",
-          "title": "70e4b3fd",
-          "seo": {
-            "title": "ac5a537d",
-            "description": "cd0fc1c7"
-          }
-        },
-        "2": {
-          "navLabel": "0909a4e2",
-          "title": "0909a4e2",
-          "seo": {
-            "title": "f641f97e",
-            "description": "7f661316"
-          }
-        },
-        "3": {
-          "navLabel": "12a938f0",
-          "title": "12a938f0",
-          "seo": {
-            "title": "e4f99289",
-            "description": "7b8f7a5c"
-          }
+          "navLabel": "0ae8097f"
         }
       },
       "sections": {
