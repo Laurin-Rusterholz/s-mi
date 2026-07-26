@@ -147,10 +147,10 @@ async function loadContent() {
         // stünden auf der Website in jeder Sprache dieselben Texte — also die
         // Texte aus der Vorlage übernehmen. Sobald in der Verwaltung einmal
         // gespeichert wurde, greift das nicht mehr.
-        if (!live.i18n && String(live.site?.lang) !== String(template.site?.lang)) {
+        if (String(live.site?.lang || "") !== String(template.site?.lang || "")) {
           console.log(
-            `[build] Verwaltung steht noch auf "${live.site?.lang}" ohne Übersetzungen — ` +
-              `Texte aus der Vorlage (${template.site?.lang}) übernommen.`
+            `[build] Verwaltung steht auf "${live.site?.lang}", die Vorlage auf ` +
+              `"${template.site?.lang}" — Texte und Übersetzungen aus der Vorlage übernommen.`
           );
           adoptTexts(live, template);
         }
@@ -599,11 +599,20 @@ function renderBooking(n, s, site) {
   </section>`;
 }
 
+/** Aus einer Profil-URL den Benutzernamen ziehen: …/samsparking/ → @samsparking */
+function handleOf(url) {
+  const clean = String(url || "").split(/[?#]/)[0].replace(/\/+$/, "");
+  const last = clean.split("/").pop() || "";
+  if (!last || /^https?:$/i.test(last) || last.includes(".")) return "";
+  return last.startsWith("@") ? last : "@" + last;
+}
+
 function renderContact(n, s) {
   const mail = str(s.email);
   const parts = mail.split("@");
+  const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
   return `
-  <section class="pad contact" id="contact" aria-labelledby="contact-h">
+  <section class="pad contact accent-block" id="contact" aria-labelledby="contact-h">
     <div class="wrap">${sectionHead(n, s, "contact")}
       <div class="rv">
         ${str(s.kicker) ? `<span class="mono">${esc(s.kicker)}</span>` : ""}
@@ -614,6 +623,22 @@ function renderContact(n, s) {
               )}</a>`
             : ""
         }
+        ${
+          socials.length
+            ? `<div class="social-cards">
+          ${socials
+            .map((x) => {
+              const handle = str(x.handle, handleOf(x.url));
+              return `<a class="scard" href="${href(x.url)}" target="_blank" rel="noopener me">
+            <span class="scard-arrow" aria-hidden="true">↗</span>
+            <span class="scard-name">${esc(x.label)}</span>
+            ${handle ? `<span class="mono">${esc(handle)}</span>` : ""}
+          </a>`;
+            })
+            .join("\n          ")}
+        </div>`
+            : ""
+        }
         <div class="contact-meta">
           ${
             str(s.phone)
@@ -622,15 +647,6 @@ function renderContact(n, s) {
                 )}">${esc(s.phone)}</a></div>`
               : ""
           }
-          ${list(s.socials)
-            .filter((x) => str(x?.label) && safeUrl(x?.url))
-            .map(
-              (x) =>
-                `<div><span class="mono">${esc(x.label)}</span><a href="${href(
-                  x.url
-                )}" target="_blank" rel="noopener me">${esc(x.label)}</a></div>`
-            )
-            .join("\n          ")}
           ${
             str(s.base)
               ? `<div><span class="mono">${esc(UI.base)}</span><span>${esc(s.base)}</span></div>`
