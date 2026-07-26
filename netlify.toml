@@ -29,8 +29,29 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+[[headers]]
+  for = "/presskit/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
 # Quelldateien des Generators nicht ausliefern.
 [[redirects]]
   from = "/scripts/*"
   to = "/404.html"
   status = 404
+
+# Der Inhalts-Schnappschuss ist eine Bau-Zutat, keine Seite.
+[[redirects]]
+  from = "/content/*"
+  to = "/404.html"
+  status = 404
+
+# Alte One-Pager-Anker auf die neuen Seiten umlenken (Links aus Posts, Presskits)
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+
+# Ohne www und mit www duerfen nicht beide indexiert werden — Netlify leitet
+# automatisch auf die Primary Domain um, sobald die Domain dort gesetzt ist.
+# Unbekannte Adressen beantwortet Netlify von selbst mit 404.html.

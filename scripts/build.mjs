@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sam Sparking — Website-Generator
+ * Sam Sparkling — Website-Generator
  *
  * Baut `index.html`, `sitemap.xml` und `robots.txt` aus dem Inhalt.
  *
@@ -88,6 +88,23 @@ const today = () => (process.env.BUILD_DATE || new Date().toISOString()).slice(0
 
 /* ------------------------------------------------------------------ laden */
 
+/**
+ * Fehlendes aus der Vorlage ergänzen — der Stand aus der Verwaltung gewinnt,
+ * aber Felder, die es dort noch gar nicht gibt (neu dazugekommene Bausteine
+ * wie Sprachen, Oberflächentexte oder das Hintergrundbild), kommen aus der
+ * eingecheckten content/site.json. Sonst müsste nach jeder Erweiterung erst
+ * jemand in der Verwaltung speichern, bevor sie auf der Website ankommt.
+ */
+function withDefaults(target, defaults) {
+  if (Array.isArray(defaults)) return Array.isArray(target) ? target : defaults;
+  if (defaults && typeof defaults === "object") {
+    const out = target && typeof target === "object" && !Array.isArray(target) ? target : {};
+    for (const [k, v] of Object.entries(defaults)) out[k] = withDefaults(out[k], v);
+    return out;
+  }
+  return target === undefined ? defaults : target;
+}
+
 async function loadContent() {
   const apiUrl = process.env.CONTENT_API_URL;
   if (apiUrl) {
@@ -98,9 +115,15 @@ async function loadContent() {
       const res = await fetch(apiUrl, { headers });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      const content = data && data.content ? data.content : data;
-      if (!content || typeof content !== "object" || !content.site) {
+      const live = data && data.content ? data.content : data;
+      if (!live || typeof live !== "object" || !live.site) {
         throw new Error("Antwort enthält kein site-Objekt");
+      }
+      let content = live;
+      try {
+        content = withDefaults(live, JSON.parse(await readFile(LOCAL_CONTENT, "utf8")));
+      } catch (e) {
+        console.warn("[build] Vorlage content/site.json nicht lesbar:", e.message);
       }
       console.log(`[build] Inhalt von der Verwaltung geladen: ${apiUrl}`);
       // Snapshot mitschreiben, damit der Build ohne API reproduzierbar bleibt.
@@ -156,6 +179,31 @@ const videoType = (url) => {
 };
 
 const isVideoUrl = (url) => /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(String(url || ""));
+
+/**
+ * Ortsangaben für Suchmaschinen. Alte, aber weiterhin gelesene Signale für
+ * lokale Suchen ("DJ St. Gallen").
+ */
+function geoMeta(contact) {
+  const place = str(contact?.base);
+  if (!place) return "";
+  const region = /st\.?\s*gallen/i.test(place) ? "CH-SG" : "CH";
+  return `  <meta name="geo.region" content="${esc(region)}">
+  <meta name="geo.placename" content="${esc(place)}">
+`;
+}
+
+/**
+ * Hintergrundbild der ganzen Seite. Liegt hinter allem, bewegt sich nicht mit
+ * und ist stark abgedunkelt — die Inhalte stehen darauf frei, ohne dass der
+ * Text an Kontrast verliert.
+ */
+function pageBackground(site) {
+  if (!safeUrl(site.backgroundImage)) return "";
+  return `  <div class="page-bg" aria-hidden="true" style="background-image:url('${href(
+    site.backgroundImage
+  )}')"></div>`;
+}
 
 /**
  * Hero-Hintergrund. Video läuft stumm in Dauerschleife — anders erlaubt kein
@@ -589,6 +637,27 @@ function structuredData(c, sections, page, pages) {
   if (contact.email) person.email = `mailto:${contact.email}`;
   if (contact.phone) person.telephone = contact.phone.replace(/[^\d+]/g, "");
   if (sameAs.length) person.sameAs = sameAs;
+  if (contact.base) {
+    const [city, country] = String(contact.base).split(",").map((x) => x.trim());
+    person.address = {
+      "@type": "PostalAddress",
+      addressLocality: city || contact.base,
+      addressCountry: /schweiz|switzerland|suisse|ch/i.test(country || "") ? "CH" : country || "CH",
+    };
+  }
+  if (contact.email || contact.phone) {
+    person.contactPoint = {
+      "@type": "ContactPoint",
+      contactType: "booking",
+      ...(contact.email ? { email: contact.email } : {}),
+      ...(contact.phone ? { telephone: contact.phone.replace(/[^\d+]/g, "") } : {}),
+      availableLanguage: languagesOf(c).map((l) => LANG_NAMES[l] || l),
+    };
+  }
+  const genres = list(sections.sound?.genres)
+    .map((g) => str(g?.name))
+    .filter(Boolean);
+  if (genres.length) person.genre = genres;
 
   const graph = [
     person,
@@ -597,27 +666,61 @@ function structuredData(c, sections, page, pages) {
       "@id": `${base}/#website`,
       url: `${base}/`,
       name: `${site.artist} — Official Website`,
-      inLanguage: site.lang,
+      inLanguage: languagesOf(c),
       publisher: { "@id": `${base}/#artist` },
+      copyrightHolder: { "@id": `${base}/#artist` },
+    },
+    {
+      "@type": "ImageObject",
+      "@id": `${base}/#logo`,
+      url: absolute(base, site.ogImage),
+      caption: site.artist,
     },
   ];
 
-  if (page && page.slug) {
+  if (page) {
+    const home = !page.slug;
     graph.push({
-      "@type": "WebPage",
+      "@type": home ? ["WebPage", "ProfilePage"] : "WebPage",
       "@id": `${base}${pagePath(page.slug)}#page`,
       url: `${base}${pagePath(page.slug)}`,
-      name: page.navLabel,
+      name: home ? site.title : page.navLabel,
+      description: home ? site.description : str(page.description, site.description),
+      inLanguage: site.lang,
       isPartOf: { "@id": `${base}/#website` },
       about: { "@id": `${base}/#artist` },
+      primaryImageOfPage: { "@id": `${base}/#logo` },
       breadcrumb: {
         "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Start", item: `${base}/` },
-          { "@type": "ListItem", position: 2, name: page.navLabel },
-        ],
+        itemListElement: home
+          ? [{ "@type": "ListItem", position: 1, name: str(pages?.[0]?.navLabel, "Start"), item: `${base}/` }]
+          : [
+              { "@type": "ListItem", position: 1, name: str(pages?.[0]?.navLabel, "Start"), item: `${base}/` },
+              { "@type": "ListItem", position: 2, name: page.navLabel, item: `${base}${pagePath(page.slug)}` },
+            ],
       },
     });
+  }
+
+  // Galerie als Bilderliste — hilft der Google-Bildersuche
+  if (!page || list(page.sections).includes("gallery")) {
+    const images = list(sections.gallery?.items)
+      .map((g) => ({ src: safeUrl(g?.src), alt: str(g?.alt) }))
+      .filter((g) => g.src && !isVideoUrl(g.src));
+    if (images.length) {
+      graph.push({
+        "@type": "ImageGallery",
+        "@id": `${base}${page ? pagePath(page.slug) : "/"}#gallery`,
+        name: str(sections.gallery?.navLabel, "Galerie"),
+        isPartOf: { "@id": `${base}/#website` },
+        image: images.map((g) => ({
+          "@type": "ImageObject",
+          contentUrl: absolute(base, g.src),
+          caption: g.alt || site.artist,
+          creditText: str(site.photoCredit),
+        })),
+      });
+    }
   }
 
   // Termine nur auf der Seite auszeichnen, die sie auch anzeigt
@@ -687,6 +790,9 @@ const UI_DEFAULTS = {
   soldOut: "Ausverkauft",
   booked: "Gebucht",
   calShow: "Termin",
+  notFoundTitle: "Nichts hier.",
+  notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
+  notFoundCta: "Zur Startseite",
   prevMonth: "Vorheriger Monat",
   nextMonth: "Nächster Monat",
   weekdays: "Mo,Di,Mi,Do,Fr,Sa,So",
@@ -723,10 +829,10 @@ const NO_TRANSLATE = new Set([
   "src", "poster", "url", "ticketUrl", "linkUrl", "embedUrl", "presskitUrl",
   "ogImage", "domain", "bookingApi", "themeColor", "accentColor", "lang",
   "slug", "date", "status", "email", "phone", "country", "createdAt",
-  "updatedAt", "updatedBy", "schemaVersion", "type", "view", "hero",
+  "updatedAt", "updatedBy", "schemaVersion", "type", "view",
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
-  "name", "venue", "inquiryId",
+  "name", "venue", "inquiryId", "backgroundImage",
 ]);
 
 const looksTechnical = (v) =>
@@ -735,7 +841,7 @@ const looksTechnical = (v) =>
   /^\d{4}-\d{2}-\d{2}$/.test(v);
 
 /** Pfade, die technische Schlüssel enthalten (Abschnitts-Namen, keine Texte). */
-const NO_TRANSLATE_PATH = /^layout\.|^pages\.\d+\.sections\./;
+const NO_TRANSLATE_PATH = /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$/;
 
 /** Alle übersetzbaren Textstellen als [pfad, text]. */
 export function collectStrings(node, prefix = "", out = []) {
@@ -801,12 +907,17 @@ function localize(content, lang) {
   return copy;
 }
 
-/** Welche Sprachen gebaut werden. Erste ist die Hauptsprache. */
+/**
+ * Welche Sprachen gebaut werden. Erste ist die Hauptsprache.
+ * Eine Sprache ohne eigene Übersetzungstabelle wird übersprungen — sonst
+ * entstünde ein kompletter Seitensatz, der nur die Hauptsprache wiederholt.
+ */
 function languagesOf(c) {
   const master = String(c.site?.lang || "de");
   const extra = list(c.site?.languages)
     .map((l) => String(l).toLowerCase())
-    .filter((l) => /^[a-z]{2}$/.test(l) && l !== master);
+    .filter((l) => /^[a-z]{2}$/.test(l) && l !== master)
+    .filter((l) => Object.keys(flattenI18n((c.i18n && c.i18n[l]) || {})).length > 0);
   return [master, ...new Set(extra)];
 }
 
@@ -1097,9 +1208,12 @@ ${langs
   <link rel="alternate" hreflang="x-default" href="${esc(
     base + (page.slug ? `/${page.slug}/` : "/")
   )}">
-  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
   <meta name="author" content="${esc(site.artist)}">
-
+  <meta name="publisher" content="${esc(site.artist)}">
+  <meta name="creator" content="${esc(site.artist)}">
+${geoMeta(sections.contact)}
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="${esc(site.artist)}">
@@ -1111,12 +1225,17 @@ ${langs
   <meta property="og:image" content="${esc(ogImage)}">
   <meta property="og:image:alt" content="${esc(c.hero?.media?.alt || site.artist)}">
   <meta property="og:locale" content="${esc(OG_LOCALE[lang] || "de_CH")}">
+${langs
+  .filter((l) => l !== lang)
+  .map((l) => `  <meta property="og:locale:alternate" content="${esc(OG_LOCALE[l] || l)}">`)
+  .join("\n")}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(isHome ? str(site.ogTitle, title) : title)}">
   <meta name="twitter:description" content="${esc(
     isHome ? str(site.ogDescription, description) : description
   )}">
   <meta name="twitter:image" content="${esc(ogImage)}">
+  <meta name="twitter:image:alt" content="${esc(c.hero?.media?.alt || site.artist)}">
 
   <!-- Structured data -->
   <script type="application/ld+json">
@@ -1138,6 +1257,7 @@ ${heroPreload}
   <style>:root{--ink:${ink};--spark:${accent};}</style>
 </head>
 <body data-page="${esc(page.slug || "home")}">
+${pageBackground(site)}
   <a class="skip" href="#${esc(order[0] || "top")}">${esc(ui.skip)}</a>
   <div class="progress" id="progress" aria-hidden="true"></div>
 
@@ -1201,6 +1321,11 @@ ${showsData}
 function renderSitemap(c, pages, langs) {
   const base = c.site.domain.replace(/\/+$/, "");
   const master = langs[0];
+  // Bilder der Galerie mitschicken — sie kommen so in die Google-Bildersuche
+  const galleryImages = list(c.sections?.gallery?.items)
+    .map((g) => ({ src: safeUrl(g?.src), alt: str(g?.alt) }))
+    .filter((g) => g.src && !isVideoUrl(g.src))
+    .slice(0, 1000);
   const rows = [];
   for (const lang of langs) {
     for (const p of pages) {
@@ -1213,19 +1338,65 @@ function renderSitemap(c, pages, langs) {
             )}"/>`
         )
         .join("\n");
+      const images = list(p.sections).includes("gallery")
+        ? galleryImages
+            .map(
+              (g) => `    <image:image>
+      <image:loc>${esc(absolute(base, g.src))}</image:loc>${
+                g.alt ? `\n      <image:title>${esc(g.alt)}</image:title>` : ""
+              }
+    </image:image>`
+            )
+            .join("\n")
+        : "";
       rows.push(`  <url>
     <loc>${esc(base)}${esc(path)}</loc>
 ${alts}
     <lastmod>${today()}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${!p.slug && lang === master ? "1.0" : "0.8"}</priority>
+    <priority>${!p.slug && lang === master ? "1.0" : "0.8"}</priority>${images ? "\n" + images : ""}
   </url>`);
     }
   }
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${rows.join("\n")}
 </urlset>
+`;
+}
+
+/** Einfache 404-Seite im Look der Website. */
+function render404(c, langs) {
+  const site = c.site;
+  const ink = color(site.themeColor, "#05070e");
+  const accent = color(site.accentColor, "#2e6bff");
+  const ui = { ...UI_DEFAULTS, ...(c.ui || {}) };
+  return `<!DOCTYPE html>
+<html lang="${esc(langs[0] || "de")}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 — ${esc(site.artist)}</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="stylesheet" href="/assets/site.css">
+  <style>:root{--ink:${ink};--spark:${accent};}
+    .nf{min-height:100svh;display:flex;align-items:center;}
+    .nf h1{font-size:clamp(3rem,14vw,9rem);font-variation-settings:'wdth' 122,'wght' 850;}
+    .nf p{color:var(--bone-dim);margin:18px 0 30px;max-width:46ch;}
+  </style>
+</head>
+<body data-page="404">
+${pageBackground(site)}
+  <main class="nf">
+    <div class="wrap">
+      <span class="mono">404</span>
+      <h1>${esc(str(ui.notFoundTitle, "Nichts hier."))}</h1>
+      <p>${esc(str(ui.notFoundText, "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle."))}</p>
+      <a class="btn" href="/">${esc(str(ui.notFoundCta, "Zur Startseite"))}</a>
+    </div>
+  </main>
+</body>
+</html>
 `;
 }
 
@@ -1270,7 +1441,8 @@ async function main() {
 
   await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages, langs));
   await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));
-  console.log("[build] sitemap.xml, robots.txt");
+  await writeFile(resolve(ROOT, "404.html"), render404(content, langs));
+  console.log("[build] sitemap.xml, robots.txt, 404.html");
 
   // Verzeichnisse aufräumen, die zu keiner Seite mehr gehören
   const wanted = new Set(written.map((r) => r.split("/")[0]).filter((d) => d !== "index.html"));

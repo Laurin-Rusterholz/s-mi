@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Sam Sparking — Website-Interaktion
+   Sam Sparkling — Website-Interaktion
    Vanilla JS, keine Abhängigkeiten.
    ========================================================================== */
 (function () {

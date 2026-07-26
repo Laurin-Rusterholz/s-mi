@@ -4,12 +4,12 @@
   "site": {
     "lang": "de",
     "domain": "https://www.samsparking.ch",
-    "artist": "Sam Sparking",
-    "logoText": "Sam Sparking",
-    "title": "Sam Sparking — Hardstyle-DJ & Producer aus St. Gallen",
-    "description": "Sam Sparking ist Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und in Europa.",
+    "artist": "Sam Sparkling",
+    "logoText": "Sam Sparkling",
+    "title": "Sam Sparkling — Hardstyle-DJ & Producer aus St. Gallen",
+    "description": "Ich bin Sam Sparkling, Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und Europa.",
     "keywords": [
-      "Sam Sparking",
+      "Sam Sparkling",
       "Hardstyle DJ",
       "Euphoric Hardstyle",
       "Melodic Hardstyle",
@@ -17,9 +17,10 @@
       "Hardstyle Schweiz",
       "DJ Booking Schweiz"
     ],
-    "ogTitle": "Sam Sparking — Aus Energie wird Euphorie",
-    "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Booking für Clubs und Festivals in der Schweiz und Europa.",
+    "ogTitle": "Sam Sparkling — Aus Energie wird Euphorie",
+    "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Buch mich für deinen Club oder dein Festival — Schweiz und Europa.",
     "ogImage": "img/hero.jpg",
+    "backgroundImage": "img/hero.jpg",
     "themeColor": "#05070e",
     "accentColor": "#2e6bff",
     "claim": "Aus Energie wird Euphorie",
@@ -34,15 +35,15 @@
   "hero": {
     "kicker": "DJ & Producer — St. Gallen, Schweiz",
     "nameSpaced": "S A M",
-    "nameMain": "Sparking",
+    "nameMain": "Sparkling",
     "tagline": "Aus Energie wird Euphorie.",
     "meta": "Euphoric Hardstyle / Melodic Hardstyle",
-    "ctaLabel": "Sam buchen",
+    "ctaLabel": "Mich buchen",
     "ctaHref": "#booking",
     "media": {
       "type": "image",
       "src": "img/hero.jpg",
-      "alt": "Sam Sparking am Pult, Laser und Crowd vor der Bühne",
+      "alt": "Sam Sparkling am Pult, Laser und Crowd vor der Bühne",
       "poster": ""
     }
   },
@@ -111,8 +112,8 @@
         "references"
       ],
       "seo": {
-        "title": "Shows & Tourdaten — Sam Sparking",
-        "description": "Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparking — Clubs und Festivals in der Schweiz und Europa."
+        "title": "Shows & Tourdaten — Sam Sparkling",
+        "description": "Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparkling — Clubs und Festivals in der Schweiz und Europa."
       }
     },
     {
@@ -127,8 +128,8 @@
         "gallery"
       ],
       "seo": {
-        "title": "Galerie — Sam Sparking live",
-        "description": "Livefotos von Sam Sparking hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography."
+        "title": "Galerie — Sam Sparkling live",
+        "description": "Livefotos von Sam Sparkling hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography."
       }
     },
     {
@@ -144,8 +145,8 @@
         "contact"
       ],
       "seo": {
-        "title": "Booking — Sam Sparking, Hardstyle-DJ",
-        "description": "Sam Sparking für Club oder Festival buchen. Technischer Rider, Presskit und Anfrageformular."
+        "title": "Booking — Sam Sparkling, Hardstyle-DJ",
+        "description": "Sam Sparkling für Club oder Festival buchen. Technischer Rider, Presskit und Anfrageformular."
       }
     }
   ],
@@ -157,15 +158,15 @@
       "titleAccent": "mich.",
       "photo": {
         "src": "img/about.jpg",
-        "alt": "Portrait von Sam Sparking",
+        "alt": "Portrait von Sam Sparkling",
         "credit": "Foto — Sarto Photography"
       },
-      "lede": "Sam Sparking ist ein 19-jähriger DJ und Producer aus St. Gallen. Seine Geschichte begann lange, bevor er zum ersten Mal hinter einem DJ-Setup stand.",
+      "lede": "Ich bin Sam Sparkling, 19, DJ und Producer aus St. Gallen. Meine Geschichte begann lange, bevor ich zum ersten Mal hinter einem DJ-Setup stand.",
       "paragraphs": [
-        "Aufgewachsen mit Festivalvideos und früh in der Welt des Hardstyle zu Hause, war es ein Defqon.1-Video, das ihm zum ersten Mal zeigte, was Musik wirklich kann. Die Energie, die Atmosphäre, die Verbindung zwischen DJ und Crowd — das traf ihn sofort und liess ihn nicht mehr los. Mit 15 wurde aus Faszination eine Richtung: Er sah einen DJ, der einen Dancefloor im Club vollständig im Griff hatte. Von diesem Moment an war Produzieren und Auflegen kein Nebenprojekt mehr, sondern der einzige Weg, der Sinn ergab.",
-        "Vier Jahre später schleift Sam täglich an seinem Sound, Track für Track. Inspiriert von Artists wie **Sound Rush**, **Sub Zero Project** und **Headhunterz** konzentriert er sich auf Euphoric Hardstyle — druckvolle Kicks, kombiniert mit emotionalen Melodien, die einen hineinziehen und nicht mehr loslassen.",
-        "Der Name **Sparking** ist kein Zufall. Er steht für konstante Energie, einen Kopf voller Ideen und einen Optimismus, der in jede Produktion durchschlägt. Seine Sets bauen auf Emotion, Storytelling und Crowd-Energie — sie schaffen Momente, in denen Musik und Publikum wirklich zusammenfinden.",
-        "Seine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist."
+        "Aufgewachsen mit Festivalvideos und früh im Hardstyle zu Hause, war es ein Defqon.1-Video, das mir zum ersten Mal gezeigt hat, was Musik wirklich kann. Die Energie, die Atmosphäre, die Verbindung zwischen DJ und Crowd — das hat mich sofort getroffen und nicht mehr losgelassen. Mit 15 wurde aus Faszination eine Richtung: Ich sah einen DJ, der einen Dancefloor komplett im Griff hatte. Ab diesem Moment war Produzieren und Auflegen kein Nebenprojekt mehr, sondern der einzige Weg, der für mich Sinn ergab.",
+        "Vier Jahre später schleife ich täglich an meinem Sound, Track für Track. Inspiriert von Artists wie **Sound Rush**, **Sub Zero Project** und **Headhunterz** konzentriere ich mich auf Euphoric Hardstyle — druckvolle Kicks, kombiniert mit emotionalen Melodien, die dich hineinziehen und nicht mehr loslassen.",
+        "Der Name **Sparkling** ist kein Zufall. Er steht für konstante Energie, einen Kopf voller Ideen und einen Optimismus, der in jeder Produktion durchschlägt. Meine Sets bauen auf Emotion, Storytelling und Crowd-Energie — sie schaffen Momente, in denen Musik und Publikum wirklich zusammenfinden.",
+        "Meine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist."
       ],
       "words": [
         "Emotional",
@@ -192,7 +193,7 @@
       "navLabel": "Sound",
       "title": "Gen",
       "titleAccent": "res.",
-      "note": "Druckvolle Kicks. Emotionale Melodien. Sets, die von Storytelling und Crowd-Energie leben.",
+      "note": "Druckvolle Kicks. Emotionale Melodien. Ich baue Sets, die von Storytelling und Crowd-Energie leben.",
       "genres": [
         {
           "name": "Euphoric Hardstyle",
@@ -207,7 +208,7 @@
         {
           "kicker": "Aktueller Mix",
           "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-          "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparking einen Raum.",
+          "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparkling einen Raum.",
           "linkLabel": "Auf Mixcloud hören",
           "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
           "embedUrl": ""
@@ -219,8 +220,8 @@
       "navLabel": "Shows",
       "title": "Sh",
       "titleAccent": "ows.",
-      "emptyText": "Aktuell sind keine Termine angekündigt. Neue Shows erscheinen hier zuerst — oder melde dich und buche selbst einen.",
-      "pastLabel": "Bereits gespielt",
+      "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
+      "pastLabel": "Schon gespielt",
       "items": [],
       "view": "calendar"
     },
@@ -230,7 +231,7 @@
       "title": "Refe",
       "titleAccent": "renzen.",
       "note": "Dein Club oder Festival als Nächstes?",
-      "noteLinkLabel": "Melde dich →",
+      "noteLinkLabel": "Schreib mir →",
       "items": [
         {
           "name": "Kugl",
@@ -277,12 +278,12 @@
       "items": [
         {
           "src": "img/gallery-01.jpg",
-          "alt": "Sam Sparking live — Crowd mit erhobenen Händen",
+          "alt": "Sam Sparkling live — Crowd mit erhobenen Händen",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-02.jpg",
-          "alt": "Sam Sparking mixt an den CDJs",
+          "alt": "Sam Sparkling mixt an den CDJs",
           "credit": "Sarto Photography"
         },
         {
@@ -292,17 +293,17 @@
         },
         {
           "src": "img/gallery-04.jpg",
-          "alt": "Sam Sparking hinter der Booth",
+          "alt": "Sam Sparkling hinter der Booth",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-05.jpg",
-          "alt": "Crowd an einer Show von Sam Sparking",
+          "alt": "Crowd an einer Show von Sam Sparkling",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-06.jpg",
-          "alt": "Sam Sparking, Portrait in der Location",
+          "alt": "Sam Sparkling, Portrait in der Location",
           "credit": "Sarto Photography"
         },
         {
@@ -312,7 +313,7 @@
         },
         {
           "src": "img/gallery-08.jpg",
-          "alt": "Sam Sparking während seines Sets",
+          "alt": "Sam Sparkling während seines Sets",
           "credit": "Sarto Photography"
         },
         {
@@ -322,7 +323,7 @@
         },
         {
           "src": "img/gallery-10.jpg",
-          "alt": "Sam Sparking auf der Bühne",
+          "alt": "Sam Sparkling auf der Bühne",
           "credit": "Sarto Photography"
         },
         {
@@ -355,7 +356,7 @@
         "kicker": "Booking-Anfrage",
         "title": "Erzähl mir von deinem Event",
         "successText": "Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir.",
-        "errorText": "Da ist etwas schiefgelaufen. Schreib bitte direkt an info@samsparking.ch.",
+        "errorText": "Da ist etwas schiefgelaufen. Schreib mir bitte direkt an info@samsparking.ch.",
         "submitLabel": "Anfrage senden"
       },
       "rider": {
@@ -446,15 +447,18 @@
     "fSetLength": "Set-Länge",
     "fMessage": "Nachricht",
     "fSetLengthHint": "z. B. 60 Min.",
-    "fHoneypot": "Bitte leer lassen"
+    "fHoneypot": "Bitte leer lassen",
+    "notFoundTitle": "Nichts hier.",
+    "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
+    "notFoundCta": "Zur Startseite"
   },
   "i18n": {
     "en": {
       "site": {
-        "title": "Sam Sparking — Hardstyle DJ & Producer from St. Gallen, Switzerland",
-        "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
+        "title": "Sam Sparkling — Hardstyle DJ & Producer from St. Gallen, Switzerland",
+        "description": "I'm Sam Sparkling, a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
         "keywords": {
-          "0": "Sam Sparking",
+          "0": "Sam Sparkling",
           "1": "Hardstyle DJ",
           "2": "Euphoric Hardstyle",
           "3": "Melodic Hardstyle",
@@ -462,8 +466,8 @@
           "5": "Hardstyle Switzerland",
           "6": "DJ Booking Switzerland"
         },
-        "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
-        "ogDescription": "Hardstyle DJ & producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs & festivals in Switzerland & Europe.",
+        "ogTitle": "Sam Sparkling — Turning Energy Into Euphoria",
+        "ogDescription": "Hardstyle DJ and producer from St. Gallen. Hard kicks, emotional melodies. Book me for your club or festival — Switzerland and Europe.",
         "claim": "Turning energy into euphoria",
         "photoCredit": "Sarto Photography"
       },
@@ -500,24 +504,24 @@
           "navLabel": "Shows",
           "title": "Shows",
           "seo": {
-            "title": "Shows & Tour Dates — Sam Sparking",
-            "description": "Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe."
+            "title": "Shows & Tour Dates — Sam Sparkling",
+            "description": "Upcoming hardstyle shows and past gigs of Sam Sparkling — clubs and festivals in Switzerland and Europe."
           }
         },
         "2": {
           "navLabel": "Gallery",
           "title": "Gallery",
           "seo": {
-            "title": "Gallery — Sam Sparking live",
-            "description": "Live photos of Sam Sparking behind the decks — clubs and festivals, shot by Sarto Photography."
+            "title": "Gallery — Sam Sparkling live",
+            "description": "Live photos of Sam Sparkling behind the decks — clubs and festivals, shot by Sarto Photography."
           }
         },
         "3": {
           "navLabel": "Booking",
           "title": "Booking",
           "seo": {
-            "title": "Booking — Sam Sparking, Hardstyle DJ",
-            "description": "Book Sam Sparking for your club or festival. Technical rider, presskit and booking request form."
+            "title": "Booking — Sam Sparkling, Hardstyle DJ",
+            "description": "Book Sam Sparkling for your club or festival. Technical rider, presskit and booking request form."
           }
         }
       },
@@ -527,15 +531,15 @@
           "title": "About",
           "titleAccent": "Me.",
           "photo": {
-            "alt": "Portrait of Sam Sparking",
+            "alt": "Portrait of Sam Sparkling",
             "credit": "Photo — Sarto Photography"
           },
-          "lede": "Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.",
+          "lede": "I'm Sam Sparkling, 19, a DJ and producer from St. Gallen. My story started long before I first stood behind a DJ setup.",
           "paragraphs": {
-            "0": "Growing up watching festival videos and discovering the world of hardstyle at a young age, it was a Defqon.1 video that first showed him what music could really do. The energy, the atmosphere, the connection between DJ and crowd — it hit him immediately and never let go. At 15, seeing a DJ own a dancefloor in a live club setting turned fascination into direction. From that moment, producing and performing wasn't a side project. It was the only path that made sense.",
-            "1": "Four years later, Sam is grinding daily, sharpening his sound track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, he focuses on euphoric hardstyle — powerful kicks combined with emotional melodies that pull you in and keep you there.",
-            "2": "The name **Sparking** is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.",
-            "3": "His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right."
+            "0": "I grew up on festival videos and found my way into hardstyle early. It was a Defqon.1 video that first showed me what music can really do. The energy, the atmosphere, the connection between DJ and crowd — it hit me instantly and never let go. At 15 the fascination turned into a direction: I watched a DJ hold a club dancefloor completely in his hands. From that moment on, producing and playing wasn't a side project any more — it was the only path that made sense to me.",
+            "1": "Four years on, I work on my sound every day, track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, I focus on euphoric hardstyle — hard kicks combined with emotional melodies that pull you in and don't let go.",
+            "2": "The name **Sparkling** is no accident. It stands for constant energy, a head full of ideas and an optimism that comes through in every production. My sets are built on emotion, storytelling and crowd energy — they create moments where music and audience truly meet.",
+            "3": "My mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat straight away, that overwhelming feeling that only happens when the music is exactly right."
           },
           "words": {
             "0": "Emotional",
@@ -558,7 +562,7 @@
           "navLabel": "Sound",
           "title": "Gen",
           "titleAccent": "res.",
-          "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
+          "note": "Hard kicks. Emotional melodies. I build sets that live on storytelling and crowd energy.",
           "genres": {
             "0": {
               "meta": "Genre"
@@ -571,7 +575,7 @@
             "0": {
               "kicker": "Latest Mix",
               "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-              "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
+              "text": "One take, no shortcuts. Get a feel for how a Sam Sparkling set moves a room.",
               "linkLabel": "Listen on Mixcloud"
             }
           }
@@ -580,15 +584,15 @@
           "navLabel": "Shows",
           "title": "Sh",
           "titleAccent": "ows.",
-          "emptyText": "No dates announced right now. New shows land here first — or get in touch to book one.",
-          "pastLabel": "Played before"
+          "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
+          "pastLabel": "Already played"
         },
         "references": {
           "navLabel": "References",
           "title": "Refe",
           "titleAccent": "rences.",
           "note": "Your club or festival next?",
-          "noteLinkLabel": "Get in touch →",
+          "noteLinkLabel": "Write to me →",
           "items": {
             "0": {
               "city": "St. Gallen"
@@ -619,11 +623,11 @@
           "titleAccent": "lery.",
           "items": {
             "0": {
-              "alt": "Sam Sparking live — crowd with hands up",
+              "alt": "Sam Sparkling live — crowd with hands up",
               "credit": "Sarto Photography"
             },
             "1": {
-              "alt": "Sam Sparking mixing on CDJs",
+              "alt": "Sam Sparkling mixing on CDJs",
               "credit": "Sarto Photography"
             },
             "2": {
@@ -631,15 +635,15 @@
               "credit": "Sarto Photography"
             },
             "3": {
-              "alt": "Sam Sparking behind the booth",
+              "alt": "Sam Sparkling behind the booth",
               "credit": "Sarto Photography"
             },
             "4": {
-              "alt": "Crowd at a Sam Sparking show",
+              "alt": "Crowd at a Sam Sparkling show",
               "credit": "Sarto Photography"
             },
             "5": {
-              "alt": "Sam Sparking portrait at the venue",
+              "alt": "Sam Sparkling portrait at the venue",
               "credit": "Sarto Photography"
             },
             "6": {
@@ -647,7 +651,7 @@
               "credit": "Sarto Photography"
             },
             "7": {
-              "alt": "Sam Sparking during his set",
+              "alt": "Sam Sparkling during his set",
               "credit": "Sarto Photography"
             },
             "8": {
@@ -655,7 +659,7 @@
               "credit": "Sarto Photography"
             },
             "9": {
-              "alt": "Sam Sparking on stage",
+              "alt": "Sam Sparkling on stage",
               "credit": "Sarto Photography"
             },
             "10": {
@@ -682,8 +686,8 @@
           "form": {
             "kicker": "Booking request",
             "title": "Tell me about your event",
-            "successText": "Thanks — your request landed. You'll hear back within 48 hours.",
-            "errorText": "Something went wrong. Please write directly to info@samsparking.ch.",
+            "successText": "Thanks — your request arrived. You'll hear from me within 48 hours.",
+            "errorText": "Something went wrong. Please write to me directly at info@samsparking.ch.",
             "submitLabel": "Send request"
           },
           "rider": {
@@ -725,7 +729,7 @@
           "navLabel": "Contact",
           "title": "Con",
           "titleAccent": "tact.",
-          "kicker": "Bookings & inquiries",
+          "kicker": "Booking & enquiries",
           "base": "St. Gallen, Switzerland",
           "socials": {
             "0": {
@@ -763,15 +767,27 @@
         "fMessage": "Message",
         "fSetLengthHint": "e.g. 60 min",
         "fHoneypot": "Leave empty",
-        "calShow": "Show"
+        "calShow": "Show",
+        "notFoundTitle": "Nothing here.",
+        "notFoundText": "This page doesn't exist (any more). Head back to the start — everything current is there.",
+        "notFoundCta": "Back to start"
+      },
+      "hero": {
+        "kicker": "DJ & producer — St. Gallen, Switzerland",
+        "tagline": "Turning energy into euphoria.",
+        "meta": "Euphoric Hardstyle / Melodic Hardstyle",
+        "ctaLabel": "Book me",
+        "media": {
+          "alt": "Sam Sparkling behind the decks, lasers and crowd in front of the stage"
+        }
       }
     },
     "fr": {
       "site": {
-        "title": "Sam Sparking — DJ et producteur hardstyle de Saint-Gall",
-        "description": "Sam Sparking est DJ et producteur hardstyle de Saint-Gall. Hardstyle euphorique et mélodique pour clubs, salles et festivals en Suisse et en Europe.",
+        "title": "Sam Sparkling — DJ et producteur hardstyle de Saint-Gall",
+        "description": "Je suis Sam Sparkling, DJ et producteur hardstyle de Saint-Gall. Euphoric et melodic hardstyle pour clubs, salles et festivals en Suisse et en Europe.",
         "keywords": {
-          "0": "Sam Sparking",
+          "0": "Sam Sparkling",
           "1": "DJ hardstyle",
           "2": "Euphoric Hardstyle",
           "3": "Melodic Hardstyle",
@@ -779,8 +795,8 @@
           "5": "Hardstyle Suisse",
           "6": "Booking DJ Suisse"
         },
-        "ogTitle": "Sam Sparking — L'énergie devient euphorie",
-        "ogDescription": "DJ et producteur hardstyle de Saint-Gall. Des kicks puissants, des mélodies émotionnelles. Booking pour clubs et festivals en Suisse et en Europe.",
+        "ogTitle": "Sam Sparkling — L'énergie devient euphorie",
+        "ogDescription": "DJ et producteur hardstyle de Saint-Gall. Des kicks puissants, des mélodies émotionnelles. Réserve-moi pour ton club ou ton festival — Suisse et Europe.",
         "claim": "L'énergie devient euphorie",
         "photoCredit": "Sarto Photography"
       },
@@ -817,24 +833,24 @@
           "navLabel": "Dates",
           "title": "Dates",
           "seo": {
-            "title": "Dates & tournée — Sam Sparking",
-            "description": "Prochaines dates hardstyle et concerts passés de Sam Sparking — clubs et festivals en Suisse et en Europe."
+            "title": "Dates & tournée — Sam Sparkling",
+            "description": "Prochaines dates hardstyle et concerts passés de Sam Sparkling — clubs et festivals en Suisse et en Europe."
           }
         },
         "2": {
           "navLabel": "Galerie",
           "title": "Galerie",
           "seo": {
-            "title": "Galerie — Sam Sparking en live",
-            "description": "Photos live de Sam Sparking aux platines — clubs et festivals, par Sarto Photography."
+            "title": "Galerie — Sam Sparkling en live",
+            "description": "Photos live de Sam Sparkling aux platines — clubs et festivals, par Sarto Photography."
           }
         },
         "3": {
           "navLabel": "Booking",
           "title": "Booking",
           "seo": {
-            "title": "Booking — Sam Sparking, DJ hardstyle",
-            "description": "Réservez Sam Sparking pour votre club ou festival. Rider technique, presskit et formulaire de demande."
+            "title": "Booking — Sam Sparkling, DJ hardstyle",
+            "description": "Réservez Sam Sparkling pour votre club ou festival. Rider technique, presskit et formulaire de demande."
           }
         }
       },
@@ -844,15 +860,15 @@
           "title": "À pro",
           "titleAccent": "pos.",
           "photo": {
-            "alt": "Portrait de Sam Sparking",
+            "alt": "Portrait de Sam Sparkling",
             "credit": "Photo — Sarto Photography"
           },
-          "lede": "Sam Sparking est un DJ et producteur de 19 ans, originaire de Saint-Gall. Son histoire a commencé bien avant qu'il ne se tienne derrière des platines.",
+          "lede": "Je suis Sam Sparkling, 19 ans, DJ et producteur de Saint-Gall. Mon histoire a commencé bien avant que je me retrouve derrière des platines.",
           "paragraphs": {
-            "0": "Nourri de vidéos de festivals et plongé très tôt dans l'univers du hardstyle, c'est une vidéo de Defqon.1 qui lui a montré pour la première fois ce que la musique pouvait vraiment faire. L'énergie, l'atmosphère, le lien entre le DJ et le public — cela l'a saisi immédiatement et ne l'a plus lâché. À 15 ans, voir un DJ tenir un dancefloor entier a transformé la fascination en direction. Dès cet instant, produire et mixer n'était plus un projet parallèle, mais la seule voie qui avait du sens.",
-            "1": "Quatre ans plus tard, Sam affine son sound au quotidien, morceau après morceau. Inspiré par des artistes comme **Sound Rush**, **Sub Zero Project** et **Headhunterz**, il se concentre sur le hardstyle euphorique — des kicks puissants associés à des mélodies émotionnelles qui vous happent et ne vous lâchent plus.",
-            "2": "Le nom **Sparking** n'est pas un hasard. Il incarne une énergie constante, une tête pleine d'idées et un optimisme qui transparaît dans chaque production. Ses sets reposent sur l'émotion, la narration et l'énergie du public — ils créent des moments où la musique et la foule se rejoignent vraiment.",
-            "3": "Sa mission est simple : faire ressentir quelque chose de vrai. Cette décharge d'énergie positive, cette envie de réécouter immédiatement, ce sentiment irrésistible qui n'arrive que lorsque la musique est exactement juste."
+            "0": "J'ai grandi avec les vidéos de festivals et je suis arrivé tôt dans le hardstyle. C'est une vidéo de Defqon.1 qui m'a montré pour la première fois ce que la musique peut vraiment faire. L'énergie, l'atmosphère, le lien entre le DJ et le public — ça m'a touché immédiatement et ne m'a plus lâché. À 15 ans, la fascination est devenue une direction : j'ai vu un DJ tenir tout un dancefloor entre ses mains. À partir de ce moment, produire et mixer n'était plus un projet parallèle, mais la seule voie qui avait du sens pour moi.",
+            "1": "Quatre ans plus tard, je travaille mon son chaque jour, morceau après morceau. Inspiré par des artistes comme **Sound Rush**, **Sub Zero Project** et **Headhunterz**, je me concentre sur l'euphoric hardstyle — des kicks puissants combinés à des mélodies émotionnelles qui t'attrapent et ne te lâchent plus.",
+            "2": "Le nom **Sparkling** n'est pas un hasard. Il représente une énergie constante, une tête pleine d'idées et un optimisme qui traverse chaque production. Mes sets reposent sur l'émotion, la narration et l'énergie du public — ils créent des moments où la musique et la foule se rejoignent vraiment.",
+            "3": "Ma mission est simple : faire ressentir aux gens quelque chose de vrai. Cette décharge d'énergie positive, cette envie d'appuyer tout de suite sur repeat, ce sentiment irrésistible qui n'arrive que lorsque la musique est exactement juste."
           },
           "words": {
             "0": "Émotionnel",
@@ -875,7 +891,7 @@
           "navLabel": "Sound",
           "title": "Gen",
           "titleAccent": "res.",
-          "note": "Des kicks puissants. Des mélodies émotionnelles. Des sets portés par la narration et l'énergie du public.",
+          "note": "Des kicks puissants. Des mélodies émotionnelles. Je construis des sets qui vivent de narration et d'énergie du public.",
           "genres": {
             "0": {
               "meta": "Genre"
@@ -888,7 +904,7 @@
             "0": {
               "kicker": "Dernier mix",
               "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-              "text": "Une seule prise, sans raccourcis. De quoi sentir comment un set de Sam Sparking soulève une salle.",
+              "text": "Une seule prise, sans raccourcis. De quoi sentir comment un set de Sam Sparkling soulève une salle.",
               "linkLabel": "Écouter sur Mixcloud"
             }
           }
@@ -897,15 +913,15 @@
           "navLabel": "Dates",
           "title": "Da",
           "titleAccent": "tes.",
-          "emptyText": "Aucune date annoncée pour le moment. Les nouvelles dates apparaissent ici en premier — ou contacte-moi pour en réserver une.",
+          "emptyText": "Je n'ai aucune date annoncée pour l'instant. Les nouveaux shows arrivent ici en premier — ou contacte-moi et réserve-moi pour ton événement.",
           "pastLabel": "Déjà joué"
         },
         "references": {
           "navLabel": "Références",
           "title": "Réfé",
           "titleAccent": "rences.",
-          "note": "Ton club ou festival, la prochaine fois ?",
-          "noteLinkLabel": "Contacte-moi →",
+          "note": "Ton club ou ton festival ensuite ?",
+          "noteLinkLabel": "Écris-moi →",
           "items": {
             "0": {
               "city": "Saint-Gall"
@@ -936,11 +952,11 @@
           "titleAccent": "erie.",
           "items": {
             "0": {
-              "alt": "Sam Sparking en live — public les mains en l'air",
+              "alt": "Sam Sparkling en live — public les mains en l'air",
               "credit": "Sarto Photography"
             },
             "1": {
-              "alt": "Sam Sparking aux CDJ",
+              "alt": "Sam Sparkling aux CDJ",
               "credit": "Sarto Photography"
             },
             "2": {
@@ -948,15 +964,15 @@
               "credit": "Sarto Photography"
             },
             "3": {
-              "alt": "Sam Sparking derrière la booth",
+              "alt": "Sam Sparkling derrière la booth",
               "credit": "Sarto Photography"
             },
             "4": {
-              "alt": "Le public à un show de Sam Sparking",
+              "alt": "Le public à un show de Sam Sparkling",
               "credit": "Sarto Photography"
             },
             "5": {
-              "alt": "Portrait de Sam Sparking sur place",
+              "alt": "Portrait de Sam Sparkling sur place",
               "credit": "Sarto Photography"
             },
             "6": {
@@ -964,7 +980,7 @@
               "credit": "Sarto Photography"
             },
             "7": {
-              "alt": "Sam Sparking pendant son set",
+              "alt": "Sam Sparkling pendant son set",
               "credit": "Sarto Photography"
             },
             "8": {
@@ -972,7 +988,7 @@
               "credit": "Sarto Photography"
             },
             "9": {
-              "alt": "Sam Sparking sur scène",
+              "alt": "Sam Sparkling sur scène",
               "credit": "Sarto Photography"
             },
             "10": {
@@ -999,8 +1015,8 @@
           "form": {
             "kicker": "Demande de booking",
             "title": "Parle-moi de ton événement",
-            "successText": "Merci — ta demande est bien arrivée. Réponse sous 48 heures.",
-            "errorText": "Une erreur est survenue. Écris directement à info@samsparking.ch.",
+            "successText": "Merci — ta demande est bien arrivée. Tu auras de mes nouvelles sous 48 heures.",
+            "errorText": "Quelque chose n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
             "submitLabel": "Envoyer la demande"
           },
           "rider": {
@@ -1080,17 +1096,29 @@
         "fMessage": "Message",
         "fSetLengthHint": "p. ex. 60 min",
         "fHoneypot": "Laisser vide",
-        "calShow": "Date"
+        "calShow": "Date",
+        "notFoundTitle": "Rien ici.",
+        "notFoundText": "Cette page n'existe pas (ou plus). Retour à l'accueil — tout ce qui est actuel s'y trouve.",
+        "notFoundCta": "Retour à l'accueil"
+      },
+      "hero": {
+        "kicker": "DJ & producteur — Saint-Gall, Suisse",
+        "tagline": "L'énergie devient euphorie.",
+        "meta": "Euphoric Hardstyle / Melodic Hardstyle",
+        "ctaLabel": "Me réserver",
+        "media": {
+          "alt": "Sam Sparkling aux platines, lasers et public devant la scène"
+        }
       }
     }
   },
   "i18nHash": {
     "en": {
       "site": {
-        "title": "20664a19",
-        "description": "d0740cdb",
+        "title": "1711f493",
+        "description": "e0abdc83",
         "keywords": {
-          "0": "36ce3c27",
+          "0": "bc65fc29",
           "1": "8b3cabbd",
           "2": "c6bc04e0",
           "3": "c8cca824",
@@ -1098,8 +1126,8 @@
           "5": "63873374",
           "6": "05803f01"
         },
-        "ogTitle": "54d8aa54",
-        "ogDescription": "65f6072a",
+        "ogTitle": "6bdea5ee",
+        "ogDescription": "c22007fa",
         "claim": "93bf7458",
         "photoCredit": "c9b915c3"
       },
@@ -1136,24 +1164,24 @@
           "navLabel": "70e4b3fd",
           "title": "70e4b3fd",
           "seo": {
-            "title": "48a62c0b",
-            "description": "ca2b2d5b"
+            "title": "ac5a537d",
+            "description": "cd0fc1c7"
           }
         },
         "2": {
           "navLabel": "0909a4e2",
           "title": "0909a4e2",
           "seo": {
-            "title": "4d721182",
-            "description": "b4de1490"
+            "title": "f641f97e",
+            "description": "7f661316"
           }
         },
         "3": {
           "navLabel": "12a938f0",
           "title": "12a938f0",
           "seo": {
-            "title": "ab6762c1",
-            "description": "b4aeba0a"
+            "title": "e4f99289",
+            "description": "7b8f7a5c"
           }
         }
       },
@@ -1163,15 +1191,15 @@
           "title": "d38dce98",
           "titleAccent": "42ebe702",
           "photo": {
-            "alt": "66028355",
+            "alt": "c4382163",
             "credit": "87c8589f"
           },
-          "lede": "a7a20632",
+          "lede": "1a3c4d26",
           "paragraphs": {
-            "0": "bdb612ee",
-            "1": "28ba8aa8",
-            "2": "6a2cd96c",
-            "3": "34e44947"
+            "0": "a10834fa",
+            "1": "d83ddd4b",
+            "2": "25c1904c",
+            "3": "96b9c205"
           },
           "words": {
             "0": "30d2f20f",
@@ -1194,7 +1222,7 @@
           "navLabel": "b3ca9a34",
           "title": "c0974eb5",
           "titleAccent": "b4bce895",
-          "note": "657f25af",
+          "note": "40682156",
           "genres": {
             "0": {
               "meta": "1c27eb60"
@@ -1207,7 +1235,7 @@
             "0": {
               "kicker": "0d6181ac",
               "title": "2bd0b949",
-              "text": "37f8c03a",
+              "text": "4d06cb82",
               "linkLabel": "b4d884d1"
             }
           }
@@ -1216,15 +1244,15 @@
           "navLabel": "70e4b3fd",
           "title": "3f025d7e",
           "titleAccent": "505289f2",
-          "emptyText": "ace73a4a",
-          "pastLabel": "82a39ac6"
+          "emptyText": "ef3e21cd",
+          "pastLabel": "c8323a1d"
         },
         "references": {
           "navLabel": "47c67c63",
           "title": "4e18ba45",
           "titleAccent": "3e87bbb7",
           "note": "aaab869a",
-          "noteLinkLabel": "8eb5be3c",
+          "noteLinkLabel": "8e27c459",
           "items": {
             "0": {
               "city": "0fcf8f7b"
@@ -1255,11 +1283,11 @@
           "titleAccent": "e7f13642",
           "items": {
             "0": {
-              "alt": "f897cb19",
+              "alt": "4e7acdd3",
               "credit": "c9b915c3"
             },
             "1": {
-              "alt": "b75c904b",
+              "alt": "d3204535",
               "credit": "c9b915c3"
             },
             "2": {
@@ -1267,15 +1295,15 @@
               "credit": "c9b915c3"
             },
             "3": {
-              "alt": "ec8cf3e8",
+              "alt": "c87ea9ee",
               "credit": "c9b915c3"
             },
             "4": {
-              "alt": "391a245e",
+              "alt": "d8c8e6d6",
               "credit": "c9b915c3"
             },
             "5": {
-              "alt": "79facd73",
+              "alt": "ca9a4c79",
               "credit": "c9b915c3"
             },
             "6": {
@@ -1283,7 +1311,7 @@
               "credit": "c9b915c3"
             },
             "7": {
-              "alt": "8e235ded",
+              "alt": "31054b9f",
               "credit": "c9b915c3"
             },
             "8": {
@@ -1291,7 +1319,7 @@
               "credit": "c9b915c3"
             },
             "9": {
-              "alt": "b067b6b3",
+              "alt": "cce10a6d",
               "credit": "c9b915c3"
             },
             "10": {
@@ -1319,7 +1347,7 @@
             "kicker": "d1e4240f",
             "title": "d348396f",
             "successText": "8f492a91",
-            "errorText": "aeba0726",
+            "errorText": "aa9b94fe",
             "submitLabel": "1d1affa2"
           },
           "rider": {
@@ -1399,15 +1427,27 @@
         "fMessage": "b8482d1b",
         "fSetLengthHint": "ed33c8d7",
         "fHoneypot": "faeb97f1",
-        "calShow": "12c12fbc"
+        "calShow": "12c12fbc",
+        "notFoundTitle": "f280d90c",
+        "notFoundText": "4bae6292",
+        "notFoundCta": "51d280ee"
+      },
+      "hero": {
+        "kicker": "00cd226e",
+        "tagline": "0c6455c2",
+        "meta": "55887dca",
+        "ctaLabel": "9606dc39",
+        "media": {
+          "alt": "db23f124"
+        }
       }
     },
     "fr": {
       "site": {
-        "title": "20664a19",
-        "description": "d0740cdb",
+        "title": "1711f493",
+        "description": "e0abdc83",
         "keywords": {
-          "0": "36ce3c27",
+          "0": "bc65fc29",
           "1": "8b3cabbd",
           "2": "c6bc04e0",
           "3": "c8cca824",
@@ -1415,8 +1455,8 @@
           "5": "63873374",
           "6": "05803f01"
         },
-        "ogTitle": "54d8aa54",
-        "ogDescription": "65f6072a",
+        "ogTitle": "6bdea5ee",
+        "ogDescription": "c22007fa",
         "claim": "93bf7458",
         "photoCredit": "c9b915c3"
       },
@@ -1453,24 +1493,24 @@
           "navLabel": "70e4b3fd",
           "title": "70e4b3fd",
           "seo": {
-            "title": "48a62c0b",
-            "description": "ca2b2d5b"
+            "title": "ac5a537d",
+            "description": "cd0fc1c7"
           }
         },
         "2": {
           "navLabel": "0909a4e2",
           "title": "0909a4e2",
           "seo": {
-            "title": "4d721182",
-            "description": "b4de1490"
+            "title": "f641f97e",
+            "description": "7f661316"
           }
         },
         "3": {
           "navLabel": "12a938f0",
           "title": "12a938f0",
           "seo": {
-            "title": "ab6762c1",
-            "description": "b4aeba0a"
+            "title": "e4f99289",
+            "description": "7b8f7a5c"
           }
         }
       },
@@ -1480,15 +1520,15 @@
           "title": "d38dce98",
           "titleAccent": "42ebe702",
           "photo": {
-            "alt": "66028355",
+            "alt": "c4382163",
             "credit": "87c8589f"
           },
-          "lede": "a7a20632",
+          "lede": "1a3c4d26",
           "paragraphs": {
-            "0": "bdb612ee",
-            "1": "28ba8aa8",
-            "2": "6a2cd96c",
-            "3": "34e44947"
+            "0": "a10834fa",
+            "1": "d83ddd4b",
+            "2": "25c1904c",
+            "3": "96b9c205"
           },
           "words": {
             "0": "30d2f20f",
@@ -1511,7 +1551,7 @@
           "navLabel": "b3ca9a34",
           "title": "c0974eb5",
           "titleAccent": "b4bce895",
-          "note": "657f25af",
+          "note": "40682156",
           "genres": {
             "0": {
               "meta": "1c27eb60"
@@ -1524,7 +1564,7 @@
             "0": {
               "kicker": "0d6181ac",
               "title": "2bd0b949",
-              "text": "37f8c03a",
+              "text": "4d06cb82",
               "linkLabel": "b4d884d1"
             }
           }
@@ -1533,15 +1573,15 @@
           "navLabel": "70e4b3fd",
           "title": "3f025d7e",
           "titleAccent": "505289f2",
-          "emptyText": "ace73a4a",
-          "pastLabel": "82a39ac6"
+          "emptyText": "ef3e21cd",
+          "pastLabel": "c8323a1d"
         },
         "references": {
           "navLabel": "47c67c63",
           "title": "4e18ba45",
           "titleAccent": "3e87bbb7",
           "note": "aaab869a",
-          "noteLinkLabel": "8eb5be3c",
+          "noteLinkLabel": "8e27c459",
           "items": {
             "0": {
               "city": "0fcf8f7b"
@@ -1572,11 +1612,11 @@
           "titleAccent": "e7f13642",
           "items": {
             "0": {
-              "alt": "f897cb19",
+              "alt": "4e7acdd3",
               "credit": "c9b915c3"
             },
             "1": {
-              "alt": "b75c904b",
+              "alt": "d3204535",
               "credit": "c9b915c3"
             },
             "2": {
@@ -1584,15 +1624,15 @@
               "credit": "c9b915c3"
             },
             "3": {
-              "alt": "ec8cf3e8",
+              "alt": "c87ea9ee",
               "credit": "c9b915c3"
             },
             "4": {
-              "alt": "391a245e",
+              "alt": "d8c8e6d6",
               "credit": "c9b915c3"
             },
             "5": {
-              "alt": "79facd73",
+              "alt": "ca9a4c79",
               "credit": "c9b915c3"
             },
             "6": {
@@ -1600,7 +1640,7 @@
               "credit": "c9b915c3"
             },
             "7": {
-              "alt": "8e235ded",
+              "alt": "31054b9f",
               "credit": "c9b915c3"
             },
             "8": {
@@ -1608,7 +1648,7 @@
               "credit": "c9b915c3"
             },
             "9": {
-              "alt": "b067b6b3",
+              "alt": "cce10a6d",
               "credit": "c9b915c3"
             },
             "10": {
@@ -1636,7 +1676,7 @@
             "kicker": "d1e4240f",
             "title": "d348396f",
             "successText": "8f492a91",
-            "errorText": "aeba0726",
+            "errorText": "aa9b94fe",
             "submitLabel": "1d1affa2"
           },
           "rider": {
@@ -1716,7 +1756,19 @@
         "fMessage": "b8482d1b",
         "fSetLengthHint": "ed33c8d7",
         "fHoneypot": "faeb97f1",
-        "calShow": "12c12fbc"
+        "calShow": "12c12fbc",
+        "notFoundTitle": "f280d90c",
+        "notFoundText": "4bae6292",
+        "notFoundCta": "51d280ee"
+      },
+      "hero": {
+        "kicker": "00cd226e",
+        "tagline": "0c6455c2",
+        "meta": "55887dca",
+        "ctaLabel": "9606dc39",
+        "media": {
+          "alt": "db23f124"
+        }
       }
     }
   }

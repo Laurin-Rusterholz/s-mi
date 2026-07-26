@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://www.samsparking.ch/</loc>
       <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/"/>
@@ -26,6 +26,54 @@
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-01.jpg</image:loc>
+      <image:title>Sam Sparkling live — Crowd mit erhobenen Händen</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-02.jpg</image:loc>
+      <image:title>Sam Sparkling mixt an den CDJs</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-03.jpg</image:loc>
+      <image:title>Bühnenlicht während eines Hardstyle-Sets</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-04.jpg</image:loc>
+      <image:title>Sam Sparkling hinter der Booth</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-05.jpg</image:loc>
+      <image:title>Crowd an einer Show von Sam Sparkling</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-06.jpg</image:loc>
+      <image:title>Sam Sparkling, Portrait in der Location</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-07.jpg</image:loc>
+      <image:title>Hände in der Luft auf dem Dancefloor</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-08.jpg</image:loc>
+      <image:title>Sam Sparkling während seines Sets</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-09.jpg</image:loc>
+      <image:title>Lichtshow über dem Dancefloor</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-10.jpg</image:loc>
+      <image:title>Sam Sparkling auf der Bühne</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-11.jpg</image:loc>
+      <image:title>Blick aus der Booth über die Crowd</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-12.jpg</image:loc>
+      <image:title>Letzter Moment der Nacht</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.samsparking.ch/booking/</loc>
@@ -62,6 +110,54 @@
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-01.jpg</image:loc>
+      <image:title>Sam Sparkling live — Crowd mit erhobenen Händen</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-02.jpg</image:loc>
+      <image:title>Sam Sparkling mixt an den CDJs</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-03.jpg</image:loc>
+      <image:title>Bühnenlicht während eines Hardstyle-Sets</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-04.jpg</image:loc>
+      <image:title>Sam Sparkling hinter der Booth</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-05.jpg</image:loc>
+      <image:title>Crowd an einer Show von Sam Sparkling</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-06.jpg</image:loc>
+      <image:title>Sam Sparkling, Portrait in der Location</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-07.jpg</image:loc>
+      <image:title>Hände in der Luft auf dem Dancefloor</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-08.jpg</image:loc>
+      <image:title>Sam Sparkling während seines Sets</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-09.jpg</image:loc>
+      <image:title>Lichtshow über dem Dancefloor</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-10.jpg</image:loc>
+      <image:title>Sam Sparkling auf der Bühne</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-11.jpg</image:loc>
+      <image:title>Blick aus der Booth über die Crowd</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-12.jpg</image:loc>
+      <image:title>Letzter Moment der Nacht</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.samsparking.ch/en/booking/</loc>
@@ -98,6 +194,54 @@
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-01.jpg</image:loc>
+      <image:title>Sam Sparkling live — Crowd mit erhobenen Händen</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-02.jpg</image:loc>
+      <image:title>Sam Sparkling mixt an den CDJs</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-03.jpg</image:loc>
+      <image:title>Bühnenlicht während eines Hardstyle-Sets</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-04.jpg</image:loc>
+      <image:title>Sam Sparkling hinter der Booth</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-05.jpg</image:loc>
+      <image:title>Crowd an einer Show von Sam Sparkling</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-06.jpg</image:loc>
+      <image:title>Sam Sparkling, Portrait in der Location</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-07.jpg</image:loc>
+      <image:title>Hände in der Luft auf dem Dancefloor</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-08.jpg</image:loc>
+      <image:title>Sam Sparkling während seines Sets</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-09.jpg</image:loc>
+      <image:title>Lichtshow über dem Dancefloor</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-10.jpg</image:loc>
+      <image:title>Sam Sparkling auf der Bühne</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-11.jpg</image:loc>
+      <image:title>Blick aus der Booth über die Crowd</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.samsparking.ch/img/gallery-12.jpg</image:loc>
+      <image:title>Letzter Moment der Nacht</image:title>
+    </image:image>
   </url>
   <url>
     <loc>https://www.samsparking.ch/fr/booking/</loc>

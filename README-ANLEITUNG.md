@@ -1,4 +1,4 @@
-# Sam Sparking — Website
+# Sam Sparkling — Website
 
 Statische Website in **Deutsch, Englisch und Französisch**, generiert aus einer
 Inhalts-Datei. Inhalte pflegst du
@@ -82,16 +82,67 @@ CONTENT_API_URL="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase
 
 1. Site aus diesem Repo erstellen (Build-Command und Publish-Verzeichnis stehen
    in `netlify.toml`, es ist nichts weiter einzustellen).
-2. Domain verbinden: Site settings → Domain management → Custom domain →
-   `samsparking.ch`, DNS beim Registrar setzen. HTTPS macht Netlify automatisch.
-3. **Build-Hook anlegen:** Site configuration → Build & deploy → Build hooks →
+2. **Build-Hook anlegen:** Site configuration → Build & deploy → Build hooks →
    „Add build hook" → URL kopieren und in der Verwaltung unter *Einstellungen*
    eintragen. Erst dann wirkt der Publizieren-Knopf.
-4. Bei Google Search Console `https://www.samsparking.ch/sitemap.xml` einreichen.
 
-Wenn die Domain nicht `samsparking.ch` wird: in der Verwaltung unter
-*Einstellungen → Domain* ändern — Canonical, Open Graph, JSON-LD, `sitemap.xml`
-und `robots.txt` ziehen automatisch nach.
+## Launch: eigene Domain (bei Jimdo gekauft) auf Netlify zeigen lassen
+
+Die Domain bleibt bei Jimdo registriert, die Website läuft weiter auf Netlify.
+Zwei Wege — der erste ist der bequemere:
+
+**A. Nameserver auf Netlify umstellen (empfohlen)**
+
+1. Netlify → Site → *Domain management* → *Add a domain* → Domain eintragen.
+2. Netlify zeigt vier Nameserver (`dns1.p0X.nsone.net` …).
+3. Bei Jimdo unter *Domains → Einstellungen → Nameserver* diese vier eintragen.
+4. Nach der Umstellung (bis 24 h) verwaltet Netlify alle DNS-Einträge; Zertifikat
+   und Weiterleitungen laufen automatisch.
+
+**B. DNS bei Jimdo behalten**
+
+1. Netlify → *Add a domain* → Domain eintragen; Netlify zeigt die nötigen Werte.
+2. Bei Jimdo im DNS-Bereich setzen:
+   - `A` für `@` (Wurzel) auf die von Netlify genannte IP (aktuell `75.2.60.5`)
+   - `CNAME` für `www` auf `<deine-site>.netlify.app`
+3. Bestehende Jimdo-Einträge für `@` und `www` vorher entfernen, sonst zeigt die
+   Domain weiter auf Jimdo.
+
+**Danach in beiden Fällen**
+
+- In Netlify die **Primary domain** festlegen (z. B. `www.…`). Netlify leitet die
+  andere Schreibweise per 301 dorthin um — wichtig, damit Google nicht zwei
+  Adressen mit demselben Inhalt sieht.
+- HTTPS erscheint unter *Domain management → HTTPS* automatisch (Let's Encrypt),
+  sobald die DNS-Umstellung durch ist. Falls nicht: *Verify DNS configuration*.
+- In der Verwaltung unter **SEO & Teilen → Domain der Website** die neue Adresse
+  eintragen (mit `https://`, ohne Schrägstrich am Ende) und publizieren. Canonical,
+  `hreflang`, Open Graph, JSON-LD, `sitemap.xml` und `robots.txt` ziehen automatisch nach.
+- E-Mail: Wenn bei Jimdo Postfächer an der Domain hängen, die `MX`-Einträge in
+  Netlify DNS nachtragen (Weg A) — sonst kommt keine Post mehr an.
+- [Google Search Console](https://search.google.com/search-console): Property für
+  die Domain anlegen, Inhaberschaft per DNS-`TXT` bestätigen und
+  `https://<domain>/sitemap.xml` einreichen. Dasselbe bei
+  [Bing Webmaster Tools](https://www.bing.com/webmasters).
+
+## SEO — was die Website mitbringt
+
+| Bereich | Umsetzung |
+|---|---|
+| Titel & Description | je Seite und je Sprache aus der Verwaltung, mit Längen-Check |
+| Canonical | selbstreferenzierend, je Sprache und Seite |
+| Mehrsprachigkeit | `hreflang` für alle Sprachen + `x-default`, `og:locale` und `og:locale:alternate` |
+| Sitemap | alle Seiten × Sprachen, `xhtml:link`-Alternativen, `lastmod`, dazu die Galeriebilder als Bild-Sitemap |
+| robots | `robots.txt` mit Sitemap-Verweis, `max-image-preview:large`, `max-snippet:-1`, `max-video-preview:-1` |
+| Strukturierte Daten | ein `@graph` mit `Person` (inkl. Adresse, Genres, `sameAs`, Booking-`ContactPoint`), `WebSite`, `ImageObject`, `WebPage`/`ProfilePage` mit `BreadcrumbList`, `ImageGallery` und **`MusicEvent` je kommender Show** (mit `offers`, wenn ein Ticket-Link gesetzt ist) |
+| Social | Open Graph und Twitter Cards inkl. Bild-Alternativtexten |
+| Lokal | `geo.region` / `geo.placename` aus dem Standort im Kontakt-Abschnitt |
+| Technik | semantisches HTML, Alt-Texte, Lazy-Loading, Hero-Preload, sauberes 404, Security-Header, unveränderliche Bild-Caches |
+
+Nicht automatisierbar und darum deine Aufgabe: echte Backlinks (Clubs,
+Festivals, Labels, Presskit-Verteiler), gepflegte Termine (die `MusicEvent`-Daten
+sind die einzige Chance auf Event-Rich-Results) und ein aussagekräftiges
+Vorschaubild.
 
 ## Bilder
 
@@ -137,6 +188,9 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
   automatisch. Ohne Seiten-Definition wird eine einzelne Seite gebaut.
 - **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte,
   gebuchte Tage blau, mit Legende darunter)
+- **Hintergrundbild** hinter der ganzen Seite (in der Verwaltung wählbar) — die
+  Inhalte stehen als freie Kacheln darauf, Bilder ohne Rahmen mit weichem Schatten
+- Alle Texte in der **Ich-Form** — die Website spricht als Sam, nicht über ihn
 - **Drei Sprachen** — Deutsch unter `/`, Englisch unter `/en/`, Französisch
   unter `/fr/`. Umschalter im Kopf, `hreflang`-Verweise und `xhtml:link` in der
   Sitemap. Übersetzt wird in der Verwaltung (auf Wunsch von Claude); fehlt eine
@@ -147,12 +201,7 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 - Jeder Abschnitt lässt sich in der Verwaltung ausschalten und umsortieren;
   Nummerierung und Navigation passen sich automatisch an.
 
-**SEO**
-- Title, Description, Canonical, Open Graph, Twitter Cards
-- Strukturierte Daten als `@graph`: Person + WebSite + **MusicEvent je Show**
-  (Chance auf Event-Rich-Results in der Google-Suche)
-- `sitemap.xml` + `robots.txt` werden mitgeneriert, `lastmod` automatisch
-- Semantisches HTML, Alt-Texte, Lazy-Loading, Hero-Preload
+**SEO** — ausführlich im Abschnitt „SEO — was die Website mitbringt"
 
 **Technik**
 - Keine Frameworks, keine Cookies, keine Tracker
