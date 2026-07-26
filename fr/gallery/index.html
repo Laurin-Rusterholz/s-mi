@@ -4,16 +4,16 @@
   Inhalte pflegst du in der Verwaltung (oder in content/site.json),
   danach "node scripts/build.mjs" bzw. ein Netlify-Deploy.
 -->
-<html lang="de">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary SEO -->
-  <title>Galerie — Sam Sparking live</title>
-  <meta name="description" content="Livefotos von Sam Sparking hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography.">
-  <meta name="keywords" content="Sam Sparking, Hardstyle DJ, Euphoric Hardstyle, Melodic Hardstyle, DJ St. Gallen, Hardstyle Schweiz, DJ Booking Schweiz">
-  <link rel="canonical" href="https://www.samsparking.ch/gallery/">
+  <title>Galerie — Sam Sparking en live</title>
+  <meta name="description" content="Photos live de Sam Sparking aux platines — clubs et festivals, par Sarto Photography.">
+  <meta name="keywords" content="Sam Sparking, DJ hardstyle, Euphoric Hardstyle, Melodic Hardstyle, DJ Saint-Gall, Hardstyle Suisse, Booking DJ Suisse">
+  <link rel="canonical" href="https://www.samsparking.ch/fr/gallery/">
   <link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/">
   <link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/">
   <link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/">
@@ -24,15 +24,15 @@
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sam Sparking">
-  <meta property="og:url" content="https://www.samsparking.ch/gallery/">
-  <meta property="og:title" content="Galerie — Sam Sparking live">
-  <meta property="og:description" content="Livefotos von Sam Sparking hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography.">
+  <meta property="og:url" content="https://www.samsparking.ch/fr/gallery/">
+  <meta property="og:title" content="Galerie — Sam Sparking en live">
+  <meta property="og:description" content="Photos live de Sam Sparking aux platines — clubs et festivals, par Sarto Photography.">
   <meta property="og:image" content="https://www.samsparking.ch/img/hero.jpg">
   <meta property="og:image:alt" content="Sam Sparking am Pult, Laser und Crowd vor der Bühne">
-  <meta property="og:locale" content="de_CH">
+  <meta property="og:locale" content="fr_CH">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Galerie — Sam Sparking live">
-  <meta name="twitter:description" content="Livefotos von Sam Sparking hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography.">
+  <meta name="twitter:title" content="Galerie — Sam Sparking en live">
+  <meta name="twitter:description" content="Photos live de Sam Sparking aux platines — clubs et festivals, par Sarto Photography.">
   <meta name="twitter:image" content="https://www.samsparking.ch/img/hero.jpg">
 
   <!-- Structured data -->
@@ -47,14 +47,14 @@
       "jobTitle": "DJ & Producer",
       "url": "https://www.samsparking.ch/",
       "image": "https://www.samsparking.ch/img/hero.jpg",
-      "description": "Sam Sparking ist Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und in Europa.",
+      "description": "Sam Sparking est DJ et producteur hardstyle de Saint-Gall. Hardstyle euphorique et mélodique pour clubs, salles et festivals en Suisse et en Europe.",
       "knowsAbout": [
         "Euphoric Hardstyle",
         "Melodic Hardstyle"
       ],
       "homeLocation": {
         "@type": "Place",
-        "name": "St. Gallen, Schweiz"
+        "name": "Saint-Gall, Suisse"
       },
       "email": "mailto:info@samsparking.ch",
       "telephone": "+41775091171",
@@ -67,15 +67,15 @@
       "@id": "https://www.samsparking.ch/#website",
       "url": "https://www.samsparking.ch/",
       "name": "Sam Sparking — Official Website",
-      "inLanguage": "de",
+      "inLanguage": "fr",
       "publisher": {
         "@id": "https://www.samsparking.ch/#artist"
       }
     },
     {
       "@type": "WebPage",
-      "@id": "https://www.samsparking.ch/gallery/#page",
-      "url": "https://www.samsparking.ch/gallery/",
+      "@id": "https://www.samsparking.ch/fr/gallery/#page",
+      "url": "https://www.samsparking.ch/fr/gallery/",
       "name": "Galerie",
       "isPartOf": {
         "@id": "https://www.samsparking.ch/#website"
@@ -115,21 +115,21 @@
   <style>:root{--ink:#05070e;--spark:#2e6bff;}</style>
 </head>
 <body data-page="gallery">
-  <a class="skip" href="#gallery">Zum Inhalt springen</a>
+  <a class="skip" href="#gallery">Aller au contenu</a>
   <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header>
     <a class="logo" href="/">Sam Sparking</a>
-    <button class="burger" id="burger" aria-label="Menü" aria-expanded="false" aria-controls="nav" data-open="Menü" data-close="Schliessen">Menü</button>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav" data-open="Menu" data-close="Fermer">Menu</button>
     <nav id="nav">
       <ul>
-          <li><a href="/">Start</a></li>
-          <li><a href="/shows/">Shows</a></li>
-          <li><a href="/gallery/" aria-current="page">Galerie</a></li>
-          <li><a href="/booking/">Booking</a></li>
+          <li><a href="/fr/">Accueil</a></li>
+          <li><a href="/fr/shows/">Dates</a></li>
+          <li><a href="/fr/gallery/" aria-current="page">Galerie</a></li>
+          <li><a href="/fr/booking/">Booking</a></li>
       </ul>
       <div class="langs" role="group" aria-label="Sprache">
-        <a href="/gallery/" lang="de" aria-current="true">DE</a><a href="/en/gallery/" lang="en">EN</a><a href="/fr/gallery/" lang="fr">FR</a>
+        <a href="/gallery/" lang="de">DE</a><a href="/en/gallery/" lang="en">EN</a><a href="/fr/gallery/" lang="fr" aria-current="true">FR</a>
       </div>
     </nav>
   </header>
@@ -145,74 +145,74 @@
     <div class="wrap">
       <div class="gal rv" id="gal">
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 1 von 12 gross öffnen">
-            <img src="/img/gallery-01.jpg" alt="Sam Sparking live — Crowd mit erhobenen Händen" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 1 sur 12 en grand">
+            <img src="/img/gallery-01.jpg" alt="Sam Sparking en live — public les mains en l&#39;air" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 2 von 12 gross öffnen">
-            <img src="/img/gallery-02.jpg" alt="Sam Sparking mixt an den CDJs" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 2 sur 12 en grand">
+            <img src="/img/gallery-02.jpg" alt="Sam Sparking aux CDJ" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 3 von 12 gross öffnen">
-            <img src="/img/gallery-03.jpg" alt="Bühnenlicht während eines Hardstyle-Sets" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 3 sur 12 en grand">
+            <img src="/img/gallery-03.jpg" alt="Jeux de lumière pendant un set hardstyle" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 4 von 12 gross öffnen">
-            <img src="/img/gallery-04.jpg" alt="Sam Sparking hinter der Booth" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 4 sur 12 en grand">
+            <img src="/img/gallery-04.jpg" alt="Sam Sparking derrière la booth" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 5 von 12 gross öffnen">
-            <img src="/img/gallery-05.jpg" alt="Crowd an einer Show von Sam Sparking" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 5 sur 12 en grand">
+            <img src="/img/gallery-05.jpg" alt="Le public à un show de Sam Sparking" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 6 von 12 gross öffnen">
-            <img src="/img/gallery-06.jpg" alt="Sam Sparking, Portrait in der Location" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 6 sur 12 en grand">
+            <img src="/img/gallery-06.jpg" alt="Portrait de Sam Sparking sur place" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 7 von 12 gross öffnen">
-            <img src="/img/gallery-07.jpg" alt="Hände in der Luft auf dem Dancefloor" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 7 sur 12 en grand">
+            <img src="/img/gallery-07.jpg" alt="Les mains en l&#39;air sur le dancefloor" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 8 von 12 gross öffnen">
-            <img src="/img/gallery-08.jpg" alt="Sam Sparking während seines Sets" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 8 sur 12 en grand">
+            <img src="/img/gallery-08.jpg" alt="Sam Sparking pendant son set" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 9 von 12 gross öffnen">
-            <img src="/img/gallery-09.jpg" alt="Lichtshow über dem Dancefloor" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 9 sur 12 en grand">
+            <img src="/img/gallery-09.jpg" alt="Jeu de lumière au-dessus du dancefloor" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 10 von 12 gross öffnen">
-            <img src="/img/gallery-10.jpg" alt="Sam Sparking auf der Bühne" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 10 sur 12 en grand">
+            <img src="/img/gallery-10.jpg" alt="Sam Sparking sur scène" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 11 von 12 gross öffnen">
-            <img src="/img/gallery-11.jpg" alt="Blick aus der Booth über die Crowd" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 11 sur 12 en grand">
+            <img src="/img/gallery-11.jpg" alt="Vue depuis la booth sur le public" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
         <figure>
-          <button type="button" class="gal-btn" aria-label="Bild 12 von 12 gross öffnen">
-            <img src="/img/gallery-12.jpg" alt="Letzter Moment der Nacht" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
+          <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 12 sur 12 en grand">
+            <img src="/img/gallery-12.jpg" alt="Dernier moment de la nuit" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
@@ -220,18 +220,18 @@
     </div>
   </section>
 
-  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Bildansicht" hidden>
-    <button class="lb-close" id="lb-close" aria-label="Schliessen">✕</button>
-    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Vorheriges Bild">‹</button>
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Visionneuse" hidden>
+    <button class="lb-close" id="lb-close" aria-label="Fermer">✕</button>
+    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Image précédente">‹</button>
     <figure class="lb-fig"><img id="lb-img" src="" alt=""><figcaption id="lb-cap" class="mono"></figcaption></figure>
-    <button class="lb-nav lb-next" id="lb-next" aria-label="Nächstes Bild">›</button>
+    <button class="lb-nav lb-next" id="lb-next" aria-label="Image suivante">›</button>
   </div>
 
   <footer>
     <div class="wrap foot">
-      <span class="mono">© <span id="yr">2026</span> Sam Sparking — Alle Rechte vorbehalten</span>
-      <span class="claim">Aus Energie wird Euphorie</span>
-      <span class="mono">Fotografie — Sarto Photography</span>
+      <span class="mono">© <span id="yr">2026</span> Sam Sparking — Tous droits réservés</span>
+      <span class="claim">L&#39;énergie devient euphorie</span>
+      <span class="mono">Photographie — Sarto Photography</span>
     </div>
   </footer>
 

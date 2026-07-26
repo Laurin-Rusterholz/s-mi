@@ -4,16 +4,16 @@
   Inhalte pflegst du in der Verwaltung (oder in content/site.json),
   danach "node scripts/build.mjs" bzw. ein Netlify-Deploy.
 -->
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary SEO -->
-  <title>Shows &amp; Tourdaten — Sam Sparking</title>
-  <meta name="description" content="Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparking — Clubs und Festivals in der Schweiz und Europa.">
-  <meta name="keywords" content="Sam Sparking, Hardstyle DJ, Euphoric Hardstyle, Melodic Hardstyle, DJ St. Gallen, Hardstyle Schweiz, DJ Booking Schweiz">
-  <link rel="canonical" href="https://www.samsparking.ch/shows/">
+  <title>Shows &amp; Tour Dates — Sam Sparking</title>
+  <meta name="description" content="Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe.">
+  <meta name="keywords" content="Sam Sparking, Hardstyle DJ, Euphoric Hardstyle, Melodic Hardstyle, DJ St. Gallen, Hardstyle Switzerland, DJ Booking Switzerland">
+  <link rel="canonical" href="https://www.samsparking.ch/en/shows/">
   <link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/">
   <link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/">
   <link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/">
@@ -24,15 +24,15 @@
   <!-- Open Graph / Social -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sam Sparking">
-  <meta property="og:url" content="https://www.samsparking.ch/shows/">
-  <meta property="og:title" content="Shows &amp; Tourdaten — Sam Sparking">
-  <meta property="og:description" content="Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparking — Clubs und Festivals in der Schweiz und Europa.">
+  <meta property="og:url" content="https://www.samsparking.ch/en/shows/">
+  <meta property="og:title" content="Shows &amp; Tour Dates — Sam Sparking">
+  <meta property="og:description" content="Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe.">
   <meta property="og:image" content="https://www.samsparking.ch/img/hero.jpg">
   <meta property="og:image:alt" content="Sam Sparking am Pult, Laser und Crowd vor der Bühne">
-  <meta property="og:locale" content="de_CH">
+  <meta property="og:locale" content="en_US">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Shows &amp; Tourdaten — Sam Sparking">
-  <meta name="twitter:description" content="Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparking — Clubs und Festivals in der Schweiz und Europa.">
+  <meta name="twitter:title" content="Shows &amp; Tour Dates — Sam Sparking">
+  <meta name="twitter:description" content="Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe.">
   <meta name="twitter:image" content="https://www.samsparking.ch/img/hero.jpg">
 
   <!-- Structured data -->
@@ -47,14 +47,14 @@
       "jobTitle": "DJ & Producer",
       "url": "https://www.samsparking.ch/",
       "image": "https://www.samsparking.ch/img/hero.jpg",
-      "description": "Sam Sparking ist Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und in Europa.",
+      "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
       "knowsAbout": [
         "Euphoric Hardstyle",
         "Melodic Hardstyle"
       ],
       "homeLocation": {
         "@type": "Place",
-        "name": "St. Gallen, Schweiz"
+        "name": "St. Gallen, Switzerland"
       },
       "email": "mailto:info@samsparking.ch",
       "telephone": "+41775091171",
@@ -67,15 +67,15 @@
       "@id": "https://www.samsparking.ch/#website",
       "url": "https://www.samsparking.ch/",
       "name": "Sam Sparking — Official Website",
-      "inLanguage": "de",
+      "inLanguage": "en",
       "publisher": {
         "@id": "https://www.samsparking.ch/#artist"
       }
     },
     {
       "@type": "WebPage",
-      "@id": "https://www.samsparking.ch/shows/#page",
-      "url": "https://www.samsparking.ch/shows/",
+      "@id": "https://www.samsparking.ch/en/shows/#page",
+      "url": "https://www.samsparking.ch/en/shows/",
       "name": "Shows",
       "isPartOf": {
         "@id": "https://www.samsparking.ch/#website"
@@ -115,21 +115,21 @@
   <style>:root{--ink:#05070e;--spark:#2e6bff;}</style>
 </head>
 <body data-page="shows">
-  <a class="skip" href="#shows">Zum Inhalt springen</a>
+  <a class="skip" href="#shows">Skip to content</a>
   <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header>
     <a class="logo" href="/">Sam Sparking</a>
-    <button class="burger" id="burger" aria-label="Menü" aria-expanded="false" aria-controls="nav" data-open="Menü" data-close="Schliessen">Menü</button>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav" data-open="Menu" data-close="Close">Menu</button>
     <nav id="nav">
       <ul>
-          <li><a href="/">Start</a></li>
-          <li><a href="/shows/" aria-current="page">Shows</a></li>
-          <li><a href="/gallery/">Galerie</a></li>
-          <li><a href="/booking/">Booking</a></li>
+          <li><a href="/en/">Home</a></li>
+          <li><a href="/en/shows/" aria-current="page">Shows</a></li>
+          <li><a href="/en/gallery/">Gallery</a></li>
+          <li><a href="/en/booking/">Booking</a></li>
       </ul>
       <div class="langs" role="group" aria-label="Sprache">
-        <a href="/shows/" lang="de" aria-current="true">DE</a><a href="/en/shows/" lang="en">EN</a><a href="/fr/shows/" lang="fr">FR</a>
+        <a href="/shows/" lang="de">DE</a><a href="/en/shows/" lang="en" aria-current="true">EN</a><a href="/fr/shows/" lang="fr">FR</a>
       </div>
     </nav>
   </header>
@@ -142,13 +142,13 @@
   </section>
     <nav class="subnav" aria-label="Auf dieser Seite">
       <div class="wrap subnav-inner">
-        <a href="#shows">Shows</a><a href="#references">Referenzen</a>
+        <a href="#shows">Shows</a><a href="#references">References</a>
       </div>
     </nav>
 
   <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
     <div class="wrap">
-      <p class="live-note rv">Aktuell sind keine Termine angekündigt. Neue Shows erscheinen hier zuerst — oder melde dich und buche selbst einen.</p>
+      <p class="live-note rv">No dates announced right now. New shows land here first — or get in touch to book one.</p>
       
     </div>
   </section>
@@ -157,33 +157,33 @@
     <div class="wrap">
       <div class="shead rv">
         <span class="num">02</span>
-        <h2 id="references-h">Refe<i>renzen.</i></h2>
+        <h2 id="references-h">Refe<i>rences.</i></h2>
       </div>
       <ul class="venue-list rv">
-        <li><a href="/booking/#booking"><span class="venue-idx">01</span><span class="venue-name">Kugl</span><span class="venue-city">St. Gallen</span></a></li>
-        <li><a href="/booking/#booking"><span class="venue-idx">02</span><span class="venue-name">Sektor 11</span><span class="venue-city">Zürich</span></a></li>
-        <li><a href="/booking/#booking"><span class="venue-idx">03</span><span class="venue-name">The Q</span><span class="venue-city">Schaan, FL</span></a></li>
-        <li><a href="/booking/#booking"><span class="venue-idx">04</span><span class="venue-name">IVY</span><span class="venue-city">St. Gallen</span></a></li>
-        <li><a href="/booking/#booking"><span class="venue-idx">05</span><span class="venue-name">BBC</span><span class="venue-city">Gossau</span></a></li>
-        <li><a href="/booking/#booking"><span class="venue-idx">06</span><span class="venue-name">B9</span><span class="venue-city">St. Gallen</span></a></li>
-        <li><a href="/booking/#booking"><span class="venue-idx">07</span><span class="venue-name">Ultrawild Festival</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">01</span><span class="venue-name">Kugl</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">02</span><span class="venue-name">Sektor 11</span><span class="venue-city">Zurich</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">03</span><span class="venue-name">The Q</span><span class="venue-city">Schaan, FL</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">04</span><span class="venue-name">IVY</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">05</span><span class="venue-name">BBC</span><span class="venue-city">Gossau</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">06</span><span class="venue-name">B9</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="/en/booking/#booking"><span class="venue-idx">07</span><span class="venue-name">Ultrawild Festival</span><span class="venue-city">St. Gallen</span></a></li>
       </ul>
-      <p class="live-note rv">Dein Club oder Festival als Nächstes? <a class="accent" href="/booking/#contact">Melde dich →</a></p>
+      <p class="live-note rv">Your club or festival next? <a class="accent" href="/en/booking/#contact">Get in touch →</a></p>
     </div>
   </section>
 
-  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Bildansicht" hidden>
-    <button class="lb-close" id="lb-close" aria-label="Schliessen">✕</button>
-    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Vorheriges Bild">‹</button>
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
+    <button class="lb-close" id="lb-close" aria-label="Close">✕</button>
+    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous image">‹</button>
     <figure class="lb-fig"><img id="lb-img" src="" alt=""><figcaption id="lb-cap" class="mono"></figcaption></figure>
-    <button class="lb-nav lb-next" id="lb-next" aria-label="Nächstes Bild">›</button>
+    <button class="lb-nav lb-next" id="lb-next" aria-label="Next image">›</button>
   </div>
 
   <footer>
     <div class="wrap foot">
-      <span class="mono">© <span id="yr">2026</span> Sam Sparking — Alle Rechte vorbehalten</span>
-      <span class="claim">Aus Energie wird Euphorie</span>
-      <span class="mono">Fotografie — Sarto Photography</span>
+      <span class="mono">© <span id="yr">2026</span> Sam Sparking — All rights reserved</span>
+      <span class="claim">Turning energy into euphoria</span>
+      <span class="mono">Photography — Sarto Photography</span>
     </div>
   </footer>
 

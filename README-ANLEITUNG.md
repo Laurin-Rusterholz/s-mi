@@ -1,6 +1,7 @@
 # Sam Sparking — Website
 
-Statische One-Page-Website, generiert aus einer Inhalts-Datei. Inhalte pflegst du
+Statische Website in **Deutsch, Englisch und Französisch**, generiert aus einer
+Inhalts-Datei. Inhalte pflegst du
 **nicht** in der HTML, sondern in der Verwaltung:
 
 > **Verwaltung:** Repo [`verwaltung-djsamsparkling`](https://github.com/Laurin-Rusterholz/verwaltung-djsamsparkling)
@@ -32,6 +33,36 @@ Verwaltung (Admin)  ──schreibt──▶  Firebase Realtime Database
   Build verloren; Verzeichnisse gelöschter Seiten räumt der Build weg.
 - **`assets/site.css` / `assets/site.js`** — Aussehen und Interaktion. Das ist der
   richtige Ort für Design-Änderungen.
+- **`en/` und `fr/`** — ebenfalls generiert, eine komplette Kopie der Seiten in
+  der jeweiligen Sprache.
+
+### Mehrsprachigkeit
+
+Deutsch ist der gepflegte Stand im Inhalt. Die Übersetzungen liegen daneben:
+
+```jsonc
+{
+  "site": { "lang": "de", "languages": ["de", "en", "fr"] },
+  "sections": { "about": { "lede": "Aus Energie wird Euphorie" } },
+  "i18n": {
+    "en": { "sections": { "about": { "lede": "Turning energy into euphoria" } } }
+  },
+  "i18nHash": {                       // Fingerabdruck des deutschen Originals —
+    "en": { "sections": { "about": { "lede": "3f0a91c2" } } }   // daran erkennt
+  }                                   // die Verwaltung veraltete Übersetzungen
+}
+```
+
+Der Generator baut je Sprache einen kompletten Satz Seiten: die Hauptsprache
+unter `/`, die anderen unter `/<sprache>/`. Vor dem Rendern wird der Inhaltsbaum
+einmal übersetzt (`localize`), deshalb kennen die einzelnen Bausteine keine
+Sprachen. Fehlt eine Übersetzung, bleibt der deutsche Text stehen.
+
+`i18n.<lang>` darf verschachtelt (so schreibt es die Verwaltung — die Realtime
+Database erlaubt keine Punkte in Schlüsseln) oder flach mit Punkt-Pfaden
+(`"sections.about.lede"`) stehen; `flattenI18n()` versteht beides. Welche Felder
+überhaupt übersetzt werden, entscheidet `collectStrings()` — die Liste muss mit
+`public/js/i18n.js` in der Verwaltung übereinstimmen.
 
 ## Lokal bauen und anschauen
 
@@ -96,13 +127,20 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 **Inhalt & Funktion**
 - Hero (Bild **oder** automatisch laufendes Video als Hintergrund), Lauftext-Ticker
 - About mit Fakten-Leiste, Genres, Mixe (Link + optionales Embed)
-- **Shows** — kommende Termine mit Datum, Venue, Ticket-Link, „Sold out";
-  vergangene Termine klappen separat auf. Abgelaufene Termine verschwinden
-  automatisch, auch ohne neuen Build.
+- **Shows** — kommende Termine mit Datum, Venue, Ticket-Link und Status
+  („Sold out", **„Gebucht"**); vergangene Termine klappen separat auf.
+  Abgelaufene Termine verschwinden automatisch, auch ohne neuen Build.
+  Bestätigt jemand in der Verwaltung eine Booking-Anfrage, steht der Termin
+  ab dem nächsten Build als **gebucht** im Kalender.
 - **Mehrere Seiten** — welche Seiten es gibt und welcher Abschnitt auf welcher
   steht, kommt aus der Verwaltung; Menü, Sitemap und Sprungmarken folgen
   automatisch. Ohne Seiten-Definition wird eine einzelne Seite gebaut.
-- **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte)
+- **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte,
+  gebuchte Tage blau, mit Legende darunter)
+- **Drei Sprachen** — Deutsch unter `/`, Englisch unter `/en/`, Französisch
+  unter `/fr/`. Umschalter im Kopf, `hreflang`-Verweise und `xhtml:link` in der
+  Sitemap. Übersetzt wird in der Verwaltung (auf Wunsch von Claude); fehlt eine
+  Stelle, steht dort der deutsche Text.
 - Referenzen, Galerie mit Lightbox (Pfeiltasten, Wischen, Zähler)
 - Booking mit Rider und **Anfrage-Formular** → landet direkt in der Verwaltung
 - Kontakt mit beliebig vielen Social-Links
@@ -118,6 +156,8 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
 
 **Technik**
 - Keine Frameworks, keine Cookies, keine Tracker
+- Freistehende Kacheln statt durchgehender Tabellen; auf dem Handy eigene
+  Abstände, Tippziele ab 48 px und ein kompakter Seitenkopf
 - Barrierefrei: Skip-Link, Fokus-Ringe, ARIA am Menü/Lightbox,
   `prefers-reduced-motion`, Tastaturbedienung überall
 - Scroll-Fortschritt, aktiver Menüpunkt, Druck-Stylesheet

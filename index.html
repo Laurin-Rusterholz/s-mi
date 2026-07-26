@@ -4,16 +4,20 @@
   Inhalte pflegst du in der Verwaltung (oder in content/site.json),
   danach "node scripts/build.mjs" bzw. ein Netlify-Deploy.
 -->
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Primary SEO -->
-  <title>Sam Sparking — Hardstyle DJ &amp; Producer from St. Gallen, Switzerland</title>
-  <meta name="description" content="Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle — available for clubs, venues and festivals across Switzerland and Europe. Booking: info@samsparking.ch">
-  <meta name="keywords" content="Sam Sparking, Hardstyle DJ, Euphoric Hardstyle, Melodic Hardstyle, DJ St. Gallen, Hardstyle Schweiz, DJ Booking Switzerland">
+  <title>Sam Sparking — Hardstyle-DJ &amp; Producer aus St. Gallen</title>
+  <meta name="description" content="Sam Sparking ist Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und in Europa.">
+  <meta name="keywords" content="Sam Sparking, Hardstyle DJ, Euphoric Hardstyle, Melodic Hardstyle, DJ St. Gallen, Hardstyle Schweiz, DJ Booking Schweiz">
   <link rel="canonical" href="https://www.samsparking.ch/">
+  <link rel="alternate" hreflang="de" href="https://www.samsparking.ch/">
+  <link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/">
+  <link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/">
+  <link rel="alternate" hreflang="x-default" href="https://www.samsparking.ch/">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="Sam Sparking">
 
@@ -21,14 +25,14 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Sam Sparking">
   <meta property="og:url" content="https://www.samsparking.ch/">
-  <meta property="og:title" content="Sam Sparking — Turning Energy Into Euphoria">
-  <meta property="og:description" content="Hardstyle DJ &amp; producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs &amp; festivals in Switzerland &amp; Europe.">
+  <meta property="og:title" content="Sam Sparking — Aus Energie wird Euphorie">
+  <meta property="og:description" content="Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Booking für Clubs und Festivals in der Schweiz und Europa.">
   <meta property="og:image" content="https://www.samsparking.ch/img/hero.jpg">
-  <meta property="og:image:alt" content="Sam Sparking behind the decks, lasers and crowd in front of the stage">
-  <meta property="og:locale" content="en_US">
+  <meta property="og:image:alt" content="Sam Sparking am Pult, Laser und Crowd vor der Bühne">
+  <meta property="og:locale" content="de_CH">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Sam Sparking — Turning Energy Into Euphoria">
-  <meta name="twitter:description" content="Hardstyle DJ &amp; producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs &amp; festivals in Switzerland &amp; Europe.">
+  <meta name="twitter:title" content="Sam Sparking — Aus Energie wird Euphorie">
+  <meta name="twitter:description" content="Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Booking für Clubs und Festivals in der Schweiz und Europa.">
   <meta name="twitter:image" content="https://www.samsparking.ch/img/hero.jpg">
 
   <!-- Structured data -->
@@ -43,14 +47,14 @@
       "jobTitle": "DJ & Producer",
       "url": "https://www.samsparking.ch/",
       "image": "https://www.samsparking.ch/img/hero.jpg",
-      "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle — available for clubs, venues and festivals across Switzerland and Europe. Booking: info@samsparking.ch",
+      "description": "Sam Sparking ist Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und in Europa.",
       "knowsAbout": [
         "Euphoric Hardstyle",
         "Melodic Hardstyle"
       ],
       "homeLocation": {
         "@type": "Place",
-        "name": "St. Gallen, Switzerland"
+        "name": "St. Gallen, Schweiz"
       },
       "email": "mailto:info@samsparking.ch",
       "telephone": "+41775091171",
@@ -63,7 +67,7 @@
       "@id": "https://www.samsparking.ch/#website",
       "url": "https://www.samsparking.ch/",
       "name": "Sam Sparking — Official Website",
-      "inLanguage": "en",
+      "inLanguage": "de",
       "publisher": {
         "@id": "https://www.samsparking.ch/#artist"
       }
@@ -84,45 +88,48 @@
   <style>:root{--ink:#05070e;--spark:#2e6bff;}</style>
 </head>
 <body data-page="home">
-  <a class="skip" href="#about">Skip to content</a>
+  <a class="skip" href="#about">Zum Inhalt springen</a>
   <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header>
     <a class="logo" href="/">Sam Sparking</a>
-    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">Menu</button>
+    <button class="burger" id="burger" aria-label="Menü" aria-expanded="false" aria-controls="nav" data-open="Menü" data-close="Schliessen">Menü</button>
     <nav id="nav">
       <ul>
-          <li><a href="/" aria-current="page">Home</a></li>
+          <li><a href="/" aria-current="page">Start</a></li>
           <li><a href="/shows/">Shows</a></li>
-          <li><a href="/gallery/">Gallery</a></li>
+          <li><a href="/gallery/">Galerie</a></li>
           <li><a href="/booking/">Booking</a></li>
       </ul>
+      <div class="langs" role="group" aria-label="Sprache">
+        <a href="/" lang="de" aria-current="true">DE</a><a href="/en/" lang="en">EN</a><a href="/fr/" lang="fr">FR</a>
+      </div>
     </nav>
   </header>
 
   <section class="hero" id="top">
     <div class="hero-bg">
-      <img src="/img/hero.jpg" alt="Sam Sparking behind the decks, lasers and crowd in front of the stage" fetchpriority="high" decoding="async" sizes="100vw">
+      <img src="/img/hero.jpg" alt="Sam Sparking am Pult, Laser und Crowd vor der Bühne" fetchpriority="high" decoding="async" sizes="100vw">
     </div>
     <div class="hero-inner">
-      <p class="mono">DJ &amp; Producer — St. Gallen, Switzerland</p>
+      <p class="mono">DJ &amp; Producer — St. Gallen, Schweiz</p>
       <h1><span class="sp">S A M</span>Sparking</h1>
       <div class="hero-sub">
-        <span class="tag">Turning energy into euphoria.</span>
+        <span class="tag">Aus Energie wird Euphorie.</span>
         <span class="mono">Euphoric Hardstyle / Melodic Hardstyle</span>
-        <a class="hero-cta" href="/booking/#booking">Book Sam</a>
+        <a class="hero-cta" href="/booking/#booking">Sam buchen</a>
       </div>
     </div>
-    <a class="hero-scroll mono" href="#about" aria-hidden="true" tabindex="-1">Scroll ↓</a>
+    <a class="hero-scroll mono" href="#about" aria-hidden="true" tabindex="-1">Scrollen ↓</a>
   </section>
   <div class="ticker" aria-hidden="true">
     <div class="ticker-track">
-      <span class="smash">Turning<i>Energy</i></span><b>◆</b><span class="smash">Into<i>Euphoria</i></span><b>◆</b><span class="smash">Euphoric<i>Hardstyle</i></span><b>◆</b><span class="smash">Melodic<i>Hardstyle</i></span><b>◆</b><span class="smash">2026<i>Edition</i></span><b>◆</b><span class="smash">Turning<i>Energy</i></span><b>◆</b><span class="smash">Into<i>Euphoria</i></span><b>◆</b><span class="smash">Euphoric<i>Hardstyle</i></span><b>◆</b><span class="smash">Melodic<i>Hardstyle</i></span><b>◆</b><span class="smash">2026<i>Edition</i></span><b>◆</b>
+      <span class="smash">Aus<i>Energie</i></span><b>◆</b><span class="smash">wird<i>Euphorie</i></span><b>◆</b><span class="smash">Euphoric<i>Hardstyle</i></span><b>◆</b><span class="smash">Melodic<i>Hardstyle</i></span><b>◆</b><span class="smash">2026<i>Edition</i></span><b>◆</b><span class="smash">Aus<i>Energie</i></span><b>◆</b><span class="smash">wird<i>Euphorie</i></span><b>◆</b><span class="smash">Euphoric<i>Hardstyle</i></span><b>◆</b><span class="smash">Melodic<i>Hardstyle</i></span><b>◆</b><span class="smash">2026<i>Edition</i></span><b>◆</b>
     </div>
   </div>
     <nav class="subnav" aria-label="Auf dieser Seite">
       <div class="wrap subnav-inner">
-        <a href="#about">About</a><a href="#sound">Sound</a>
+        <a href="#about">Über mich</a><a href="#sound">Sound</a>
       </div>
     </nav>
 
@@ -130,23 +137,23 @@
     <div class="wrap">
       <div class="shead rv">
         <span class="num">01</span>
-        <h2 id="about-h">About<i>Me.</i></h2>
+        <h2 id="about-h">Über<i>mich.</i></h2>
       </div>
       <div class="about-grid">
         <div class="about-photo rv">
-          <img src="/img/about.jpg" alt="Portrait of Sam Sparking" loading="lazy" decoding="async" sizes="(max-width:860px) 90vw, 40vw">
-          <span class="mono">Photo — Sarto Photography</span>
+          <img src="/img/about.jpg" alt="Portrait von Sam Sparking" loading="lazy" decoding="async" sizes="(max-width:860px) 90vw, 40vw">
+          <span class="mono">Foto — Sarto Photography</span>
         </div>
         <div class="about-copy rv">
-          <p class="lede">Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.</p>
-          <p>Growing up watching festival videos and discovering the world of hardstyle at a young age, it was a Defqon.1 video that first showed him what music could really do. The energy, the atmosphere, the connection between DJ and crowd — it hit him immediately and never let go. At 15, seeing a DJ own a dancefloor in a live club setting turned fascination into direction. From that moment, producing and performing wasn&#39;t a side project. It was the only path that made sense.</p>
-          <p>Four years later, Sam is grinding daily, sharpening his sound track by track. Inspired by artists like <strong>Sound Rush</strong>, <strong>Sub Zero Project</strong> and <strong>Headhunterz</strong>, he focuses on euphoric hardstyle — powerful kicks combined with emotional melodies that pull you in and keep you there.</p>
-          <p>The name <strong>Sparking</strong> is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.</p>
-          <p>His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right.</p>
-          <div class="three-words"><span>Emotional</span><span>Powerful</span><span>Euphoric</span></div>
+          <p class="lede">Sam Sparking ist ein 19-jähriger DJ und Producer aus St. Gallen. Seine Geschichte begann lange, bevor er zum ersten Mal hinter einem DJ-Setup stand.</p>
+          <p>Aufgewachsen mit Festivalvideos und früh in der Welt des Hardstyle zu Hause, war es ein Defqon.1-Video, das ihm zum ersten Mal zeigte, was Musik wirklich kann. Die Energie, die Atmosphäre, die Verbindung zwischen DJ und Crowd — das traf ihn sofort und liess ihn nicht mehr los. Mit 15 wurde aus Faszination eine Richtung: Er sah einen DJ, der einen Dancefloor im Club vollständig im Griff hatte. Von diesem Moment an war Produzieren und Auflegen kein Nebenprojekt mehr, sondern der einzige Weg, der Sinn ergab.</p>
+          <p>Vier Jahre später schleift Sam täglich an seinem Sound, Track für Track. Inspiriert von Artists wie <strong>Sound Rush</strong>, <strong>Sub Zero Project</strong> und <strong>Headhunterz</strong> konzentriert er sich auf Euphoric Hardstyle — druckvolle Kicks, kombiniert mit emotionalen Melodien, die einen hineinziehen und nicht mehr loslassen.</p>
+          <p>Der Name <strong>Sparking</strong> ist kein Zufall. Er steht für konstante Energie, einen Kopf voller Ideen und einen Optimismus, der in jede Produktion durchschlägt. Seine Sets bauen auf Emotion, Storytelling und Crowd-Energie — sie schaffen Momente, in denen Musik und Publikum wirklich zusammenfinden.</p>
+          <p>Seine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist.</p>
+          <div class="three-words"><span>Emotional</span><span>Kraftvoll</span><span>Euphorisch</span></div>
         </div>
       </div>
-      <dl class="facts rv"><div><dt class="mono">First set</dt><dd>2021</dd></div><div><dt class="mono">Clubs &amp; festivals</dt><dd>7+</dd></div><div><dt class="mono">BPM home base</dt><dd>150</dd></div></dl>
+      <dl class="facts rv"><div><dt class="mono">Erstes Set</dt><dd>2021</dd></div><div><dt class="mono">Clubs &amp; Festivals</dt><dd>7+</dd></div><div><dt class="mono">BPM Zuhause</dt><dd>150</dd></div></dl>
     </div>
   </section>
 
@@ -162,33 +169,33 @@
             <li>Euphoric Hardstyle <span class="mono">Genre</span></li>
             <li>Melodic Hardstyle <span class="mono">Genre</span></li>
           </ul>
-          <p class="live-note">Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.</p>
+          <p class="live-note">Druckvolle Kicks. Emotionale Melodien. Sets, die von Storytelling und Crowd-Energie leben.</p>
         </div>
         <div class="mix-stack rv">
           <article class="mix-card">
-            <span class="mono">Latest Mix</span>
+            <span class="mono">Aktueller Mix</span>
             <h3>Euphoric &amp; Melodic Hardstyle — Recorded Set</h3>
-            <p>One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.</p>
+            <p>One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparking einen Raum.</p>
             
-            <a class="btn" href="https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/" target="_blank" rel="noopener">Listen on Mixcloud</a>
+            <a class="btn" href="https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/" target="_blank" rel="noopener">Auf Mixcloud hören</a>
           </article>
         </div>
       </div>
     </div>
   </section>
 
-  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
-    <button class="lb-close" id="lb-close" aria-label="Close">✕</button>
-    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous image">‹</button>
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Bildansicht" hidden>
+    <button class="lb-close" id="lb-close" aria-label="Schliessen">✕</button>
+    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Vorheriges Bild">‹</button>
     <figure class="lb-fig"><img id="lb-img" src="" alt=""><figcaption id="lb-cap" class="mono"></figcaption></figure>
-    <button class="lb-nav lb-next" id="lb-next" aria-label="Next image">›</button>
+    <button class="lb-nav lb-next" id="lb-next" aria-label="Nächstes Bild">›</button>
   </div>
 
   <footer>
     <div class="wrap foot">
-      <span class="mono">© <span id="yr">2026</span> Sam Sparking — All rights reserved</span>
-      <span class="claim">Turning energy into euphoria</span>
-      <span class="mono">Photography — Sarto Photography</span>
+      <span class="mono">© <span id="yr">2026</span> Sam Sparking — Alle Rechte vorbehalten</span>
+      <span class="claim">Aus Energie wird Euphorie</span>
+      <span class="mono">Fotografie — Sarto Photography</span>
     </div>
   </footer>
 

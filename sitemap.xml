@@ -1,25 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.samsparking.ch/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/"/>
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://www.samsparking.ch/shows/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/"/>
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.samsparking.ch/gallery/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/"/>
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.samsparking.ch/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/booking/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/booking/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/booking/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/en/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/en/shows/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/en/gallery/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/en/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/booking/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/booking/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/booking/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/fr/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/fr/shows/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/shows/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/shows/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/shows/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/fr/gallery/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/gallery/"/>
+    <lastmod>2026-07-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.samsparking.ch/fr/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://www.samsparking.ch/booking/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://www.samsparking.ch/en/booking/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://www.samsparking.ch/fr/booking/"/>
     <lastmod>2026-07-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

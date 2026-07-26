@@ -2,12 +2,12 @@
   "schemaVersion": 2,
   "updatedAt": "2026-07-26T00:00:00.000Z",
   "site": {
-    "lang": "en",
+    "lang": "de",
     "domain": "https://www.samsparking.ch",
     "artist": "Sam Sparking",
     "logoText": "Sam Sparking",
-    "title": "Sam Sparking — Hardstyle DJ & Producer from St. Gallen, Switzerland",
-    "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle — available for clubs, venues and festivals across Switzerland and Europe. Booking: info@samsparking.ch",
+    "title": "Sam Sparking — Hardstyle-DJ & Producer aus St. Gallen",
+    "description": "Sam Sparking ist Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und in Europa.",
     "keywords": [
       "Sam Sparking",
       "Hardstyle DJ",
@@ -15,29 +15,34 @@
       "Melodic Hardstyle",
       "DJ St. Gallen",
       "Hardstyle Schweiz",
-      "DJ Booking Switzerland"
+      "DJ Booking Schweiz"
     ],
-    "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
-    "ogDescription": "Hardstyle DJ & producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs & festivals in Switzerland & Europe.",
+    "ogTitle": "Sam Sparking — Aus Energie wird Euphorie",
+    "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Booking für Clubs und Festivals in der Schweiz und Europa.",
     "ogImage": "img/hero.jpg",
     "themeColor": "#05070e",
     "accentColor": "#2e6bff",
-    "claim": "Turning energy into euphoria",
+    "claim": "Aus Energie wird Euphorie",
     "photoCredit": "Sarto Photography",
-    "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json"
+    "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json",
+    "languages": [
+      "de",
+      "en",
+      "fr"
+    ]
   },
   "hero": {
-    "kicker": "DJ & Producer — St. Gallen, Switzerland",
+    "kicker": "DJ & Producer — St. Gallen, Schweiz",
     "nameSpaced": "S A M",
     "nameMain": "Sparking",
-    "tagline": "Turning energy into euphoria.",
+    "tagline": "Aus Energie wird Euphorie.",
     "meta": "Euphoric Hardstyle / Melodic Hardstyle",
-    "ctaLabel": "Book Sam",
+    "ctaLabel": "Sam buchen",
     "ctaHref": "#booking",
     "media": {
       "type": "image",
       "src": "img/hero.jpg",
-      "alt": "Sam Sparking behind the decks, lasers and crowd in front of the stage",
+      "alt": "Sam Sparking am Pult, Laser und Crowd vor der Bühne",
       "poster": ""
     }
   },
@@ -45,12 +50,12 @@
     "enabled": true,
     "items": [
       {
-        "text": "Turning",
-        "accent": "Energy"
+        "text": "Aus",
+        "accent": "Energie"
       },
       {
-        "text": "Into",
-        "accent": "Euphoria"
+        "text": "wird",
+        "accent": "Euphorie"
       },
       {
         "text": "Euphoric",
@@ -78,8 +83,8 @@
   "pages": [
     {
       "slug": "",
-      "navLabel": "Home",
-      "title": "Home",
+      "navLabel": "Start",
+      "title": "Start",
       "enabled": true,
       "hero": "full",
       "ticker": true,
@@ -106,14 +111,14 @@
         "references"
       ],
       "seo": {
-        "title": "Shows & Tour Dates — Sam Sparking",
-        "description": "Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe."
+        "title": "Shows & Tourdaten — Sam Sparking",
+        "description": "Kommende Hardstyle-Shows und bisherige Auftritte von Sam Sparking — Clubs und Festivals in der Schweiz und Europa."
       }
     },
     {
       "slug": "gallery",
-      "navLabel": "Gallery",
-      "title": "Gallery",
+      "navLabel": "Galerie",
+      "title": "Galerie",
       "enabled": true,
       "hero": "compact",
       "ticker": false,
@@ -122,8 +127,8 @@
         "gallery"
       ],
       "seo": {
-        "title": "Gallery — Sam Sparking live",
-        "description": "Live photos of Sam Sparking behind the decks — clubs and festivals, shot by Sarto Photography."
+        "title": "Galerie — Sam Sparking live",
+        "description": "Livefotos von Sam Sparking hinter den Decks — Clubs und Festivals, fotografiert von Sarto Photography."
       }
     },
     {
@@ -139,46 +144,46 @@
         "contact"
       ],
       "seo": {
-        "title": "Booking — Sam Sparking, Hardstyle DJ",
-        "description": "Book Sam Sparking for your club or festival. Technical rider, presskit and booking request form."
+        "title": "Booking — Sam Sparking, Hardstyle-DJ",
+        "description": "Sam Sparking für Club oder Festival buchen. Technischer Rider, Presskit und Anfrageformular."
       }
     }
   ],
   "sections": {
     "about": {
       "enabled": true,
-      "navLabel": "About",
-      "title": "About",
-      "titleAccent": "Me.",
+      "navLabel": "Über mich",
+      "title": "Über",
+      "titleAccent": "mich.",
       "photo": {
         "src": "img/about.jpg",
-        "alt": "Portrait of Sam Sparking",
-        "credit": "Photo — Sarto Photography"
+        "alt": "Portrait von Sam Sparking",
+        "credit": "Foto — Sarto Photography"
       },
-      "lede": "Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.",
+      "lede": "Sam Sparking ist ein 19-jähriger DJ und Producer aus St. Gallen. Seine Geschichte begann lange, bevor er zum ersten Mal hinter einem DJ-Setup stand.",
       "paragraphs": [
-        "Growing up watching festival videos and discovering the world of hardstyle at a young age, it was a Defqon.1 video that first showed him what music could really do. The energy, the atmosphere, the connection between DJ and crowd — it hit him immediately and never let go. At 15, seeing a DJ own a dancefloor in a live club setting turned fascination into direction. From that moment, producing and performing wasn't a side project. It was the only path that made sense.",
-        "Four years later, Sam is grinding daily, sharpening his sound track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, he focuses on euphoric hardstyle — powerful kicks combined with emotional melodies that pull you in and keep you there.",
-        "The name **Sparking** is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.",
-        "His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right."
+        "Aufgewachsen mit Festivalvideos und früh in der Welt des Hardstyle zu Hause, war es ein Defqon.1-Video, das ihm zum ersten Mal zeigte, was Musik wirklich kann. Die Energie, die Atmosphäre, die Verbindung zwischen DJ und Crowd — das traf ihn sofort und liess ihn nicht mehr los. Mit 15 wurde aus Faszination eine Richtung: Er sah einen DJ, der einen Dancefloor im Club vollständig im Griff hatte. Von diesem Moment an war Produzieren und Auflegen kein Nebenprojekt mehr, sondern der einzige Weg, der Sinn ergab.",
+        "Vier Jahre später schleift Sam täglich an seinem Sound, Track für Track. Inspiriert von Artists wie **Sound Rush**, **Sub Zero Project** und **Headhunterz** konzentriert er sich auf Euphoric Hardstyle — druckvolle Kicks, kombiniert mit emotionalen Melodien, die einen hineinziehen und nicht mehr loslassen.",
+        "Der Name **Sparking** ist kein Zufall. Er steht für konstante Energie, einen Kopf voller Ideen und einen Optimismus, der in jede Produktion durchschlägt. Seine Sets bauen auf Emotion, Storytelling und Crowd-Energie — sie schaffen Momente, in denen Musik und Publikum wirklich zusammenfinden.",
+        "Seine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist."
       ],
       "words": [
         "Emotional",
-        "Powerful",
-        "Euphoric"
+        "Kraftvoll",
+        "Euphorisch"
       ],
       "facts": [
         {
           "value": "2021",
-          "label": "First set"
+          "label": "Erstes Set"
         },
         {
           "value": "7+",
-          "label": "Clubs & festivals"
+          "label": "Clubs & Festivals"
         },
         {
           "value": "150",
-          "label": "BPM home base"
+          "label": "BPM Zuhause"
         }
       ]
     },
@@ -187,7 +192,7 @@
       "navLabel": "Sound",
       "title": "Gen",
       "titleAccent": "res.",
-      "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
+      "note": "Druckvolle Kicks. Emotionale Melodien. Sets, die von Storytelling und Crowd-Energie leben.",
       "genres": [
         {
           "name": "Euphoric Hardstyle",
@@ -200,10 +205,10 @@
       ],
       "mixes": [
         {
-          "kicker": "Latest Mix",
+          "kicker": "Aktueller Mix",
           "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-          "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
-          "linkLabel": "Listen on Mixcloud",
+          "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparking einen Raum.",
+          "linkLabel": "Auf Mixcloud hören",
           "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
           "embedUrl": ""
         }
@@ -214,18 +219,18 @@
       "navLabel": "Shows",
       "title": "Sh",
       "titleAccent": "ows.",
-      "emptyText": "No dates announced right now. New shows land here first — or get in touch to book one.",
-      "pastLabel": "Played before",
+      "emptyText": "Aktuell sind keine Termine angekündigt. Neue Shows erscheinen hier zuerst — oder melde dich und buche selbst einen.",
+      "pastLabel": "Bereits gespielt",
       "items": [],
       "view": "calendar"
     },
     "references": {
       "enabled": true,
-      "navLabel": "References",
+      "navLabel": "Referenzen",
       "title": "Refe",
-      "titleAccent": "rences.",
-      "note": "Your club or festival next?",
-      "noteLinkLabel": "Get in touch →",
+      "titleAccent": "renzen.",
+      "note": "Dein Club oder Festival als Nächstes?",
+      "noteLinkLabel": "Melde dich →",
       "items": [
         {
           "name": "Kugl",
@@ -266,68 +271,68 @@
     },
     "gallery": {
       "enabled": true,
-      "navLabel": "Gallery",
+      "navLabel": "Galerie",
       "title": "Gal",
-      "titleAccent": "lery.",
+      "titleAccent": "erie.",
       "items": [
         {
           "src": "img/gallery-01.jpg",
-          "alt": "Sam Sparking live — crowd with hands up",
+          "alt": "Sam Sparking live — Crowd mit erhobenen Händen",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-02.jpg",
-          "alt": "Sam Sparking mixing on CDJs",
+          "alt": "Sam Sparking mixt an den CDJs",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-03.jpg",
-          "alt": "Stage lights during a hardstyle set",
+          "alt": "Bühnenlicht während eines Hardstyle-Sets",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-04.jpg",
-          "alt": "Sam Sparking behind the booth",
+          "alt": "Sam Sparking hinter der Booth",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-05.jpg",
-          "alt": "Crowd at a Sam Sparking show",
+          "alt": "Crowd an einer Show von Sam Sparking",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-06.jpg",
-          "alt": "Sam Sparking portrait at the venue",
+          "alt": "Sam Sparking, Portrait in der Location",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-07.jpg",
-          "alt": "Hands in the air on the dancefloor",
+          "alt": "Hände in der Luft auf dem Dancefloor",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-08.jpg",
-          "alt": "Sam Sparking during his set",
+          "alt": "Sam Sparking während seines Sets",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-09.jpg",
-          "alt": "Light show over the dancefloor",
+          "alt": "Lichtshow über dem Dancefloor",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-10.jpg",
-          "alt": "Sam Sparking on stage",
+          "alt": "Sam Sparking auf der Bühne",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-11.jpg",
-          "alt": "Booth view over the crowd",
+          "alt": "Blick aus der Booth über die Crowd",
           "credit": "Sarto Photography"
         },
         {
           "src": "img/gallery-12.jpg",
-          "alt": "Closing moment of the night",
+          "alt": "Letzter Moment der Nacht",
           "credit": "Sarto Photography"
         }
       ]
@@ -337,78 +342,1382 @@
       "navLabel": "Booking",
       "title": "Boo",
       "titleAccent": "king.",
-      "availableKicker": "Available for",
+      "availableKicker": "Verfügbar für",
       "available": [
         "Clubs & Venues",
         "Festivals",
-        "Switzerland & Europe"
+        "Schweiz & Europa"
       ],
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
       "form": {
         "enabled": true,
-        "kicker": "Booking request",
-        "title": "Tell me about your event",
-        "successText": "Thanks — your request landed. You'll hear back within 48 hours.",
-        "errorText": "Something went wrong. Please write directly to info@samsparking.ch.",
-        "submitLabel": "Send request"
+        "kicker": "Booking-Anfrage",
+        "title": "Erzähl mir von deinem Event",
+        "successText": "Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir.",
+        "errorText": "Da ist etwas schiefgelaufen. Schreib bitte direkt an info@samsparking.ch.",
+        "submitLabel": "Anfrage senden"
       },
       "rider": {
-        "kicker": "Preferred Setup",
+        "kicker": "Bevorzugtes Setup",
         "groups": [
           {
-            "title": "CDJs — 4× required",
+            "title": "CDJs — 4× erforderlich",
             "items": [
               {
                 "name": "Pioneer CDJ-3000X",
-                "meta": "1st choice"
+                "meta": "1. Wahl"
               },
               {
                 "name": "Pioneer CDJ-3000",
-                "meta": "2nd choice"
+                "meta": "2. Wahl"
               },
               {
                 "name": "Pioneer CDJ-2000NXS2",
-                "meta": "3rd choice"
+                "meta": "3. Wahl"
               }
             ]
           },
           {
-            "title": "Mixer — one of the following",
+            "title": "Mixer — eines der folgenden",
             "items": [
               {
                 "name": "Pioneer DJM-V10",
-                "meta": "1st choice"
+                "meta": "1. Wahl"
               },
               {
                 "name": "Pioneer DJM-A9",
-                "meta": "2nd choice"
+                "meta": "2. Wahl"
               },
               {
                 "name": "Pioneer DJM-2000NXS",
-                "meta": "3rd choice"
+                "meta": "3. Wahl"
               }
             ]
           }
         ],
-        "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
+        "note": "Bitte Booth-Monitore mit unabhängiger Lautstärkeregelung bereitstellen — essenziell für sauberes Cueing und Mixing."
       }
     },
     "contact": {
       "enabled": true,
-      "navLabel": "Contact",
-      "title": "Contact",
-      "titleAccent": "Me.",
-      "kicker": "Bookings & inquiries",
+      "navLabel": "Kontakt",
+      "title": "Kon",
+      "titleAccent": "takt.",
+      "kicker": "Booking & Anfragen",
       "email": "info@samsparking.ch",
       "phone": "+41 77 509 11 71",
-      "base": "St. Gallen, Switzerland",
+      "base": "St. Gallen, Schweiz",
       "socials": [
         {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
         }
       ]
+    }
+  },
+  "ui": {
+    "skip": "Zum Inhalt springen",
+    "menu": "Menü",
+    "close": "Schliessen",
+    "scroll": "Scrollen ↓",
+    "imageViewer": "Bildansicht",
+    "prevImage": "Vorheriges Bild",
+    "nextImage": "Nächstes Bild",
+    "openImage": "Bild {n} von {total} gross öffnen",
+    "rights": "Alle Rechte vorbehalten",
+    "photography": "Fotografie",
+    "phone": "Telefon",
+    "base": "Standort",
+    "tickets": "Tickets",
+    "soldOut": "Ausverkauft",
+    "booked": "Gebucht",
+    "calShow": "Termin",
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So",
+    "sending": "Wird gesendet …",
+    "formInvalid": "Bitte die markierten Felder prüfen.",
+    "fName": "Dein Name",
+    "fEmail": "E-Mail",
+    "fEvent": "Event / Club",
+    "fCity": "Ort",
+    "fDate": "Datum",
+    "fSetLength": "Set-Länge",
+    "fMessage": "Nachricht",
+    "fSetLengthHint": "z. B. 60 Min.",
+    "fHoneypot": "Bitte leer lassen"
+  },
+  "i18n": {
+    "en": {
+      "site": {
+        "title": "Sam Sparking — Hardstyle DJ & Producer from St. Gallen, Switzerland",
+        "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
+        "keywords": {
+          "0": "Sam Sparking",
+          "1": "Hardstyle DJ",
+          "2": "Euphoric Hardstyle",
+          "3": "Melodic Hardstyle",
+          "4": "DJ St. Gallen",
+          "5": "Hardstyle Switzerland",
+          "6": "DJ Booking Switzerland"
+        },
+        "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
+        "ogDescription": "Hardstyle DJ & producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs & festivals in Switzerland & Europe.",
+        "claim": "Turning energy into euphoria",
+        "photoCredit": "Sarto Photography"
+      },
+      "ticker": {
+        "items": {
+          "0": {
+            "text": "Turning",
+            "accent": "Energy"
+          },
+          "1": {
+            "text": "Into",
+            "accent": "Euphoria"
+          },
+          "2": {
+            "text": "Euphoric",
+            "accent": "Hardstyle"
+          },
+          "3": {
+            "text": "Melodic",
+            "accent": "Hardstyle"
+          },
+          "4": {
+            "text": "2026",
+            "accent": "Edition"
+          }
+        }
+      },
+      "pages": {
+        "0": {
+          "navLabel": "Home",
+          "title": "Home"
+        },
+        "1": {
+          "navLabel": "Shows",
+          "title": "Shows",
+          "seo": {
+            "title": "Shows & Tour Dates — Sam Sparking",
+            "description": "Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe."
+          }
+        },
+        "2": {
+          "navLabel": "Gallery",
+          "title": "Gallery",
+          "seo": {
+            "title": "Gallery — Sam Sparking live",
+            "description": "Live photos of Sam Sparking behind the decks — clubs and festivals, shot by Sarto Photography."
+          }
+        },
+        "3": {
+          "navLabel": "Booking",
+          "title": "Booking",
+          "seo": {
+            "title": "Booking — Sam Sparking, Hardstyle DJ",
+            "description": "Book Sam Sparking for your club or festival. Technical rider, presskit and booking request form."
+          }
+        }
+      },
+      "sections": {
+        "about": {
+          "navLabel": "About",
+          "title": "About",
+          "titleAccent": "Me.",
+          "photo": {
+            "alt": "Portrait of Sam Sparking",
+            "credit": "Photo — Sarto Photography"
+          },
+          "lede": "Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.",
+          "paragraphs": {
+            "0": "Growing up watching festival videos and discovering the world of hardstyle at a young age, it was a Defqon.1 video that first showed him what music could really do. The energy, the atmosphere, the connection between DJ and crowd — it hit him immediately and never let go. At 15, seeing a DJ own a dancefloor in a live club setting turned fascination into direction. From that moment, producing and performing wasn't a side project. It was the only path that made sense.",
+            "1": "Four years later, Sam is grinding daily, sharpening his sound track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, he focuses on euphoric hardstyle — powerful kicks combined with emotional melodies that pull you in and keep you there.",
+            "2": "The name **Sparking** is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.",
+            "3": "His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right."
+          },
+          "words": {
+            "0": "Emotional",
+            "1": "Powerful",
+            "2": "Euphoric"
+          },
+          "facts": {
+            "0": {
+              "label": "First set"
+            },
+            "1": {
+              "label": "Clubs & Festivals"
+            },
+            "2": {
+              "label": "BPM home base"
+            }
+          }
+        },
+        "sound": {
+          "navLabel": "Sound",
+          "title": "Gen",
+          "titleAccent": "res.",
+          "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
+          "genres": {
+            "0": {
+              "meta": "Genre"
+            },
+            "1": {
+              "meta": "Genre"
+            }
+          },
+          "mixes": {
+            "0": {
+              "kicker": "Latest Mix",
+              "title": "Euphoric & Melodic Hardstyle — Recorded Set",
+              "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
+              "linkLabel": "Listen on Mixcloud"
+            }
+          }
+        },
+        "shows": {
+          "navLabel": "Shows",
+          "title": "Sh",
+          "titleAccent": "ows.",
+          "emptyText": "No dates announced right now. New shows land here first — or get in touch to book one.",
+          "pastLabel": "Played before"
+        },
+        "references": {
+          "navLabel": "References",
+          "title": "Refe",
+          "titleAccent": "rences.",
+          "note": "Your club or festival next?",
+          "noteLinkLabel": "Get in touch →",
+          "items": {
+            "0": {
+              "city": "St. Gallen"
+            },
+            "1": {
+              "city": "Zurich"
+            },
+            "2": {
+              "city": "Schaan, FL"
+            },
+            "3": {
+              "city": "St. Gallen"
+            },
+            "4": {
+              "city": "Gossau"
+            },
+            "5": {
+              "city": "St. Gallen"
+            },
+            "6": {
+              "city": "St. Gallen"
+            }
+          }
+        },
+        "gallery": {
+          "navLabel": "Gallery",
+          "title": "Gal",
+          "titleAccent": "lery.",
+          "items": {
+            "0": {
+              "alt": "Sam Sparking live — crowd with hands up",
+              "credit": "Sarto Photography"
+            },
+            "1": {
+              "alt": "Sam Sparking mixing on CDJs",
+              "credit": "Sarto Photography"
+            },
+            "2": {
+              "alt": "Stage lights during a hardstyle set",
+              "credit": "Sarto Photography"
+            },
+            "3": {
+              "alt": "Sam Sparking behind the booth",
+              "credit": "Sarto Photography"
+            },
+            "4": {
+              "alt": "Crowd at a Sam Sparking show",
+              "credit": "Sarto Photography"
+            },
+            "5": {
+              "alt": "Sam Sparking portrait at the venue",
+              "credit": "Sarto Photography"
+            },
+            "6": {
+              "alt": "Hands in the air on the dancefloor",
+              "credit": "Sarto Photography"
+            },
+            "7": {
+              "alt": "Sam Sparking during his set",
+              "credit": "Sarto Photography"
+            },
+            "8": {
+              "alt": "Light show over the dancefloor",
+              "credit": "Sarto Photography"
+            },
+            "9": {
+              "alt": "Sam Sparking on stage",
+              "credit": "Sarto Photography"
+            },
+            "10": {
+              "alt": "Booth view over the crowd",
+              "credit": "Sarto Photography"
+            },
+            "11": {
+              "alt": "Closing moment of the night",
+              "credit": "Sarto Photography"
+            }
+          }
+        },
+        "booking": {
+          "navLabel": "Booking",
+          "title": "Boo",
+          "titleAccent": "king.",
+          "availableKicker": "Available for",
+          "available": {
+            "0": "Clubs & Venues",
+            "1": "Festivals",
+            "2": "Switzerland & Europe"
+          },
+          "presskitLabel": "Presskit (PDF)",
+          "form": {
+            "kicker": "Booking request",
+            "title": "Tell me about your event",
+            "successText": "Thanks — your request landed. You'll hear back within 48 hours.",
+            "errorText": "Something went wrong. Please write directly to info@samsparking.ch.",
+            "submitLabel": "Send request"
+          },
+          "rider": {
+            "kicker": "Preferred setup",
+            "groups": {
+              "0": {
+                "title": "CDJs — 4× required",
+                "items": {
+                  "0": {
+                    "meta": "1st choice"
+                  },
+                  "1": {
+                    "meta": "2nd choice"
+                  },
+                  "2": {
+                    "meta": "3rd choice"
+                  }
+                }
+              },
+              "1": {
+                "title": "Mixer — one of the following",
+                "items": {
+                  "0": {
+                    "meta": "1st choice"
+                  },
+                  "1": {
+                    "meta": "2nd choice"
+                  },
+                  "2": {
+                    "meta": "3rd choice"
+                  }
+                }
+              }
+            },
+            "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
+          }
+        },
+        "contact": {
+          "navLabel": "Contact",
+          "title": "Con",
+          "titleAccent": "tact.",
+          "kicker": "Bookings & inquiries",
+          "base": "St. Gallen, Switzerland",
+          "socials": {
+            "0": {
+              "label": "Mixcloud"
+            }
+          }
+        }
+      },
+      "ui": {
+        "skip": "Skip to content",
+        "menu": "Menu",
+        "close": "Close",
+        "scroll": "Scroll ↓",
+        "imageViewer": "Image viewer",
+        "prevImage": "Previous image",
+        "nextImage": "Next image",
+        "openImage": "Open image {n} of {total} in full size",
+        "rights": "All rights reserved",
+        "photography": "Photography",
+        "base": "Base",
+        "tickets": "Tickets",
+        "soldOut": "Sold out",
+        "booked": "Booked",
+        "prevMonth": "Previous month",
+        "nextMonth": "Next month",
+        "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
+        "sending": "Sending …",
+        "formInvalid": "Please check the highlighted fields.",
+        "fName": "Your name",
+        "fEmail": "E-mail",
+        "fEvent": "Event / club",
+        "fCity": "City",
+        "fDate": "Date",
+        "fSetLength": "Set length",
+        "fMessage": "Message",
+        "fSetLengthHint": "e.g. 60 min",
+        "fHoneypot": "Leave empty",
+        "calShow": "Show"
+      }
+    },
+    "fr": {
+      "site": {
+        "title": "Sam Sparking — DJ et producteur hardstyle de Saint-Gall",
+        "description": "Sam Sparking est DJ et producteur hardstyle de Saint-Gall. Hardstyle euphorique et mélodique pour clubs, salles et festivals en Suisse et en Europe.",
+        "keywords": {
+          "0": "Sam Sparking",
+          "1": "DJ hardstyle",
+          "2": "Euphoric Hardstyle",
+          "3": "Melodic Hardstyle",
+          "4": "DJ Saint-Gall",
+          "5": "Hardstyle Suisse",
+          "6": "Booking DJ Suisse"
+        },
+        "ogTitle": "Sam Sparking — L'énergie devient euphorie",
+        "ogDescription": "DJ et producteur hardstyle de Saint-Gall. Des kicks puissants, des mélodies émotionnelles. Booking pour clubs et festivals en Suisse et en Europe.",
+        "claim": "L'énergie devient euphorie",
+        "photoCredit": "Sarto Photography"
+      },
+      "ticker": {
+        "items": {
+          "0": {
+            "text": "L'énergie",
+            "accent": "devient"
+          },
+          "1": {
+            "text": "pure",
+            "accent": "euphorie"
+          },
+          "2": {
+            "text": "Euphoric",
+            "accent": "Hardstyle"
+          },
+          "3": {
+            "text": "Melodic",
+            "accent": "Hardstyle"
+          },
+          "4": {
+            "text": "2026",
+            "accent": "Edition"
+          }
+        }
+      },
+      "pages": {
+        "0": {
+          "navLabel": "Accueil",
+          "title": "Accueil"
+        },
+        "1": {
+          "navLabel": "Dates",
+          "title": "Dates",
+          "seo": {
+            "title": "Dates & tournée — Sam Sparking",
+            "description": "Prochaines dates hardstyle et concerts passés de Sam Sparking — clubs et festivals en Suisse et en Europe."
+          }
+        },
+        "2": {
+          "navLabel": "Galerie",
+          "title": "Galerie",
+          "seo": {
+            "title": "Galerie — Sam Sparking en live",
+            "description": "Photos live de Sam Sparking aux platines — clubs et festivals, par Sarto Photography."
+          }
+        },
+        "3": {
+          "navLabel": "Booking",
+          "title": "Booking",
+          "seo": {
+            "title": "Booking — Sam Sparking, DJ hardstyle",
+            "description": "Réservez Sam Sparking pour votre club ou festival. Rider technique, presskit et formulaire de demande."
+          }
+        }
+      },
+      "sections": {
+        "about": {
+          "navLabel": "À propos",
+          "title": "À pro",
+          "titleAccent": "pos.",
+          "photo": {
+            "alt": "Portrait de Sam Sparking",
+            "credit": "Photo — Sarto Photography"
+          },
+          "lede": "Sam Sparking est un DJ et producteur de 19 ans, originaire de Saint-Gall. Son histoire a commencé bien avant qu'il ne se tienne derrière des platines.",
+          "paragraphs": {
+            "0": "Nourri de vidéos de festivals et plongé très tôt dans l'univers du hardstyle, c'est une vidéo de Defqon.1 qui lui a montré pour la première fois ce que la musique pouvait vraiment faire. L'énergie, l'atmosphère, le lien entre le DJ et le public — cela l'a saisi immédiatement et ne l'a plus lâché. À 15 ans, voir un DJ tenir un dancefloor entier a transformé la fascination en direction. Dès cet instant, produire et mixer n'était plus un projet parallèle, mais la seule voie qui avait du sens.",
+            "1": "Quatre ans plus tard, Sam affine son sound au quotidien, morceau après morceau. Inspiré par des artistes comme **Sound Rush**, **Sub Zero Project** et **Headhunterz**, il se concentre sur le hardstyle euphorique — des kicks puissants associés à des mélodies émotionnelles qui vous happent et ne vous lâchent plus.",
+            "2": "Le nom **Sparking** n'est pas un hasard. Il incarne une énergie constante, une tête pleine d'idées et un optimisme qui transparaît dans chaque production. Ses sets reposent sur l'émotion, la narration et l'énergie du public — ils créent des moments où la musique et la foule se rejoignent vraiment.",
+            "3": "Sa mission est simple : faire ressentir quelque chose de vrai. Cette décharge d'énergie positive, cette envie de réécouter immédiatement, ce sentiment irrésistible qui n'arrive que lorsque la musique est exactement juste."
+          },
+          "words": {
+            "0": "Émotionnel",
+            "1": "Puissant",
+            "2": "Euphorique"
+          },
+          "facts": {
+            "0": {
+              "label": "Premier set"
+            },
+            "1": {
+              "label": "Clubs & Festivals"
+            },
+            "2": {
+              "label": "BPM de référence"
+            }
+          }
+        },
+        "sound": {
+          "navLabel": "Sound",
+          "title": "Gen",
+          "titleAccent": "res.",
+          "note": "Des kicks puissants. Des mélodies émotionnelles. Des sets portés par la narration et l'énergie du public.",
+          "genres": {
+            "0": {
+              "meta": "Genre"
+            },
+            "1": {
+              "meta": "Genre"
+            }
+          },
+          "mixes": {
+            "0": {
+              "kicker": "Dernier mix",
+              "title": "Euphoric & Melodic Hardstyle — Recorded Set",
+              "text": "Une seule prise, sans raccourcis. De quoi sentir comment un set de Sam Sparking soulève une salle.",
+              "linkLabel": "Écouter sur Mixcloud"
+            }
+          }
+        },
+        "shows": {
+          "navLabel": "Dates",
+          "title": "Da",
+          "titleAccent": "tes.",
+          "emptyText": "Aucune date annoncée pour le moment. Les nouvelles dates apparaissent ici en premier — ou contacte-moi pour en réserver une.",
+          "pastLabel": "Déjà joué"
+        },
+        "references": {
+          "navLabel": "Références",
+          "title": "Réfé",
+          "titleAccent": "rences.",
+          "note": "Ton club ou festival, la prochaine fois ?",
+          "noteLinkLabel": "Contacte-moi →",
+          "items": {
+            "0": {
+              "city": "Saint-Gall"
+            },
+            "1": {
+              "city": "Zurich"
+            },
+            "2": {
+              "city": "Schaan, FL"
+            },
+            "3": {
+              "city": "Saint-Gall"
+            },
+            "4": {
+              "city": "Gossau"
+            },
+            "5": {
+              "city": "Saint-Gall"
+            },
+            "6": {
+              "city": "Saint-Gall"
+            }
+          }
+        },
+        "gallery": {
+          "navLabel": "Galerie",
+          "title": "Gal",
+          "titleAccent": "erie.",
+          "items": {
+            "0": {
+              "alt": "Sam Sparking en live — public les mains en l'air",
+              "credit": "Sarto Photography"
+            },
+            "1": {
+              "alt": "Sam Sparking aux CDJ",
+              "credit": "Sarto Photography"
+            },
+            "2": {
+              "alt": "Jeux de lumière pendant un set hardstyle",
+              "credit": "Sarto Photography"
+            },
+            "3": {
+              "alt": "Sam Sparking derrière la booth",
+              "credit": "Sarto Photography"
+            },
+            "4": {
+              "alt": "Le public à un show de Sam Sparking",
+              "credit": "Sarto Photography"
+            },
+            "5": {
+              "alt": "Portrait de Sam Sparking sur place",
+              "credit": "Sarto Photography"
+            },
+            "6": {
+              "alt": "Les mains en l'air sur le dancefloor",
+              "credit": "Sarto Photography"
+            },
+            "7": {
+              "alt": "Sam Sparking pendant son set",
+              "credit": "Sarto Photography"
+            },
+            "8": {
+              "alt": "Jeu de lumière au-dessus du dancefloor",
+              "credit": "Sarto Photography"
+            },
+            "9": {
+              "alt": "Sam Sparking sur scène",
+              "credit": "Sarto Photography"
+            },
+            "10": {
+              "alt": "Vue depuis la booth sur le public",
+              "credit": "Sarto Photography"
+            },
+            "11": {
+              "alt": "Dernier moment de la nuit",
+              "credit": "Sarto Photography"
+            }
+          }
+        },
+        "booking": {
+          "navLabel": "Booking",
+          "title": "Boo",
+          "titleAccent": "king.",
+          "availableKicker": "Disponible pour",
+          "available": {
+            "0": "Clubs & salles",
+            "1": "Festivals",
+            "2": "Suisse & Europe"
+          },
+          "presskitLabel": "Presskit (PDF)",
+          "form": {
+            "kicker": "Demande de booking",
+            "title": "Parle-moi de ton événement",
+            "successText": "Merci — ta demande est bien arrivée. Réponse sous 48 heures.",
+            "errorText": "Une erreur est survenue. Écris directement à info@samsparking.ch.",
+            "submitLabel": "Envoyer la demande"
+          },
+          "rider": {
+            "kicker": "Setup souhaité",
+            "groups": {
+              "0": {
+                "title": "CDJ — 4× requis",
+                "items": {
+                  "0": {
+                    "meta": "1er choix"
+                  },
+                  "1": {
+                    "meta": "2e choix"
+                  },
+                  "2": {
+                    "meta": "3e choix"
+                  }
+                }
+              },
+              "1": {
+                "title": "Mixer — l'un des suivants",
+                "items": {
+                  "0": {
+                    "meta": "1er choix"
+                  },
+                  "1": {
+                    "meta": "2e choix"
+                  },
+                  "2": {
+                    "meta": "3e choix"
+                  }
+                }
+              }
+            },
+            "note": "Merci de prévoir des retours booth avec réglage de volume indépendant — indispensable pour un cueing et un mix propres."
+          }
+        },
+        "contact": {
+          "navLabel": "Kontakt",
+          "title": "Kon",
+          "titleAccent": "takt.",
+          "kicker": "Booking & demandes",
+          "base": "Saint-Gall, Suisse",
+          "socials": {
+            "0": {
+              "label": "Mixcloud"
+            }
+          }
+        }
+      },
+      "ui": {
+        "skip": "Aller au contenu",
+        "menu": "Menu",
+        "close": "Fermer",
+        "scroll": "Défiler ↓",
+        "imageViewer": "Visionneuse",
+        "prevImage": "Image précédente",
+        "nextImage": "Image suivante",
+        "openImage": "Ouvrir l'image {n} sur {total} en grand",
+        "rights": "Tous droits réservés",
+        "photography": "Photographie",
+        "base": "Basé à",
+        "tickets": "Billets",
+        "soldOut": "Complet",
+        "booked": "Réservé",
+        "prevMonth": "Mois précédent",
+        "nextMonth": "Mois suivant",
+        "weekdays": "Lun,Mar,Mer,Jeu,Ven,Sam,Dim",
+        "sending": "Envoi …",
+        "formInvalid": "Merci de vérifier les champs signalés.",
+        "fName": "Ton nom",
+        "fEmail": "E-mail",
+        "fEvent": "Événement / club",
+        "fCity": "Ville",
+        "fDate": "Date",
+        "fSetLength": "Durée du set",
+        "fMessage": "Message",
+        "fSetLengthHint": "p. ex. 60 min",
+        "fHoneypot": "Laisser vide",
+        "calShow": "Date"
+      }
+    }
+  },
+  "i18nHash": {
+    "en": {
+      "site": {
+        "title": "20664a19",
+        "description": "d0740cdb",
+        "keywords": {
+          "0": "36ce3c27",
+          "1": "8b3cabbd",
+          "2": "c6bc04e0",
+          "3": "c8cca824",
+          "4": "c128157f",
+          "5": "63873374",
+          "6": "05803f01"
+        },
+        "ogTitle": "54d8aa54",
+        "ogDescription": "65f6072a",
+        "claim": "93bf7458",
+        "photoCredit": "c9b915c3"
+      },
+      "ticker": {
+        "items": {
+          "0": {
+            "text": "8cee7058",
+            "accent": "231cfca0"
+          },
+          "1": {
+            "text": "f459e32b",
+            "accent": "0e77ae68"
+          },
+          "2": {
+            "text": "1477b7da",
+            "accent": "e042e611"
+          },
+          "3": {
+            "text": "f58f1f7e",
+            "accent": "e042e611"
+          },
+          "4": {
+            "text": "40293d93",
+            "accent": "dc839411"
+          }
+        }
+      },
+      "pages": {
+        "0": {
+          "navLabel": "0ae8097f",
+          "title": "0ae8097f"
+        },
+        "1": {
+          "navLabel": "70e4b3fd",
+          "title": "70e4b3fd",
+          "seo": {
+            "title": "48a62c0b",
+            "description": "ca2b2d5b"
+          }
+        },
+        "2": {
+          "navLabel": "0909a4e2",
+          "title": "0909a4e2",
+          "seo": {
+            "title": "4d721182",
+            "description": "b4de1490"
+          }
+        },
+        "3": {
+          "navLabel": "12a938f0",
+          "title": "12a938f0",
+          "seo": {
+            "title": "ab6762c1",
+            "description": "b4aeba0a"
+          }
+        }
+      },
+      "sections": {
+        "about": {
+          "navLabel": "da793f81",
+          "title": "d38dce98",
+          "titleAccent": "42ebe702",
+          "photo": {
+            "alt": "66028355",
+            "credit": "87c8589f"
+          },
+          "lede": "a7a20632",
+          "paragraphs": {
+            "0": "bdb612ee",
+            "1": "28ba8aa8",
+            "2": "6a2cd96c",
+            "3": "34e44947"
+          },
+          "words": {
+            "0": "30d2f20f",
+            "1": "c5127c26",
+            "2": "824d46b9"
+          },
+          "facts": {
+            "0": {
+              "label": "b9911dfd"
+            },
+            "1": {
+              "label": "8172eb91"
+            },
+            "2": {
+              "label": "3116428f"
+            }
+          }
+        },
+        "sound": {
+          "navLabel": "b3ca9a34",
+          "title": "c0974eb5",
+          "titleAccent": "b4bce895",
+          "note": "657f25af",
+          "genres": {
+            "0": {
+              "meta": "1c27eb60"
+            },
+            "1": {
+              "meta": "1c27eb60"
+            }
+          },
+          "mixes": {
+            "0": {
+              "kicker": "0d6181ac",
+              "title": "2bd0b949",
+              "text": "37f8c03a",
+              "linkLabel": "b4d884d1"
+            }
+          }
+        },
+        "shows": {
+          "navLabel": "70e4b3fd",
+          "title": "3f025d7e",
+          "titleAccent": "505289f2",
+          "emptyText": "ace73a4a",
+          "pastLabel": "82a39ac6"
+        },
+        "references": {
+          "navLabel": "47c67c63",
+          "title": "4e18ba45",
+          "titleAccent": "3e87bbb7",
+          "note": "aaab869a",
+          "noteLinkLabel": "8eb5be3c",
+          "items": {
+            "0": {
+              "city": "0fcf8f7b"
+            },
+            "1": {
+              "city": "dc81153d"
+            },
+            "2": {
+              "city": "3e5d36c9"
+            },
+            "3": {
+              "city": "0fcf8f7b"
+            },
+            "4": {
+              "city": "fbd73a2f"
+            },
+            "5": {
+              "city": "0fcf8f7b"
+            },
+            "6": {
+              "city": "0fcf8f7b"
+            }
+          }
+        },
+        "gallery": {
+          "navLabel": "0909a4e2",
+          "title": "9ea1a68b",
+          "titleAccent": "e7f13642",
+          "items": {
+            "0": {
+              "alt": "f897cb19",
+              "credit": "c9b915c3"
+            },
+            "1": {
+              "alt": "b75c904b",
+              "credit": "c9b915c3"
+            },
+            "2": {
+              "alt": "0b17a6f0",
+              "credit": "c9b915c3"
+            },
+            "3": {
+              "alt": "ec8cf3e8",
+              "credit": "c9b915c3"
+            },
+            "4": {
+              "alt": "391a245e",
+              "credit": "c9b915c3"
+            },
+            "5": {
+              "alt": "79facd73",
+              "credit": "c9b915c3"
+            },
+            "6": {
+              "alt": "74f2c26c",
+              "credit": "c9b915c3"
+            },
+            "7": {
+              "alt": "8e235ded",
+              "credit": "c9b915c3"
+            },
+            "8": {
+              "alt": "2f2ddb24",
+              "credit": "c9b915c3"
+            },
+            "9": {
+              "alt": "b067b6b3",
+              "credit": "c9b915c3"
+            },
+            "10": {
+              "alt": "7f00ad2e",
+              "credit": "c9b915c3"
+            },
+            "11": {
+              "alt": "d49a29f8",
+              "credit": "c9b915c3"
+            }
+          }
+        },
+        "booking": {
+          "navLabel": "12a938f0",
+          "title": "e0cb9023",
+          "titleAccent": "454fdf68",
+          "availableKicker": "d18cf06a",
+          "available": {
+            "0": "adcfb620",
+            "1": "d5521852",
+            "2": "8acfb38e"
+          },
+          "presskitLabel": "d483ae75",
+          "form": {
+            "kicker": "d1e4240f",
+            "title": "d348396f",
+            "successText": "8f492a91",
+            "errorText": "aeba0726",
+            "submitLabel": "1d1affa2"
+          },
+          "rider": {
+            "kicker": "8db60d54",
+            "groups": {
+              "0": {
+                "title": "36aeb1fb",
+                "items": {
+                  "0": {
+                    "meta": "cc368ade"
+                  },
+                  "1": {
+                    "meta": "51938e13"
+                  },
+                  "2": {
+                    "meta": "ece0047c"
+                  }
+                }
+              },
+              "1": {
+                "title": "c80c1e91",
+                "items": {
+                  "0": {
+                    "meta": "cc368ade"
+                  },
+                  "1": {
+                    "meta": "51938e13"
+                  },
+                  "2": {
+                    "meta": "ece0047c"
+                  }
+                }
+              }
+            },
+            "note": "f2b4dc99"
+          }
+        },
+        "contact": {
+          "navLabel": "42ec9773",
+          "title": "dc0148c3",
+          "titleAccent": "0906d5b5",
+          "kicker": "01950b56",
+          "base": "502d2998",
+          "socials": {
+            "0": {
+              "label": "afc62f32"
+            }
+          }
+        }
+      },
+      "ui": {
+        "skip": "60ca65f1",
+        "menu": "79c6c5d5",
+        "close": "bcaac78c",
+        "scroll": "f0f24e3a",
+        "imageViewer": "6bb611ac",
+        "prevImage": "26f88184",
+        "nextImage": "9111dae8",
+        "openImage": "aa0990ee",
+        "rights": "88d76fa2",
+        "photography": "5764e2ef",
+        "base": "23e68742",
+        "tickets": "9241e6c2",
+        "soldOut": "0850a5d6",
+        "booked": "ea398231",
+        "prevMonth": "52cdb2cb",
+        "nextMonth": "030a3fd7",
+        "weekdays": "f01e28d7",
+        "sending": "18a10094",
+        "formInvalid": "033484de",
+        "fName": "010be134",
+        "fEmail": "b463dcd0",
+        "fEvent": "e1ed2f4e",
+        "fCity": "0ba89c70",
+        "fDate": "56f3988c",
+        "fSetLength": "bbc1fbd4",
+        "fMessage": "b8482d1b",
+        "fSetLengthHint": "ed33c8d7",
+        "fHoneypot": "faeb97f1",
+        "calShow": "12c12fbc"
+      }
+    },
+    "fr": {
+      "site": {
+        "title": "20664a19",
+        "description": "d0740cdb",
+        "keywords": {
+          "0": "36ce3c27",
+          "1": "8b3cabbd",
+          "2": "c6bc04e0",
+          "3": "c8cca824",
+          "4": "c128157f",
+          "5": "63873374",
+          "6": "05803f01"
+        },
+        "ogTitle": "54d8aa54",
+        "ogDescription": "65f6072a",
+        "claim": "93bf7458",
+        "photoCredit": "c9b915c3"
+      },
+      "ticker": {
+        "items": {
+          "0": {
+            "text": "8cee7058",
+            "accent": "231cfca0"
+          },
+          "1": {
+            "text": "f459e32b",
+            "accent": "0e77ae68"
+          },
+          "2": {
+            "text": "1477b7da",
+            "accent": "e042e611"
+          },
+          "3": {
+            "text": "f58f1f7e",
+            "accent": "e042e611"
+          },
+          "4": {
+            "text": "40293d93",
+            "accent": "dc839411"
+          }
+        }
+      },
+      "pages": {
+        "0": {
+          "navLabel": "0ae8097f",
+          "title": "0ae8097f"
+        },
+        "1": {
+          "navLabel": "70e4b3fd",
+          "title": "70e4b3fd",
+          "seo": {
+            "title": "48a62c0b",
+            "description": "ca2b2d5b"
+          }
+        },
+        "2": {
+          "navLabel": "0909a4e2",
+          "title": "0909a4e2",
+          "seo": {
+            "title": "4d721182",
+            "description": "b4de1490"
+          }
+        },
+        "3": {
+          "navLabel": "12a938f0",
+          "title": "12a938f0",
+          "seo": {
+            "title": "ab6762c1",
+            "description": "b4aeba0a"
+          }
+        }
+      },
+      "sections": {
+        "about": {
+          "navLabel": "da793f81",
+          "title": "d38dce98",
+          "titleAccent": "42ebe702",
+          "photo": {
+            "alt": "66028355",
+            "credit": "87c8589f"
+          },
+          "lede": "a7a20632",
+          "paragraphs": {
+            "0": "bdb612ee",
+            "1": "28ba8aa8",
+            "2": "6a2cd96c",
+            "3": "34e44947"
+          },
+          "words": {
+            "0": "30d2f20f",
+            "1": "c5127c26",
+            "2": "824d46b9"
+          },
+          "facts": {
+            "0": {
+              "label": "b9911dfd"
+            },
+            "1": {
+              "label": "8172eb91"
+            },
+            "2": {
+              "label": "3116428f"
+            }
+          }
+        },
+        "sound": {
+          "navLabel": "b3ca9a34",
+          "title": "c0974eb5",
+          "titleAccent": "b4bce895",
+          "note": "657f25af",
+          "genres": {
+            "0": {
+              "meta": "1c27eb60"
+            },
+            "1": {
+              "meta": "1c27eb60"
+            }
+          },
+          "mixes": {
+            "0": {
+              "kicker": "0d6181ac",
+              "title": "2bd0b949",
+              "text": "37f8c03a",
+              "linkLabel": "b4d884d1"
+            }
+          }
+        },
+        "shows": {
+          "navLabel": "70e4b3fd",
+          "title": "3f025d7e",
+          "titleAccent": "505289f2",
+          "emptyText": "ace73a4a",
+          "pastLabel": "82a39ac6"
+        },
+        "references": {
+          "navLabel": "47c67c63",
+          "title": "4e18ba45",
+          "titleAccent": "3e87bbb7",
+          "note": "aaab869a",
+          "noteLinkLabel": "8eb5be3c",
+          "items": {
+            "0": {
+              "city": "0fcf8f7b"
+            },
+            "1": {
+              "city": "dc81153d"
+            },
+            "2": {
+              "city": "3e5d36c9"
+            },
+            "3": {
+              "city": "0fcf8f7b"
+            },
+            "4": {
+              "city": "fbd73a2f"
+            },
+            "5": {
+              "city": "0fcf8f7b"
+            },
+            "6": {
+              "city": "0fcf8f7b"
+            }
+          }
+        },
+        "gallery": {
+          "navLabel": "0909a4e2",
+          "title": "9ea1a68b",
+          "titleAccent": "e7f13642",
+          "items": {
+            "0": {
+              "alt": "f897cb19",
+              "credit": "c9b915c3"
+            },
+            "1": {
+              "alt": "b75c904b",
+              "credit": "c9b915c3"
+            },
+            "2": {
+              "alt": "0b17a6f0",
+              "credit": "c9b915c3"
+            },
+            "3": {
+              "alt": "ec8cf3e8",
+              "credit": "c9b915c3"
+            },
+            "4": {
+              "alt": "391a245e",
+              "credit": "c9b915c3"
+            },
+            "5": {
+              "alt": "79facd73",
+              "credit": "c9b915c3"
+            },
+            "6": {
+              "alt": "74f2c26c",
+              "credit": "c9b915c3"
+            },
+            "7": {
+              "alt": "8e235ded",
+              "credit": "c9b915c3"
+            },
+            "8": {
+              "alt": "2f2ddb24",
+              "credit": "c9b915c3"
+            },
+            "9": {
+              "alt": "b067b6b3",
+              "credit": "c9b915c3"
+            },
+            "10": {
+              "alt": "7f00ad2e",
+              "credit": "c9b915c3"
+            },
+            "11": {
+              "alt": "d49a29f8",
+              "credit": "c9b915c3"
+            }
+          }
+        },
+        "booking": {
+          "navLabel": "12a938f0",
+          "title": "e0cb9023",
+          "titleAccent": "454fdf68",
+          "availableKicker": "d18cf06a",
+          "available": {
+            "0": "adcfb620",
+            "1": "d5521852",
+            "2": "8acfb38e"
+          },
+          "presskitLabel": "d483ae75",
+          "form": {
+            "kicker": "d1e4240f",
+            "title": "d348396f",
+            "successText": "8f492a91",
+            "errorText": "aeba0726",
+            "submitLabel": "1d1affa2"
+          },
+          "rider": {
+            "kicker": "8db60d54",
+            "groups": {
+              "0": {
+                "title": "36aeb1fb",
+                "items": {
+                  "0": {
+                    "meta": "cc368ade"
+                  },
+                  "1": {
+                    "meta": "51938e13"
+                  },
+                  "2": {
+                    "meta": "ece0047c"
+                  }
+                }
+              },
+              "1": {
+                "title": "c80c1e91",
+                "items": {
+                  "0": {
+                    "meta": "cc368ade"
+                  },
+                  "1": {
+                    "meta": "51938e13"
+                  },
+                  "2": {
+                    "meta": "ece0047c"
+                  }
+                }
+              }
+            },
+            "note": "f2b4dc99"
+          }
+        },
+        "contact": {
+          "navLabel": "42ec9773",
+          "title": "dc0148c3",
+          "titleAccent": "0906d5b5",
+          "kicker": "01950b56",
+          "base": "502d2998",
+          "socials": {
+            "0": {
+              "label": "afc62f32"
+            }
+          }
+        }
+      },
+      "ui": {
+        "skip": "60ca65f1",
+        "menu": "79c6c5d5",
+        "close": "bcaac78c",
+        "scroll": "f0f24e3a",
+        "imageViewer": "6bb611ac",
+        "prevImage": "26f88184",
+        "nextImage": "9111dae8",
+        "openImage": "aa0990ee",
+        "rights": "88d76fa2",
+        "photography": "5764e2ef",
+        "base": "23e68742",
+        "tickets": "9241e6c2",
+        "soldOut": "0850a5d6",
+        "booked": "ea398231",
+        "prevMonth": "52cdb2cb",
+        "nextMonth": "030a3fd7",
+        "weekdays": "f01e28d7",
+        "sending": "18a10094",
+        "formInvalid": "033484de",
+        "fName": "010be134",
+        "fEmail": "b463dcd0",
+        "fEvent": "e1ed2f4e",
+        "fCity": "0ba89c70",
+        "fDate": "56f3988c",
+        "fSetLength": "bbc1fbd4",
+        "fMessage": "b8482d1b",
+        "fSetLengthHint": "ed33c8d7",
+        "fHoneypot": "faeb97f1",
+        "calShow": "12c12fbc"
+      }
     }
   }
 }

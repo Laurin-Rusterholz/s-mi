@@ -11,9 +11,11 @@
   var burger = document.getElementById("burger");
   var nav = document.getElementById("nav");
   if (burger && nav) {
+    var openLabel = burger.getAttribute("data-open") || "Menü";
+    var closeLabel = burger.getAttribute("data-close") || "Schliessen";
     var setNav = function (open) {
       nav.classList.toggle("open", open);
-      burger.textContent = open ? "Close" : "Menu";
+      burger.textContent = open ? closeLabel : openLabel;
       burger.setAttribute("aria-expanded", open ? "true" : "false");
       document.body.style.overflow = open ? "hidden" : "";
     };
@@ -263,7 +265,9 @@
     }
 
     if (shows.length) {
-      var lang = document.documentElement.lang || "en";
+      var lang = document.documentElement.lang || "de";
+      var weekdays = (calBox.getAttribute("data-weekdays") || "Mo,Di,Mi,Do,Fr,Sa,So").split(",");
+      var bookedLabel = calBox.getAttribute("data-booked") || "Gebucht";
       var grid = document.getElementById("cal-grid");
       var monthLabel = document.getElementById("cal-month");
       var byDate = {};
@@ -280,8 +284,6 @@
       var month = start.getUTCMonth();
 
       var pad = function (n) { return String(n).padStart(2, "0"); };
-      var weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
-      if (lang === "de") weekdays = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
       function draw() {
         var first = new Date(Date.UTC(year, month, 1));
@@ -305,10 +307,15 @@
           var classes = "cal-day";
           if (iso === todayStr) classes += " today";
           if (iso < todayStr) classes += " past";
-          if (list) classes += " has-show";
+          if (list) {
+            classes += " has-show";
+            if (list.some(function (x) { return x.status === "booked"; })) classes += " booked";
+            if (list.every(function (x) { return x.status === "soldout"; })) classes += " soldout";
+          }
           if (list) {
             var s = list[0];
             var label = [s.name, s.city].filter(Boolean).join(", ");
+            if (s.status === "booked") label += " · " + bookedLabel;
             var inner =
               '<b>' + day + "</b><span class=\"cal-dot\"></span>" +
               '<span class="cal-tip">' + escapeHtml(label) +
@@ -363,6 +370,8 @@
   var form = document.getElementById("booking-form");
   if (form) {
     var endpoint = form.getAttribute("data-endpoint");
+    var sendingText = form.getAttribute("data-sending") || "…";
+    var invalidText = form.getAttribute("data-invalid") || "";
     var msg = form.querySelector(".bform-msg");
     var opened = Date.now();
 
@@ -391,7 +400,7 @@
         if (!ok && !bad) bad = f;
       });
       if (bad) {
-        setMsg("Please check the highlighted fields.", "err");
+        setMsg(invalidText, "err");
         bad.focus();
         return;
       }
@@ -409,7 +418,7 @@
       data.source = location.hostname || "website";
 
       form.classList.add("busy");
-      setMsg("Sending …", "");
+      setMsg(sendingText, "");
 
       fetch(endpoint, {
         method: "POST",

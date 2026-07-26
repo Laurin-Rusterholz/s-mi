@@ -264,6 +264,7 @@ function renderSound(n, s) {
 
 function showRow(sh, idx) {
   const date = isoDate(sh.date);
+  const booked = sh.status === "booked";
   const d = date ? new Date(date + "T12:00:00Z") : null;
   const day = d ? String(d.getUTCDate()).padStart(2, "0") : "";
   const month = d
@@ -271,8 +272,8 @@ function showRow(sh, idx) {
     : "";
   const year = d ? d.getUTCFullYear() : "";
   const soldOut = sh.status === "soldout";
-  const label = soldOut ? "Sold out" : str(sh.ticketLabel, "Tickets");
-  return `<li class="show${soldOut ? " soldout" : ""}"${date ? ` data-date="${esc(date)}"` : ""}>
+  const label = soldOut ? UI.soldOut : booked ? UI.booked : str(sh.ticketLabel, UI.tickets);
+  return `<li class="show${soldOut ? " soldout" : ""}${booked ? " booked" : ""}"${date ? ` data-date="${esc(date)}"` : ""}>
           <span class="show-date"><b>${esc(day)}</b><span class="mono">${esc(month)} ${esc(
     year
   )}</span></span>
@@ -284,11 +285,11 @@ function showRow(sh, idx) {
               .join(" · ")}</span>
           </span>
           <span class="show-cta">${
-            safeUrl(sh.ticketUrl) && !soldOut
+            safeUrl(sh.ticketUrl) && !soldOut && !booked
               ? `<a class="btn btn-sm" href="${href(
                   sh.ticketUrl
                 )}" target="_blank" rel="noopener">${esc(label)}</a>`
-              : `<span class="mono">${esc(soldOut ? label : "")}</span>`
+              : `<span class="mono">${esc(soldOut || booked ? label : "")}</span>`
           }</span>
         </li>`;
 }
@@ -308,17 +309,22 @@ function renderShows(n, s) {
   const calendar =
     str(s.view, "calendar") !== "list" && items.length
       ? `
-      <div class="cal rv" id="shows-calendar" hidden>
+      <div class="cal rv" id="shows-calendar" data-weekdays="${esc(UI.weekdays)}" data-booked="${esc(UI.booked)}" hidden>
         <div class="cal-head">
           <button type="button" class="cal-nav" data-cal="prev" aria-label="${esc(
-            str(s.prevLabel, "Previous month")
+            str(s.prevLabel, UI.prevMonth)
           )}">‹</button>
           <strong class="cal-month" id="cal-month"></strong>
           <button type="button" class="cal-nav" data-cal="next" aria-label="${esc(
-            str(s.nextLabel, "Next month")
+            str(s.nextLabel, UI.nextMonth)
           )}">›</button>
         </div>
         <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
+        <p class="cal-legend">
+          <span class="lg lg-show">${esc(UI.calShow)}</span>
+          <span class="lg lg-booked">${esc(UI.booked)}</span>
+          <span class="lg lg-soldout">${esc(UI.soldOut)}</span>
+        </p>
       </div>`
       : "";
 
@@ -395,7 +401,9 @@ function renderGallery(n, s) {
     }
     const idx = photos.indexOf(g) + 1;
     return `<figure>
-          <button type="button" class="gal-btn" aria-label="Open image ${idx} of ${photos.length} in full size">
+          <button type="button" class="gal-btn" aria-label="${esc(
+            UI.openImage.replace("{n}", idx).replace("{total}", photos.length)
+          )}">
             ${picture(g, { sizes: "(max-width:700px) 100vw, 33vw" })}
             ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
           </button>
@@ -466,34 +474,34 @@ function renderBooking(n, s, site) {
           ? `
       <form class="bform rv" id="booking-form" data-endpoint="${href(
         site.bookingApi
-      )}" novalidate>
+      )}" data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}" novalidate>
         <div class="bform-head">
           <span class="mono">${esc(str(f.kicker, "Booking request"))}</span>
           <h3>${esc(str(f.title, "Tell me about your event"))}</h3>
         </div>
         <div class="bform-grid">
-          <label>Your name <span aria-hidden="true">*</span>
+          <label>${esc(UI.fName)} <span aria-hidden="true">*</span>
             <input name="name" type="text" required maxlength="120" autocomplete="name">
           </label>
-          <label>E-mail <span aria-hidden="true">*</span>
+          <label>${esc(UI.fEmail)} <span aria-hidden="true">*</span>
             <input name="email" type="email" required maxlength="160" autocomplete="email">
           </label>
-          <label>Event / club
+          <label>${esc(UI.fEvent)}
             <input name="event" type="text" maxlength="160">
           </label>
-          <label>City
+          <label>${esc(UI.fCity)}
             <input name="city" type="text" maxlength="120">
           </label>
-          <label>Date
+          <label>${esc(UI.fDate)}
             <input name="date" type="date">
           </label>
-          <label>Set length
-            <input name="setLength" type="text" maxlength="60" placeholder="e.g. 60 min">
+          <label>${esc(UI.fSetLength)}
+            <input name="setLength" type="text" maxlength="60" placeholder="${esc(UI.fSetLengthHint)}">
           </label>
-          <label class="span-2">Message
+          <label class="span-2">${esc(UI.fMessage)}
             <textarea name="message" rows="4" maxlength="4000"></textarea>
           </label>
-          <label class="hp" aria-hidden="true" tabindex="-1">Leave empty
+          <label class="hp" aria-hidden="true" tabindex="-1">${esc(UI.fHoneypot)}
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
         </div>
@@ -528,7 +536,7 @@ function renderContact(n, s) {
         <div class="contact-meta">
           ${
             str(s.phone)
-              ? `<div><span class="mono">Phone</span><a href="tel:${esc(
+              ? `<div><span class="mono">${esc(UI.phone)}</span><a href="tel:${esc(
                   s.phone.replace(/[^\d+]/g, "")
                 )}">${esc(s.phone)}</a></div>`
               : ""
@@ -544,7 +552,7 @@ function renderContact(n, s) {
             .join("\n          ")}
           ${
             str(s.base)
-              ? `<div><span class="mono">Base</span><span>${esc(s.base)}</span></div>`
+              ? `<div><span class="mono">${esc(UI.base)}</span><span>${esc(s.base)}</span></div>`
               : ""
           }
         </div>
@@ -659,6 +667,155 @@ function structuredData(c, sections, page, pages) {
 
 /* ------------------------------------------------------------- dokument */
 
+/* --------------------------------------------------------------- oberfläche
+   Kurztexte der Oberfläche. Sie stehen im Inhalt (also übersetzbar); fehlt
+   einer, greift der deutsche Vorgabewert. */
+const UI_DEFAULTS = {
+  skip: "Zum Inhalt springen",
+  menu: "Menü",
+  close: "Schliessen",
+  scroll: "Scrollen ↓",
+  imageViewer: "Bildansicht",
+  prevImage: "Vorheriges Bild",
+  nextImage: "Nächstes Bild",
+  openImage: "Bild {n} von {total} gross öffnen",
+  rights: "Alle Rechte vorbehalten",
+  photography: "Fotografie",
+  phone: "Telefon",
+  base: "Standort",
+  tickets: "Tickets",
+  soldOut: "Ausverkauft",
+  booked: "Gebucht",
+  calShow: "Termin",
+  prevMonth: "Vorheriger Monat",
+  nextMonth: "Nächster Monat",
+  weekdays: "Mo,Di,Mi,Do,Fr,Sa,So",
+  sending: "Wird gesendet …",
+  formInvalid: "Bitte die markierten Felder prüfen.",
+  fName: "Dein Name",
+  fEmail: "E-Mail",
+  fEvent: "Event / Club",
+  fCity: "Ort",
+  fDate: "Datum",
+  fSetLength: "Set-Länge",
+  fSetLengthHint: "z. B. 60 Min.",
+  fMessage: "Nachricht",
+  fHoneypot: "Bitte leer lassen",
+};
+
+/* Die gerade gültigen Oberflächentexte — von renderPage je Sprache gesetzt. */
+let UI = { ...UI_DEFAULTS };
+
+/* ------------------------------------------------------------------- i18n */
+
+/**
+ * Mehrsprachigkeit: Deutsch ist der gepflegte Stand ("Master"), Englisch und
+ * Französisch liegen als flache Übersetzungstabelle daneben —
+ * i18n.en["sections.about.lede"] = "…".
+ *
+ * Vor dem Rendern wird der ganze Inhaltsbaum einmal in die Zielsprache
+ * übersetzt (localize). Dadurch bleiben alle Bausteine unverändert; fehlt eine
+ * Übersetzung, steht dort der deutsche Text — nie eine Lücke.
+ */
+
+/** Felder, die nie übersetzt werden (Technik, Adressen, Zahlen). */
+const NO_TRANSLATE = new Set([
+  "src", "poster", "url", "ticketUrl", "linkUrl", "embedUrl", "presskitUrl",
+  "ogImage", "domain", "bookingApi", "themeColor", "accentColor", "lang",
+  "slug", "date", "status", "email", "phone", "country", "createdAt",
+  "updatedAt", "updatedBy", "schemaVersion", "type", "view", "hero",
+  "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
+  // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
+  "name", "venue", "inquiryId",
+]);
+
+const looksTechnical = (v) =>
+  /^(https?:|mailto:|tel:|#|\/)/i.test(v) ||
+  /^#[0-9a-f]{3,8}$/i.test(v) ||
+  /^\d{4}-\d{2}-\d{2}$/.test(v);
+
+/** Pfade, die technische Schlüssel enthalten (Abschnitts-Namen, keine Texte). */
+const NO_TRANSLATE_PATH = /^layout\.|^pages\.\d+\.sections\./;
+
+/** Alle übersetzbaren Textstellen als [pfad, text]. */
+export function collectStrings(node, prefix = "", out = []) {
+  if (prefix && NO_TRANSLATE_PATH.test(prefix)) return out;
+  if (Array.isArray(node)) {
+    node.forEach((v, i) => collectStrings(v, `${prefix}.${i}`, out));
+    return out;
+  }
+  if (node && typeof node === "object") {
+    for (const [k, v] of Object.entries(node)) {
+      if (NO_TRANSLATE.has(k) || k === "i18n" || k === "i18nHash") continue;
+      collectStrings(v, prefix ? `${prefix}.${k}` : k, out);
+    }
+    return out;
+  }
+  if (typeof node === "string" && node.trim() && !looksTechnical(node)) {
+    out.push([prefix, node]);
+  }
+  return out;
+}
+
+function setDeep(obj, path, value) {
+  const keys = path.split(".");
+  let cur = obj;
+  for (let i = 0; i < keys.length - 1; i++) {
+    if (cur == null || typeof cur !== "object") return;
+    cur = cur[keys[i]];
+  }
+  if (cur && typeof cur === "object") cur[keys[keys.length - 1]] = value;
+}
+
+/**
+ * Übersetzungstabelle einer Sprache flach machen.
+ *
+ * Zwei Schreibweisen sind erlaubt und ergeben dasselbe:
+ *   flach     i18n.en["sections.about.lede"] = "…"
+ *   verschach i18n.en.sections.about.lede    = "…"
+ *
+ * Die Verwaltung schreibt die verschachtelte Form, weil Schlüssel in der
+ * Realtime Database keine Punkte enthalten dürfen. Von Hand gepflegte
+ * Dateien dürfen weiter Punkt-Pfade verwenden.
+ */
+export function flattenI18n(node, prefix = "", out = {}) {
+  if (!node || typeof node !== "object") return out;
+  for (const [k, v] of Object.entries(node)) {
+    const path = prefix ? `${prefix}.${k}` : k;
+    if (v && typeof v === "object") flattenI18n(v, path, out);
+    else if (typeof v === "string") out[path] = v;
+  }
+  return out;
+}
+
+/** Inhalt in eine Sprache übersetzen. Fehlende Stellen bleiben deutsch. */
+function localize(content, lang) {
+  const master = String(content.site?.lang || "de");
+  if (lang === master) return content;
+  const table = flattenI18n((content.i18n && content.i18n[lang]) || {});
+  const copy = JSON.parse(JSON.stringify(content));
+  for (const [path, value] of Object.entries(table)) {
+    if (typeof value === "string" && value.trim()) setDeep(copy, path, value);
+  }
+  copy.site.lang = lang;
+  return copy;
+}
+
+/** Welche Sprachen gebaut werden. Erste ist die Hauptsprache. */
+function languagesOf(c) {
+  const master = String(c.site?.lang || "de");
+  const extra = list(c.site?.languages)
+    .map((l) => String(l).toLowerCase())
+    .filter((l) => /^[a-z]{2}$/.test(l) && l !== master);
+  return [master, ...new Set(extra)];
+}
+
+/** Präfix einer Sprache: Hauptsprache ohne, andere mit /en, /fr */
+const langPrefix = (lang, master) => (lang === master ? "" : `/${lang}`);
+
+const LANG_NAMES = { de: "Deutsch", en: "English", fr: "Français" };
+const OG_LOCALE = { de: "de_CH", en: "en_US", fr: "fr_CH" };
+
 /* ------------------------------------------------------------------ seiten */
 
 /**
@@ -718,12 +875,13 @@ const slugify = (v) =>
     .replace(/^[-/]+|[-/]+$/g, "")
     .slice(0, 60);
 
-/** Adresse einer Seite: "" → "/", "shows" → "/shows/" */
-const pagePath = (slug) => (slug ? `/${slug}/` : "/");
+/* Welche Seite und welche Sprache gerade gebaut werden — damit Sprungmarken
+   wie #booking auch dann ankommen, wenn der Abschnitt inzwischen auf einer
+   anderen Seite liegt, und damit Links in der Sprache bleiben. */
+let CTX = { page: null, pages: [], prefix: "" };
 
-/* Welche Seite wird gerade gebaut — damit Sprungmarken wie #booking auch dann
-   ankommen, wenn der Abschnitt inzwischen auf einer anderen Seite liegt. */
-let CTX = { page: null, pages: [] };
+/** Adresse einer Seite in der aktuellen Sprache: "/", "/shows/", "/en/shows/" */
+const pagePath = (slug) => `${CTX.prefix}${slug ? `/${slug}/` : "/"}`;
 
 /**
  * Verweis auf einen Abschnitt: auf derselben Seite ein Anker, sonst der Link
@@ -755,8 +913,11 @@ function rooted(url) {
 
 /* --------------------------------------------------------------- dokument */
 
-function renderPage(c, page, pages) {
-  CTX = { page, pages, hideHead: null };
+function renderPage(c, page, pages, lang, langs) {
+  const master = langs[0];
+  UI = { ...UI_DEFAULTS, ...(c.ui || {}) };
+  const ui = UI;
+  CTX = { page, pages, hideHead: null, prefix: langPrefix(lang, master) };
   const site = c.site;
   const base = site.domain.replace(/\/+$/, "");
   const sections = c.sections || {};
@@ -879,7 +1040,7 @@ function renderPage(c, page, pages) {
         }
       </div>
     </div>
-    <a class="hero-scroll mono" href="#${esc(order[0] || "top")}" aria-hidden="true" tabindex="-1">Scroll ↓</a>
+    <a class="hero-scroll mono" href="#${esc(order[0] || "top")}" aria-hidden="true" tabindex="-1">${esc(ui.scroll)}</a>
   </section>`;
 
   const heroPreload = (() => {
@@ -925,6 +1086,17 @@ function renderPage(c, page, pages) {
   <meta name="description" content="${esc(description)}">
   <meta name="keywords" content="${esc(list(site.keywords).join(", "))}">
   <link rel="canonical" href="${esc(url)}">
+${langs
+  .map(
+    (l) =>
+      `  <link rel="alternate" hreflang="${esc(l)}" href="${esc(
+        base + langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
+      )}">`
+  )
+  .join("\n")}
+  <link rel="alternate" hreflang="x-default" href="${esc(
+    base + (page.slug ? `/${page.slug}/` : "/")
+  )}">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta name="author" content="${esc(site.artist)}">
 
@@ -938,7 +1110,7 @@ function renderPage(c, page, pages) {
   )}">
   <meta property="og:image" content="${esc(ogImage)}">
   <meta property="og:image:alt" content="${esc(c.hero?.media?.alt || site.artist)}">
-  <meta property="og:locale" content="${esc((site.lang || "en") === "de" ? "de_CH" : "en_US")}">
+  <meta property="og:locale" content="${esc(OG_LOCALE[lang] || "de_CH")}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${esc(isHome ? str(site.ogTitle, title) : title)}">
   <meta name="twitter:description" content="${esc(
@@ -966,37 +1138,53 @@ ${heroPreload}
   <style>:root{--ink:${ink};--spark:${accent};}</style>
 </head>
 <body data-page="${esc(page.slug || "home")}">
-  <a class="skip" href="#${esc(order[0] || "top")}">Skip to content</a>
+  <a class="skip" href="#${esc(order[0] || "top")}">${esc(ui.skip)}</a>
   <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header>
     <a class="logo" href="/">${esc(str(site.logoText, site.artist))}</a>
-    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav">Menu</button>
+    <button class="burger" id="burger" aria-label="${esc(ui.menu)}" aria-expanded="false" aria-controls="nav" data-open="${esc(ui.menu)}" data-close="${esc(ui.close)}">${esc(ui.menu)}</button>
     <nav id="nav">
       <ul>
           ${nav}
       </ul>
+      ${
+        langs.length > 1
+          ? `<div class="langs" role="group" aria-label="Sprache">
+        ${langs
+          .map(
+            (l) =>
+              `<a href="${esc(
+                langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
+              )}" lang="${esc(l)}"${l === lang ? ' aria-current="true"' : ""}>${esc(
+                l.toUpperCase()
+              )}</a>`
+          )
+          .join("")}
+      </div>`
+          : ""
+      }
     </nav>
   </header>
 ${hero}${tickerBlock}${subNav}
 ${body}
 
-  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
-    <button class="lb-close" id="lb-close" aria-label="Close">✕</button>
-    <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous image">‹</button>
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="${esc(ui.imageViewer)}" hidden>
+    <button class="lb-close" id="lb-close" aria-label="${esc(ui.close)}">✕</button>
+    <button class="lb-nav lb-prev" id="lb-prev" aria-label="${esc(ui.prevImage)}">‹</button>
     <figure class="lb-fig"><img id="lb-img" src="" alt=""><figcaption id="lb-cap" class="mono"></figcaption></figure>
-    <button class="lb-nav lb-next" id="lb-next" aria-label="Next image">›</button>
+    <button class="lb-nav lb-next" id="lb-next" aria-label="${esc(ui.nextImage)}">›</button>
   </div>
 
   <footer>
     <div class="wrap foot">
       <span class="mono">© <span id="yr">${today().slice(0, 4)}</span> ${esc(
     site.artist
-  )} — All rights reserved</span>
+  )} — ${esc(ui.rights)}</span>
       ${site.claim ? `<span class="claim">${esc(site.claim)}</span>` : ""}
       ${
         site.photoCredit
-          ? `<span class="mono">Photography — ${esc(site.photoCredit)}</span>`
+          ? `<span class="mono">${esc(ui.photography)} — ${esc(site.photoCredit)}</span>`
           : ""
       }
     </div>
@@ -1010,20 +1198,33 @@ ${showsData}
 
 /* ------------------------------------------------------------------ main */
 
-function renderSitemap(c, pages) {
+function renderSitemap(c, pages, langs) {
   const base = c.site.domain.replace(/\/+$/, "");
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages
-  .map(
-    (p) => `  <url>
-    <loc>${esc(base)}${esc(pagePath(p.slug))}</loc>
+  const master = langs[0];
+  const rows = [];
+  for (const lang of langs) {
+    for (const p of pages) {
+      const path = langPrefix(lang, master) + (p.slug ? `/${p.slug}/` : "/");
+      const alts = langs
+        .map(
+          (l) =>
+            `      <xhtml:link rel="alternate" hreflang="${esc(l)}" href="${esc(
+              base + langPrefix(l, master) + (p.slug ? `/${p.slug}/` : "/")
+            )}"/>`
+        )
+        .join("\n");
+      rows.push(`  <url>
+    <loc>${esc(base)}${esc(path)}</loc>
+${alts}
     <lastmod>${today()}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${p.slug ? "0.8" : "1.0"}</priority>
-  </url>`
-  )
-  .join("\n")}
+    <priority>${!p.slug && lang === master ? "1.0" : "0.8"}</priority>
+  </url>`);
+    }
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${rows.join("\n")}
 </urlset>
 `;
 }
@@ -1044,31 +1245,38 @@ async function main() {
   }
   await mkdir(resolve(ROOT, "content"), { recursive: true });
 
+  const langs = languagesOf(content);
+  const master = langs[0];
   const pages = pagesOf(content);
+  const written = [];
 
-  // Seiten schreiben: Start nach index.html, alle anderen nach <slug>/index.html
-  for (const page of pages) {
-    const rel = page.slug ? `${page.slug}/index.html` : "index.html";
-    const file = resolve(ROOT, rel);
-    await mkdir(dirname(file), { recursive: true });
-    const html = renderPage(content, page, pages);
-    await writeFile(file, html);
-    console.log(
-      `[build] ${rel.padEnd(28)} ${(html.length / 1024).toFixed(1).padStart(5)} kB  ` +
-        `(${page.sections.join(", ") || "keine Abschnitte"})`
-    );
+  for (const lang of langs) {
+    const localized = localize(content, lang);
+    const localizedPages = pagesOf(localized);
+    for (const page of localizedPages) {
+      const dir = [lang === master ? "" : lang, page.slug].filter(Boolean).join("/");
+      const rel = dir ? `${dir}/index.html` : "index.html";
+      const file = resolve(ROOT, rel);
+      await mkdir(dirname(file), { recursive: true });
+      const html = renderPage(localized, page, localizedPages, lang, langs);
+      await writeFile(file, html);
+      written.push(rel);
+      console.log(
+        `[build] ${rel.padEnd(30)} ${(html.length / 1024).toFixed(1).padStart(5)} kB  ` +
+          `(${page.sections.join(", ") || "keine Abschnitte"})`
+      );
+    }
   }
 
-  await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages));
+  await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages, langs));
   await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));
   console.log("[build] sitemap.xml, robots.txt");
 
   // Verzeichnisse aufräumen, die zu keiner Seite mehr gehören
-  const wanted = new Set(pages.filter((p) => p.slug).map((p) => p.slug.split("/")[0]));
+  const wanted = new Set(written.map((r) => r.split("/")[0]).filter((d) => d !== "index.html"));
   for (const entry of await readdir(ROOT, { withFileTypes: true })) {
     if (!entry.isDirectory() || KEEP_DIRS.has(entry.name) || entry.name.startsWith(".")) continue;
     if (wanted.has(entry.name)) continue;
-    // Nur entfernen, was eindeutig eine generierte Seite ist
     if (existsSync(resolve(ROOT, entry.name, "index.html"))) {
       await rm(resolve(ROOT, entry.name), { recursive: true, force: true });
       console.log(`[build] entfernt: ${entry.name}/ (keine Seite mehr)`);
@@ -1077,9 +1285,19 @@ async function main() {
 
   const shows = list(content.sections?.shows?.items).length;
   const gal = list(content.sections?.gallery?.items).length;
+  const missing = langs
+    .slice(1)
+    .map((l) => {
+      const have = Object.keys(flattenI18n((content.i18n && content.i18n[l]) || {})).length;
+      const total = collectStrings(content).length;
+      return `${l}: ${have}/${total}`;
+    })
+    .join(", ");
   console.log(
-    `[build] fertig — ${pages.length} Seite(n), ${shows} Show(s), ${gal} Galeriebild(er)`
+    `[build] fertig — ${langs.length} Sprache(n) (${langs.join(", ")}), ` +
+      `${pages.length} Seite(n) je Sprache, ${shows} Show(s), ${gal} Galeriebild(er)`
   );
+  if (missing) console.log(`[build] Übersetzungen: ${missing}`);
 }
 
 main().catch((err) => {
