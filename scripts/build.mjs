@@ -322,7 +322,7 @@ function heroMedia(hero, site) {
   if (m.type === "video" && safeUrl(m.src)) {
     const posterSrc = safeUrl(m.poster) || safeUrl(site?.ogImage) || safeUrl(site?.backgroundImage);
     const poster = posterSrc ? esc(cdnUrl(posterSrc, 1600)) : "";
-    return `<video class="hero-video" autoplay muted loop playsinline preload="metadata"${
+    return `<video class="hero-video" autoplay muted loop playsinline preload="auto"${
       poster ? ` poster="${poster}"` : ""
     } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}" type="${videoType(
       m.src

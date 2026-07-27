@@ -20,7 +20,8 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 [hidden]{display:none!important;}
 html{
-  scroll-behavior:smooth;scroll-padding-top:calc(var(--head) + 58px);
+  overflow-x:clip;
+  scroll-behavior:smooth;scroll-padding-top:calc(var(--head) + 16px);
   -webkit-tap-highlight-color:transparent;scrollbar-color:#232c42 var(--ink);
 }
 ::-webkit-scrollbar{width:10px;height:10px;}
@@ -42,7 +43,7 @@ body{
   font-size:17px;
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  overflow-x:clip;
 }
 ::selection{background:var(--spark);color:#fff;}
 :focus-visible{outline:2px solid var(--spark);outline-offset:3px;}
@@ -643,7 +644,7 @@ span.bcal-day:not(.busy){opacity:.35;}
 
 /* ---------- CONTACT ---------- */
 .contact .big-mail{
-  display:block;white-space:nowrap;line-height:1.15;margin:10px 0 6px;
+  display:block;white-space:nowrap;max-width:100%;overflow:hidden;line-height:1.15;margin:10px 0 6px;
   font-size:clamp(1.1rem,4.2vw,3rem);font-variation-settings:'wdth' 116,'wght' 780;
   text-transform:uppercase;letter-spacing:.01em;transition:color .2s;
 }
@@ -725,7 +726,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .bform-grid{gap:14px;}
   .bform-foot{flex-direction:column;align-items:stretch;}
   .bform-foot .btn{width:100%;}
-  .contact .big-mail{font-size:clamp(1rem,7vw,2rem);}
+  .contact .big-mail{font-size:clamp(.95rem,6vw,1.8rem);}
   .contact-meta{gap:16px;}
   .contact-meta div{min-width:0;flex:1 1 40%;}
   .foot{gap:8px;}
