@@ -1608,7 +1608,7 @@
       "pastLabel": "Schon gespielt",
       "title": "Sh",
       "titleAccent": "ows.",
-      "view": "list",
+      "view": "calendar",
       "items": []
     },
     "sound": {
