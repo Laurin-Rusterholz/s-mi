@@ -81,8 +81,7 @@ section.pad + section.pad{border-top:1px solid rgba(233,237,245,.16);}
 
 /* scroll progress */
 .progress{
-  position:fixed;top:0;left:0;height:2px;width:0;background:var(--spark);z-index:150;
-  transition:width .1s linear;
+  position:absolute;top:0;left:0;height:2px;width:0;background:var(--spark);z-index:2;
 }
 
 /* ---------- NAV ---------- */
@@ -90,7 +89,7 @@ section.pad + section.pad{border-top:1px solid rgba(233,237,245,.16);}
    keine Pseudo-Ebenen — jede dieser Techniken hat auf Handys schon Lücken
    oder lose wirkende Leisten produziert. */
 header{
-  position:fixed;top:0;left:0;right:0;z-index:100;height:var(--head);
+  position:sticky;top:0;z-index:100;height:var(--head);
   display:flex;justify-content:space-between;align-items:center;
   padding:0 clamp(20px,4vw,56px);
   background:rgb(12,16,27);
@@ -151,7 +150,7 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
 .langs a[aria-current="true"]{color:#fff;background:var(--spark);border-color:var(--spark);}
 
 /* ---------- HERO ---------- */
-.hero{height:100svh;min-height:620px;display:flex;align-items:center;overflow:hidden;}
+.hero{height:calc(100svh - var(--head));min-height:620px;display:flex;align-items:center;overflow:hidden;}
 .hero-bg{position:absolute;inset:0;z-index:-1;}
 .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--ink) 4%,rgba(5,7,14,.25) 45%,rgba(5,7,14,.5) 100%);}
 .hero-inner{width:100%;padding:clamp(60px,10vh,110px) clamp(20px,4vw,56px);text-align:center;}
@@ -690,7 +689,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .wrap{padding:0 18px;}
   .pad{padding:56px 0;}
   /* nicht die kompakten Unterseiten-Heroes treffen — die bleiben auf auto */
-  .hero:not(.hero-compact){min-height:0;height:88svh;}
+  .hero:not(.hero-compact){min-height:0;height:calc(92svh - var(--head));}
   .hero-inner{padding:0 18px 34px;}
   .hero h1{font-size:clamp(2rem,12vw,4.6rem);}
   .hero h1 .sp{font-size:.4em;letter-spacing:.5em;}

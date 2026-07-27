@@ -1527,9 +1527,9 @@ ${heroPreload}
 <body data-page="${esc(page.slug || "home")}">
 ${pageBackground(site)}
   <a class="skip" href="#${esc(order[0] || "top")}">${esc(ui.skip)}</a>
-  <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header>
+    <div class="progress" id="progress" aria-hidden="true"></div>
     <a class="logo" href="/">${esc(str(site.logoText, site.artist))}</a>
     <button class="burger" id="burger" aria-label="${esc(ui.menu)}" aria-expanded="false" aria-controls="nav" data-open="${esc(ui.menu)}" data-close="${esc(ui.close)}">${esc(ui.menu)}</button>
     <nav id="nav">
