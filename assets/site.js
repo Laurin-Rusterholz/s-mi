@@ -25,7 +25,23 @@
       setNav(!nav.classList.contains("open"));
     });
     nav.addEventListener("click", function (e) {
-      // Link gewaehlt, X getippt oder daneben getippt: Menue zu
+      // Anker-Ziel gewaehlt: Sprung selbst ausfuehren, NACHDEM das Menue zu
+      // ist — iOS Safari verwirft den nativen Sprung sonst, weil der Body im
+      // Moment des Tippens noch scroll-gesperrt ist (overflow:hidden).
+      var a = e.target.closest('a[href^="#"]');
+      if (a) {
+        var ziel = document.getElementById(a.getAttribute("href").slice(1));
+        if (ziel) {
+          e.preventDefault();
+          setNav(false);
+          requestAnimationFrame(function () {
+            ziel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+            if (history.replaceState) history.replaceState(null, "", a.getAttribute("href"));
+          });
+          return;
+        }
+      }
+      // Sprachlink, X oder Tipp daneben: Menue zu, Standardverhalten laeuft
       if (e.target.closest("a") || e.target.closest(".nav-close") || e.target === nav) setNav(false);
     });
     document.addEventListener("keydown", function (e) {
