@@ -20,6 +20,7 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 [hidden]{display:none!important;}
 html{
+  background:var(--ink);
   overflow-x:clip;
   scroll-behavior:smooth;scroll-padding-top:calc(var(--head) + 16px);
   -webkit-tap-highlight-color:transparent;scrollbar-color:#232c42 var(--ink);
@@ -85,18 +86,15 @@ section.pad + section.pad{border-top:1px solid rgba(233,237,245,.16);}
 }
 
 /* ---------- NAV ---------- */
+/* Bewusst schlicht: deckende Fläche direkt auf dem Element, keine Unschärfe,
+   keine Pseudo-Ebenen — jede dieser Techniken hat auf Handys schon Lücken
+   oder lose wirkende Leisten produziert. */
 header{
   position:fixed;top:0;left:0;right:0;z-index:100;height:var(--head);
   display:flex;justify-content:space-between;align-items:center;
   padding:0 clamp(20px,4vw,56px);
-  border-bottom:1px solid rgba(233,237,245,.07);
-}
-/* Fläche und Unschärfe liegen auf einem ::before — ein backdrop-filter direkt
-   auf dem Header macht ihn zum Bezugsrahmen für position:fixed und liesse das
-   Mobil-Menü ohne Hintergrund in der Seite hängen. */
-header::before{
-  content:"";position:absolute;inset:0;z-index:-1;
-  background:rgba(8,11,20,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:rgba(10,14,25,.96);
+  border-bottom:1px solid rgba(233,237,245,.09);
 }
 .logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;}
 header nav ul{display:flex;gap:clamp(18px,2.4vw,34px);list-style:none;}
@@ -676,7 +674,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   :root{--head:54px;}
   /* Unschaerfe-Effekte und Filmkorn kosten auf dem Handy spuerbar
      Scroll-Leistung — dort deckende Flaechen und Ruhe */
-  header::before{background:rgba(8,11,20,.96);backdrop-filter:none;-webkit-backdrop-filter:none;}
   body::after{animation:none;opacity:.025;}
   .sparks span:nth-child(2n){display:none;}
   .cookie{backdrop-filter:none;}

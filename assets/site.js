@@ -266,7 +266,22 @@
       };
       window.addEventListener("touchstart", gesture, { passive: true });
       window.addEventListener("click", gesture);
-      heroVideo.addEventListener("error", heroFallback, true);
+      // Fehler heisst nicht gleich "kaputt": ein kurzer Netz-Abbruch feuert
+      // dasselbe Ereignis. Erst neu laden; nur wenn danach wirklich keine
+      // abspielbare Quelle uebrig ist (networkState NO_SOURCE oder Decode-/
+      // Formatfehler), kommt das Standbild.
+      var heroFails = 0;
+      heroVideo.addEventListener("error", function () {
+        heroFails++;
+        if (heroFails === 1) {
+          setTimeout(function () {
+            try { heroVideo.load(); kick(); } catch (e) {}
+          }, 1200);
+          return;
+        }
+        var me = heroVideo.error;
+        if (heroVideo.networkState === 3 || (me && (me.code === 3 || me.code === 4))) heroFallback();
+      }, true);
       // Im Hintergrund-Tab nicht weiterlaufen lassen
       document.addEventListener("visibilitychange", function () {
         if (document.hidden) heroVideo.pause();
