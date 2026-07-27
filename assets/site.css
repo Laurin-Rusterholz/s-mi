@@ -113,23 +113,36 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
   /* Nur das Hauptmenü im Kopf wird zur Vollbild-Schublade — die Sprungleiste
      (.subnav) ist ebenfalls ein <nav> und darf davon nicht erfasst werden. */
   header nav{
-    position:fixed;inset:0;background:rgba(8,11,20,.97);
-    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
-    display:none;flex-direction:column;align-items:center;justify-content:center;gap:34px;
+    position:fixed;inset:0;background:rgba(8,11,20,.98);
+    display:none;flex-direction:column;align-items:stretch;
+    padding:calc(var(--head) + 26px) 22px 30px;overflow-y:auto;
   }
   header nav.open{display:flex;}
-  header nav ul{flex-direction:column;text-align:center;gap:8px;counter-reset:mnav;}
-  header nav li{counter-increment:mnav;}
-  header nav ul a{font-size:1.35rem;padding:10px 18px;display:inline-block;}
-  header nav ul a::before{
-    content:counter(mnav,decimal-leading-zero) " ";
-    color:var(--spark);font-size:.62rem;vertical-align:2px;margin-right:8px;
+  /* Grosser Schliessen-Knopf oben rechts — zusätzlich schliesst jeder Tipp
+     neben die Einträge und die Wahl eines Ziels */
+  header nav .nav-close{
+    display:flex;position:absolute;top:10px;right:14px;width:48px;height:48px;
+    align-items:center;justify-content:center;border:1px solid var(--line);
+    background:none;color:var(--bone);font-size:1.15rem;cursor:pointer;
   }
-  header nav .nav-langs{display:flex;gap:8px;}
+  header nav ul{flex-direction:column;gap:0;counter-reset:mnav;width:100%;}
+  header nav li{counter-increment:mnav;border-bottom:1px solid var(--line);}
+  header nav ul a{
+    display:flex;align-items:baseline;gap:14px;width:100%;
+    font-size:1.15rem;padding:17px 4px;
+  }
+  header nav ul a::before{
+    content:counter(mnav,decimal-leading-zero);
+    color:var(--spark);font-size:.6rem;letter-spacing:.08em;
+  }
+  header nav ul a::after{display:none;}
+  header nav a[aria-current]{color:var(--spark);}
+  header nav .nav-langs{display:flex;gap:8px;margin-top:auto;padding-top:26px;}
   .burger{display:block;position:relative;z-index:2;}
 }
 
-/* Sprachwahl im Mobil-Menü (Desktop: nur im Fuss) */
+/* Schliessen-Knopf und Sprachwahl gibt es nur im Mobil-Menü */
+.nav-close{display:none;}
 .nav-langs{display:none;}
 .nav-langs a{
   font-family:var(--font-m);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;

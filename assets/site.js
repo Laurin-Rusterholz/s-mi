@@ -25,7 +25,8 @@
       setNav(!nav.classList.contains("open"));
     });
     nav.addEventListener("click", function (e) {
-      if (e.target.closest("a")) setNav(false);
+      // Link gewaehlt, X getippt oder daneben getippt: Menue zu
+      if (e.target.closest("a") || e.target.closest(".nav-close") || e.target === nav) setNav(false);
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && nav.classList.contains("open")) setNav(false);
@@ -239,10 +240,10 @@
         heroVideo.remove();
       }
     };
-    if (reduce) {
-      heroVideo.removeAttribute("autoplay");
-      heroVideo.pause();
-    } else {
+    // Bewusste Entscheidung des Betreibers: das Hero-Video ist Kerninhalt
+    // und laeuft auch bei "Bewegung reduzieren" — es ist stumm und dezent;
+    // Funken und Filmkorn bleiben unter dieser Einstellung weiterhin aus.
+    {
       heroVideo.muted = true;
       heroVideo.defaultMuted = true;
       heroVideo.setAttribute("webkit-playsinline", "");

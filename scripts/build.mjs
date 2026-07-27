@@ -1533,6 +1533,7 @@ ${pageBackground(site)}
     <a class="logo" href="/">${esc(str(site.logoText, site.artist))}</a>
     <button class="burger" id="burger" aria-label="${esc(ui.menu)}" aria-expanded="false" aria-controls="nav" data-open="${esc(ui.menu)}" data-close="${esc(ui.close)}">${esc(ui.menu)}</button>
     <nav id="nav">
+      <button class="nav-close" type="button" aria-label="${esc(ui.close)}">✕</button>
       <ul>
           ${nav}
       </ul>
