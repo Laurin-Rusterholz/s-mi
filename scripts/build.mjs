@@ -1609,7 +1609,7 @@ ${
       <span class="mono">© <span id="yr">${today().slice(0, 4)}</span> ${esc(
     site.artist
   )} — ${esc(ui.rights)}</span>
-      <a class="mono" href="${esc(langPrefix(lang, master) + "/rechtliches/")}">${esc(
+      <a class="mono" href="${esc(langPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
     LEGAL_LABEL[lang] || LEGAL_LABEL.de
   )}</a>
       ${site.claim ? `<span class="claim">${esc(site.claim)}</span>` : ""}
@@ -1630,6 +1630,7 @@ ${showsData}
 /* ------------------------------------------------------- rechtliches */
 
 const LEGAL_LABEL = { de: "Impressum & Datenschutz", en: "Legal & privacy", fr: "Mentions légales" };
+const LEGAL_SLUG = { de: "rechtliches", en: "legal", fr: "mentions-legales" };
 
 const LEGAL_TEXT = {
   de: {
@@ -1709,11 +1710,24 @@ function renderLegal(c, lang, langs) {
     .legal h3{font-size:.95rem;margin:24px 0 6px;color:var(--bone);}
     .legal p{color:var(--bone-dim);margin-bottom:12px;}
     .legal a{color:var(--spark);}
+    .legal .langs{border:0;padding:0;margin:22px 0 0;}
   </style>
 </head>
 <body>
   <main class="legal">
     <a class="mono" href="${esc(prefix || "/")}">← ${artist}</a>
+    ${
+      langs.length > 1
+        ? `<nav class="langs" aria-label="${esc(LANG_NAMES[lang] || "Sprache")}">${langs
+            .map(
+              (l) =>
+                `<a href="${esc(langPrefix(l, master) + "/" + (LEGAL_SLUG[l] || "legal") + "/")}" lang="${esc(
+                  l
+                )}"${l === lang ? ' aria-current="true"' : ""}>${esc(LANG_NAMES[l] || l)}</a>`
+            )
+            .join("")}</nav>`
+        : ""
+    }
     <h1>${esc(t.title)}</h1>
     <h2>${esc(t.impressum)}</h2>
     ${t.impressumBody(artist, base, email)}
@@ -1873,13 +1887,13 @@ async function main() {
 
   // Impressum & Datenschutz je Sprache
   for (const lang of langs) {
-    const rel = (langPrefix(lang, master) + "/rechtliches/index.html").replace(/^\//, "");
+    const rel = (langPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/index.html").replace(/^\//, "");
     const file = resolve(ROOT, rel);
     await mkdir(dirname(file), { recursive: true });
     await writeFile(file, renderLegal(content, lang, langs));
     written.push(rel);
   }
-  console.log("[build] rechtliches/ (3 Sprachen)");
+  console.log("[build] Rechtliches je Sprache");
 
   await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages, langs));
   await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));
@@ -1888,6 +1902,7 @@ async function main() {
 
   // Verzeichnisse aufräumen, die zu keiner Seite mehr gehören
   const wanted = new Set(written.map((r) => r.split("/")[0]).filter((d) => d !== "index.html"));
+  langs.slice(1).forEach((l) => wanted.add(l));
   for (const entry of await readdir(ROOT, { withFileTypes: true })) {
     if (!entry.isDirectory() || KEEP_DIRS.has(entry.name) || entry.name.startsWith(".")) continue;
     if (wanted.has(entry.name)) continue;
@@ -1898,14 +1913,16 @@ async function main() {
   }
 
   // Dasselbe innerhalb der Sprachverzeichnisse (en/, fr/, …)
-  const keepSlugs = new Set(pages.map((p) => p.slug).filter(Boolean));
-  keepSlugs.add("rechtliches");
+  // Behalten wird, was dieser Lauf wirklich geschrieben hat
+  const writtenDirs = new Set(
+    written.map((r) => r.split("/").slice(0, -1).join("/")).filter(Boolean)
+  );
   for (const lang of langs.slice(1)) {
     const dir = resolve(ROOT, lang);
     if (!existsSync(dir)) continue;
     for (const entry of await readdir(dir, { withFileTypes: true })) {
       if (!entry.isDirectory()) continue;
-      if (keepSlugs.has(entry.name)) continue;
+      if (writtenDirs.has(`${lang}/${entry.name}`)) continue;
       if (existsSync(resolve(dir, entry.name, "index.html"))) {
         await rm(resolve(dir, entry.name), { recursive: true, force: true });
         console.log(`[build] entfernt: ${lang}/${entry.name}/ (keine Seite mehr)`);

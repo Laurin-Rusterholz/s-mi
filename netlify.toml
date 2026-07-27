@@ -67,6 +67,21 @@
   to = "/"
   status = 301
 
+# Hauptsprache ist neu Englisch: fruehere deutsche Adressen zeigen auf /de/,
+# die alten /en/-Adressen auf die Startseite.
+[[redirects]]
+  from = "/en/*"
+  to = "/:splat"
+  status = 301
+[[redirects]]
+  from = "/rechtliches/*"
+  to = "/de/rechtliches/"
+  status = 301
+[[redirects]]
+  from = "/fr/rechtliches/*"
+  to = "/fr/mentions-legales/"
+  status = 301
+
 # Die Website ist ein Einseiter — fruehere Unterseiten-Adressen auf die Anker umlenken.
 [[redirects]]
   from = "/shows/*"

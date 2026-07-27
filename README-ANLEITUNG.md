@@ -1,7 +1,7 @@
 # Sam Sparkling — Website
 
-Statische Website in **Deutsch, Englisch und Französisch**, generiert aus einer
-Inhalts-Datei. Inhalte pflegst du
+Statische Website in **Englisch (Hauptsprache), Deutsch und Französisch**,
+generiert aus einer Inhalts-Datei. Inhalte pflegst du
 **nicht** in der HTML, sondern in der Verwaltung:
 
 > **Verwaltung:** Repo [`verwaltung-djsamsparkling`](https://github.com/Laurin-Rusterholz/verwaltung-djsamsparkling)
@@ -38,16 +38,16 @@ Verwaltung (Admin)  ──schreibt──▶  Firebase Realtime Database
 
 ### Mehrsprachigkeit
 
-Deutsch ist der gepflegte Stand im Inhalt. Die Übersetzungen liegen daneben:
+Englisch ist der gepflegte Stand im Inhalt. Die Übersetzungen liegen daneben:
 
 ```jsonc
 {
-  "site": { "lang": "de", "languages": ["de", "en", "fr"] },
+  "site": { "lang": "en", "languages": ["en", "de", "fr"] },
   "sections": { "about": { "lede": "Aus Energie wird Euphorie" } },
   "i18n": {
     "en": { "sections": { "about": { "lede": "Turning energy into euphoria" } } }
   },
-  "i18nHash": {                       // Fingerabdruck des deutschen Originals —
+  "i18nHash": {                       // Fingerabdruck des englischen Originals —
     "en": { "sections": { "about": { "lede": "3f0a91c2" } } }   // daran erkennt
   }                                   // die Verwaltung veraltete Übersetzungen
 }
@@ -56,7 +56,7 @@ Deutsch ist der gepflegte Stand im Inhalt. Die Übersetzungen liegen daneben:
 Der Generator baut je Sprache einen kompletten Satz Seiten: die Hauptsprache
 unter `/`, die anderen unter `/<sprache>/`. Vor dem Rendern wird der Inhaltsbaum
 einmal übersetzt (`localize`), deshalb kennen die einzelnen Bausteine keine
-Sprachen. Fehlt eine Übersetzung, bleibt der deutsche Text stehen.
+Sprachen. Fehlt eine Übersetzung, bleibt der englische Text stehen.
 
 Steht in der Verwaltung noch ein alter Stand **ohne** `i18n` und mit einer
 anderen Hauptsprache, übernimmt der Build die Texte aus `content/site.json` und
@@ -205,15 +205,15 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
   Inhalte stehen als freie, **eckige** Kacheln darauf, Bilder ohne Rahmen und
   ohne Rundungen, nur mit weichem Schatten
 - Alle Texte in der **Ich-Form** — die Website spricht als Sam, nicht über ihn
-- **Impressum & Datenschutz** unter `/rechtliches/` (drei Sprachen, im Footer
+- **Impressum & Datenschutz** unter `/legal/` bzw. `/de/rechtliches/` (drei Sprachen, im Footer
   verlinkt) — Vorlage auf Basis des tatsächlichen Setups (Netlify, Firebase,
   keine Tracker); vor dem offiziellen Launch einmal selbst durchlesen
 - **App-Icons und Web-Manifest** — beim „Zum Home-Bildschirm hinzufügen"
   erscheint das Blitz-Logo statt eines Screenshots
-- **Drei Sprachen** — Deutsch unter `/`, Englisch unter `/en/`, Französisch
+- **Drei Sprachen** — Englisch unter `/`, Deutsch unter `/de/`, Französisch
   unter `/fr/`. Umschalter im **Fussbereich**, `hreflang`-Verweise und
   `xhtml:link` in der Sitemap. Übersetzt wird in der Verwaltung (auf Wunsch von
-  Claude); fehlt eine Stelle, steht dort der deutsche Text.
+  Claude); fehlt eine Stelle, steht dort der englische Text.
 - Referenzen, Galerie mit Lightbox (Pfeiltasten, Wischen, Zähler)
 - Booking mit Rider und **Anfrage-Formular** → landet direkt in der Verwaltung
 - Kontakt mit beliebig vielen Social-Links
