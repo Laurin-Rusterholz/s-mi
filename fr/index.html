@@ -282,7 +282,7 @@
 
   <section class="hero" id="top">
     <div class="hero-bg">
-      <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&amp;token=325c944f-ff1b-479c-bdea-473b0b1257db" aria-hidden="true" tabindex="-1"><source src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&amp;token=d89f8d1b-067a-49e6-a950-0939b27a4b11" type="video/mp4"></video>
+      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&amp;token=325c944f-ff1b-479c-bdea-473b0b1257db" aria-hidden="true" tabindex="-1"><source src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&amp;token=d89f8d1b-067a-49e6-a950-0939b27a4b11" type="video/mp4"></video>
     </div>
     <div class="hero-inner">
       <p class="mono">DJ &amp; producteur — Saint-Gall, Suisse</p>
@@ -358,19 +358,6 @@
       <div class="shead rv">
         <span class="num">03</span>
         <h2 id="shows-h">Da<i>tes.</i></h2>
-      </div>
-      <div class="cal rv" id="shows-calendar" data-weekdays="Lun,Mar,Mer,Jeu,Ven,Sam,Dim" data-booked="Réservé" data-book="Demander cette date" hidden>
-        <div class="cal-head">
-          <button type="button" class="cal-nav" data-cal="prev" aria-label="Mois précédent">‹</button>
-          <strong class="cal-month" id="cal-month"></strong>
-          <button type="button" class="cal-nav" data-cal="next" aria-label="Mois suivant">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
-        <p class="cal-legend">
-          <span class="lg lg-show">Date</span>
-          <span class="lg lg-booked">Réservé</span>
-          <span class="lg lg-soldout">Complet</span>
-        </p>
       </div>
       <p class="live-note rv">Je n&#39;ai aucune date annoncée pour l&#39;instant. Les nouveaux shows arrivent ici en premier — ou contacte-moi et réserve-moi pour ton événement.</p>
       
@@ -494,7 +481,7 @@
             <p>as</p>
             <div class="product-foot">
               <span class="price">CHF 5 35.—</span>
-              <a class="btn sm" href="asd" target="_blank" rel="noopener">Acheter ↗</a>
+              <a class="btn sm ghost" href="mailto:info@samsparking.ch?subject=Commande%3A%20Beispiel&amp;body=Salut%20Sam%0A%0AJe%20commande%20%3A%20Beispiel%20%E2%80%94%20CHF%205%2035.%E2%80%94%0AAdresse%20de%20livraison%20%3A%0A%0AMerci%20!">Commander par e-mail</a>
             </div>
             
           </div>
@@ -617,6 +604,11 @@
   </div>
 
   <a class="totop" href="#top" aria-label="En haut">↑</a>
+
+  <aside class="cookie" id="cookie" hidden aria-label="Cookies">
+    <p>Ce site n&#39;utilise ni traçage ni cookies publicitaires. Lors de l&#39;envoi d&#39;une demande ou d&#39;une commande, seules les informations du formulaire sont enregistrées.</p>
+    <button class="btn sm solid" id="cookie-ok" type="button">Compris</button>
+  </aside>
 
   <footer>
     <div class="wrap foot">

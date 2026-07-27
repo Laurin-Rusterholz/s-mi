@@ -39,3 +39,19 @@ jobs:
           fi
           git commit -m "Inhalt aus der Verwaltung uebernommen"
           git push
+      - name: Bild-Cache am Netz-Rand vorwaermen
+        # Das erste Laden eines Bildes ueber /.netlify/images verkleinert es
+        # erst — dieser Schritt ruft alle Bild-Adressen einmal ab, damit
+        # Besucher immer den warmen Cache treffen. Schlaegt nie den Build fehl.
+        if: always()
+        continue-on-error: true
+        run: |
+          BASE="https://djsamsparkling.netlify.app"
+          sleep 120   # dem Netlify-Deploy einen Moment Vorsprung lassen
+          for path in / /en/ /fr/; do
+            curl -s --max-time 20 "$BASE$path" \
+              | grep -o '/\.netlify/images[^"]*' | sed 's/&amp;/\&/g' | sort -u | head -60 \
+              | while read -r u; do
+                  curl -s -o /dev/null --max-time 30 -H "Accept: image/avif,image/webp,image/*" "$BASE$u" || true
+                done
+          done

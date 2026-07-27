@@ -304,9 +304,12 @@ function sparks(n = 16) {
  */
 function pageBackground(site) {
   if (!safeUrl(site.backgroundImage)) return "";
-  return `  <div class="page-bg" aria-hidden="true" style="background-image:url('${esc(
-    cdnUrl(site.backgroundImage, 1600)
-  )}')"></div>`;
+  const small = esc(cdnUrl(site.backgroundImage, 800));
+  const big = esc(cdnUrl(site.backgroundImage, 1600));
+  const style = CDN
+    ? `background-image:url('${small}');background-image:image-set(url('${small}') 1x,url('${big}') 2x)`
+    : `background-image:url('${big}')`;
+  return `  <div class="page-bg" aria-hidden="true" style="${style}"></div>`;
 }
 
 /**
@@ -314,11 +317,12 @@ function pageBackground(site) {
  * Browser Autoplay. Das Poster wird sofort angezeigt (und bleibt stehen, wenn
  * jemand „Bewegung reduzieren" eingestellt hat, siehe assets/site.js).
  */
-function heroMedia(hero) {
+function heroMedia(hero, site) {
   const m = hero.media || {};
   if (m.type === "video" && safeUrl(m.src)) {
-    const poster = safeUrl(m.poster) ? esc(cdnUrl(m.poster, 1600)) : "";
-    return `<video class="hero-video" autoplay muted loop playsinline preload="auto"${
+    const posterSrc = safeUrl(m.poster) || safeUrl(site?.ogImage) || safeUrl(site?.backgroundImage);
+    const poster = posterSrc ? esc(cdnUrl(posterSrc, 1600)) : "";
+    return `<video class="hero-video" autoplay muted loop playsinline preload="metadata"${
       poster ? ` poster="${poster}"` : ""
     } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}" type="${videoType(
       m.src
@@ -456,33 +460,10 @@ function renderShows(n, s) {
     .filter((i) => isoDate(i.date) && isoDate(i.date) < t)
     .sort((a, b) => String(b.date).localeCompare(String(a.date)));
 
-  // Der Kalender wird von assets/site.js aufgebaut (aus #shows-data) und erst
-  // dann eingeblendet — ohne JavaScript bleibt die Liste allein stehen.
-  const calendar =
-    str(s.view, "calendar") !== "list"
-      ? `
-      <div class="cal rv" id="shows-calendar" data-weekdays="${esc(UI.weekdays)}" data-booked="${esc(UI.booked)}" data-book="${esc(UI.bookDay)}" hidden>
-        <div class="cal-head">
-          <button type="button" class="cal-nav" data-cal="prev" aria-label="${esc(
-            str(s.prevLabel, UI.prevMonth)
-          )}">‹</button>
-          <strong class="cal-month" id="cal-month"></strong>
-          <button type="button" class="cal-nav" data-cal="next" aria-label="${esc(
-            str(s.nextLabel, UI.nextMonth)
-          )}">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
-        <p class="cal-legend">
-          <span class="lg lg-show">${esc(UI.calShow)}</span>
-          <span class="lg lg-booked">${esc(UI.booked)}</span>
-          <span class="lg lg-soldout">${esc(UI.soldOut)}</span>
-        </p>
-      </div>`
-      : "";
 
   return `
   <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
-    <div class="wrap">${sectionHead(n, s, "shows")}${calendar}
+    <div class="wrap">${sectionHead(n, s, "shows")}
       ${
         upcoming.length
           ? `<ul class="show-list rv" id="show-list">
@@ -556,7 +537,7 @@ function renderGallery(n, s) {
           <button type="button" class="gal-btn" aria-label="${esc(
             UI.openImage.replace("{n}", idx).replace("{total}", photos.length)
           )}">
-            ${picture(g, { sizes: "(max-width:700px) 100vw, 33vw" })}
+            ${picture(g, { sizes: "(max-width:700px) 100vw, 33vw", widths: [480, 800] })}
             ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
           </button>
         </figure>`;
@@ -587,7 +568,9 @@ function renderShop(n, s, contactEmail) {
   const cards = items
     .map((p) => {
       const sold = p.status === "soldout";
-      const link = safeUrl(p.linkUrl);
+      // Nur echte Adressen zaehlen als Bezahl-Link — Tippreste wie "asd"
+      // fallen sonst als toter Kauf-Knopf auf die Website
+      const link = /^https?:\/\//i.test(String(p.linkUrl || "")) ? safeUrl(p.linkUrl) : "";
       const price = priceTag(p.price, cur);
       const order = contactEmail
         ? `mailto:${contactEmail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}` +
@@ -617,7 +600,7 @@ function renderShop(n, s, contactEmail) {
         ? `<a class="btn sm ghost" href="${esc(order)}">${esc(UI.orderByMail)}</a>`
         : "";
       return `<article class="product rv${sold ? " soldout" : ""}">
-          ${p.src ? `<div class="product-img">${picture(p, { sizes: "(max-width:700px) 46vw, 280px" })}</div>` : ""}
+          ${p.src ? `<div class="product-img">${picture(p, { sizes: "(max-width:700px) 46vw, 280px", widths: [480, 800] })}</div>` : ""}
           <div class="product-body">
             <h3>${esc(p.name)}</h3>
             ${str(p.note) ? `<p>${esc(p.note)}</p>` : ""}
@@ -1039,6 +1022,8 @@ const UI_DEFAULTS = {
   pickDay: "Oder Wunschdatum direkt im Kalender antippen:",
   dayBusy: "Belegt",
   toTop: "Nach oben",
+  cookieText: "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
+  cookieOk: "Alles klar",
   twintSend: "Per TWINT bezahlen an",
   twintRef: "Vermerk",
   twintNote: "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
@@ -1400,7 +1385,7 @@ function renderPage(c, page, pages, lang, langs) {
       : `
   <section class="hero" id="top">
     <div class="hero-bg">
-      ${heroMedia(c.hero || {})}
+      ${heroMedia(c.hero || {}, site)}
     </div>
     <div class="hero-inner">
       ${c.hero?.kicker ? `<p class="mono">${esc(c.hero.kicker)}</p>` : ""}
@@ -1428,8 +1413,14 @@ function renderPage(c, page, pages, lang, langs) {
     const m = c.hero?.media || {};
     const first = m.type === "video" ? m.poster : m.src;
     if (!safeUrl(first)) return "";
-    const url = isVideoUrl(first) ? rooted(first) : cdnUrl(first, 1600);
-    return `  <link rel="preload" as="image" href="${esc(url)}" fetchpriority="high">\n`;
+    if (isVideoUrl(first))
+      return `  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">\n`;
+    if (!CDN)
+      return `  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">\n`;
+    const set = [640, 1024, 1600]
+      .map((w) => `${esc(cdnUrl(first, w))} ${w}w`)
+      .join(", ");
+    return `  <link rel="preload" as="image" imagesrcset="${set}" imagesizes="100vw" fetchpriority="high">\n`;
   })();
 
   // Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf)
@@ -1563,6 +1554,11 @@ ${body}
   </div>
 
   <a class="totop" href="#top" aria-label="${esc(ui.toTop || "Nach oben")}">↑</a>
+
+  <aside class="cookie" id="cookie" hidden aria-label="Cookies">
+    <p>${esc(ui.cookieText)}</p>
+    <button class="btn sm solid" id="cookie-ok" type="button">${esc(ui.cookieOk)}</button>
+  </aside>
 
   <footer>
     <div class="wrap foot">

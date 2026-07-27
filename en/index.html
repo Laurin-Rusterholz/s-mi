@@ -282,7 +282,7 @@
 
   <section class="hero" id="top">
     <div class="hero-bg">
-      <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&amp;token=325c944f-ff1b-479c-bdea-473b0b1257db" aria-hidden="true" tabindex="-1"><source src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&amp;token=d89f8d1b-067a-49e6-a950-0939b27a4b11" type="video/mp4"></video>
+      <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&amp;token=325c944f-ff1b-479c-bdea-473b0b1257db" aria-hidden="true" tabindex="-1"><source src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&amp;token=d89f8d1b-067a-49e6-a950-0939b27a4b11" type="video/mp4"></video>
     </div>
     <div class="hero-inner">
       <p class="mono">DJ &amp; producer — St. Gallen, Switzerland</p>
@@ -358,19 +358,6 @@
       <div class="shead rv">
         <span class="num">03</span>
         <h2 id="shows-h">Sh<i>ows.</i></h2>
-      </div>
-      <div class="cal rv" id="shows-calendar" data-weekdays="Mon,Tue,Wed,Thu,Fri,Sat,Sun" data-booked="Booked" data-book="Request this date" hidden>
-        <div class="cal-head">
-          <button type="button" class="cal-nav" data-cal="prev" aria-label="Previous month">‹</button>
-          <strong class="cal-month" id="cal-month"></strong>
-          <button type="button" class="cal-nav" data-cal="next" aria-label="Next month">›</button>
-        </div>
-        <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
-        <p class="cal-legend">
-          <span class="lg lg-show">Show</span>
-          <span class="lg lg-booked">Booked</span>
-          <span class="lg lg-soldout">Sold out</span>
-        </p>
       </div>
       <p class="live-note rv">I haven&#39;t announced any dates right now. New shows land here first — or get in touch and book me for your event.</p>
       
@@ -494,7 +481,7 @@
             <p>as</p>
             <div class="product-foot">
               <span class="price">CHF 5 35.—</span>
-              <a class="btn sm" href="asd" target="_blank" rel="noopener">Buy ↗</a>
+              <a class="btn sm ghost" href="mailto:info@samsparking.ch?subject=Order%3A%20Beispiel&amp;body=Hi%20Sam%0A%0AI&#39;d%20like%20to%20order%3A%20Beispiel%20%E2%80%94%20CHF%205%2035.%E2%80%94%0AShipping%20address%3A%0A%0AThanks!">Order by e-mail</a>
             </div>
             
           </div>
@@ -617,6 +604,11 @@
   </div>
 
   <a class="totop" href="#top" aria-label="Back to top">↑</a>
+
+  <aside class="cookie" id="cookie" hidden aria-label="Cookies">
+    <p>This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.</p>
+    <button class="btn sm solid" id="cookie-ok" type="button">Got it</button>
+  </aside>
 
   <footer>
     <div class="wrap foot">

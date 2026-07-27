@@ -225,16 +225,52 @@
   // trotz muted), bleibt ebenfalls das Poster stehen.
   var heroVideo = document.querySelector(".hero-video");
   if (heroVideo) {
-    if (reduce) {
+    // Kann das Geraet das Format gar nicht abspielen (z. B. iPhone-.mov in
+    // HEVC auf Android), Video ausblenden — das Poster/Hintergrundbild bleibt.
+    var heroSrc = heroVideo.querySelector("source");
+    var heroFallback = function () {
+      var poster = heroVideo.getAttribute("poster");
+      if (poster) {
+        var still = document.createElement("img");
+        still.src = poster;
+        still.alt = "";
+        still.className = "hero-video";
+        heroVideo.replaceWith(still);
+      } else {
+        heroVideo.remove();
+      }
+    };
+    if (heroSrc && heroVideo.canPlayType && heroVideo.canPlayType(heroSrc.type || "video/mp4") === "") {
+      heroFallback();
+    } else if (reduce) {
       heroVideo.removeAttribute("autoplay");
       heroVideo.pause();
     } else {
-      var tryPlay = heroVideo.play();
-      if (tryPlay && typeof tryPlay.catch === "function") tryPlay.catch(function () {});
+      var heroTries = 0;
+      var kick = function () {
+        var pr = heroVideo.play();
+        if (pr && typeof pr.catch === "function") pr.catch(function () {});
+      };
+      kick();
+      // Manche Geraete blocken Autoplay (Stromsparmodus, Daten-Sparen):
+      // nach dem Laden nochmals anstossen und spaetestens bei der ersten
+      // Beruehrung — die gilt als Nutzer-Geste und darf abspielen.
+      heroVideo.addEventListener("loadeddata", kick);
+      heroVideo.addEventListener("canplay", kick);
+      var gesture = function () {
+        if (heroVideo.paused && heroTries++ < 3) kick();
+        if (heroTries >= 3 || !heroVideo.paused) {
+          window.removeEventListener("touchstart", gesture);
+          window.removeEventListener("click", gesture);
+        }
+      };
+      window.addEventListener("touchstart", gesture, { passive: true });
+      window.addEventListener("click", gesture);
+      heroVideo.addEventListener("error", heroFallback, true);
       // Im Hintergrund-Tab nicht weiterlaufen lassen
       document.addEventListener("visibilitychange", function () {
         if (document.hidden) heroVideo.pause();
-        else heroVideo.play().catch(function () {});
+        else kick();
       });
     }
   }
@@ -378,6 +414,21 @@
 
       draw();
       calBox.hidden = false;
+    }
+  }
+
+  /* ------------------------------------------------------- cookie-hinweis */
+  var cookie = document.getElementById("cookie");
+  if (cookie) {
+    var seen = false;
+    try { seen = localStorage.getItem("cookie-ok") === "1"; } catch (e) {}
+    if (!seen) {
+      cookie.hidden = false;
+      var okBtn = document.getElementById("cookie-ok");
+      okBtn && okBtn.addEventListener("click", function () {
+        try { localStorage.setItem("cookie-ok", "1"); } catch (e) {}
+        cookie.hidden = true;
+      });
     }
   }
 

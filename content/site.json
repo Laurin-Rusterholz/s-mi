@@ -328,7 +328,9 @@
         "twintNote": "After paying, confirm briefly by e-mail with your shipping address — then your piece ships.",
         "twintConfirm": "Confirm order by e-mail",
         "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!",
-        "toTop": "Back to top"
+        "toTop": "Back to top",
+        "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
+        "cookieOk": "Got it"
       },
       "hero": {
         "kicker": "DJ & producer — St. Gallen, Switzerland",
@@ -653,7 +655,9 @@
         "twintNote": "Après le paiement, confirme par e-mail avec ton adresse de livraison — ta pièce part ensuite.",
         "twintConfirm": "Confirmer la commande par e-mail",
         "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !",
-        "toTop": "En haut"
+        "toTop": "En haut",
+        "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
+        "cookieOk": "Compris"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -980,7 +984,9 @@
         "twintNote": "164a381d",
         "twintConfirm": "b2ba67e1",
         "orderMailBody": "303203c1",
-        "toTop": "95722473"
+        "toTop": "95722473",
+        "cookieText": "4f546eda",
+        "cookieOk": "c467fbc0"
       },
       "hero": {
         "kicker": "00cd226e",
@@ -1305,7 +1311,9 @@
         "twintNote": "164a381d",
         "twintConfirm": "b2ba67e1",
         "orderMailBody": "303203c1",
-        "toTop": "95722473"
+        "toTop": "95722473",
+        "cookieText": "4f546eda",
+        "cookieOk": "c467fbc0"
       },
       "hero": {
         "kicker": "00cd226e",
@@ -1600,7 +1608,7 @@
       "pastLabel": "Schon gespielt",
       "title": "Sh",
       "titleAccent": "ows.",
-      "view": "calendar",
+      "view": "list",
       "items": []
     },
     "sound": {
@@ -1732,7 +1740,9 @@
     "twintNote": "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
     "twintConfirm": "Bestellung per Mail bestätigen",
     "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
-    "toTop": "Nach oben"
+    "toTop": "Nach oben",
+    "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
+    "cookieOk": "Alles klar"
   },
   "updatedAt": "2026-07-27T04:36:05.224Z",
   "updatedBy": "Verwaltung"
