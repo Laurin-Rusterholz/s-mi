@@ -227,7 +227,6 @@
   if (heroVideo) {
     // Kann das Geraet das Format gar nicht abspielen (z. B. iPhone-.mov in
     // HEVC auf Android), Video ausblenden — das Poster/Hintergrundbild bleibt.
-    var heroSrc = heroVideo.querySelector("source");
     var heroFallback = function () {
       var poster = heroVideo.getAttribute("poster");
       if (poster) {
@@ -240,9 +239,7 @@
         heroVideo.remove();
       }
     };
-    if (heroSrc && heroVideo.canPlayType && heroVideo.canPlayType(heroSrc.type || "video/mp4") === "") {
-      heroFallback();
-    } else if (reduce) {
+    if (reduce) {
       heroVideo.removeAttribute("autoplay");
       heroVideo.pause();
     } else {
