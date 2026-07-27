@@ -1409,16 +1409,25 @@ function renderPage(c, page, pages, lang, langs) {
   const heroPreload = (() => {
     if (page.hero !== "full") return "";
     const m = c.hero?.media || {};
+    const links = [];
+    if (m.type === "video" && safeUrl(m.src)) {
+      // Das Video selbst frueh anfordern — noch bevor der Parser beim
+      // <video>-Element ankommt. Nur fuer die eigene, komprimierte Fassung.
+      if (/^\/?media\//.test(String(m.src)))
+        links.push(`  <link rel="preload" as="video" href="${esc(rooted(m.src))}" fetchpriority="high">`);
+    }
     const first = m.type === "video" ? m.poster : m.src;
-    if (!safeUrl(first)) return "";
-    if (isVideoUrl(first))
-      return `  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">\n`;
-    if (!CDN)
-      return `  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">\n`;
-    const set = [640, 1024, 1600]
-      .map((w) => `${esc(cdnUrl(first, w))} ${w}w`)
-      .join(", ");
-    return `  <link rel="preload" as="image" imagesrcset="${set}" imagesizes="100vw" fetchpriority="high">\n`;
+    if (safeUrl(first) && !isVideoUrl(first)) {
+      if (CDN) {
+        const set = [640, 1024, 1600]
+          .map((w) => `${esc(cdnUrl(first, w))} ${w}w`)
+          .join(", ");
+        links.push(`  <link rel="preload" as="image" imagesrcset="${set}" imagesizes="100vw" fetchpriority="high">`);
+      } else {
+        links.push(`  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">`);
+      }
+    }
+    return links.length ? links.join("\n") + "\n" : "";
   })();
 
   // Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf)
