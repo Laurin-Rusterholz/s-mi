@@ -1,433 +1,18 @@
 {
-  "schemaVersion": 2,
-  "updatedAt": "2026-07-26T00:00:00.000Z",
-  "site": {
-    "lang": "de",
-    "domain": "https://www.samsparking.ch",
-    "artist": "Sam Sparkling",
-    "logoText": "Sam Sparkling",
-    "title": "Sam Sparkling — Hardstyle-DJ & Producer aus St. Gallen",
-    "description": "Ich bin Sam Sparkling, Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und Europa.",
-    "keywords": [
-      "Sam Sparkling",
-      "Hardstyle DJ",
-      "Euphoric Hardstyle",
-      "Melodic Hardstyle",
-      "DJ St. Gallen",
-      "Hardstyle Schweiz",
-      "DJ Booking Schweiz"
-    ],
-    "ogTitle": "Sam Sparkling — Aus Energie wird Euphorie",
-    "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Buch mich für deinen Club oder dein Festival — Schweiz und Europa.",
-    "ogImage": "img/hero.jpg",
-    "backgroundImage": "img/hero.jpg",
-    "themeColor": "#0d1119",
-    "accentColor": "#2e6bff",
-    "claim": "Aus Energie wird Euphorie",
-    "photoCredit": "Sarto Photography",
-    "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json",
-    "languages": [
-      "de",
-      "en",
-      "fr"
-    ]
-  },
   "hero": {
-    "kicker": "DJ & Producer — St. Gallen, Schweiz",
-    "nameSpaced": "S A M",
-    "nameMain": "Sparkling",
-    "tagline": "Aus Energie wird Euphorie.",
-    "meta": "Euphoric Hardstyle / Melodic Hardstyle",
-    "ctaLabel": "Mich buchen",
     "ctaHref": "#booking",
+    "ctaLabel": "Mich buchen",
+    "kicker": "DJ & Producer — St. Gallen, Schweiz",
     "media": {
-      "type": "image",
-      "src": "img/hero.jpg",
       "alt": "Sam Sparkling am Pult, Laser und Crowd vor der Bühne",
-      "poster": ""
-    }
-  },
-  "ticker": {
-    "enabled": true,
-    "items": [
-      {
-        "text": "Aus",
-        "accent": "Energie"
-      },
-      {
-        "text": "wird",
-        "accent": "Euphorie"
-      },
-      {
-        "text": "Euphoric",
-        "accent": "Hardstyle"
-      },
-      {
-        "text": "Melodic",
-        "accent": "Hardstyle"
-      },
-      {
-        "text": "2026",
-        "accent": "Edition"
-      }
-    ]
-  },
-  "layout": [
-    "about",
-    "sound",
-    "shows",
-    "references",
-    "gallery",
-    "shop",
-    "booking",
-    "contact"
-  ],
-  "pages": [
-    {
-      "slug": "",
-      "navLabel": "Start",
-      "title": "",
-      "hero": "full",
-      "ticker": true,
-      "inNav": true,
-      "sections": [
-        "about",
-        "sound",
-        "shows",
-        "references",
-        "gallery",
-        "shop",
-        "booking",
-        "contact"
-      ]
-    }
-  ],
-  "sections": {
-    "about": {
-      "enabled": true,
-      "navLabel": "Über mich",
-      "title": "Über",
-      "titleAccent": "mich.",
-      "photo": {
-        "src": "img/about.jpg",
-        "alt": "Portrait von Sam Sparkling",
-        "credit": "Foto — Sarto Photography"
-      },
-      "lede": "Ich bin Sam Sparkling, 19, DJ und Producer aus St. Gallen. Meine Geschichte begann lange, bevor ich zum ersten Mal hinter einem DJ-Setup stand.",
-      "paragraphs": [
-        "Aufgewachsen mit Festivalvideos und früh im Hardstyle zu Hause, war es ein Defqon.1-Video, das mir zum ersten Mal gezeigt hat, was Musik wirklich kann. Die Energie, die Atmosphäre, die Verbindung zwischen DJ und Crowd — das hat mich sofort getroffen und nicht mehr losgelassen. Mit 15 wurde aus Faszination eine Richtung: Ich sah einen DJ, der einen Dancefloor komplett im Griff hatte. Ab diesem Moment war Produzieren und Auflegen kein Nebenprojekt mehr, sondern der einzige Weg, der für mich Sinn ergab.",
-        "Vier Jahre später schleife ich täglich an meinem Sound, Track für Track. Inspiriert von Artists wie **Sound Rush**, **Sub Zero Project** und **Headhunterz** konzentriere ich mich auf Euphoric Hardstyle — druckvolle Kicks, kombiniert mit emotionalen Melodien, die dich hineinziehen und nicht mehr loslassen.",
-        "Der Name **Sparkling** ist kein Zufall. Er steht für konstante Energie, einen Kopf voller Ideen und einen Optimismus, der in jeder Produktion durchschlägt. Meine Sets bauen auf Emotion, Storytelling und Crowd-Energie — sie schaffen Momente, in denen Musik und Publikum wirklich zusammenfinden.",
-        "Meine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist."
-      ],
-      "words": [
-        "Emotional",
-        "Kraftvoll",
-        "Euphorisch"
-      ],
-      "facts": [
-        {
-          "value": "2021",
-          "label": "Erstes Set"
-        },
-        {
-          "value": "7+",
-          "label": "Clubs & Festivals"
-        },
-        {
-          "value": "150",
-          "label": "BPM Zuhause"
-        }
-      ]
+      "poster": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&token=325c944f-ff1b-479c-bdea-473b0b1257db",
+      "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&token=d89f8d1b-067a-49e6-a950-0939b27a4b11",
+      "type": "video"
     },
-    "sound": {
-      "enabled": true,
-      "navLabel": "Sound",
-      "title": "Gen",
-      "titleAccent": "res.",
-      "note": "Druckvolle Kicks. Emotionale Melodien. Ich baue Sets, die von Storytelling und Crowd-Energie leben.",
-      "genres": [
-        {
-          "name": "Euphoric Hardstyle",
-          "meta": "Genre"
-        },
-        {
-          "name": "Melodic Hardstyle",
-          "meta": "Genre"
-        }
-      ],
-      "mixes": [
-        {
-          "kicker": "Aktueller Mix",
-          "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-          "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparkling einen Raum.",
-          "linkLabel": "Auf Mixcloud hören",
-          "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
-          "embedUrl": ""
-        }
-      ]
-    },
-    "shows": {
-      "enabled": true,
-      "navLabel": "Shows",
-      "title": "Sh",
-      "titleAccent": "ows.",
-      "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
-      "pastLabel": "Schon gespielt",
-      "items": [],
-      "view": "calendar"
-    },
-    "references": {
-      "enabled": true,
-      "navLabel": "Referenzen",
-      "title": "Refe",
-      "titleAccent": "renzen.",
-      "note": "Dein Club oder Festival als Nächstes?",
-      "noteLinkLabel": "Schreib mir →",
-      "items": [
-        {
-          "name": "Kugl",
-          "city": "St. Gallen",
-          "url": ""
-        },
-        {
-          "name": "Sektor 11",
-          "city": "Zürich",
-          "url": ""
-        },
-        {
-          "name": "The Q",
-          "city": "Schaan, FL",
-          "url": ""
-        },
-        {
-          "name": "IVY",
-          "city": "St. Gallen",
-          "url": ""
-        },
-        {
-          "name": "BBC",
-          "city": "Gossau",
-          "url": ""
-        },
-        {
-          "name": "B9",
-          "city": "St. Gallen",
-          "url": ""
-        },
-        {
-          "name": "Ultrawild Festival",
-          "city": "St. Gallen",
-          "url": ""
-        }
-      ]
-    },
-    "gallery": {
-      "enabled": true,
-      "navLabel": "Galerie",
-      "title": "Gal",
-      "titleAccent": "erie.",
-      "items": [
-        {
-          "src": "img/gallery-01.jpg",
-          "alt": "Sam Sparkling live — Crowd mit erhobenen Händen",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-02.jpg",
-          "alt": "Sam Sparkling mixt an den CDJs",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-03.jpg",
-          "alt": "Bühnenlicht während eines Hardstyle-Sets",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-04.jpg",
-          "alt": "Sam Sparkling hinter der Booth",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-05.jpg",
-          "alt": "Crowd an einer Show von Sam Sparkling",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-06.jpg",
-          "alt": "Sam Sparkling, Portrait in der Location",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-07.jpg",
-          "alt": "Hände in der Luft auf dem Dancefloor",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-08.jpg",
-          "alt": "Sam Sparkling während seines Sets",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-09.jpg",
-          "alt": "Lichtshow über dem Dancefloor",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-10.jpg",
-          "alt": "Sam Sparkling auf der Bühne",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-11.jpg",
-          "alt": "Blick aus der Booth über die Crowd",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "img/gallery-12.jpg",
-          "alt": "Letzter Moment der Nacht",
-          "credit": "Sarto Photography"
-        }
-      ]
-    },
-    "shop": {
-      "enabled": true,
-      "navLabel": "Shop",
-      "title": "Sh",
-      "titleAccent": "op.",
-      "note": "Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.",
-      "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
-      "currency": "CHF",
-      "twint": "",
-      "buyLabel": "Kaufen",
-      "items": []
-    },
-    "booking": {
-      "enabled": true,
-      "navLabel": "Booking",
-      "title": "Boo",
-      "titleAccent": "king.",
-      "availableKicker": "Verfügbar für",
-      "available": [
-        "Clubs & Venues",
-        "Festivals",
-        "Schweiz & Europa"
-      ],
-      "presskitLabel": "Presskit (PDF)",
-      "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
-      "form": {
-        "enabled": true,
-        "kicker": "Booking-Anfrage",
-        "title": "Erzähl mir von deinem Event",
-        "successText": "Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir.",
-        "errorText": "Da ist etwas schiefgelaufen. Schreib mir bitte direkt an info@samsparking.ch.",
-        "submitLabel": "Anfrage senden"
-      },
-      "rider": {
-        "kicker": "Bevorzugtes Setup",
-        "groups": [
-          {
-            "title": "CDJs — 4× erforderlich",
-            "items": [
-              {
-                "name": "Pioneer CDJ-3000X",
-                "meta": "1. Wahl"
-              },
-              {
-                "name": "Pioneer CDJ-3000",
-                "meta": "2. Wahl"
-              },
-              {
-                "name": "Pioneer CDJ-2000NXS2",
-                "meta": "3. Wahl"
-              }
-            ]
-          },
-          {
-            "title": "Mixer — eines der folgenden",
-            "items": [
-              {
-                "name": "Pioneer DJM-V10",
-                "meta": "1. Wahl"
-              },
-              {
-                "name": "Pioneer DJM-A9",
-                "meta": "2. Wahl"
-              },
-              {
-                "name": "Pioneer DJM-2000NXS",
-                "meta": "3. Wahl"
-              }
-            ]
-          }
-        ],
-        "note": "Bitte Booth-Monitore mit unabhängiger Lautstärkeregelung bereitstellen — essenziell für sauberes Cueing und Mixing."
-      }
-    },
-    "contact": {
-      "enabled": true,
-      "navLabel": "Kontakt",
-      "title": "Kon",
-      "titleAccent": "takt.",
-      "kicker": "Booking & Anfragen",
-      "email": "info@samsparking.ch",
-      "phone": "+41 77 509 11 71",
-      "base": "St. Gallen, Schweiz",
-      "socials": [
-        {
-          "label": "Mixcloud",
-          "url": "https://www.mixcloud.com/samsparking/"
-        }
-      ]
-    }
-  },
-  "ui": {
-    "skip": "Zum Inhalt springen",
-    "menu": "Menü",
-    "close": "Schliessen",
-    "scroll": "Scrollen ↓",
-    "imageViewer": "Bildansicht",
-    "prevImage": "Vorheriges Bild",
-    "nextImage": "Nächstes Bild",
-    "openImage": "Bild {n} von {total} gross öffnen",
-    "rights": "Alle Rechte vorbehalten",
-    "photography": "Fotografie",
-    "phone": "Telefon",
-    "base": "Standort",
-    "tickets": "Tickets",
-    "soldOut": "Ausverkauft",
-    "booked": "Gebucht",
-    "calShow": "Termin",
-    "prevMonth": "Vorheriger Monat",
-    "nextMonth": "Nächster Monat",
-    "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So",
-    "sending": "Wird gesendet …",
-    "formInvalid": "Bitte die markierten Felder prüfen.",
-    "fName": "Dein Name",
-    "fEmail": "E-Mail",
-    "fEvent": "Event / Club",
-    "fCity": "Ort",
-    "fDate": "Datum",
-    "fSetLength": "Set-Länge",
-    "fMessage": "Nachricht",
-    "fSetLengthHint": "z. B. 60 Min.",
-    "fHoneypot": "Bitte leer lassen",
-    "notFoundTitle": "Nichts hier.",
-    "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
-    "notFoundCta": "Zur Startseite",
-    "language": "Sprache",
-    "buy": "Kaufen",
-    "orderByMail": "Per Mail bestellen",
-    "orderSubject": "Bestellung",
-    "bookDay": "Diesen Tag anfragen",
-    "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
-    "dayBusy": "Belegt",
-    "twintSend": "Per TWINT bezahlen an",
-    "twintRef": "Vermerk",
-    "twintNote": "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
-    "twintConfirm": "Bestellung per Mail bestätigen",
-    "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
-    "toTop": "Nach oben"
+    "meta": "Euphoric Hardstyle / Melodic Hardstyle",
+    "nameMain": "Sparkling",
+    "nameSpaced": "S A M",
+    "tagline": "Aus Energie wird Euphorie."
   },
   "i18n": {
     "en": {
@@ -1732,5 +1317,423 @@
         }
       }
     }
-  }
+  },
+  "layout": [
+    "about",
+    "sound",
+    "shows",
+    "references",
+    "gallery",
+    "shop",
+    "booking",
+    "contact"
+  ],
+  "pages": [
+    {
+      "slug": "",
+      "navLabel": "Start",
+      "title": "",
+      "hero": "full",
+      "ticker": true,
+      "inNav": true,
+      "sections": [
+        "about",
+        "sound",
+        "shows",
+        "references",
+        "gallery",
+        "shop",
+        "booking",
+        "contact"
+      ]
+    }
+  ],
+  "schemaVersion": 2,
+  "sections": {
+    "about": {
+      "enabled": true,
+      "facts": [
+        {
+          "label": "Erstes Set",
+          "value": "2021"
+        },
+        {
+          "label": "Clubs & Festivals",
+          "value": "7+"
+        },
+        {
+          "label": "BPM Zuhause",
+          "value": "150"
+        }
+      ],
+      "lede": "Ich bin Sam Sparkling, 19, DJ und Producer aus St. Gallen. Meine Geschichte begann lange, bevor ich zum ersten Mal hinter einem DJ-Setup stand.",
+      "navLabel": "Über mich",
+      "paragraphs": [
+        "Aufgewachsen mit Festivalvideos und früh im Hardstyle zu Hause, war es ein Defqon.1-Video, das mir zum ersten Mal gezeigt hat, was Musik wirklich kann. Die Energie, die Atmosphäre, die Verbindung zwischen DJ und Crowd — das hat mich sofort getroffen und nicht mehr losgelassen. Mit 15 wurde aus Faszination eine Richtung: Ich sah einen DJ, der einen Dancefloor komplett im Griff hatte. Ab diesem Moment war Produzieren und Auflegen kein Nebenprojekt mehr, sondern der einzige Weg, der für mich Sinn ergab.",
+        "Vier Jahre später schleife ich täglich an meinem Sound, Track für Track. Inspiriert von Artists wie **Sound Rush**, **Sub Zero Project** und **Headhunterz** konzentriere ich mich auf Euphoric Hardstyle — druckvolle Kicks, kombiniert mit emotionalen Melodien, die dich hineinziehen und nicht mehr loslassen.",
+        "Der Name **Sparkling** ist kein Zufall. Er steht für konstante Energie, einen Kopf voller Ideen und einen Optimismus, der in jeder Produktion durchschlägt. Meine Sets bauen auf Emotion, Storytelling und Crowd-Energie — sie schaffen Momente, in denen Musik und Publikum wirklich zusammenfinden.",
+        "Meine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist."
+      ],
+      "photo": {
+        "alt": "Portrait von Sam Sparkling",
+        "credit": "Foto — Sarto Photography",
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU1vLnR1ajbjuKnSCI%2Fsartophotography-dsc04164-print.jpg?alt=media&token=62cb2959-a9a7-430a-8adf-6fe756495f67"
+      },
+      "title": "Über",
+      "titleAccent": "mich.",
+      "words": [
+        "Emotional",
+        "Kraftvoll",
+        "Euphorisch"
+      ]
+    },
+    "booking": {
+      "available": [
+        "Clubs & Venues",
+        "Festivals",
+        "Schweiz & Europa"
+      ],
+      "availableKicker": "Verfügbar für",
+      "enabled": true,
+      "form": {
+        "enabled": true,
+        "errorText": "Da ist etwas schiefgelaufen. Schreib mir bitte direkt an info@samsparking.ch.",
+        "kicker": "Booking-Anfrage",
+        "submitLabel": "Anfrage senden",
+        "successText": "Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir.",
+        "title": "Erzähl mir von deinem Event"
+      },
+      "navLabel": "Booking",
+      "presskitLabel": "Presskit (PDF)",
+      "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
+      "rider": {
+        "groups": [
+          {
+            "items": [
+              {
+                "meta": "1. Wahl",
+                "name": "Pioneer CDJ-3000X"
+              },
+              {
+                "meta": "2. Wahl",
+                "name": "Pioneer CDJ-3000"
+              },
+              {
+                "meta": "3. Wahl",
+                "name": "Pioneer CDJ-2000NXS2"
+              }
+            ],
+            "title": "CDJs — 4× erforderlich"
+          },
+          {
+            "items": [
+              {
+                "meta": "1. Wahl",
+                "name": "Pioneer DJM-V10"
+              },
+              {
+                "meta": "2. Wahl",
+                "name": "Pioneer DJM-A9"
+              },
+              {
+                "meta": "3. Wahl",
+                "name": "Pioneer DJM-2000NXS"
+              }
+            ],
+            "title": "Mixer — eines der folgenden"
+          }
+        ],
+        "kicker": "Bevorzugtes Setup",
+        "note": "Bitte Booth-Monitore mit unabhängiger Lautstärkeregelung bereitstellen — essenziell für sauberes Cueing und Mixing."
+      },
+      "title": "Boo",
+      "titleAccent": "king."
+    },
+    "contact": {
+      "base": "St. Gallen, Schweiz",
+      "email": "info@samsparking.ch",
+      "enabled": true,
+      "kicker": "Booking & Anfragen",
+      "navLabel": "Kontakt",
+      "phone": "+41 77 509 11 71",
+      "socials": [
+        {
+          "label": "Mixcloud",
+          "url": "https://www.mixcloud.com/samsparking/"
+        }
+      ],
+      "title": "Kon",
+      "titleAccent": "takt."
+    },
+    "gallery": {
+      "enabled": true,
+      "items": [
+        {
+          "alt": "Sam Sparkling live — Crowd mit erhobenen Händen",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&token=325c944f-ff1b-479c-bdea-473b0b1257db"
+        },
+        {
+          "alt": "Sam Sparkling mixt an den CDJs",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171"
+        },
+        {
+          "alt": "Bühnenlicht während eines Hardstyle-Sets",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQQ%2Fdsc01431.jpg?alt=media&token=927faf36-b359-4b57-81f2-46c6ca1cd1aa"
+        },
+        {
+          "alt": "Sam Sparkling hinter der Booth",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQR%2Fdsc01432.jpg?alt=media&token=c595b476-15fd-4cc8-a61d-f5288ca30c39"
+        },
+        {
+          "alt": "Crowd an einer Show von Sam Sparkling",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbl%2Fdsc01363-2.jpg?alt=media&token=a53f40fe-b244-4a1e-89ac-e9f6adc61f8f"
+        },
+        {
+          "alt": "Sam Sparkling, Portrait in der Location",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU1vLnR1ajbjuKnSCI%2Fsartophotography-dsc04164-print.jpg?alt=media&token=62cb2959-a9a7-430a-8adf-6fe756495f67"
+        },
+        {
+          "alt": "Hände in der Luft auf dem Dancefloor",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQS%2Fdsc01434.jpg?alt=media&token=e1f93b67-3278-4889-9cdc-e400b096bf9a"
+        },
+        {
+          "alt": "Sam Sparkling während seines Sets",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbm%2Fdsc01363.jpg?alt=media&token=970a22f6-6e46-48d7-823f-9c9089f08e6f"
+        },
+        {
+          "alt": "Lichtshow über dem Dancefloor",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbn%2Fdsc01395.jpg?alt=media&token=9c942a63-b8db-4f72-8520-196106de2b3c"
+        },
+        {
+          "alt": "Sam Sparkling auf der Bühne",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQP%2Fdsc01430.jpg?alt=media&token=a2b80100-cb77-4120-878b-cc9ac62aff65"
+        },
+        {
+          "alt": "Blick aus der Booth über die Crowd",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbo%2Fdsc01396.jpg?alt=media&token=98915a35-6435-4e3f-b05c-289364e37aa3"
+        },
+        {
+          "alt": "Letzter Moment der Nacht",
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbp%2Fdsc01426.jpg?alt=media&token=d2664e47-f9d9-4567-bd91-622adb8b567b"
+        }
+      ],
+      "navLabel": "Galerie",
+      "title": "Gal",
+      "titleAccent": "erie."
+    },
+    "references": {
+      "enabled": true,
+      "items": [
+        {
+          "city": "St. Gallen",
+          "name": "Kugl"
+        },
+        {
+          "city": "Zürich",
+          "name": "Sektor 11"
+        },
+        {
+          "city": "Schaan, FL",
+          "name": "The Q"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "IVY"
+        },
+        {
+          "city": "Gossau",
+          "name": "BBC"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "B9"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Ultrawild Festival"
+        }
+      ],
+      "navLabel": "Referenzen",
+      "note": "Dein Club oder Festival als Nächstes?",
+      "noteLinkLabel": "Schreib mir →",
+      "title": "Refe",
+      "titleAccent": "renzen."
+    },
+    "shop": {
+      "buyLabel": "Kaufen",
+      "currency": "CHF 5",
+      "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
+      "enabled": true,
+      "items": [
+        {
+          "alt": "as",
+          "linkUrl": "asd",
+          "name": "Beispiel",
+          "note": "as",
+          "price": "35",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
+          "status": "available"
+        }
+      ],
+      "navLabel": "Shop",
+      "note": "Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.",
+      "title": "Sh",
+      "titleAccent": "op.",
+      "twint": ""
+    },
+    "shows": {
+      "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
+      "enabled": true,
+      "navLabel": "Shows",
+      "pastLabel": "Schon gespielt",
+      "title": "Sh",
+      "titleAccent": "ows.",
+      "view": "calendar",
+      "items": []
+    },
+    "sound": {
+      "enabled": true,
+      "genres": [
+        {
+          "meta": "Genre",
+          "name": "Euphoric Hardstyle"
+        },
+        {
+          "meta": "Genre",
+          "name": "Melodic Hardstyle"
+        }
+      ],
+      "mixes": [
+        {
+          "kicker": "Aktueller Mix",
+          "linkLabel": "Auf Mixcloud hören",
+          "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
+          "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparkling einen Raum.",
+          "title": "Euphoric & Melodic Hardstyle — Recorded Set"
+        }
+      ],
+      "navLabel": "Sound",
+      "note": "Druckvolle Kicks. Emotionale Melodien. Ich baue Sets, die von Storytelling und Crowd-Energie leben.",
+      "title": "Gen",
+      "titleAccent": "res."
+    }
+  },
+  "site": {
+    "accentColor": "#2e6bff",
+    "artist": "Sam Sparkling",
+    "backgroundImage": "img/hero.jpg",
+    "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json",
+    "claim": "Aus Energie wird Euphorie",
+    "description": "Ich bin Sam Sparkling, Hardstyle-DJ und Producer aus St. Gallen. Euphoric und Melodic Hardstyle für Clubs, Venues und Festivals in der Schweiz und Europa.",
+    "domain": "https://djsamsparkling.netlify.app",
+    "keywords": [
+      "Sam Sparkling",
+      "Hardstyle DJ",
+      "Euphoric Hardstyle",
+      "Melodic Hardstyle",
+      "DJ St. Gallen",
+      "Hardstyle Schweiz",
+      "DJ Booking Schweiz"
+    ],
+    "lang": "de",
+    "languages": [
+      "de",
+      "en",
+      "fr"
+    ],
+    "logoText": "Sam Sparkling",
+    "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Buch mich für deinen Club oder dein Festival — Schweiz und Europa.",
+    "ogImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171",
+    "ogTitle": "Sam Sparkling — Aus Energie wird Euphorie",
+    "photoCredit": "Sarto Photography",
+    "themeColor": "#05070e",
+    "title": "Sam Sparkling — Hardstyle-DJ & Producer aus St. Gallen"
+  },
+  "ticker": {
+    "enabled": true,
+    "items": [
+      {
+        "accent": "Energie",
+        "text": "Aus"
+      },
+      {
+        "accent": "Euphorie",
+        "text": "wird"
+      },
+      {
+        "accent": "Hardstyle",
+        "text": "Euphoric"
+      },
+      {
+        "accent": "Hardstyle",
+        "text": "Melodic"
+      },
+      {
+        "accent": "Edition",
+        "text": "2026"
+      }
+    ]
+  },
+  "ui": {
+    "skip": "Zum Inhalt springen",
+    "menu": "Menü",
+    "close": "Schliessen",
+    "scroll": "Scrollen ↓",
+    "imageViewer": "Bildansicht",
+    "prevImage": "Vorheriges Bild",
+    "nextImage": "Nächstes Bild",
+    "openImage": "Bild {n} von {total} gross öffnen",
+    "rights": "Alle Rechte vorbehalten",
+    "photography": "Fotografie",
+    "phone": "Telefon",
+    "base": "Standort",
+    "tickets": "Tickets",
+    "soldOut": "Ausverkauft",
+    "booked": "Gebucht",
+    "calShow": "Termin",
+    "prevMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So",
+    "sending": "Wird gesendet …",
+    "formInvalid": "Bitte die markierten Felder prüfen.",
+    "fName": "Dein Name",
+    "fEmail": "E-Mail",
+    "fEvent": "Event / Club",
+    "fCity": "Ort",
+    "fDate": "Datum",
+    "fSetLength": "Set-Länge",
+    "fMessage": "Nachricht",
+    "fSetLengthHint": "z. B. 60 Min.",
+    "fHoneypot": "Bitte leer lassen",
+    "notFoundTitle": "Nichts hier.",
+    "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
+    "notFoundCta": "Zur Startseite",
+    "language": "Sprache",
+    "buy": "Kaufen",
+    "orderByMail": "Per Mail bestellen",
+    "orderSubject": "Bestellung",
+    "bookDay": "Diesen Tag anfragen",
+    "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
+    "dayBusy": "Belegt",
+    "twintSend": "Per TWINT bezahlen an",
+    "twintRef": "Vermerk",
+    "twintNote": "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
+    "twintConfirm": "Bestellung per Mail bestätigen",
+    "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
+    "toTop": "Nach oben"
+  },
+  "updatedAt": "2026-07-27T04:36:05.224Z",
+  "updatedBy": "Verwaltung"
 }
