@@ -1515,6 +1515,9 @@ ${jsonScript(structuredData(c, sections, page, pages))}
   </script>
 
   <meta name="theme-color" content="${esc(ink)}">
+  <link rel="apple-touch-icon" href="/img/icon-180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/img/icon-32.png">
+  <link rel="manifest" href="/manifest.webmanifest">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='${encodeURIComponent(
     ink
   )}'/%3E%3Cpath d='M36 6 14 38h14l-4 20 26-34H34z' fill='${encodeURIComponent(
@@ -1606,6 +1609,9 @@ ${
       <span class="mono">© <span id="yr">${today().slice(0, 4)}</span> ${esc(
     site.artist
   )} — ${esc(ui.rights)}</span>
+      <a class="mono" href="${esc(langPrefix(lang, master) + "/rechtliches/")}">${esc(
+    LEGAL_LABEL[lang] || LEGAL_LABEL.de
+  )}</a>
       ${site.claim ? `<span class="claim">${esc(site.claim)}</span>` : ""}
       ${
         site.photoCredit
@@ -1616,6 +1622,104 @@ ${
   </footer>
 ${showsData}
   <script src="/assets/site.js" defer></script>
+</body>
+</html>
+`;
+}
+
+/* ------------------------------------------------------- rechtliches */
+
+const LEGAL_LABEL = { de: "Impressum & Datenschutz", en: "Legal & privacy", fr: "Mentions légales" };
+
+const LEGAL_TEXT = {
+  de: {
+    title: "Impressum & Datenschutz",
+    impressum: "Impressum",
+    impressumBody: (artist, base, email) =>
+      `<p>Verantwortlich für diese Website:</p><p><strong>${artist}</strong><br>${base}<br><a href="mailto:${email}">${email}</a></p>`,
+    privacy: "Datenschutz",
+    blocks: [
+      ["Kurzfassung", "Diese Website kommt ohne Tracking, Werbe-Cookies und Analyse-Dienste aus. Personendaten fallen nur an, wenn du sie selbst über ein Formular schickst."],
+      ["Hosting", "Die Website wird bei Netlify (Netlify Inc., USA) ausgeliefert. Beim Aufruf verarbeitet Netlify technisch notwendige Verbindungsdaten (z. B. IP-Adresse) in Server-Protokollen. Bilder werden über das Bild-CDN von Netlify verkleinert ausgeliefert."],
+      ["Medien", "Bilder und Videos liegen bei Google Firebase (Google Ireland Ltd.). Beim Laden dieser Dateien wird deine IP-Adresse an Firebase übermittelt."],
+      ["Booking-Anfragen und Bestellungen", "Schickst du eine Anfrage oder Bestellung ab, werden die Angaben aus dem Formular (Name, E-Mail, Nachricht, ggf. Datum und Ort) in einer Firebase-Datenbank gespeichert und ausschliesslich zur Bearbeitung deiner Anfrage verwendet. Sie werden nicht weitergegeben und auf Wunsch gelöscht."],
+      ["Bezahlung", "Beim Kauf über einen Bezahl-Link (z. B. Stripe) oder per TWINT gelten die Datenschutzbestimmungen des jeweiligen Anbieters; diese Website selbst speichert keine Zahlungsdaten."],
+      ["Lokaler Speicher", "Die Website merkt sich lediglich im Browser (localStorage), dass du den Hinweis unten bestätigt hast. Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt."],
+      ["Deine Rechte", "Du hast das Recht auf Auskunft, Berichtigung und Löschung deiner Daten (DSG/DSGVO). Melde dich dafür per E-Mail."],
+    ],
+  },
+  en: {
+    title: "Legal notice & privacy",
+    impressum: "Legal notice",
+    impressumBody: (artist, base, email) =>
+      `<p>Responsible for this website:</p><p><strong>${artist}</strong><br>${base}<br><a href="mailto:${email}">${email}</a></p>`,
+    privacy: "Privacy",
+    blocks: [
+      ["In short", "This website uses no tracking, no advertising cookies and no analytics. Personal data is only processed when you submit it through a form yourself."],
+      ["Hosting", "The site is served by Netlify (Netlify Inc., USA). When you visit, Netlify processes technically necessary connection data (e.g. IP address) in server logs. Images are resized and delivered via Netlify's image CDN."],
+      ["Media", "Images and videos are stored with Google Firebase (Google Ireland Ltd.). Loading these files transmits your IP address to Firebase."],
+      ["Booking requests and orders", "If you submit a request or an order, the form details (name, e-mail, message, date and place if given) are stored in a Firebase database and used solely to handle your request. They are not shared and will be deleted on request."],
+      ["Payment", "Purchases via a payment link (e.g. Stripe) or TWINT are governed by the provider's privacy policy; this website itself stores no payment data."],
+      ["Local storage", "The site only remembers in your browser (localStorage) that you confirmed the notice below. No advertising or analytics cookies are set."],
+      ["Your rights", "You have the right to access, correct and delete your data (Swiss FADP / GDPR). Just send an e-mail."],
+    ],
+  },
+  fr: {
+    title: "Mentions légales & protection des données",
+    impressum: "Mentions légales",
+    impressumBody: (artist, base, email) =>
+      `<p>Responsable de ce site :</p><p><strong>${artist}</strong><br>${base}<br><a href="mailto:${email}">${email}</a></p>`,
+    privacy: "Protection des données",
+    blocks: [
+      ["En bref", "Ce site n'utilise ni traçage, ni cookies publicitaires, ni outils d'analyse. Des données personnelles ne sont traitées que si tu les envoies toi-même via un formulaire."],
+      ["Hébergement", "Le site est servi par Netlify (Netlify Inc., USA). Lors de la visite, Netlify traite des données de connexion techniquement nécessaires (p. ex. adresse IP) dans ses journaux. Les images sont redimensionnées et livrées via le CDN d'images de Netlify."],
+      ["Médias", "Les images et vidéos sont hébergées chez Google Firebase (Google Ireland Ltd.). Leur chargement transmet ton adresse IP à Firebase."],
+      ["Demandes de booking et commandes", "Si tu envoies une demande ou une commande, les informations du formulaire (nom, e-mail, message, date et lieu le cas échéant) sont enregistrées dans une base Firebase et utilisées uniquement pour traiter ta demande. Elles ne sont pas transmises et seront supprimées sur demande."],
+      ["Paiement", "Les achats via un lien de paiement (p. ex. Stripe) ou TWINT sont soumis aux règles de l'opérateur concerné ; ce site ne conserve aucune donnée de paiement."],
+      ["Stockage local", "Le site retient uniquement dans ton navigateur (localStorage) que tu as confirmé l'avis en bas de page. Aucun cookie publicitaire ou d'analyse n'est déposé."],
+      ["Tes droits", "Tu as le droit d'accéder à tes données, de les corriger et de les supprimer (LPD/RGPD). Il suffit d'envoyer un e-mail."],
+    ],
+  },
+};
+
+/** Impressum & Datenschutz — eine schlichte Seite je Sprache. */
+function renderLegal(c, lang, langs) {
+  const site = c.site;
+  const master = langs[0];
+  const t = LEGAL_TEXT[lang] || LEGAL_TEXT.de;
+  const contact = c.sections?.contact || {};
+  const email = esc(str(contact.email, "info@samsparking.ch"));
+  const artist = esc(site.artist);
+  const base = esc(str(contact.base, "St. Gallen, Schweiz"));
+  const ink = color(site.themeColor, "#05070e");
+  const accent = color(site.accentColor, "#2e6bff");
+  const prefix = langPrefix(lang, master);
+  return `<!DOCTYPE html>
+<html lang="${esc(lang)}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${esc(t.title)} — ${artist}</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="stylesheet" href="/assets/site.css">
+  <style>:root{--ink:${ink};--spark:${accent};}
+    .legal{max-width:720px;margin:0 auto;padding:clamp(90px,14vh,140px) 22px 80px;}
+    .legal h1{font-size:clamp(1.6rem,5vw,2.6rem);margin-bottom:34px;}
+    .legal h2{font-size:1.15rem;margin:38px 0 12px;}
+    .legal h3{font-size:.95rem;margin:24px 0 6px;color:var(--bone);}
+    .legal p{color:var(--bone-dim);margin-bottom:12px;}
+    .legal a{color:var(--spark);}
+  </style>
+</head>
+<body>
+  <main class="legal">
+    <a class="mono" href="${esc(prefix || "/")}">← ${artist}</a>
+    <h1>${esc(t.title)}</h1>
+    <h2>${esc(t.impressum)}</h2>
+    ${t.impressumBody(artist, base, email)}
+    <h2>${esc(t.privacy)}</h2>
+    ${t.blocks.map(([h, b]) => `<h3>${esc(h)}</h3><p>${esc(b)}</p>`).join("\n    ")}
+  </main>
 </body>
 </html>
 `;
@@ -1767,6 +1871,16 @@ async function main() {
     }
   }
 
+  // Impressum & Datenschutz je Sprache
+  for (const lang of langs) {
+    const rel = (langPrefix(lang, master) + "/rechtliches/index.html").replace(/^\//, "");
+    const file = resolve(ROOT, rel);
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, renderLegal(content, lang, langs));
+    written.push(rel);
+  }
+  console.log("[build] rechtliches/ (3 Sprachen)");
+
   await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages, langs));
   await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));
   await writeFile(resolve(ROOT, "404.html"), render404(content, langs));
@@ -1785,6 +1899,7 @@ async function main() {
 
   // Dasselbe innerhalb der Sprachverzeichnisse (en/, fr/, …)
   const keepSlugs = new Set(pages.map((p) => p.slug).filter(Boolean));
+  keepSlugs.add("rechtliches");
   for (const lang of langs.slice(1)) {
     const dir = resolve(ROOT, lang);
     if (!existsSync(dir)) continue;

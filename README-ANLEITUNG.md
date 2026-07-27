@@ -205,6 +205,11 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
   Inhalte stehen als freie, **eckige** Kacheln darauf, Bilder ohne Rahmen und
   ohne Rundungen, nur mit weichem Schatten
 - Alle Texte in der **Ich-Form** — die Website spricht als Sam, nicht über ihn
+- **Impressum & Datenschutz** unter `/rechtliches/` (drei Sprachen, im Footer
+  verlinkt) — Vorlage auf Basis des tatsächlichen Setups (Netlify, Firebase,
+  keine Tracker); vor dem offiziellen Launch einmal selbst durchlesen
+- **App-Icons und Web-Manifest** — beim „Zum Home-Bildschirm hinzufügen"
+  erscheint das Blitz-Logo statt eines Screenshots
 - **Drei Sprachen** — Deutsch unter `/`, Englisch unter `/en/`, Französisch
   unter `/fr/`. Umschalter im **Fussbereich**, `hreflang`-Verweise und
   `xhtml:link` in der Sitemap. Übersetzt wird in der Verwaltung (auf Wunsch von
