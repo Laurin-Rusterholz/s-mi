@@ -224,7 +224,7 @@
   // laufenden Videos. Läuft das Autoplay ins Leere (manche Browser blocken es
   // trotz muted), bleibt ebenfalls das Poster stehen.
   var heroVideo = document.querySelector(".hero-video");
-  if (heroVideo) {
+  if (heroVideo) try {
     // Kann das Geraet das Format gar nicht abspielen (z. B. iPhone-.mov in
     // HEVC auf Android), Video ausblenden — das Poster/Hintergrundbild bleibt.
     var heroFallback = function () {
@@ -243,6 +243,9 @@
       heroVideo.removeAttribute("autoplay");
       heroVideo.pause();
     } else {
+      heroVideo.muted = true;
+      heroVideo.defaultMuted = true;
+      heroVideo.setAttribute("webkit-playsinline", "");
       var heroTries = 0;
       var kick = function () {
         var pr = heroVideo.play();
@@ -269,8 +272,18 @@
         if (document.hidden) heroVideo.pause();
         else kick();
       });
+      // Beharrlich bleiben: in den ersten Sekunden mehrfach anstossen und
+      // nachziehen, sobald das Hero sichtbar ist
+      [400, 1200, 3000, 6000].forEach(function (ms) {
+        setTimeout(function () { if (heroVideo.paused) kick(); }, ms);
+      });
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting && heroVideo.paused) kick(); });
+        }).observe(heroVideo);
+      }
     }
-  }
+  } catch (e) { /* Video darf nie den Rest der Seite mitreissen */ }
 
   // Galerie-Videos nur abspielen, solange sie sichtbar sind
   var galVideos = Array.prototype.slice.call(document.querySelectorAll(".gal-video video"));
@@ -416,7 +429,7 @@
 
   /* ------------------------------------------------------- cookie-hinweis */
   var cookie = document.getElementById("cookie");
-  if (cookie) {
+  if (cookie) try {
     var seen = false;
     try { seen = localStorage.getItem("cookie-ok") === "1"; } catch (e) {}
     if (!seen) {
@@ -427,14 +440,14 @@
         cookie.hidden = true;
       });
     }
-  }
+  } catch (e) { /* Hinweis ist Beiwerk — nie die Seite gefaehrden */ }
 
   /* -------------------------------------------- Datumswahl im Formular */
   // Kleiner Monatskalender direkt beim Booking-Formular: Tag antippen setzt
   // das Datumsfeld. Tage mit Show sind belegt, Vergangenheit gesperrt.
   var bcal = document.getElementById("bform-cal");
   var bDate = document.querySelector('.bform input[name="date"]');
-  if (bcal && bDate) {
+  if (bcal && bDate) try {
     var bShowsRaw = document.getElementById("shows-data");
     var bShows = [];
     try { bShows = JSON.parse(bShowsRaw ? bShowsRaw.textContent : "[]") || []; } catch (e) { bShows = []; }
@@ -516,7 +529,7 @@
 
     bDraw();
     bcal.hidden = false;
-  }
+  } catch (e) { /* Kalender ist Komfort — das Datumsfeld bleibt benutzbar */ }
 
   /* ------------------------------------------------- Shows: abgelaufene weg */
   // Die Seite ist statisch generiert. Falls seit dem letzten Build Termine

@@ -324,9 +324,7 @@ function heroMedia(hero, site) {
     const poster = posterSrc ? esc(cdnUrl(posterSrc, 1600)) : "";
     return `<video class="hero-video" autoplay muted loop playsinline preload="auto"${
       poster ? ` poster="${poster}"` : ""
-    } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}" type="${videoType(
-      m.src
-    )}"></video>`;
+    } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}"></video>`;
   }
   return picture(m, { eager: true, sizes: "100vw" });
 }
