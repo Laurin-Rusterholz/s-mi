@@ -90,7 +90,9 @@ html{
 @keyframes vt-out{to{opacity:0}}
 @keyframes vt-in{from{opacity:0;transform:translateY(8px)}}
 body{
-  background:var(--ink);
+  /* Kein eigener body-Hintergrund: html traegt den Grundton. Haetten beide
+     einen, laege die body-Flaeche UEBER allen negativen z-Ebenen — Video
+     (z -1) und Hintergrundbild (z -3) waeren unsichtbar, alles schwarz. */
   color:var(--bone);
   font-family:var(--font-d);
   font-variation-settings:'wdth' 100,'wght' 380;
