@@ -7,6 +7,8 @@
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  document.documentElement.classList.add("js");
+
   /* ------------------------------------------------------------ mobile nav */
   var burger = document.getElementById("burger");
   var nav = document.getElementById("nav");
@@ -82,11 +84,21 @@
     );
   }
 
+  /* Galerie-Bilder erst zeigen, wenn sie geladen sind — kein hartes Aufpoppen */
+  Array.prototype.forEach.call(document.querySelectorAll(".gal img"), function (img) {
+    if (img.complete && img.naturalWidth) img.classList.add("ld");
+    else {
+      img.addEventListener("load", function () { img.classList.add("ld"); });
+      img.addEventListener("error", function () { img.classList.add("ld"); });
+    }
+  });
+
   /* -------------------------------------------- scroll progress + active nav */
   var progress = document.getElementById("progress");
+  var toTop = document.querySelector(".totop");
   var subnav = document.querySelector(".subnav");
   var links = Array.prototype.slice.call(
-    document.querySelectorAll('.subnav a[href^="#"]')
+    document.querySelectorAll('.subnav a[href^="#"], header nav a[href^="#"]')
   );
   var targets = links
     .map(function (a) {
@@ -106,6 +118,7 @@
         var h = document.documentElement.scrollHeight - window.innerHeight;
         progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
       }
+      if (toTop) toTop.classList.toggle("show", window.scrollY > 700);
       var y = window.scrollY + window.innerHeight * 0.32;
       var current = null;
       targets.forEach(function (t) {
@@ -307,7 +320,8 @@
         for (var day = 1; day <= days; day++) {
           var iso = year + "-" + pad(month + 1) + "-" + pad(day);
           var list = byDate[iso];
-          var classes = "cal-day";
+          var dow = new Date(iso + "T12:00:00Z").getUTCDay();
+          var classes = "cal-day" + (dow === 0 || dow === 6 ? " we" : "");
           if (iso === todayStr) classes += " today";
           if (iso < todayStr) classes += " past";
           if (list) {
@@ -407,7 +421,9 @@
         var iso = bYear + "-" + bPad(bMonth + 1) + "-" + bPad(day);
         var busy = bBusy[iso];
         var past = iso < bToday;
-        var cls = "bcal-day" + (iso === sel ? " sel" : "") + (busy ? " busy" : "") + (iso === bToday ? " today" : "");
+        var bDow = new Date(iso + "T12:00:00Z").getUTCDay();
+        var cls = "bcal-day" + (bDow === 0 || bDow === 6 ? " we" : "") +
+          (iso === sel ? " sel" : "") + (busy ? " busy" : "") + (iso === bToday ? " today" : "");
         if (past || busy) {
           html += '<span class="' + cls + '"' + (busy ? ' title="' + escapeBc(busyLabel) + '"' : "") + "><b>" + day + "</b></span>";
         } else {
@@ -532,6 +548,7 @@
           if (!res.ok) throw new Error("HTTP " + res.status);
           form.classList.remove("busy");
           form.classList.add("sent");
+          form.reset();
           setMsg(msg.getAttribute("data-success"), "ok");
         })
         .catch(function () {

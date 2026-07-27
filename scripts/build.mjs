@@ -734,6 +734,27 @@ function handleOf(url) {
   return last.startsWith("@") ? last : "@" + last;
 }
 
+/** Stilisiertes Kanal-Zeichen aus Label/URL — einfarbig, ohne Fremd-Dateien. */
+function socialIcon(label, url) {
+  const key = (String(label) + " " + String(url)).toLowerCase();
+  const P = 'fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  let body = "";
+  if (key.includes("instagram"))
+    body = `<rect x="3.5" y="3.5" width="17" height="17" rx="4.5" ${P}/><circle cx="12" cy="12" r="4" ${P}/><circle cx="17" cy="7" r="1.2" fill="currentColor"/>`;
+  else if (key.includes("tiktok"))
+    body = `<path d="M14 4v9.6a3.6 3.6 0 1 1-3-3.55" ${P}/><path d="M14 5.4c.7 1.9 2.3 3.2 4.4 3.4" ${P}/>`;
+  else if (key.includes("youtube"))
+    body = `<rect x="3" y="6" width="18" height="12" rx="3.5" ${P}/><path d="M10.5 9.5v5l4.5-2.5z" fill="currentColor"/>`;
+  else if (key.includes("spotify"))
+    body = `<circle cx="12" cy="12" r="8.5" ${P}/><path d="M8.5 10.2c2.6-.8 5-.6 7 .5M9 12.8c2-.6 3.9-.4 5.5.5M9.5 15.2c1.5-.4 2.9-.3 4 .3" ${P}/>`;
+  else if (key.includes("soundcloud") || key.includes("mixcloud"))
+    body = `<path d="M4 15v-3M6.5 15v-5M9 15V8M11.5 15V6.5M14 15V9" ${P}/><path d="M14 15h3.5a2.5 2.5 0 0 0 .4-4.97A4 4 0 0 0 14 9" ${P}/>`;
+  else if (key.includes("facebook"))
+    body = `<path d="M14.5 8H13c-.8 0-1.3.5-1.3 1.3V11h2.6l-.4 2.6h-2.2V20" ${P}/><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" ${P}/>`;
+  else body = `<path d="M7 17 17 7M9.5 7H17v7.5" ${P}/>`;
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
+}
+
 function renderContact(n, s) {
   const mail = str(s.email);
   const parts = mail.split("@");
@@ -745,9 +766,7 @@ function renderContact(n, s) {
         ${str(s.kicker) ? `<span class="mono">${esc(s.kicker)}</span>` : ""}
         ${
           mail
-            ? `<a class="big-mail" href="mailto:${esc(mail)}">${esc(parts[0])}@<wbr>${esc(
-                parts.slice(1).join("@")
-              )}</a>`
+            ? `<a class="big-mail" href="mailto:${esc(mail)}">${esc(mail)}</a>`
             : ""
         }
         ${
@@ -757,6 +776,7 @@ function renderContact(n, s) {
             .map((x) => {
               const handle = str(x.handle, handleOf(x.url));
               return `<a class="scard" href="${href(x.url)}" target="_blank" rel="noopener me">
+            <span class="scard-ico" aria-hidden="true">${socialIcon(x.label, x.url)}</span>
             <span class="scard-arrow" aria-hidden="true">↗</span>
             <span class="scard-name">${esc(x.label)}</span>
             ${handle ? `<span class="mono">${esc(handle)}</span>` : ""}
@@ -997,6 +1017,7 @@ const UI_DEFAULTS = {
   bookDay: "Diesen Tag anfragen",
   pickDay: "Oder Wunschdatum direkt im Kalender antippen:",
   dayBusy: "Belegt",
+  toTop: "Nach oben",
   twintSend: "Per TWINT bezahlen an",
   twintRef: "Vermerk",
   twintNote: "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
@@ -1495,6 +1516,18 @@ ${pageBackground(site)}
       <ul>
           ${nav}
       </ul>
+      ${
+        langs.length > 1
+          ? `<div class="nav-langs">${langs
+              .map(
+                (l) =>
+                  `<a href="${esc(
+                    langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
+                  )}" lang="${esc(l)}"${l === lang ? ' aria-current="true"' : ""}>${esc(l.toUpperCase())}</a>`
+              )
+              .join("")}</div>`
+          : ""
+      }
     </nav>
   </header>
 ${hero}${tickerBlock}${subNav}
@@ -1506,6 +1539,8 @@ ${body}
     <figure class="lb-fig"><img id="lb-img" src="" alt=""><figcaption id="lb-cap" class="mono"></figcaption></figure>
     <button class="lb-nav lb-next" id="lb-next" aria-label="${esc(ui.nextImage)}">›</button>
   </div>
+
+  <a class="totop" href="#top" aria-label="${esc(ui.toTop || "Nach oben")}">↑</a>
 
   <footer>
     <div class="wrap foot">

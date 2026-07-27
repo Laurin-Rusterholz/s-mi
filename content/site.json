@@ -426,7 +426,8 @@
     "twintRef": "Vermerk",
     "twintNote": "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
     "twintConfirm": "Bestellung per Mail bestätigen",
-    "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!"
+    "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
+    "toTop": "Nach oben"
   },
   "i18n": {
     "en": {
@@ -741,7 +742,8 @@
         "twintRef": "Reference",
         "twintNote": "After paying, confirm briefly by e-mail with your shipping address — then your piece ships.",
         "twintConfirm": "Confirm order by e-mail",
-        "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!"
+        "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!",
+        "toTop": "Back to top"
       },
       "hero": {
         "kicker": "DJ & producer — St. Gallen, Switzerland",
@@ -1065,7 +1067,8 @@
         "twintRef": "Motif",
         "twintNote": "Après le paiement, confirme par e-mail avec ton adresse de livraison — ta pièce part ensuite.",
         "twintConfirm": "Confirmer la commande par e-mail",
-        "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !"
+        "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !",
+        "toTop": "En haut"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -1391,7 +1394,8 @@
         "twintRef": "5f36991f",
         "twintNote": "164a381d",
         "twintConfirm": "b2ba67e1",
-        "orderMailBody": "303203c1"
+        "orderMailBody": "303203c1",
+        "toTop": "95722473"
       },
       "hero": {
         "kicker": "00cd226e",
@@ -1715,7 +1719,8 @@
         "twintRef": "5f36991f",
         "twintNote": "164a381d",
         "twintConfirm": "b2ba67e1",
-        "orderMailBody": "303203c1"
+        "orderMailBody": "303203c1",
+        "toTop": "95722473"
       },
       "hero": {
         "kicker": "00cd226e",
