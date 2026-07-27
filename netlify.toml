@@ -35,6 +35,11 @@
     Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
+  for = "/media/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+[[headers]]
   for = "/presskit/*"
   [headers.values]
     Cache-Control = "public, max-age=86400"

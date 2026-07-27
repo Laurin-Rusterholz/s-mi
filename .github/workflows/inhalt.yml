@@ -19,15 +19,37 @@ concurrency:
 jobs:
   uebernehmen:
     runs-on: ubuntu-latest
+    env:
+      CONTENT_API_URL: https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - name: Website aus dem Datenbank-Stand bauen
-        env:
-          CONTENT_API_URL: https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json
         run: node scripts/build.mjs
+
+      - name: Hero-Video verkleinern (einmal pro hochgeladenem Video)
+        # Die Originale aus der Verwaltung sind oft 15+ Mbit/s — auf Mobilfunk
+        # kommt der Puffer nie hinterher und das Video steht. ffmpeg rechnet
+        # eine schlanke H.264-Fassung (~3.8 Mbit/s, stumm, faststart); der
+        # Website-Build setzt sie ein, solange der Quelle-Marker passt.
+        continue-on-error: true
+        run: |
+          SRC=$(node -e "const c=require('./content/site.json');const m=c.hero&&c.hero.media;if(m&&m.type==='video'&&/^https?:/.test(m.src||''))console.log(m.src)")
+          if [ -z "$SRC" ]; then echo "Kein externes Hero-Video."; exit 0; fi
+          KNOWN=$(cat media/hero-video.source 2>/dev/null || true)
+          if [ "$SRC" = "$KNOWN" ]; then echo "Schon optimiert."; exit 0; fi
+          echo "Neues Hero-Video gefunden — verkleinern..."
+          mkdir -p media
+          curl -sSL --max-time 600 -o /tmp/hero-orig.mp4 "$SRC"
+          ffmpeg -hide_banner -loglevel error -y -i /tmp/hero-orig.mp4 \
+            -vf "scale=-2:1080" -c:v libx264 -preset veryfast -crf 26 \
+            -maxrate 3800k -bufsize 7600k -an -movflags +faststart \
+            -pix_fmt yuv420p media/hero-video.mp4
+          printf '%s' "$SRC" > media/hero-video.source
+          ls -la media/
+          node scripts/build.mjs
       - name: Aenderungen einchecken (loest den Netlify-Deploy aus)
         run: |
           git config user.name "verwaltung"

@@ -22,7 +22,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LOCAL_CONTENT = resolve(ROOT, "content/site.json");
 
 /** Verzeichnisse, die der Generator nie anfasst. */
-const KEEP_DIRS = new Set(["assets", "img", "content", "scripts", "presskit", "node_modules"]);
+const KEEP_DIRS = new Set(["assets", "img", "media", "content", "scripts", "presskit", "node_modules"]);
 
 /* ------------------------------------------------------------------ utils */
 
@@ -1692,6 +1692,29 @@ async function main() {
   const content = await loadContent();
   if (!content.site || !content.site.domain) {
     throw new Error("content: site.domain fehlt");
+  }
+
+  // Hero-Video: die Verwaltung liefert Originale in voller Bitrate (das
+  // aktuelle: 15+ Mbit/s — auf Mobilfunk kommt der Puffer nie hinterher).
+  // Die GitHub Action legt eine komprimierte Fassung unter media/ ab samt
+  // Quelle-Marker; passt der Marker zur aktuellen Quelle, nimmt der Build
+  // die schlanke Fassung. Laedt Sam ein neues Video hoch, greift wieder das
+  // Original, bis die Action nachgezogen hat.
+  try {
+    const hv = content.hero?.media;
+    if (hv?.type === "video" && /^https?:/i.test(String(hv.src || ""))) {
+      const markerFile = resolve(ROOT, "media/hero-video.source");
+      const localFile = resolve(ROOT, "media/hero-video.mp4");
+      if (existsSync(markerFile) && existsSync(localFile)) {
+        const known = (await readFile(markerFile, "utf8")).trim();
+        if (known === String(hv.src).trim()) {
+          hv.src = "media/hero-video.mp4";
+          console.log("[build] Hero-Video: komprimierte lokale Fassung eingesetzt");
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("[build] Video-Optimierung uebersprungen:", e.message);
   }
   await mkdir(resolve(ROOT, "content"), { recursive: true });
 
