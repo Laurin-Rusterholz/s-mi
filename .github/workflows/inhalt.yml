@@ -1,0 +1,41 @@
+# Holt den Stand aus der Verwaltung (Realtime Database) und checkt die neu
+# gebaute Website ein — der Push loest den Netlify-Deploy aus. Damit wirkt
+# "Publizieren" in der Verwaltung auch OHNE hinterlegten Netlify-Build-Hook:
+# spaetestens eine Stunde nach dem Speichern ist der Stand live.
+name: Inhalt aus der Verwaltung uebernehmen
+
+on:
+  schedule:
+    - cron: "23 * * * *"   # stuendlich
+  workflow_dispatch: {}     # von Hand: Actions -> Run workflow
+
+permissions:
+  contents: write
+
+concurrency:
+  group: inhalt-sync
+  cancel-in-progress: false
+
+jobs:
+  uebernehmen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Website aus dem Datenbank-Stand bauen
+        env:
+          CONTENT_API_URL: https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json
+        run: node scripts/build.mjs
+      - name: Aenderungen einchecken (loest den Netlify-Deploy aus)
+        run: |
+          git config user.name "verwaltung"
+          git config user.email "contact@laurin-rusterholz.ch"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Kein neuer Inhalt — nichts zu tun."
+            exit 0
+          fi
+          git commit -m "Inhalt aus der Verwaltung uebernommen"
+          git push

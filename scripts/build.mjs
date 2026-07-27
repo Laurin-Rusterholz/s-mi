@@ -562,17 +562,36 @@ function renderShop(n, s, contactEmail) {
   const items = list(s.items).filter((p) => str(p?.name));
   const cur = str(s.currency, "CHF");
   const buy = str(s.buyLabel, UI.buy);
+  const twint = str(s.twint);
   const cards = items
     .map((p) => {
       const sold = p.status === "soldout";
       const link = safeUrl(p.linkUrl);
+      const price = priceTag(p.price, cur);
       const order = contactEmail
-        ? `mailto:${contactEmail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}`
+        ? `mailto:${contactEmail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}` +
+          `&body=${encodeURIComponent(UI.orderMailBody.replace("{product}", [str(p.name), price].filter(Boolean).join(" — ")))}`
         : "";
+      // TWINT-Zahlung: aufklappbares Feld mit Nummer, Vermerk und Bestaetigung
+      const twintPanel =
+        twint && !link
+          ? `<details class="pay">
+            <summary class="btn sm">${esc(buy)} · TWINT</summary>
+            <div class="pay-panel">
+              <p class="mono">${esc(UI.twintSend)}</p>
+              <strong class="pay-nr">${esc(twint)}</strong>
+              <p>${esc(UI.twintRef)}: <b>${esc(p.name)}</b>${price ? ` · ${esc(price)}` : ""}</p>
+              <p class="pay-note">${esc(UI.twintNote)}</p>
+              ${order ? `<a class="btn sm ghost" href="${esc(order)}">${esc(UI.twintConfirm)}</a>` : ""}
+            </div>
+          </details>`
+          : "";
       const cta = sold
         ? `<span class="mono">${esc(UI.soldOut)}</span>`
         : link
         ? `<a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">${esc(buy)} ↗</a>`
+        : twintPanel
+        ? ""
         : order
         ? `<a class="btn sm ghost" href="${esc(order)}">${esc(UI.orderByMail)}</a>`
         : "";
@@ -582,9 +601,10 @@ function renderShop(n, s, contactEmail) {
             <h3>${esc(p.name)}</h3>
             ${str(p.note) ? `<p>${esc(p.note)}</p>` : ""}
             <div class="product-foot">
-              ${str(p.price) ? `<span class="price">${esc(priceTag(p.price, cur))}</span>` : ""}
+              ${str(p.price) ? `<span class="price">${esc(price)}</span>` : ""}
               ${cta}
             </div>
+            ${sold ? "" : twintPanel}
           </div>
         </article>`;
     })
@@ -977,6 +997,11 @@ const UI_DEFAULTS = {
   bookDay: "Diesen Tag anfragen",
   pickDay: "Oder Wunschdatum direkt im Kalender antippen:",
   dayBusy: "Belegt",
+  twintSend: "Per TWINT bezahlen an",
+  twintRef: "Vermerk",
+  twintNote: "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
+  twintConfirm: "Bestellung per Mail bestätigen",
+  orderMailBody: "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
   notFoundCta: "Zur Startseite",
@@ -1019,7 +1044,7 @@ const NO_TRANSLATE = new Set([
   "updatedAt", "updatedBy", "schemaVersion", "type", "view",
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
-  "name", "venue", "inquiryId", "backgroundImage", "price", "currency",
+  "name", "venue", "inquiryId", "backgroundImage", "price", "currency", "twint",
 ]);
 
 const looksTechnical = (v) =>

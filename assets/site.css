@@ -396,6 +396,22 @@ a.cal-day.has-show:hover .cal-dot{animation:pulse 1.2s ease-out infinite;}
 .product.soldout{opacity:.55;}
 .empty-note{color:var(--bone-dim);border:1px dashed var(--line);padding:26px 28px;max-width:52ch;}
 
+/* TWINT-Zahlung im Produkt */
+.pay{margin-top:2px;}
+.pay summary{list-style:none;display:inline-flex;user-select:none;}
+.pay summary::-webkit-details-marker{display:none;}
+.pay[open] summary{border-color:var(--spark);color:var(--spark);}
+.pay-panel{
+  margin-top:12px;border:1px solid var(--line);background:rgba(9,13,24,.65);
+  padding:16px;display:flex;flex-direction:column;gap:8px;font-size:.88rem;
+}
+.pay-nr{
+  font-family:var(--font-m);font-size:1.25rem;letter-spacing:.08em;color:var(--spark);
+  user-select:all;
+}
+.pay-note{color:var(--bone-dim);font-size:.82rem;}
+.pay-panel .btn{margin-top:6px;align-self:flex-start;}
+
 /* Freie Kalendertage sind anklickbar */
 .cal-day.bookable{cursor:pointer;transition:background .2s;}
 .cal-day.bookable:hover{background:rgba(46,107,255,.18);}
