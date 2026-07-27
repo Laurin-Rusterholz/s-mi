@@ -264,7 +264,7 @@
       shows = [];
     }
 
-    if (shows.length) {
+    {
       var lang = document.documentElement.lang || "de";
       var weekdays = (calBox.getAttribute("data-weekdays") || "Mo,Di,Mi,Do,Fr,Sa,So").split(",");
       var bookedLabel = calBox.getAttribute("data-booked") || "Gebucht";

@@ -339,6 +339,19 @@
         <span class="num">03</span>
         <h2 id="shows-h">Da<i>tes.</i></h2>
       </div>
+      <div class="cal rv" id="shows-calendar" data-weekdays="Lun,Mar,Mer,Jeu,Ven,Sam,Dim" data-booked="Réservé" hidden>
+        <div class="cal-head">
+          <button type="button" class="cal-nav" data-cal="prev" aria-label="Mois précédent">‹</button>
+          <strong class="cal-month" id="cal-month"></strong>
+          <button type="button" class="cal-nav" data-cal="next" aria-label="Mois suivant">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid" role="grid" aria-labelledby="cal-month"></div>
+        <p class="cal-legend">
+          <span class="lg lg-show">Date</span>
+          <span class="lg lg-booked">Réservé</span>
+          <span class="lg lg-soldout">Complet</span>
+        </p>
+      </div>
       <p class="live-note rv">Je n&#39;ai aucune date annoncée pour l&#39;instant. Les nouveaux shows arrivent ici en premier — ou contacte-moi et réserve-moi pour ton événement.</p>
       
     </div>
@@ -567,6 +580,7 @@
     </div>
   </footer>
 
+  <script type="application/json" id="shows-data">[]</script>
   <script src="/assets/site.js" defer></script>
 </body>
 </html>

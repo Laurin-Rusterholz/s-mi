@@ -438,7 +438,7 @@ function renderShows(n, s) {
   // Der Kalender wird von assets/site.js aufgebaut (aus #shows-data) und erst
   // dann eingeblendet — ohne JavaScript bleibt die Liste allein stehen.
   const calendar =
-    str(s.view, "calendar") !== "list" && items.length
+    str(s.view, "calendar") !== "list"
       ? `
       <div class="cal rv" id="shows-calendar" data-weekdays="${esc(UI.weekdays)}" data-booked="${esc(UI.booked)}" hidden>
         <div class="cal-head">
@@ -1279,7 +1279,7 @@ function renderPage(c, page, pages, lang, langs) {
 
   // Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf)
   const showsData =
-    order.includes("shows") && list(sections.shows?.items).length
+    order.includes("shows")
       ? `
   <script type="application/json" id="shows-data">${jsonScript(
     list(sections.shows.items)
