@@ -92,7 +92,7 @@ header{
    Mobil-Menü ohne Hintergrund in der Seite hängen. */
 header::before{
   content:"";position:absolute;inset:0;z-index:-1;
-  background:rgba(8,11,20,.68);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:rgba(8,11,20,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
 }
 .logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;}
 header nav ul{display:flex;gap:clamp(18px,2.4vw,34px);list-style:none;}
@@ -509,7 +509,7 @@ a.cal-day.has-show:hover .cal-dot{animation:pulse 1.2s ease-out infinite;}
 }
 .gal-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;position:relative;}
 .gal img{transition:transform .5s ease,opacity .45s ease;}
-.js .gal img:not(.ld){opacity:0;}
+.gal img.ld{opacity:1;}
 .gal figure:hover img{transform:scale(1.035);}
 .gal figcaption{
   position:absolute;left:12px;bottom:10px;font-family:var(--font-m);font-size:.62rem;letter-spacing:.12em;
@@ -657,6 +657,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
    ========================================================================== */
 @media(max-width:700px){
   :root{--head:54px;}
+  header::before{background:rgba(8,11,20,.94);}
   body{font-size:16px;}
   .wrap{padding:0 18px;}
   .pad{padding:56px 0;}

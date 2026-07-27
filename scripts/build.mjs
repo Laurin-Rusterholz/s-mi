@@ -221,17 +221,38 @@ function sectionHead(n, s, key) {
       </div>`;
 }
 
-function picture(media, { className = "", eager = false, sizes = "" } = {}) {
-  const src = href(media?.src);
-  if (!src) return "";
+/*
+ * Bilder über das Netlify-Image-CDN ausliefern: verkleinert, als WebP/AVIF,
+ * am Netz-Rand zwischengespeichert. Die Uploads aus der Verwaltung sind
+ * Handyfotos in Originalgrösse (mehrere MB) — direkt aus Firebase geladen
+ * fühlt sich das auf dem Handy wie "Bilder laden nicht" an.
+ *
+ * Aktiv nur, wenn der Build bei Netlify läuft (oder IMAGE_CDN=1 gesetzt ist);
+ * lokal bleiben die Originalpfade, damit Vorschau und Tests ohne CDN laufen.
+ */
+const CDN = !!(process.env.NETLIFY || process.env.IMAGE_CDN);
+
+function cdnUrl(src, w) {
+  const clean = String(src || "").trim();
+  if (!CDN || !clean || isVideoUrl(clean)) return rooted(clean);
+  if (/^data:/i.test(clean)) return clean;
+  return `/.netlify/images?url=${encodeURIComponent(rooted(clean))}&w=${w}&q=72`;
+}
+
+function picture(media, { className = "", eager = false, sizes = "", widths = [480, 800, 1200] } = {}) {
+  const raw = String(media?.src || "").trim();
+  if (!raw || !safeUrl(raw)) return "";
+  const srcset = CDN
+    ? ` srcset="${widths.map((w) => `${esc(cdnUrl(raw, w))} ${w}w`).join(", ")}"`
+    : "";
   const attrs = [
-    `src="${src}"`,
+    `src="${esc(cdnUrl(raw, widths[widths.length - 1]))}"`,
     `alt="${esc(media?.alt || "")}"`,
     eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"',
     sizes ? `sizes="${esc(sizes)}"` : "",
     className ? `class="${esc(className)}"` : "",
   ].filter(Boolean);
-  return `<img ${attrs.join(" ")}>`;
+  return `<img ${attrs.join(" ")}${srcset}>`;
 }
 
 /** MIME-Typ aus der Dateiendung (Firebase-URLs tragen die Endung im Pfad). */
@@ -283,8 +304,8 @@ function sparks(n = 16) {
  */
 function pageBackground(site) {
   if (!safeUrl(site.backgroundImage)) return "";
-  return `  <div class="page-bg" aria-hidden="true" style="background-image:url('${href(
-    site.backgroundImage
+  return `  <div class="page-bg" aria-hidden="true" style="background-image:url('${esc(
+    cdnUrl(site.backgroundImage, 1600)
   )}')"></div>`;
 }
 
@@ -296,7 +317,7 @@ function pageBackground(site) {
 function heroMedia(hero) {
   const m = hero.media || {};
   if (m.type === "video" && safeUrl(m.src)) {
-    const poster = href(m.poster);
+    const poster = safeUrl(m.poster) ? esc(cdnUrl(m.poster, 1600)) : "";
     return `<video class="hero-video" autoplay muted loop playsinline preload="auto"${
       poster ? ` poster="${poster}"` : ""
     } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}" type="${videoType(
@@ -1406,9 +1427,9 @@ function renderPage(c, page, pages, lang, langs) {
     if (page.hero !== "full") return "";
     const m = c.hero?.media || {};
     const first = m.type === "video" ? m.poster : m.src;
-    return safeUrl(first)
-      ? `  <link rel="preload" as="image" href="${esc(rooted(first))}" fetchpriority="high">\n`
-      : "";
+    if (!safeUrl(first)) return "";
+    const url = isVideoUrl(first) ? rooted(first) : cdnUrl(first, 1600);
+    return `  <link rel="preload" as="image" href="${esc(url)}" fetchpriority="high">\n`;
   })();
 
   // Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf)
@@ -1497,6 +1518,7 @@ ${jsonScript(structuredData(c, sections, page, pages))}
     accent
   )}'/%3E%3C/svg%3E">
 
+  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
