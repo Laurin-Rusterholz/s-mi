@@ -78,6 +78,7 @@
     "shows",
     "references",
     "gallery",
+    "shop",
     "booking",
     "contact"
   ],
@@ -95,6 +96,7 @@
         "shows",
         "references",
         "gallery",
+        "shop",
         "booking",
         "contact"
       ]
@@ -288,6 +290,17 @@
         }
       ]
     },
+    "shop": {
+      "enabled": true,
+      "navLabel": "Shop",
+      "title": "Sh",
+      "titleAccent": "op.",
+      "note": "Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.",
+      "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
+      "currency": "CHF",
+      "buyLabel": "Kaufen",
+      "items": []
+    },
     "booking": {
       "enabled": true,
       "navLabel": "Booking",
@@ -401,7 +414,11 @@
     "notFoundTitle": "Nichts hier.",
     "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
     "notFoundCta": "Zur Startseite",
-    "language": "Sprache"
+    "language": "Sprache",
+    "buy": "Kaufen",
+    "orderByMail": "Per Mail bestellen",
+    "orderSubject": "Bestellung",
+    "bookDay": "Diesen Tag anfragen"
   },
   "i18n": {
     "en": {
@@ -662,6 +679,14 @@
               "label": "Mixcloud"
             }
           }
+        },
+        "shop": {
+          "navLabel": "Shop",
+          "note": "Sam Sparkling merch — every piece helps fund the next production.",
+          "emptyText": "The shop opens soon — the first merch is in the works. Follow the channels below so you don't miss the drop.",
+          "buyLabel": "Buy",
+          "title": "Sh",
+          "titleAccent": "op."
         }
       },
       "ui": {
@@ -697,7 +722,11 @@
         "notFoundTitle": "Nothing here.",
         "notFoundText": "This page doesn't exist (any more). Head back to the start — everything current is there.",
         "notFoundCta": "Back to start",
-        "language": "Language"
+        "language": "Language",
+        "buy": "Buy",
+        "orderByMail": "Order by e-mail",
+        "orderSubject": "Order",
+        "bookDay": "Request this date"
       },
       "hero": {
         "kicker": "DJ & producer — St. Gallen, Switzerland",
@@ -967,6 +996,14 @@
               "label": "Mixcloud"
             }
           }
+        },
+        "shop": {
+          "navLabel": "Shop",
+          "note": "Le merch de Sam Sparkling — chaque pièce aide à financer la prochaine production.",
+          "emptyText": "Le shop ouvre bientôt — le premier merch est en préparation. Suis les canaux ci-dessous pour ne pas rater le lancement.",
+          "buyLabel": "Acheter",
+          "title": "Sh",
+          "titleAccent": "op."
         }
       },
       "ui": {
@@ -1002,7 +1039,11 @@
         "notFoundTitle": "Rien ici.",
         "notFoundText": "Cette page n'existe pas (ou plus). Retour à l'accueil — tout ce qui est actuel s'y trouve.",
         "notFoundCta": "Retour à l'accueil",
-        "language": "Langue"
+        "language": "Langue",
+        "buy": "Acheter",
+        "orderByMail": "Commander par e-mail",
+        "orderSubject": "Commande",
+        "bookDay": "Demander cette date"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -1274,6 +1315,14 @@
               "label": "afc62f32"
             }
           }
+        },
+        "shop": {
+          "navLabel": "28742cc9",
+          "note": "ed41c0e5",
+          "emptyText": "2ae6a9a6",
+          "buyLabel": "8dcd885d",
+          "title": "3f025d7e",
+          "titleAccent": "632213cc"
         }
       },
       "ui": {
@@ -1309,7 +1358,11 @@
         "notFoundTitle": "f280d90c",
         "notFoundText": "4bae6292",
         "notFoundCta": "51d280ee",
-        "language": "99efb25b"
+        "language": "99efb25b",
+        "buy": "8dcd885d",
+        "orderByMail": "77f6f959",
+        "orderSubject": "b8e896b6",
+        "bookDay": "78e97c4b"
       },
       "hero": {
         "kicker": "00cd226e",
@@ -1579,6 +1632,14 @@
               "label": "afc62f32"
             }
           }
+        },
+        "shop": {
+          "navLabel": "28742cc9",
+          "note": "ed41c0e5",
+          "emptyText": "2ae6a9a6",
+          "buyLabel": "8dcd885d",
+          "title": "3f025d7e",
+          "titleAccent": "632213cc"
         }
       },
       "ui": {
@@ -1614,7 +1675,11 @@
         "notFoundTitle": "f280d90c",
         "notFoundText": "4bae6292",
         "notFoundCta": "51d280ee",
-        "language": "99efb25b"
+        "language": "99efb25b",
+        "buy": "8dcd885d",
+        "orderByMail": "77f6f959",
+        "orderSubject": "b8e896b6",
+        "bookDay": "78e97c4b"
       },
       "hero": {
         "kicker": "00cd226e",

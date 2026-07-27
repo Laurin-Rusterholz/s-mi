@@ -268,6 +268,9 @@
       var lang = document.documentElement.lang || "de";
       var weekdays = (calBox.getAttribute("data-weekdays") || "Mo,Di,Mi,Do,Fr,Sa,So").split(",");
       var bookedLabel = calBox.getAttribute("data-booked") || "Gebucht";
+      // Freie Tage buchbar machen, wenn es auf der Seite ein Formular gibt
+      var bookLabel = calBox.getAttribute("data-book") || "";
+      var bookingForm = document.querySelector('.bform input[name="date"]');
       var grid = document.getElementById("cal-grid");
       var monthLabel = document.getElementById("cal-month");
       var byDate = {};
@@ -324,6 +327,10 @@
               ? '<a class="' + classes + '" href="' + escapeHtml(s.url) +
                 '" target="_blank" rel="noopener" title="' + escapeHtml(label) + '">' + inner + "</a>"
               : '<span class="' + classes + '" role="gridcell" title="' + escapeHtml(label) + '">' + inner + "</span>";
+          } else if (iso >= todayStr && bookLabel && bookingForm) {
+            html +=
+              '<a class="' + classes + ' bookable" href="#booking" data-date="' + iso +
+              '" title="' + escapeHtml(bookLabel) + '" role="gridcell"><b>' + day + "</b></a>";
           } else {
             html += '<span class="' + classes + '" role="gridcell"><b>' + day + "</b></span>";
           }
@@ -338,6 +345,15 @@
       }
 
       calBox.addEventListener("click", function (e) {
+        // Klick auf einen freien Tag: Datum ins Booking-Formular uebernehmen
+        var dayLink = e.target.closest("a.bookable");
+        if (dayLink && bookingForm) {
+          bookingForm.value = dayLink.getAttribute("data-date") || "";
+          bookingForm.dispatchEvent(new Event("change", { bubbles: true }));
+          var nameField = document.querySelector('.bform input[name="name"]');
+          setTimeout(function () { nameField && nameField.focus({ preventScroll: true }); }, 450);
+          return; // der Anker scrollt selbst zu #booking
+        }
         var btn = e.target.closest("[data-cal]");
         if (!btn) return;
         month += btn.getAttribute("data-cal") === "next" ? 1 : -1;

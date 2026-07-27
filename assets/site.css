@@ -371,6 +371,39 @@ a.cal-day.has-show:hover .cal-dot{animation:pulse 1.2s ease-out infinite;}
 .venue-idx{font-family:var(--font-m);font-size:.72rem;color:var(--spark);}
 .live-note{margin-top:26px;color:var(--bone-dim);font-size:.92rem;}
 
+/* ---------- SHOP ---------- */
+.shop-note{color:var(--bone-dim);max-width:60ch;margin-bottom:clamp(26px,4vw,40px);}
+.shop-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:clamp(16px,2.5vw,26px);
+}
+.product{
+  background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;
+  transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
+}
+.product:hover{transform:translateY(-3px);border-color:rgba(46,107,255,.55);}
+.product-img{aspect-ratio:4/5;overflow:hidden;}
+.product-img img{transition:transform .5s ease;}
+.product:hover .product-img img{transform:scale(1.04);}
+.product-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1;}
+.product-body h3{font-size:1.05rem;font-variation-settings:'wdth' 116,'wght' 740;}
+.product-body p{color:var(--bone-dim);font-size:.88rem;}
+.product-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px;}
+.price{font-family:var(--font-m);font-size:.85rem;color:var(--spark);letter-spacing:.06em;}
+.product .btn{margin-top:0;padding:11px 18px;font-size:.66rem;min-height:40px;}
+.btn.ghost{border-color:var(--line);color:var(--bone);}
+.btn.ghost:hover{border-color:var(--bone);background:none;color:var(--bone);}
+.product.soldout{opacity:.55;}
+.empty-note{color:var(--bone-dim);border:1px dashed var(--line);padding:26px 28px;max-width:52ch;}
+
+/* Freie Kalendertage sind anklickbar */
+.cal-day.bookable{cursor:pointer;transition:background .2s;}
+.cal-day.bookable:hover{background:rgba(46,107,255,.18);}
+.cal-day.bookable:hover::after{
+  content:"+";position:absolute;right:8px;bottom:5px;color:var(--spark);
+  font-family:var(--font-m);font-size:.85rem;
+}
+
 /* ---------- AKZENT-BLOCK (Kontakt) ----------
    Vollflächiger Farbblock am Seitenende: dunkle Schrift auf der Akzentfarbe,
    die Kanäle als helle, eckige Karten. */

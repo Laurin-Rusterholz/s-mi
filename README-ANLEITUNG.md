@@ -192,8 +192,13 @@ Verwaltung eine beliebige URL als Presskit-Link eintragen.
   den Abschnitten. Unter *Seiten* in der Verwaltung lässt sich die Website
   jederzeit wieder in mehrere Seiten aufteilen; Menü, Sitemap und Sprungmarken
   folgen automatisch.
-- **Kalender** über den Terminen (Monatsansicht, Punkte sind Auftritte,
-  gebuchte Tage blau, mit Legende darunter)
+- **Kalender** über den Terminen (immer sichtbar; Punkte sind Auftritte,
+  gebuchte Tage blau, mit Legende darunter). **Freie kommende Tage sind
+  anklickbar** und übernehmen das Datum direkt ins Booking-Formular.
+- **Shop** — Produkte aus der Verwaltung (Bild, Preis, Beschreibung), Kauf
+  über einen Bezahl-Link je Produkt (z. B. Stripe Payment Link); ohne Link
+  „Per Mail bestellen“. Produkte erscheinen als Product-Daten fürs
+  Google-Shopping-Schaufenster.
 - **Funken** — aufsteigende, leuchtende Funken im Kopfbereich (reines CSS,
   passend zum Namen; ausgeblendet bei „Bewegung reduzieren“)
 - **Hintergrundbild** hinter der ganzen Seite (in der Verwaltung wählbar) — die

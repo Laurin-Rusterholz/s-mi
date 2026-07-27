@@ -440,7 +440,7 @@ function renderShows(n, s) {
   const calendar =
     str(s.view, "calendar") !== "list"
       ? `
-      <div class="cal rv" id="shows-calendar" data-weekdays="${esc(UI.weekdays)}" data-booked="${esc(UI.booked)}" hidden>
+      <div class="cal rv" id="shows-calendar" data-weekdays="${esc(UI.weekdays)}" data-booked="${esc(UI.booked)}" data-book="${esc(UI.bookDay)}" hidden>
         <div class="cal-head">
           <button type="button" class="cal-nav" data-cal="prev" aria-label="${esc(
             str(s.prevLabel, UI.prevMonth)
@@ -547,6 +547,60 @@ function renderGallery(n, s) {
       <div class="gal rv" id="gal">
         ${items.map(cell).join("\n        ")}
       </div>
+    </div>
+  </section>`;
+}
+
+/** Preis huebsch ausgeben: "45" + "CHF" -> "CHF 45.—" */
+function priceTag(price, currency) {
+  const v = String(price ?? "").trim();
+  if (!v) return "";
+  return /[A-Za-z]/.test(v) ? v : `${currency} ${v}${/[.,]/.test(v) ? "" : ".—"}`;
+}
+
+function renderShop(n, s, contactEmail) {
+  const items = list(s.items).filter((p) => str(p?.name));
+  const cur = str(s.currency, "CHF");
+  const buy = str(s.buyLabel, UI.buy);
+  const cards = items
+    .map((p) => {
+      const sold = p.status === "soldout";
+      const link = safeUrl(p.linkUrl);
+      const order = contactEmail
+        ? `mailto:${contactEmail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}`
+        : "";
+      const cta = sold
+        ? `<span class="mono">${esc(UI.soldOut)}</span>`
+        : link
+        ? `<a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">${esc(buy)} ↗</a>`
+        : order
+        ? `<a class="btn sm ghost" href="${esc(order)}">${esc(UI.orderByMail)}</a>`
+        : "";
+      return `<article class="product rv${sold ? " soldout" : ""}">
+          ${p.src ? `<div class="product-img">${picture(p, { sizes: "(max-width:700px) 46vw, 280px" })}</div>` : ""}
+          <div class="product-body">
+            <h3>${esc(p.name)}</h3>
+            ${str(p.note) ? `<p>${esc(p.note)}</p>` : ""}
+            <div class="product-foot">
+              ${str(p.price) ? `<span class="price">${esc(priceTag(p.price, cur))}</span>` : ""}
+              ${cta}
+            </div>
+          </div>
+        </article>`;
+    })
+    .join("\n        ");
+
+  return `
+  <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
+    <div class="wrap">${sectionHead(n, s, "shop")}
+      ${str(s.note) ? `<p class="shop-note rv">${inline(s.note)}</p>` : ""}
+      ${
+        items.length
+          ? `<div class="shop-grid">
+        ${cards}
+      </div>`
+          : `<p class="empty-note rv">${esc(str(s.emptyText, "Merch ist in Arbeit."))}</p>`
+      }
     </div>
   </section>`;
 }
@@ -822,6 +876,30 @@ function structuredData(c, sections, page, pages) {
     }
   }
 
+  // Produkte des Shops (nur mit Preis)
+  if (!page || list(page.sections).includes("shop")) {
+    const cur = str(sections.shop?.currency, "CHF");
+    for (const p of list(sections.shop?.items)) {
+      if (!str(p?.name) || !str(p?.price) || p.status === "soldout") continue;
+      const amount = String(p.price).replace(/[^\d.]/g, "");
+      if (!amount) continue;
+      graph.push({
+        "@type": "Product",
+        name: str(p.name),
+        ...(safeUrl(p.src) ? { image: absolute(base, p.src) } : {}),
+        ...(str(p.note) ? { description: str(p.note) } : {}),
+        brand: { "@type": "Brand", name: site.artist },
+        offers: {
+          "@type": "Offer",
+          price: amount,
+          priceCurrency: cur,
+          availability: "https://schema.org/InStock",
+          ...(safeUrl(p.linkUrl) ? { url: safeUrl(p.linkUrl) } : {}),
+        },
+      });
+    }
+  }
+
   // Termine nur auf der Seite auszeichnen, die sie auch anzeigt
   if (page && !list(page.sections).includes("shows")) return { "@context": "https://schema.org", "@graph": graph };
 
@@ -890,6 +968,10 @@ const UI_DEFAULTS = {
   booked: "Gebucht",
   calShow: "Termin",
   language: "Sprache",
+  buy: "Kaufen",
+  orderByMail: "Per Mail bestellen",
+  orderSubject: "Bestellung",
+  bookDay: "Diesen Tag anfragen",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
   notFoundCta: "Zur Startseite",
@@ -932,7 +1014,7 @@ const NO_TRANSLATE = new Set([
   "updatedAt", "updatedBy", "schemaVersion", "type", "view",
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
-  "name", "venue", "inquiryId", "backgroundImage",
+  "name", "venue", "inquiryId", "backgroundImage", "price", "currency",
 ]);
 
 const looksTechnical = (v) =>
@@ -1141,6 +1223,7 @@ function renderPage(c, page, pages, lang, langs) {
     shows: renderShows,
     references: renderReferences,
     gallery: renderGallery,
+    shop: (n, s) => renderShop(n, s, str(sections.contact?.email)),
     booking: (n, s) => renderBooking(n, s, site),
     contact: renderContact,
   };
