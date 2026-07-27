@@ -216,8 +216,9 @@ function sectionHead(n, s, key) {
   if (CTX.hideHead === key) return "";
   return `
       <div class="shead rv">
-        <span class="num">${num(n)}</span>
+        <span class="num" aria-hidden="true">${num(n)}</span>
         <h2 id="${esc(key)}-h">${esc(s.title)}<i>${esc(s.titleAccent)}</i></h2>
+        <span class="shead-rule" aria-hidden="true"></span>
       </div>`;
 }
 
