@@ -1309,12 +1309,12 @@ function renderPage(c, page, pages, lang, langs) {
           )
           .join("\n          ")
       : order
-          .map(
-            (key) =>
-              `<li><a href="#${esc(key)}">${esc(
-                str(sections[key]?.navLabel, str(sections[key]?.title, key))
-              )}</a></li>`
-          )
+          .map((key) => {
+            const cls = key === "booking" ? ' class="nav-cta"' : key === "shop" ? ' class="nav-hot"' : "";
+            return `<li${cls}><a href="#${esc(key)}">${esc(
+              str(sections[key]?.navLabel, str(sections[key]?.title, key))
+            )}</a></li>`;
+          })
           .join("\n          ");
 
   // Auf einer Seite mit mehreren Abschnitten zusätzlich Sprungmarken anbieten
@@ -1398,6 +1398,11 @@ function renderPage(c, page, pages, lang, langs) {
             ? `<a class="hero-cta" href="${anchorHref(str(c.hero.ctaHref, "#booking"))}">${esc(
                 c.hero.ctaLabel
               )}</a>`
+            : ""
+        }
+        ${
+          sections.shop && sections.shop.enabled !== false && order.includes("shop")
+            ? `<a class="hero-cta alt" href="#shop">${esc(str(sections.shop.navLabel, "Shop"))}</a>`
             : ""
         }
       </div>
@@ -1561,6 +1566,18 @@ ${body}
   </div>
 
   <a class="totop" href="#top" aria-label="${esc(ui.toTop || "Nach oben")}">↑</a>
+${
+  order.includes("booking")
+    ? `  <div class="actbar" id="actbar" aria-hidden="false">
+    <a class="btn solid" href="#booking">${esc(str(sections.booking?.navLabel, "Booking"))}</a>${
+        sections.shop && sections.shop.enabled !== false && order.includes("shop")
+          ? `<a class="btn" href="#shop">${esc(str(sections.shop.navLabel, "Shop"))}</a>`
+          : ""
+      }
+  </div>
+`
+    : ""
+}
 
   <aside class="cookie" id="cookie" hidden aria-label="Cookies">
     <p>${esc(ui.cookieText)}</p>
