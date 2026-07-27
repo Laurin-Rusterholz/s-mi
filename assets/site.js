@@ -367,6 +367,93 @@
     }
   }
 
+  /* -------------------------------------------- Datumswahl im Formular */
+  // Kleiner Monatskalender direkt beim Booking-Formular: Tag antippen setzt
+  // das Datumsfeld. Tage mit Show sind belegt, Vergangenheit gesperrt.
+  var bcal = document.getElementById("bform-cal");
+  var bDate = document.querySelector('.bform input[name="date"]');
+  if (bcal && bDate) {
+    var bShowsRaw = document.getElementById("shows-data");
+    var bShows = [];
+    try { bShows = JSON.parse(bShowsRaw ? bShowsRaw.textContent : "[]") || []; } catch (e) { bShows = []; }
+    var bBusy = {};
+    bShows.forEach(function (s) { bBusy[s.date] = s; });
+
+    var bWeekdays = (bcal.getAttribute("data-weekdays") || "Mo,Di,Mi,Do,Fr,Sa,So").split(",");
+    var busyLabel = bcal.getAttribute("data-busy") || "Belegt";
+    var bToday = new Date().toISOString().slice(0, 10);
+    var bNow = new Date(bToday + "T12:00:00Z");
+    var bYear = bNow.getUTCFullYear();
+    var bMonth = bNow.getUTCMonth();
+    var bPad = function (n) { return String(n).padStart(2, "0"); };
+    var bLang = document.documentElement.lang || "de";
+
+    function bDraw() {
+      var first = new Date(Date.UTC(bYear, bMonth, 1));
+      var days = new Date(Date.UTC(bYear, bMonth + 1, 0)).getUTCDate();
+      var lead = (first.getUTCDay() + 6) % 7;
+      var sel = bDate.value || "";
+      var html =
+        '<p class="mono bcal-hint">' + escapeBc(bcal.getAttribute("data-hint") || "") + "</p>" +
+        '<div class="bcal-head">' +
+        '<button type="button" class="cal-nav" data-bcal="prev" aria-label="\u2039">\u2039</button>' +
+        '<strong>' + first.toLocaleDateString(bLang, { month: "long", year: "numeric", timeZone: "UTC" }) + "</strong>" +
+        '<button type="button" class="cal-nav" data-bcal="next" aria-label="\u203a">\u203a</button>' +
+        "</div>" +
+        '<div class="bcal-grid">' +
+        bWeekdays.map(function (d) { return '<span class="bcal-wd">' + d + "</span>"; }).join("");
+      for (var i = 0; i < lead; i++) html += "<span></span>";
+      for (var day = 1; day <= days; day++) {
+        var iso = bYear + "-" + bPad(bMonth + 1) + "-" + bPad(day);
+        var busy = bBusy[iso];
+        var past = iso < bToday;
+        var cls = "bcal-day" + (iso === sel ? " sel" : "") + (busy ? " busy" : "") + (iso === bToday ? " today" : "");
+        if (past || busy) {
+          html += '<span class="' + cls + '"' + (busy ? ' title="' + escapeBc(busyLabel) + '"' : "") + "><b>" + day + "</b></span>";
+        } else {
+          html += '<button type="button" class="' + cls + '" data-day="' + iso + '"><b>' + day + "</b></button>";
+        }
+      }
+      html += "</div>";
+      bcal.innerHTML = html;
+    }
+
+    function escapeBc(v) {
+      return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+
+    bcal.addEventListener("click", function (e) {
+      var nav = e.target.closest("[data-bcal]");
+      if (nav) {
+        bMonth += nav.getAttribute("data-bcal") === "next" ? 1 : -1;
+        if (bMonth > 11) { bMonth = 0; bYear++; }
+        if (bMonth < 0) { bMonth = 11; bYear--; }
+        bDraw();
+        return;
+      }
+      var dayBtn = e.target.closest("[data-day]");
+      if (!dayBtn) return;
+      bDate.value = dayBtn.getAttribute("data-day");
+      bDraw();
+    });
+
+    // Wird das Datum anderswo gesetzt (Feld von Hand, Shows-Kalender),
+    // springt der Kalender zum Monat und markiert den Tag.
+    bDate.addEventListener("change", function () {
+      var v = bDate.value;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+        bYear = Number(v.slice(0, 4));
+        bMonth = Number(v.slice(5, 7)) - 1;
+      }
+      bDraw();
+    });
+
+    bDraw();
+    bcal.hidden = false;
+  }
+
   /* ------------------------------------------------- Shows: abgelaufene weg */
   // Die Seite ist statisch generiert. Falls seit dem letzten Build Termine
   // verstrichen sind, werden sie hier clientseitig ausgeblendet.

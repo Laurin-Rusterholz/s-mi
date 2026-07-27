@@ -418,7 +418,9 @@
     "buy": "Kaufen",
     "orderByMail": "Per Mail bestellen",
     "orderSubject": "Bestellung",
-    "bookDay": "Diesen Tag anfragen"
+    "bookDay": "Diesen Tag anfragen",
+    "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
+    "dayBusy": "Belegt"
   },
   "i18n": {
     "en": {
@@ -726,7 +728,9 @@
         "buy": "Buy",
         "orderByMail": "Order by e-mail",
         "orderSubject": "Order",
-        "bookDay": "Request this date"
+        "bookDay": "Request this date",
+        "pickDay": "Or tap your preferred date right in the calendar:",
+        "dayBusy": "Taken"
       },
       "hero": {
         "kicker": "DJ & producer — St. Gallen, Switzerland",
@@ -1043,7 +1047,9 @@
         "buy": "Acheter",
         "orderByMail": "Commander par e-mail",
         "orderSubject": "Commande",
-        "bookDay": "Demander cette date"
+        "bookDay": "Demander cette date",
+        "pickDay": "Ou choisis ta date directement dans le calendrier :",
+        "dayBusy": "Occupé"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -1362,7 +1368,9 @@
         "buy": "8dcd885d",
         "orderByMail": "77f6f959",
         "orderSubject": "b8e896b6",
-        "bookDay": "78e97c4b"
+        "bookDay": "78e97c4b",
+        "pickDay": "24f7ddf0",
+        "dayBusy": "998bfd78"
       },
       "hero": {
         "kicker": "00cd226e",
@@ -1679,7 +1687,9 @@
         "buy": "8dcd885d",
         "orderByMail": "77f6f959",
         "orderSubject": "b8e896b6",
-        "bookDay": "78e97c4b"
+        "bookDay": "78e97c4b",
+        "pickDay": "24f7ddf0",
+        "dayBusy": "998bfd78"
       },
       "hero": {
         "kicker": "00cd226e",

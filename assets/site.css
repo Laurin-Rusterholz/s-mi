@@ -503,6 +503,29 @@ a.cal-day.has-show:hover .cal-dot{animation:pulse 1.2s ease-out infinite;}
 .rider .note{border:1px solid var(--line);border-left:2px solid var(--spark);padding:16px 18px;margin-top:22px;font-size:.9rem;color:var(--bone-dim);}
 @media(max-width:900px){.booking-grid{grid-template-columns:1fr;}}
 
+/* Datumswahl-Kalender im Booking-Formular */
+.bform-cal{border:1px solid var(--line);background:rgba(9,13,24,.6);padding:16px 16px 14px;}
+.bcal-hint{margin-bottom:12px;}
+.bcal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.bcal-head strong{font-size:.92rem;text-transform:uppercase;letter-spacing:.06em;font-variation-settings:'wdth' 112,'wght' 700;}
+.bcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.bcal-wd{
+  text-align:center;font-family:var(--font-m);font-size:.58rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--bone-dim);padding:4px 0 8px;
+}
+.bcal-day{
+  appearance:none;border:1px solid transparent;background:rgba(233,237,245,.05);
+  min-height:40px;display:flex;align-items:center;justify-content:center;color:var(--bone);
+  font-family:var(--font-m);font-size:.78rem;cursor:default;padding:0;
+}
+button.bcal-day{cursor:pointer;transition:background .15s,border-color .15s;}
+button.bcal-day:hover{border-color:var(--spark);background:rgba(46,107,255,.16);}
+.bcal-day.today{border-color:var(--line);}
+.bcal-day.sel{background:var(--spark);color:#fff;border-color:var(--spark);}
+.bcal-day.busy{opacity:.4;text-decoration:line-through;}
+span.bcal-day:not(.busy){opacity:.35;}
+.bcal-day b{font-weight:normal;}
+
 /* booking form */
 .bform{margin-top:clamp(46px,7vw,84px);border:1px solid var(--line);padding:clamp(22px,4vw,44px);background:rgba(11,17,32,.55);backdrop-filter:blur(6px);}
 .bform-head h3{font-size:clamp(1.3rem,2.6vw,2rem);font-variation-settings:'wdth' 116,'wght' 760;margin-top:8px;}

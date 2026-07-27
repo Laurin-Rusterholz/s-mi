@@ -689,6 +689,9 @@ function renderBooking(n, s, site) {
           <label class="hp" aria-hidden="true" tabindex="-1">${esc(UI.fHoneypot)}
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
+          <div class="bform-cal span-2" id="bform-cal"
+               data-weekdays="${esc(UI.weekdays)}" data-hint="${esc(UI.pickDay)}"
+               data-busy="${esc(UI.dayBusy)}" hidden></div>
         </div>
         <div class="bform-foot">
           <button class="btn solid" type="submit">${esc(str(f.submitLabel, "Send request"))}</button>
@@ -972,6 +975,8 @@ const UI_DEFAULTS = {
   orderByMail: "Per Mail bestellen",
   orderSubject: "Bestellung",
   bookDay: "Diesen Tag anfragen",
+  pickDay: "Oder Wunschdatum direkt im Kalender antippen:",
+  dayBusy: "Belegt",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
   notFoundCta: "Zur Startseite",
