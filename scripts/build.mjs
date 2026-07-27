@@ -1338,7 +1338,7 @@ function renderPage(c, page, pages, lang, langs) {
 
   const accent = color(site.accentColor, "#2e6bff");
   const ink = color(site.themeColor, "#05070e");
-  const ogImage = absolute(base, rooted(site.ogImage));
+  const ogImage = absolute(base, cdnUrl(site.ogImage, 1200));
   const ticker = c.ticker || {};
   const tickerItems = list(ticker.items).filter((t) => str(t?.text) || str(t?.accent));
 
@@ -1517,9 +1517,8 @@ ${jsonScript(structuredData(c, sections, page, pages))}
   )}'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/plexmono-400-latin.woff2" crossorigin>
 ${heroPreload}
   <link rel="stylesheet" href="/assets/site.css">
   <style>:root{--ink:${ink};--spark:${accent};}</style>

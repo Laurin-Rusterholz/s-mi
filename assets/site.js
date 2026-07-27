@@ -294,8 +294,12 @@
         setTimeout(function () { if (heroVideo.paused) kick(); }, ms);
       });
       if ("IntersectionObserver" in window) {
+        // Sichtbar: abspielen. Aus dem Bild gescrollt: anhalten (Akku, Daten).
         new IntersectionObserver(function (es) {
-          es.forEach(function (e) { if (e.isIntersecting && heroVideo.paused) kick(); });
+          es.forEach(function (e) {
+            if (e.isIntersecting) { if (heroVideo.paused) kick(); }
+            else if (!heroVideo.paused) heroVideo.pause();
+          });
         }).observe(heroVideo);
       }
     }
