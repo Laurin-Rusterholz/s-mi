@@ -129,6 +129,9 @@ a.accent,.accent{color:var(--spark);}
 img,video{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.88) contrast(1.06);transition:filter .4s ease;}
 .gal figure:hover img,.product:hover img,.about-photo:hover img{filter:saturate(1.02) contrast(1.04);}
 section{position:relative;}
+/* Sprungziele halten Abstand zur festen Kopfleiste — greift auch dort, wo
+   ein Browser scroll-padding ignoriert. */
+section[id],div[id],main[id]{scroll-margin-top:calc(var(--head) + 12px);}
 /* Helle Trenner zwischen den Abschnitten des Einseiters */
 section.pad + section.pad{border-top:1px solid rgba(233,237,245,.16);}
 .wrap{max-width:1200px;margin:0 auto;padding:0 clamp(20px,4vw,56px);}
@@ -317,6 +320,12 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
   100%{transform:translate(var(--dx,0),-105vh) scale(.35);opacity:0}
 }
 @media(prefers-reduced-motion:reduce){.sparks{display:none;}}
+
+/* Anzeige-Art: "ganzes Video/Bild zeigen" statt Flaeche fuellen.
+   Der Rand bleibt dunkel — bei Videos im Hochformat sonst der uebliche
+   Balken-Effekt; ein weicher Verlauf faengt die Kante ab. */
+.hero-bg .fit-full{object-fit:contain;background:var(--ink);}
+.gal-video.fit-full video{object-fit:contain;background:var(--ink);aspect-ratio:16/9;height:auto;}
 
 /* ---------- HERO (Unterseiten) ---------- */
 .hero-compact{

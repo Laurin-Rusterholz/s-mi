@@ -29,17 +29,14 @@
       // ist — iOS Safari verwirft den nativen Sprung sonst, weil der Body im
       // Moment des Tippens noch scroll-gesperrt ist (overflow:hidden).
       var a = e.target.closest('a[href^="#"]');
-      if (a) {
-        var ziel = document.getElementById(a.getAttribute("href").slice(1));
-        if (ziel) {
-          e.preventDefault();
-          setNav(false);
-          requestAnimationFrame(function () {
-            ziel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-            if (history.replaceState) history.replaceState(null, "", a.getAttribute("href"));
-          });
-          return;
-        }
+      if (a && document.getElementById(a.getAttribute("href").slice(1))) {
+        // Erst Menue schliessen (loest die Scroll-Sperre), dann springen
+        e.preventDefault();
+        e.stopPropagation();
+        var zielId = a.getAttribute("href").slice(1);
+        setNav(false);
+        requestAnimationFrame(function () { jumpTo(zielId); });
+        return;
       }
       // Sprachlink, X oder Tipp daneben: Menue zu, Standardverhalten laeuft
       if (e.target.closest("a") || e.target.closest(".nav-close") || e.target === nav) setNav(false);
@@ -48,6 +45,39 @@
       if (e.key === "Escape" && nav.classList.contains("open")) setNav(false);
     });
   }
+
+  /* ------------------------------------------------------- anker-spruenge */
+  // Ein Weg fuer alle Sprungziele (Menue, Hero-Knoepfe, Daumenleiste, Fuss).
+  // Der native Sprung verhaelt sich je nach Browser unterschiedlich — vor
+  // allem auf iOS, wo er bei gesperrtem Body oder waehrend einer Animation
+  // stillschweigend verworfen wird. Deshalb scrollen wir selbst, mit
+  // Abstand fuer die feste Kopfleiste.
+  function jumpTo(id) {
+    var ziel = document.getElementById(id);
+    if (!ziel) return false;
+    var head = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--head"), 10) || 60;
+    var y = ziel.getBoundingClientRect().top + window.pageYOffset - head - 12;
+    try {
+      window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
+    } catch (e) {
+      window.scrollTo(0, y);
+    }
+    // Nachfassen: waehrend des Scrollens geladene Bilder verschieben das Ziel
+    setTimeout(function () {
+      var y2 = ziel.getBoundingClientRect().top + window.pageYOffset - head - 12;
+      if (Math.abs(y2 - window.pageYOffset) > 24) window.scrollTo({ top: y2, behavior: "auto" });
+    }, 700);
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+    return true;
+  }
+
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a || a.classList.contains("skip")) return;
+    var id = a.getAttribute("href").slice(1);
+    if (!id) return;
+    if (jumpTo(id)) e.preventDefault();
+  });
 
   /* --------------------------------------------------------------- reveal */
   var rv = document.querySelectorAll(".rv");
@@ -319,6 +349,21 @@
         if (document.hidden) heroVideo.pause();
         else kick();
       });
+      // Nahtlose Wiederholung: manche Browser lassen die Schleife am Dateiende
+      // kurz stocken oder bleiben stehen. Kurz vor Schluss selbst zurueck an
+      // den Anfang setzen und weiterlaufen lassen.
+      heroVideo.addEventListener("timeupdate", function () {
+        var d = heroVideo.duration;
+        if (d && isFinite(d) && d - heroVideo.currentTime < 0.25) {
+          heroVideo.currentTime = 0;
+          kick();
+        }
+      });
+      heroVideo.addEventListener("ended", function () {
+        heroVideo.currentTime = 0;
+        kick();
+      });
+
       // Beharrlich bleiben: in den ersten Sekunden mehrfach anstossen und
       // nachziehen, sobald das Hero sichtbar ist
       [400, 1200, 3000, 6000].forEach(function (ms) {
@@ -338,6 +383,9 @@
 
   // Galerie-Videos nur abspielen, solange sie sichtbar sind
   var galVideos = Array.prototype.slice.call(document.querySelectorAll(".gal-video video"));
+  galVideos.forEach(function (v) {
+    v.addEventListener("ended", function () { v.currentTime = 0; v.play().catch(function () {}); });
+  });
   if (galVideos.length) {
     if (reduce) {
       galVideos.forEach(function (v) {

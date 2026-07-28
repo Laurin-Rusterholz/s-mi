@@ -240,7 +240,7 @@ function cdnUrl(src, w) {
   return `/.netlify/images?url=${encodeURIComponent(rooted(clean))}&w=${w}&q=72`;
 }
 
-function picture(media, { className = "", eager = false, sizes = "", widths = [480, 800, 1200] } = {}) {
+function picture(media, { className = "", eager = false, sizes = "", widths = [480, 800, 1200], style = "" } = {}) {
   const raw = String(media?.src || "").trim();
   if (!raw || !safeUrl(raw)) return "";
   const srcset = CDN
@@ -253,7 +253,7 @@ function picture(media, { className = "", eager = false, sizes = "", widths = [4
     sizes ? `sizes="${esc(sizes)}"` : "",
     className ? `class="${esc(className)}"` : "",
   ].filter(Boolean);
-  return `<img ${attrs.join(" ")}${srcset}>`;
+  return `<img ${attrs.join(" ")}${srcset}${style}>`;
 }
 
 /** MIME-Typ aus der Dateiendung (Firebase-URLs tragen die Endung im Pfad). */
@@ -318,16 +318,40 @@ function pageBackground(site) {
  * Browser Autoplay. Das Poster wird sofort angezeigt (und bleibt stehen, wenn
  * jemand „Bewegung reduzieren" eingestellt hat, siehe assets/site.js).
  */
+/**
+ * Anzeige-Art eines Mediums:
+ *   fill (Standard) – fuellt die Flaeche, Raender werden abgeschnitten
+ *   full            – das ganze Bild/Video ist zu sehen, ggf. mit Rand
+ * Dazu der Bildausschnitt (welcher Teil sichtbar bleibt, wenn beschnitten wird).
+ */
+const FOCUS = new Set(["center", "top", "bottom", "left", "right"]);
+
+function fitAttrs(m) {
+  const full = str(m?.fit) === "full";
+  const focus = FOCUS.has(str(m?.focus)) ? str(m.focus) : "center";
+  return {
+    cls: full ? " fit-full" : "",
+    style: !full && focus !== "center" ? ` style="object-position:${esc(focus)}"` : "",
+  };
+}
+
 function heroMedia(hero, site) {
   const m = hero.media || {};
   if (m.type === "video" && safeUrl(m.src)) {
     const posterSrc = safeUrl(m.poster) || safeUrl(site?.ogImage) || safeUrl(site?.backgroundImage);
     const poster = posterSrc ? esc(cdnUrl(posterSrc, 1600)) : "";
-    return `<video class="hero-video" autoplay muted loop playsinline preload="auto"${
+    const f = fitAttrs(m);
+    return `<video class="hero-video${f.cls}" autoplay muted loop playsinline preload="auto"${
       poster ? ` poster="${poster}"` : ""
-    } aria-hidden="true" tabindex="-1"><source src="${href(m.src)}"></video>`;
+    }${f.style} aria-hidden="true" tabindex="-1"><source src="${href(m.src)}"></video>`;
   }
-  return picture(m, { eager: true, sizes: "100vw" });
+  const f = fitAttrs(m);
+  return picture(m, {
+    eager: true,
+    sizes: "100vw",
+    className: f.cls.trim(),
+    style: f.style,
+  });
 }
 
 function renderAbout(n, s) {
@@ -524,10 +548,11 @@ function renderGallery(n, s) {
 
   const cell = (g, i) => {
     if (isVideoUrl(g.src)) {
-      return `<figure class="gal-video">
+      const gf = fitAttrs(g);
+      return `<figure class="gal-video${gf.cls}">
           <video src="${href(g.src)}" muted loop playsinline autoplay preload="metadata"${
         g.poster ? ` poster="${href(g.poster)}"` : ""
-      } aria-label="${esc(g.alt || "")}"></video>
+      }${gf.style} aria-label="${esc(g.alt || "")}"></video>
           ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
         </figure>`;
     }
@@ -1071,6 +1096,7 @@ const NO_TRANSLATE = new Set([
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
   "name", "venue", "inquiryId", "backgroundImage", "price", "currency", "twint",
+  "fit", "focus",
 ]);
 
 const looksTechnical = (v) =>
