@@ -345,7 +345,12 @@
         "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
         "toTop": "Nach oben",
         "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
-        "cookieOk": "Alles klar"
+        "cookieOk": "Alles klar",
+        "copyMail": "Adresse kopieren",
+        "copied": "Kopiert ✓",
+        "bookCta": "Jetzt buchen",
+        "follow": "Kanäle",
+        "phone": "Telefon"
       }
     },
     "fr": {
@@ -663,7 +668,12 @@
         "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !",
         "toTop": "En haut",
         "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
-        "cookieOk": "Compris"
+        "cookieOk": "Compris",
+        "copyMail": "Copier l'adresse",
+        "copied": "Copié ✓",
+        "bookCta": "Réserver",
+        "follow": "Réseaux",
+        "phone": "Téléphone"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -1007,7 +1017,12 @@
         "orderMailBody": "92a8e3b2",
         "toTop": "0babbd70",
         "cookieText": "0252aaa9",
-        "cookieOk": "4c891c6a"
+        "cookieOk": "4c891c6a",
+        "copyMail": "5fa0a1bc",
+        "copied": "32d29144",
+        "bookCta": "5747254e",
+        "follow": "c9409495",
+        "phone": "4930944f"
       }
     },
     "fr": {
@@ -1325,7 +1340,12 @@
         "orderMailBody": "92a8e3b2",
         "toTop": "0babbd70",
         "cookieText": "0252aaa9",
-        "cookieOk": "4c891c6a"
+        "cookieOk": "4c891c6a",
+        "copyMail": "5fa0a1bc",
+        "copied": "32d29144",
+        "bookCta": "5747254e",
+        "follow": "c9409495",
+        "phone": "4930944f"
       },
       "hero": {
         "kicker": "0f636286",
@@ -1717,7 +1737,7 @@
     "openImage": "Open image {n} of {total} in full size",
     "rights": "All rights reserved",
     "photography": "Photography",
-    "phone": "Telefon",
+    "phone": "Phone",
     "base": "Base",
     "tickets": "Tickets",
     "soldOut": "Sold out",
@@ -1754,7 +1774,11 @@
     "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!",
     "toTop": "Back to top",
     "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
-    "cookieOk": "Got it"
+    "cookieOk": "Got it",
+    "copyMail": "Copy address",
+    "copied": "Copied ✓",
+    "bookCta": "Book me",
+    "follow": "Channels"
   },
   "updatedAt": "2026-07-27T04:36:05.224Z",
   "updatedBy": "Verwaltung"

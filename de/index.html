@@ -294,7 +294,7 @@
       <div class="hero-sub">
         <span class="tag">Aus Energie wird Euphorie.</span>
         <span class="mono">Euphoric Hardstyle / Melodic Hardstyle</span>
-        <a class="hero-cta" href="#booking">Mich buchen</a>
+        <a class="hero-cta" href="#booking">Mich buchen<span class="cta-arr" aria-hidden="true">→</span></a>
         <a class="hero-cta alt" href="#shop">Shop</a>
       </div>
     </div>
@@ -367,7 +367,7 @@
         <h2 id="shows-h">Sh<i>ows.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
-      <p class="live-note rv">Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.</p>
+      <div class="empty-state rv"><span class="mono">Termin</span><p>Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.</p></div>
       
     </div>
   </section>
@@ -584,26 +584,37 @@
   </section>
 
   <section class="pad contact accent-block" id="contact" aria-labelledby="contact-h">
+    <span class="contact-mark" aria-hidden="true">Kontakt.</span>
     <div class="wrap">
       <div class="shead rv">
         <span class="num" aria-hidden="true">08</span>
         <h2 id="contact-h">Kon<i>takt.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
-      <div class="rv">
-        <span class="mono">Booking &amp; Anfragen</span>
-        <a class="big-mail" href="mailto:info@samsparking.ch">info@samsparking.ch</a>
-        <div class="social-cards">
+      <div class="contact-grid rv">
+        <div class="contact-main">
+          <span class="mono">Booking &amp; Anfragen</span>
+          <a class="big-mail" href="mailto:info@samsparking.ch">info@samsparking.ch</a>
+          <div class="mail-tools">
+            <button class="copy-mail mono" type="button" data-mail="info@samsparking.ch" data-done="Kopiert ✓">Adresse kopieren</button>
+            <a class="btn ink" href="#booking">Jetzt buchen</a>
+          </div>
+          
+        <div class="contact-meta">
+          <div><span class="mono">Telefon</span><a href="tel:+41775091171">+41 77 509 11 71</a></div>
+          <div><span class="mono">Standort</span><span>St. Gallen, Schweiz</span></div>
+        </div>
+        </div>
+        <div class="contact-side">
+          <span class="mono side-label">Kanäle</span>
+          <div class="social-cards">
           <a class="scard" href="https://www.mixcloud.com/samsparking/" target="_blank" rel="noopener me">
             <span class="scard-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3M6.5 15v-5M9 15V8M11.5 15V6.5M14 15V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 15h3.5a2.5 2.5 0 0 0 .4-4.97A4 4 0 0 0 14 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="scard-arrow" aria-hidden="true">↗</span>
             <span class="scard-name">Mixcloud</span>
             <span class="mono">@samsparking</span>
           </a>
-        </div>
-        <div class="contact-meta">
-          <div><span class="mono">Telefon</span><a href="tel:+41775091171">+41 77 509 11 71</a></div>
-          <div><span class="mono">Standort</span><span>St. Gallen, Schweiz</span></div>
+          </div>
         </div>
       </div>
     </div>

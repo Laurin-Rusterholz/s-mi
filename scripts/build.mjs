@@ -492,9 +492,9 @@ function renderShows(n, s) {
           ? `<ul class="show-list rv" id="show-list">
         ${upcoming.map(showRow).join("\n        ")}
       </ul>`
-          : `<p class="live-note rv">${inline(
+          : `<div class="empty-state rv"><span class="mono">${esc(UI.calShow)}</span><p>${inline(
               str(s.emptyText, "No dates announced right now.")
-            )}</p>`
+            )}</p></div>`
       }
       ${
         past.length
@@ -647,7 +647,9 @@ function renderShop(n, s, contactEmail) {
           ? `<div class="shop-grid">
         ${cards}
       </div>`
-          : `<p class="empty-note rv">${esc(str(s.emptyText, "Merch ist in Arbeit."))}</p>`
+          : `<div class="empty-state rv"><span class="mono">Shop</span><p>${esc(
+              str(s.emptyText, "Merch ist in Arbeit.")
+            )}</p></div>`
       }
     </div>
   </section>`;
@@ -783,37 +785,10 @@ function socialIcon(label, url) {
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
 }
 
-function renderContact(n, s) {
+function renderContact(n, s, hasBooking) {
   const mail = str(s.email);
-  const parts = mail.split("@");
   const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
-  return `
-  <section class="pad contact accent-block" id="contact" aria-labelledby="contact-h">
-    <div class="wrap">${sectionHead(n, s, "contact")}
-      <div class="rv">
-        ${str(s.kicker) ? `<span class="mono">${esc(s.kicker)}</span>` : ""}
-        ${
-          mail
-            ? `<a class="big-mail" href="mailto:${esc(mail)}">${esc(mail)}</a>`
-            : ""
-        }
-        ${
-          socials.length
-            ? `<div class="social-cards">
-          ${socials
-            .map((x) => {
-              const handle = str(x.handle, handleOf(x.url));
-              return `<a class="scard" href="${href(x.url)}" target="_blank" rel="noopener me">
-            <span class="scard-ico" aria-hidden="true">${socialIcon(x.label, x.url)}</span>
-            <span class="scard-arrow" aria-hidden="true">↗</span>
-            <span class="scard-name">${esc(x.label)}</span>
-            ${handle ? `<span class="mono">${esc(handle)}</span>` : ""}
-          </a>`;
-            })
-            .join("\n          ")}
-        </div>`
-            : ""
-        }
+  const meta = `
         <div class="contact-meta">
           ${
             str(s.phone)
@@ -827,7 +802,47 @@ function renderContact(n, s) {
               ? `<div><span class="mono">${esc(UI.base)}</span><span>${esc(s.base)}</span></div>`
               : ""
           }
+        </div>`;
+  return `
+  <section class="pad contact accent-block" id="contact" aria-labelledby="contact-h">
+    <span class="contact-mark" aria-hidden="true">${esc(str(s.title) + str(s.titleAccent))}</span>
+    <div class="wrap">${sectionHead(n, s, "contact")}
+      <div class="contact-grid rv">
+        <div class="contact-main">
+          ${str(s.kicker) ? `<span class="mono">${esc(s.kicker)}</span>` : ""}
+          ${
+            mail
+              ? `<a class="big-mail" href="mailto:${esc(mail)}">${esc(mail)}</a>
+          <div class="mail-tools">
+            <button class="copy-mail mono" type="button" data-mail="${esc(mail)}" data-done="${esc(
+                  UI.copied
+                )}">${esc(UI.copyMail)}</button>
+            ${hasBooking ? `<a class="btn ink" href="#booking">${esc(UI.bookCta)}</a>` : ""}
+          </div>`
+              : ""
+          }
+          ${meta}
         </div>
+        ${
+          socials.length
+            ? `<div class="contact-side">
+          <span class="mono side-label">${esc(UI.follow)}</span>
+          <div class="social-cards">
+          ${socials
+            .map((x) => {
+              const handle = str(x.handle, handleOf(x.url));
+              return `<a class="scard" href="${href(x.url)}" target="_blank" rel="noopener me">
+            <span class="scard-ico" aria-hidden="true">${socialIcon(x.label, x.url)}</span>
+            <span class="scard-arrow" aria-hidden="true">↗</span>
+            <span class="scard-name">${esc(x.label)}</span>
+            ${handle ? `<span class="mono">${esc(handle)}</span>` : ""}
+          </a>`;
+            })
+            .join("\n          ")}
+          </div>
+        </div>`
+            : ""
+        }
       </div>
     </div>
   </section>`;
@@ -1048,6 +1063,10 @@ const UI_DEFAULTS = {
   toTop: "Nach oben",
   cookieText: "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
   cookieOk: "Alles klar",
+  copyMail: "Adresse kopieren",
+  copied: "Kopiert ✓",
+  bookCta: "Jetzt buchen",
+  follow: "Kanäle",
   twintSend: "Per TWINT bezahlen an",
   twintRef: "Vermerk",
   twintNote: "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
@@ -1116,7 +1135,9 @@ export function collectStrings(node, prefix = "", out = []) {
   }
   if (node && typeof node === "object") {
     for (const [k, v] of Object.entries(node)) {
-      if (NO_TRANSLATE.has(k) || k === "i18n" || k === "i18nHash") continue;
+      // Unter ui.* stehen nur Oberflächentexte — dort gelten die technischen
+      // Schlüsselnamen (phone, close, …) nicht als Sperre.
+      if ((!prefix.startsWith("ui") && NO_TRANSLATE.has(k)) || k === "i18n" || k === "i18nHash") continue;
       collectStrings(v, prefix ? `${prefix}.${k}` : k, out);
     }
     return out;
@@ -1307,7 +1328,7 @@ function renderPage(c, page, pages, lang, langs) {
     gallery: renderGallery,
     shop: (n, s) => renderShop(n, s, str(sections.contact?.email)),
     booking: (n, s) => renderBooking(n, s, site),
-    contact: renderContact,
+    contact: (n, s) => renderContact(n, s, order.includes("booking")),
   };
 
   const norm = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -1424,7 +1445,7 @@ function renderPage(c, page, pages, lang, langs) {
           c.hero?.ctaLabel
             ? `<a class="hero-cta" href="${anchorHref(str(c.hero.ctaHref, "#booking"))}">${esc(
                 c.hero.ctaLabel
-              )}</a>`
+              )}<span class="cta-arr" aria-hidden="true">→</span></a>`
             : ""
         }
         ${

@@ -722,6 +722,36 @@
   var yr = document.getElementById("yr");
   if (yr) yr.textContent = new Date().getFullYear();
 
+  /* -------------------------------------------------------- mail kopieren */
+  var copyBtn = document.querySelector(".copy-mail");
+  if (copyBtn) {
+    var copyLabel = copyBtn.textContent;
+    copyBtn.addEventListener("click", function () {
+      var mail = copyBtn.getAttribute("data-mail") || "";
+      var done = function () {
+        copyBtn.classList.add("done");
+        copyBtn.textContent = copyBtn.getAttribute("data-done") || "OK";
+        setTimeout(function () {
+          copyBtn.classList.remove("done");
+          copyBtn.textContent = copyLabel;
+        }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(mail).then(done, function () {});
+      } else {
+        // Fallback ohne Clipboard-API: unsichtbares Feld markieren + kopieren
+        var tmp = document.createElement("textarea");
+        tmp.value = mail;
+        tmp.style.position = "fixed";
+        tmp.style.left = "-9999px";
+        document.body.appendChild(tmp);
+        tmp.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        tmp.remove();
+      }
+    });
+  }
+
   /* ----------------------------------------------------------- wunsch-modus
      Nur aktiv, wenn die Seite in der Verwaltung als Vorschau eingebettet ist
      (iframe + ?wunsch=1). Dann kann dort auf ein Element getippt werden; die
