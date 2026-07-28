@@ -17,7 +17,11 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    # Kein X-Frame-Options: das kennt nur DENY/SAMEORIGIN und koennte die
+    # Vorschau in der Verwaltung nicht erlauben. frame-ancestors ist der
+    # Nachfolger und laesst gezielt nur die eigene Verwaltung (Netlify) zu —
+    # fuer alle anderen Seiten bleibt das Einbetten verboten (Clickjacking).
+    Content-Security-Policy = "frame-ancestors 'self' https://*.netlify.app https://*.netlify.com http://localhost:* http://127.0.0.1:*"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"

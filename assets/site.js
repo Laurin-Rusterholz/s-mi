@@ -721,4 +721,151 @@
   /* ------------------------------------------------------------------ jahr */
   var yr = document.getElementById("yr");
   if (yr) yr.textContent = new Date().getFullYear();
+
+  /* ----------------------------------------------------------- wunsch-modus
+     Nur aktiv, wenn die Seite in der Verwaltung als Vorschau eingebettet ist
+     (iframe + ?wunsch=1). Dann kann dort auf ein Element getippt werden; die
+     Stelle wird an die Verwaltung gemeldet, die daraus eine Quantus-Aufgabe
+     macht. Fuer normale Besucher laeuft dieser Block nie an.
+  */
+  try {
+    if (window.top !== window.self && /[?&]wunsch=1(&|$)/.test(location.search)) {
+      initWunsch();
+    }
+  } catch (e) {
+    /* cross-origin-Zugriff auf window.top blockiert: dann kein Wunsch-Modus */
+  }
+
+  function initWunsch() {
+    var NS = "samsparking-wunsch";
+    var armed = false;
+    var marked = null;
+
+    var stil = document.createElement("style");
+    stil.textContent =
+      ".wunsch-an, .wunsch-an * { cursor: crosshair !important; }" +
+      ".wunsch-ziel { outline: 3px solid #ff3d6e !important; outline-offset: 2px !important;" +
+      " background: rgba(255,61,110,.10) !important; }" +
+      ".wunsch-hinweis { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);" +
+      " z-index: 2147483647; background: #ff3d6e; color: #fff; font: 600 13px/1.3 system-ui, sans-serif;" +
+      " padding: 9px 14px; border-radius: 0; letter-spacing: .02em; pointer-events: none;" +
+      " box-shadow: 0 6px 24px rgba(0,0,0,.35); }";
+    document.head.appendChild(stil);
+
+    var hinweis = document.createElement("div");
+    hinweis.className = "wunsch-hinweis";
+    hinweis.hidden = true;
+    hinweis.textContent = "Auf die Stelle tippen, die geändert werden soll";
+    document.body.appendChild(hinweis);
+
+    function senden(nachricht) {
+      nachricht.ns = NS;
+      try {
+        // Ziel ist die eigene Verwaltung; die prueft ihrerseits die Herkunft.
+        // Uebertragen werden nur oeffentliche Angaben von dieser Seite.
+        window.parent.postMessage(nachricht, "*");
+      } catch (e) {}
+    }
+
+    function markieren(node) {
+      if (marked === node) return;
+      if (marked) marked.classList.remove("wunsch-ziel");
+      marked = node;
+      if (marked) marked.classList.add("wunsch-ziel");
+    }
+
+    /** Kurzer, verstaendlicher Name fuer das angetippte Element. */
+    function bezeichnung(node) {
+      if (!node) return "";
+      var t = (node.getAttribute("aria-label") || node.getAttribute("alt") || node.title || "").trim();
+      if (!t && node.tagName === "IMG") t = "Bild";
+      if (!t && (node.tagName === "VIDEO" || node.querySelector && node.querySelector("video"))) t = "Video";
+      if (!t) t = (node.textContent || "").replace(/\s+/g, " ").trim();
+      if (!t) t = node.tagName.toLowerCase();
+      return t.length > 90 ? t.slice(0, 89) + "…" : t;
+    }
+
+    /** Abschnitt, in dem das Element sitzt — passt zu den Ansichten der Verwaltung. */
+    function abschnitt(node) {
+      var sec = node.closest && node.closest("section[id], header, footer");
+      if (!sec) return { id: "", titel: "" };
+      var id = sec.id || (sec.tagName === "HEADER" ? "header" : sec.tagName === "FOOTER" ? "footer" : "");
+      var h = sec.querySelector && sec.querySelector("h1, h2, h3");
+      return { id: id, titel: h ? h.textContent.replace(/\s+/g, " ").trim().slice(0, 80) : "" };
+    }
+
+    /** Element statt Textknoten, und keine riesigen Container melden. */
+    function ziel(node) {
+      if (!node || node.nodeType !== 1) return document.body;
+      var n = node;
+      // Sehr kleine Huellen (span/strong) auf das Elternelement heben, damit
+      // die Meldung greifbar bleibt.
+      while (n.parentElement && /^(SPAN|STRONG|EM|B|I|SMALL|PICTURE|SOURCE)$/.test(n.tagName)) {
+        n = n.parentElement;
+      }
+      return n;
+    }
+
+    function setArmed(an) {
+      armed = !!an;
+      document.documentElement.classList.toggle("wunsch-an", armed);
+      hinweis.hidden = !armed;
+      if (!armed) markieren(null);
+    }
+
+    document.addEventListener(
+      "mouseover",
+      function (e) {
+        if (!armed) return;
+        markieren(ziel(e.target));
+      },
+      true
+    );
+
+    // Im Wunsch-Modus wird jeder Klick abgefangen: die Seite soll nicht
+    // navigieren, sondern die Stelle melden.
+    ["click", "submit"].forEach(function (typ) {
+      document.addEventListener(
+        typ,
+        function (e) {
+          if (!armed) return;
+          e.preventDefault();
+          e.stopPropagation();
+          if (typ !== "click") return;
+          var node = ziel(e.target);
+          var sec = abschnitt(node);
+          markieren(node);
+          senden({
+            type: "pick",
+            section: sec.id,
+            sectionTitle: sec.titel,
+            label: bezeichnung(node),
+            tag: node.tagName.toLowerCase(),
+            url: location.href.replace(/([?&])wunsch=1(&|$)/, "$1").replace(/[?&]$/, ""),
+            lang: document.documentElement.lang || "",
+          });
+        },
+        true
+      );
+    });
+
+    window.addEventListener("message", function (e) {
+      var d = e.data;
+      if (!d || d.ns !== NS) return;
+      if (d.type === "arm") setArmed(true);
+      else if (d.type === "disarm") setArmed(false);
+      else if (d.type === "clear") markieren(null);
+      else if (d.type === "jump" && d.id) jumpTo(d.id);
+    });
+
+    senden({
+      type: "ready",
+      url: location.href,
+      lang: document.documentElement.lang || "",
+      sections: Array.prototype.map.call(document.querySelectorAll("section[id]"), function (s) {
+        var h = s.querySelector("h1, h2, h3");
+        return { id: s.id, titel: h ? h.textContent.replace(/\s+/g, " ").trim().slice(0, 60) : s.id };
+      }),
+    });
+  }
 })();

@@ -178,6 +178,23 @@ Tipp: vorher auf max. ~2000 px Breite verkleinern, JPG Qualität ~80.
 PDF unter `presskit/sam-sparking-presskit-2026.pdf` ablegen — oder in der
 Verwaltung eine beliebige URL als Presskit-Link eintragen.
 
+## Wunsch-Modus (Vorschau in der Verwaltung)
+
+Die Verwaltung zeigt unter *Website & Wünsche* die veröffentlichte Seite in
+einem Rahmen. Dort lässt sich auf eine Stelle tippen und ein Anpassungswunsch
+eintippen; daraus wird eine Aufgabe in Quantus (Repo `ai-sync`).
+
+Dafür bringt die Website zwei Dinge mit:
+
+- `netlify.toml` erlaubt das Einbetten per
+  `Content-Security-Policy: frame-ancestors` — nur für die eigenen
+  Netlify-Adressen (`X-Frame-Options` gibt es dafür bewusst nicht mehr, das
+  kennt nur „alles oder nichts").
+- `assets/site.js` schaltet den Wunsch-Modus **nur** frei, wenn die Seite in
+  einem Rahmen läuft **und** `?wunsch=1` in der Adresse steht. Dann meldet ein
+  Klick den Abschnitt und das angetippte Element an die Verwaltung, statt zu
+  navigieren. Für normale Besuche ist der Block wirkungslos.
+
 ## Was drin ist
 
 **Inhalt & Funktion**
