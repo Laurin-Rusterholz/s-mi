@@ -86,6 +86,20 @@ const isoDate = (v) => {
 
 const today = () => (process.env.BUILD_DATE || new Date().toISOString()).slice(0, 10);
 
+/**
+ * Unterverzeichnis, in dem die fertige Website ausgeliefert wird.
+ * Leer (Normalfall) = direkt an der Wurzel der Domain. Gesetzt (SITE_BASE=/site)
+ * wandern alle seiteninternen Adressen — Bilder, CSS, Sprachwechsel, Menü —
+ * unter dieses Verzeichnis. Gebraucht wird das von der Präsentations-Fassung
+ * (Repo Beispiel-Sami), die Website und Verwaltung nebeneinander ausliefert.
+ * Die absoluten Adressen für Suchmaschinen (canonical, hreflang, sitemap)
+ * bleiben bewusst unberührt — sie zeigen weiter auf die echte Website.
+ */
+const BASE = String(process.env.SITE_BASE || "")
+  .trim()
+  .replace(/\/+$/, "")
+  .replace(/^(?!$|\/)/, "/");
+
 /* ------------------------------------------------------------------ laden */
 
 /**
@@ -437,6 +451,47 @@ function renderSound(n, s) {
             .join("\n          ")}
         </div>
       </div>
+    </div>
+  </section>`;
+}
+
+function renderExperience(n, s) {
+  const moments = list(s.moments).filter((m) => str(m?.title));
+  return `
+  <section class="pad" id="experience" aria-labelledby="experience-h">
+    <div class="wrap">${sectionHead(n, s, "experience")}
+      ${str(s.lede) ? `<p class="lede rv">${inline(s.lede)}</p>` : ""}
+      ${
+        moments.length
+          ? `<div class="moment-grid rv">${moments
+              .map(
+                (m) => `<article class="mix-card">
+            ${str(m.kicker) ? `<span class="mono">${esc(m.kicker)}</span>` : ""}
+            <h3>${esc(m.title)}</h3>
+            ${str(m.text) ? `<p>${inline(m.text)}</p>` : ""}
+          </article>`
+              )
+              .join("\n          ")}</div>`
+          : ""
+      }
+      ${
+        safeUrl(s.embedUrl)
+          ? `<div class="mix-embed rv"><iframe src="${href(s.embedUrl)}" title="${esc(
+              str(s.embedLabel, "Aftermovie")
+            )}" loading="lazy" allow="autoplay" frameborder="0"></iframe></div>`
+          : ""
+      }
+      ${
+        str(s.quote?.text)
+          ? `<blockquote class="lede rv">${inline(s.quote.text)}${
+              [str(s.quote.name), str(s.quote.venue)].filter(Boolean).length
+                ? `<footer class="mono">— ${[esc(s.quote.name), esc(s.quote.venue)]
+                    .filter(Boolean)
+                    .join(", ")}</footer>`
+                : ""
+            }</blockquote>`
+          : ""
+      }
     </div>
   </section>`;
 }
@@ -1218,6 +1273,9 @@ function languagesOf(c) {
 /** Präfix einer Sprache: Hauptsprache ohne, andere mit /en, /fr */
 const langPrefix = (lang, master) => (lang === master ? "" : `/${lang}`);
 
+/** Dasselbe für Links auf der Seite selbst — inklusive Basis-Verzeichnis. */
+const navPrefix = (lang, master) => BASE + langPrefix(lang, master);
+
 const LANG_NAMES = { de: "Deutsch", en: "English", fr: "Français" };
 const OG_LOCALE = { de: "de_CH", en: "en_US", fr: "fr_CH" };
 
@@ -1312,8 +1370,9 @@ const anchorHref = (v) => esc(anchor(v));
 function rooted(url) {
   const u = safeUrl(url);
   if (!u) return "";
-  if (/^(https?:|mailto:|tel:|#|\/)/i.test(u)) return u;
-  return "/" + u.replace(/^\.?\//, "");
+  if (/^(https?:|mailto:|tel:|#)/i.test(u)) return u;
+  if (u.startsWith("/")) return BASE + u;
+  return BASE + "/" + u.replace(/^\.?\//, "");
 }
 
 /* --------------------------------------------------------------- dokument */
@@ -1322,7 +1381,7 @@ function renderPage(c, page, pages, lang, langs) {
   const master = langs[0];
   UI = { ...UI_DEFAULTS, ...(c.ui || {}) };
   const ui = UI;
-  CTX = { page, pages, hideHead: null, prefix: langPrefix(lang, master) };
+  CTX = { page, pages, hideHead: null, prefix: navPrefix(lang, master) };
   const site = c.site;
   const base = site.domain.replace(/\/+$/, "");
   const sections = c.sections || {};
@@ -1332,6 +1391,7 @@ function renderPage(c, page, pages, lang, langs) {
   const renderers = {
     about: renderAbout,
     sound: renderSound,
+    experience: renderExperience,
     shows: renderShows,
     references: renderReferences,
     gallery: renderGallery,
@@ -1572,9 +1632,9 @@ ${jsonScript(structuredData(c, sections, page, pages))}
   </script>
 
   <meta name="theme-color" content="${esc(ink)}">
-  <link rel="apple-touch-icon" href="/img/icon-180.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/img/icon-32.png">
-  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="apple-touch-icon" href="${BASE}/img/icon-180.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="${BASE}/img/icon-32.png">
+  <link rel="manifest" href="${BASE}/manifest.webmanifest">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='${encodeURIComponent(
     ink
   )}'/%3E%3Cpath d='M36 6 14 38h14l-4 20 26-34H34z' fill='${encodeURIComponent(
@@ -1582,10 +1642,10 @@ ${jsonScript(structuredData(c, sections, page, pages))}
   )}'/%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/archivo-latin.woff2" crossorigin>
-  <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/plexmono-400-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="${BASE}/assets/fonts/archivo-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="${BASE}/assets/fonts/plexmono-400-latin.woff2" crossorigin>
 ${heroPreload}
-  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="${BASE}/assets/site.css">
   <style>:root{--ink:${ink};--spark:${accent};}</style>
 </head>
 <body data-page="${esc(page.slug || "home")}">
@@ -1594,7 +1654,7 @@ ${pageBackground(site)}
 
   <header>
     <div class="progress" id="progress" aria-hidden="true"></div>
-    <a class="logo" href="/">${esc(str(site.logoText, site.artist))}</a>
+    <a class="logo" href="${BASE}/">${esc(str(site.logoText, site.artist))}</a>
     <button class="burger" id="burger" aria-label="${esc(ui.menu)}" aria-expanded="false" aria-controls="nav" data-open="${esc(ui.menu)}" data-close="${esc(ui.close)}">${esc(ui.menu)}</button>
     <nav id="nav">
       <button class="nav-close" type="button" aria-label="${esc(ui.close)}">✕</button>
@@ -1607,7 +1667,7 @@ ${pageBackground(site)}
               .map(
                 (l) =>
                   `<a href="${esc(
-                    langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
+                    navPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
                   )}" lang="${esc(l)}"${l === lang ? ' aria-current="true"' : ""}>${esc(l.toUpperCase())}</a>`
               )
               .join("")}</div>`
@@ -1654,7 +1714,7 @@ ${
           .map(
             (l) =>
               `<a href="${esc(
-                langPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
+                navPrefix(l, master) + (page.slug ? `/${page.slug}/` : "/")
               )}" lang="${esc(l)}"${l === lang ? ' aria-current="true"' : ""}>${esc(
                 LANG_NAMES[l] || l.toUpperCase()
               )}</a>`
@@ -1666,7 +1726,7 @@ ${
       <span class="mono">© <span id="yr">${today().slice(0, 4)}</span> ${esc(
     site.artist
   )} — ${esc(ui.rights)}</span>
-      <a class="mono" href="${esc(langPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
+      <a class="mono" href="${esc(navPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
     LEGAL_LABEL[lang] || LEGAL_LABEL.de
   )}</a>
       ${site.claim ? `<span class="claim">${esc(site.claim)}</span>` : ""}
@@ -1678,7 +1738,7 @@ ${
     </div>
   </footer>
 ${showsData}
-  <script src="/assets/site.js" defer></script>
+  <script src="${BASE}/assets/site.js" defer></script>
 </body>
 </html>
 `;
@@ -1751,7 +1811,7 @@ function renderLegal(c, lang, langs) {
   const base = esc(str(contact.base, "St. Gallen, Schweiz"));
   const ink = color(site.themeColor, "#05070e");
   const accent = color(site.accentColor, "#2e6bff");
-  const prefix = langPrefix(lang, master);
+  const prefix = navPrefix(lang, master);
   return `<!DOCTYPE html>
 <html lang="${esc(lang)}">
 <head>
@@ -1759,7 +1819,7 @@ function renderLegal(c, lang, langs) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${esc(t.title)} — ${artist}</title>
   <meta name="robots" content="noindex, follow">
-  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="${BASE}/assets/site.css">
   <style>:root{--ink:${ink};--spark:${accent};}
     .legal{max-width:720px;margin:0 auto;padding:clamp(90px,14vh,140px) 22px 80px;}
     .legal h1{font-size:clamp(1.6rem,5vw,2.6rem);margin-bottom:34px;}
@@ -1778,7 +1838,7 @@ function renderLegal(c, lang, langs) {
         ? `<nav class="langs" aria-label="${esc(LANG_NAMES[lang] || "Sprache")}">${langs
             .map(
               (l) =>
-                `<a href="${esc(langPrefix(l, master) + "/" + (LEGAL_SLUG[l] || "legal") + "/")}" lang="${esc(
+                `<a href="${esc(navPrefix(l, master) + "/" + (LEGAL_SLUG[l] || "legal") + "/")}" lang="${esc(
                   l
                 )}"${l === lang ? ' aria-current="true"' : ""}>${esc(LANG_NAMES[l] || l)}</a>`
             )
@@ -1858,7 +1918,7 @@ function render404(c, langs) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>404 — ${esc(site.artist)}</title>
   <meta name="robots" content="noindex, follow">
-  <link rel="stylesheet" href="/assets/site.css">
+  <link rel="stylesheet" href="${BASE}/assets/site.css">
   <style>:root{--ink:${ink};--spark:${accent};}
     .nf{min-height:100svh;display:flex;align-items:center;}
     .nf h1{font-size:clamp(3rem,14vw,9rem);font-variation-settings:'wdth' 122,'wght' 850;}
@@ -1872,7 +1932,7 @@ ${pageBackground(site)}
       <span class="mono">404</span>
       <h1>${esc(str(ui.notFoundTitle, "Nichts hier."))}</h1>
       <p>${esc(str(ui.notFoundText, "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle."))}</p>
-      <a class="btn" href="/">${esc(str(ui.notFoundCta, "Zur Startseite"))}</a>
+      <a class="btn" href="${BASE}/">${esc(str(ui.notFoundCta, "Zur Startseite"))}</a>
     </div>
   </main>
 </body>

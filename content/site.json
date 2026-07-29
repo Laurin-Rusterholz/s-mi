@@ -1365,6 +1365,7 @@
   "layout": [
     "about",
     "sound",
+    "experience",
     "shows",
     "references",
     "gallery",
@@ -1383,6 +1384,7 @@
       "sections": [
         "about",
         "sound",
+        "experience",
         "shows",
         "references",
         "gallery",
@@ -1508,6 +1510,37 @@
       ],
       "title": "Con",
       "titleAccent": "tact."
+    },
+    "experience": {
+      "enabled": true,
+      "navLabel": "Experience",
+      "title": "Experi",
+      "titleAccent": "ence.",
+      "lede": "A Sam Sparkling set is built like a story: a slow burn, a hard turn, and a last hour nobody wants to end.",
+      "moments": [
+        {
+          "kicker": "Warm-up",
+          "title": "The Build",
+          "text": "Melodic, patient, and loud enough to pull people off the wall. The room fills before the first kick lands."
+        },
+        {
+          "kicker": "Peak time",
+          "title": "The Drop",
+          "text": "Euphoric hardstyle at full width — hard kicks under melodies you can sing back. This is what people come for."
+        },
+        {
+          "kicker": "Closing",
+          "title": "The Last Hour",
+          "text": "Raw energy, no filler. Tracks I only play when the floor has earned them."
+        }
+      ],
+      "embedUrl": "",
+      "embedLabel": "Aftermovie",
+      "quote": {
+        "text": "",
+        "name": "",
+        "venue": ""
+      }
     },
     "gallery": {
       "enabled": true,
