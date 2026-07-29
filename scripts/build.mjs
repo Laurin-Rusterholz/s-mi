@@ -660,6 +660,7 @@ function renderBooking(n, s, site) {
   const formEnabled = f.enabled !== false && !!safeUrl(site.bookingApi);
   return `
   <section class="booking pad" id="booking" aria-labelledby="booking-h">
+    <span class="section-mark" aria-hidden="true">${esc(str(s.title) + str(s.titleAccent))}</span>
     <div class="wrap">${sectionHead(n, s, "booking")}
       <div class="booking-grid">
         <div class="rv">
@@ -714,37 +715,44 @@ function renderBooking(n, s, site) {
           <span class="mono">${esc(str(f.kicker, "Booking request"))}</span>
           <h3>${esc(str(f.title, "Tell me about your event"))}</h3>
         </div>
-        <div class="bform-grid">
-          <label>${esc(UI.fName)} <span aria-hidden="true">*</span>
+        <div class="bform-cols">
+          <div class="bform-grid">
+          <label><span class="lbl">${esc(UI.fName)} <i aria-hidden="true">*</i></span>
             <input name="name" type="text" required maxlength="120" autocomplete="name">
           </label>
-          <label>${esc(UI.fEmail)} <span aria-hidden="true">*</span>
+          <label><span class="lbl">${esc(UI.fEmail)} <i aria-hidden="true">*</i></span>
             <input name="email" type="email" required maxlength="160" autocomplete="email">
           </label>
-          <label>${esc(UI.fEvent)}
+          <label><span class="lbl">${esc(UI.fEvent)}</span>
             <input name="event" type="text" maxlength="160">
           </label>
-          <label>${esc(UI.fCity)}
+          <label><span class="lbl">${esc(UI.fCity)}</span>
             <input name="city" type="text" maxlength="120">
           </label>
-          <label>${esc(UI.fDate)}
+          <label><span class="lbl">${esc(UI.fDate)}</span>
             <input name="date" type="date">
           </label>
-          <label>${esc(UI.fSetLength)}
+          <label><span class="lbl">${esc(UI.fSetLength)}</span>
             <input name="setLength" type="text" maxlength="60" placeholder="${esc(UI.fSetLengthHint)}">
           </label>
-          <label class="span-2">${esc(UI.fMessage)}
+          <label class="span-2"><span class="lbl">${esc(UI.fMessage)}</span>
             <textarea name="message" rows="4" maxlength="4000"></textarea>
           </label>
-          <label class="hp" aria-hidden="true" tabindex="-1">${esc(UI.fHoneypot)}
+          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">${esc(UI.fHoneypot)}</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
-          <div class="bform-cal span-2" id="bform-cal"
-               data-weekdays="${esc(UI.weekdays)}" data-hint="${esc(UI.pickDay)}"
-               data-busy="${esc(UI.dayBusy)}" hidden></div>
+          </div>
+          <div class="bform-side">
+            <div class="bform-cal" id="bform-cal"
+                 data-weekdays="${esc(UI.weekdays)}" data-hint="${esc(UI.pickDay)}"
+                 data-busy="${esc(UI.dayBusy)}" hidden></div>
+          </div>
         </div>
         <div class="bform-foot">
-          <button class="btn solid" type="submit">${esc(str(f.submitLabel, "Send request"))}</button>
+          <button class="btn solid big" type="submit">${esc(
+            str(f.submitLabel, "Send request")
+          )}<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">${esc(UI.replyNote)}</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="${esc(str(f.successText, "Thanks — your request landed."))}"
              data-error="${esc(str(f.errorText, "Something went wrong. Please e-mail instead."))}"></p>
@@ -1063,6 +1071,7 @@ const UI_DEFAULTS = {
   toTop: "Nach oben",
   cookieText: "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
   cookieOk: "Alles klar",
+  replyNote: "Antwort meist innert 48 Stunden",
   copyMail: "Adresse kopieren",
   copied: "Kopiert ✓",
   bookCta: "Jetzt buchen",

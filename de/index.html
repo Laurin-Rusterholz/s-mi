@@ -502,6 +502,7 @@
   </section>
 
   <section class="booking pad" id="booking" aria-labelledby="booking-h">
+    <span class="section-mark" aria-hidden="true">Booking.</span>
     <div class="wrap">
       <div class="shead rv">
         <span class="num" aria-hidden="true">07</span>
@@ -544,37 +545,42 @@
           <span class="mono">Booking-Anfrage</span>
           <h3>Erzähl mir von deinem Event</h3>
         </div>
-        <div class="bform-grid">
-          <label>Dein Name <span aria-hidden="true">*</span>
+        <div class="bform-cols">
+          <div class="bform-grid">
+          <label><span class="lbl">Dein Name <i aria-hidden="true">*</i></span>
             <input name="name" type="text" required maxlength="120" autocomplete="name">
           </label>
-          <label>E-Mail <span aria-hidden="true">*</span>
+          <label><span class="lbl">E-Mail <i aria-hidden="true">*</i></span>
             <input name="email" type="email" required maxlength="160" autocomplete="email">
           </label>
-          <label>Event / Club
+          <label><span class="lbl">Event / Club</span>
             <input name="event" type="text" maxlength="160">
           </label>
-          <label>Ort
+          <label><span class="lbl">Ort</span>
             <input name="city" type="text" maxlength="120">
           </label>
-          <label>Datum
+          <label><span class="lbl">Datum</span>
             <input name="date" type="date">
           </label>
-          <label>Set-Länge
+          <label><span class="lbl">Set-Länge</span>
             <input name="setLength" type="text" maxlength="60" placeholder="z. B. 60 Min.">
           </label>
-          <label class="span-2">Nachricht
+          <label class="span-2"><span class="lbl">Nachricht</span>
             <textarea name="message" rows="4" maxlength="4000"></textarea>
           </label>
-          <label class="hp" aria-hidden="true" tabindex="-1">Bitte leer lassen
+          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Bitte leer lassen</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
-          <div class="bform-cal span-2" id="bform-cal"
-               data-weekdays="Mo,Di,Mi,Do,Fr,Sa,So" data-hint="Oder Wunschdatum direkt im Kalender antippen:"
-               data-busy="Belegt" hidden></div>
+          </div>
+          <div class="bform-side">
+            <div class="bform-cal" id="bform-cal"
+                 data-weekdays="Mo,Di,Mi,Do,Fr,Sa,So" data-hint="Oder Wunschdatum direkt im Kalender antippen:"
+                 data-busy="Belegt" hidden></div>
+          </div>
         </div>
         <div class="bform-foot">
-          <button class="btn solid" type="submit">Anfrage senden</button>
+          <button class="btn solid big" type="submit">Anfrage senden<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">Antwort meist innert 48 Stunden</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir."
              data-error="Da ist etwas schiefgelaufen. Schreib mir bitte direkt an info@samsparking.ch."></p>

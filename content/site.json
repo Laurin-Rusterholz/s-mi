@@ -350,7 +350,8 @@
         "copied": "Kopiert ✓",
         "bookCta": "Jetzt buchen",
         "follow": "Kanäle",
-        "phone": "Telefon"
+        "phone": "Telefon",
+        "replyNote": "Antwort meist innert 48 Stunden"
       }
     },
     "fr": {
@@ -673,7 +674,8 @@
         "copied": "Copié ✓",
         "bookCta": "Réserver",
         "follow": "Réseaux",
-        "phone": "Téléphone"
+        "phone": "Téléphone",
+        "replyNote": "Réponse en général sous 48 h"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -1022,7 +1024,8 @@
         "copied": "32d29144",
         "bookCta": "5747254e",
         "follow": "c9409495",
-        "phone": "4930944f"
+        "phone": "4930944f",
+        "replyNote": "273c1cf7"
       }
     },
     "fr": {
@@ -1345,7 +1348,8 @@
         "copied": "32d29144",
         "bookCta": "5747254e",
         "follow": "c9409495",
-        "phone": "4930944f"
+        "phone": "4930944f",
+        "replyNote": "273c1cf7"
       },
       "hero": {
         "kicker": "0f636286",
@@ -1778,7 +1782,8 @@
     "copyMail": "Copy address",
     "copied": "Copied ✓",
     "bookCta": "Book me",
-    "follow": "Channels"
+    "follow": "Channels",
+    "replyNote": "I usually reply within 48 hours"
   },
   "updatedAt": "2026-07-27T04:36:05.224Z",
   "updatedBy": "Verwaltung"
