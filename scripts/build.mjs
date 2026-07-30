@@ -474,15 +474,33 @@ function renderExperience(n, s) {
       ${str(s.lede) ? `<p class="lede rv">${inline(s.lede)}</p>` : ""}
       ${
         moments.length
-          ? `<div class="moment-grid rv">${moments
+          ? `<div class="experience-composition rv">
+        <div class="speaker-model" aria-hidden="true">
+          <span class="speaker-aura"></span>
+          <span class="sound-ring ring-one"></span>
+          <span class="sound-ring ring-two"></span>
+          <div class="speaker-cabinet">
+            <span class="speaker-brand">SAM<br>SPARKLING</span>
+            <span class="speaker-tweeter"></span>
+            <span class="speaker-driver speaker-driver-mid"><i></i></span>
+            <span class="speaker-driver speaker-driver-bass"><i></i></span>
+            <span class="speaker-port"></span>
+          </div>
+          <span class="speaker-floor"></span>
+        </div>
+        <div class="moment-grid">${moments
               .map(
-                (m) => `<article class="mix-card">
+                (m, index) => `<article class="mix-card" data-step="${String(index + 1).padStart(
+                  2,
+                  "0"
+                )}">
             ${str(m.kicker) ? `<span class="mono">${esc(m.kicker)}</span>` : ""}
             <h3>${esc(m.title)}</h3>
             ${str(m.text) ? `<p>${inline(m.text)}</p>` : ""}
           </article>`
               )
-              .join("\n          ")}</div>`
+              .join("\n          ")}</div>
+      </div>`
           : ""
       }
       ${
@@ -1530,6 +1548,14 @@ function renderPage(c, page, pages, lang, langs) {
   </div>`
       : "";
 
+  const configuredHeroCta = str(c.hero?.ctaHref, "#booking");
+  const heroCtaHref =
+    configuredHeroCta === "#booking" &&
+    sections.booking?.enabled !== false &&
+    sections.booking?.form?.enabled !== false
+      ? "#booking-form"
+      : configuredHeroCta;
+
   const hero =
     page.hero === "none"
       ? ""
@@ -1557,7 +1583,7 @@ function renderPage(c, page, pages, lang, langs) {
         ${c.hero?.meta ? `<span class="mono">${esc(c.hero.meta)}</span>` : ""}
         ${
           c.hero?.ctaLabel
-            ? `<a class="hero-cta" href="${anchorHref(str(c.hero.ctaHref, "#booking"))}">${esc(
+            ? `<a class="hero-cta" href="${anchorHref(heroCtaHref)}">${esc(
                 c.hero.ctaLabel
               )}<span class="cta-arr" aria-hidden="true">→</span></a>`
             : ""
