@@ -955,29 +955,94 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .subnav a{min-height:40px;display:inline-flex;align-items:center;}
 
   .shead{gap:12px;margin-bottom:26px;}
-  .shead h2{font-size:clamp(1.9rem,9vw,2.6rem);}
+  .shead{
+    grid-template-columns:1fr;align-items:start;
+    border-top:1px solid var(--line);padding-top:14px;
+  }
+  .shead .num{grid-row:1;margin:0;border:0;padding:0;}
+  .shead h2{grid-row:2;font-size:clamp(2.15rem,10.5vw,3.1rem);line-height:.86;}
+  .shead-rule{display:none;}
 
-  .about-grid{gap:26px;}
-  .about-photo{max-width:none;}
+  /* Auf dem Handy wird die Seite eigenständig komponiert: Bilder und
+     horizontale Sammlungen nutzen die Bildschirmbreite statt Desktop-Karten
+     bloss untereinander zu stapeln. */
+  .about-grid{gap:30px;}
+  .about-photo{
+    max-width:none;margin-inline:-16px;aspect-ratio:4/5;
+    box-shadow:0 26px 60px -30px rgba(0,0,0,.9);
+  }
   .about-photo .mono{position:static;display:block;margin-top:10px;}
   .about-copy .lede{font-size:1.15rem;}
-  .facts{grid-template-columns:1fr 1fr;gap:8px;}
-  .facts>div{padding:16px 14px;}
-  .facts dd{font-size:1.5rem;}
+  .about-copy p{line-height:1.68;}
+  .three-words{
+    display:grid;grid-template-columns:1fr;margin:22px 0 4px;gap:8px;
+  }
+  .facts{
+    display:flex;gap:0;margin-inline:-16px;overflow-x:auto;
+    scroll-snap-type:x mandatory;scrollbar-width:none;
+    border-block:1px solid var(--line);
+  }
+  .facts::-webkit-scrollbar{display:none;}
+  .facts>div{
+    flex:0 0 46vw;min-width:150px;padding:18px 16px 20px;
+    border-top:0;border-right:1px solid var(--line);scroll-snap-align:start;
+  }
+  .facts dd{font-size:1.7rem;}
 
   .show-list li{grid-template-columns:60px 1fr;gap:12px 14px;padding:16px;}
   .show-date b{font-size:1.5rem;}
   .show-cta{grid-column:1/-1;}
   .show-cta .btn{width:100%;}
-  .venue-list a{grid-template-columns:38px 1fr;gap:10px;padding:16px;}
+  .sound{background:rgba(10,14,25,.76);}
+  .sound-grid{gap:34px;}
+  .genre-list{gap:0;border-top:1px solid var(--line);}
+  .genre-list li{
+    background:none;border:0;border-bottom:1px solid var(--line);
+    padding:15px 2px;font-size:1.35rem;
+  }
+  .mix-stack{
+    display:flex;gap:12px;margin-inline:-16px;padding-inline:16px;
+    overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  }
+  .mix-stack::-webkit-scrollbar{display:none;}
+  .mix-card{flex:0 0 86vw;scroll-snap-align:center;padding:20px 18px;}
+
+  .show-list{gap:10px;}
+  .show-list li{
+    grid-template-columns:54px minmax(0,1fr);align-items:start;
+    background:rgba(23,30,48,.72);border-width:0 0 0 2px;
+  }
+  .venue-list{gap:0;border-top:1px solid var(--line);}
+  .venue-list a{
+    grid-template-columns:32px minmax(0,1fr);gap:10px;padding:17px 2px;
+    background:none;border:0;border-bottom:1px solid var(--line);
+  }
   .venue-name{font-size:1.35rem;}
   .venue-city{grid-column:2;}
   .genre-list li{font-size:1.15rem;padding:16px;}
   .avail li{font-size:1.05rem;}
 
-  .gal{columns:1;column-gap:0;}
-  .gal figure{margin-bottom:10px;}
+  .gal{
+    columns:auto;display:flex;gap:10px;margin-inline:-16px;padding-inline:16px;
+    overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;
+    scrollbar-width:none;overscroll-behavior-inline:contain;
+  }
+  .gal::-webkit-scrollbar{display:none;}
+  .gal figure,.gal figure:nth-child(4n){
+    flex:0 0 84vw;margin:0;scroll-snap-align:center;
+    aspect-ratio:4/5;background:var(--ink-2);
+  }
+  .gal-btn,.gal-btn img,.gal-video video{height:100%;object-fit:cover;}
   .gal figcaption{opacity:1;}          /* ohne Hover sonst nie sichtbar */
+
+  .shop-grid{
+    display:flex;gap:12px;margin-inline:-16px;padding-inline:16px;
+    overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;
+    scrollbar-width:none;
+  }
+  .shop-grid::-webkit-scrollbar{display:none;}
+  .product{flex:0 0 82vw;scroll-snap-align:center;}
+  .product-body{padding:16px;}
 
   .cal{margin-inline:-4px;}
   .cal-head{padding:11px 10px;}
@@ -1004,7 +1069,11 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .contact .big-mail{font-size:clamp(.95rem,6vw,1.8rem);}
   .contact-meta{gap:16px;}
   .contact-meta div{min-width:0;flex:1 1 40%;}
-  .foot{gap:8px;}
+  .social-cards{grid-template-columns:1fr;}
+  .scard{min-height:88px;}
+  .contact-mark,.section-mark{opacity:.65;}
+  .foot{gap:12px;align-items:flex-start;flex-direction:column;}
+  footer{padding-bottom:24px;}
 
   /* Lightbox: Bedienelemente in Daumennähe */
   .lb-prev,.lb-next{top:auto;bottom:18px;transform:none;font-size:2.2rem;padding:12px 20px;}
