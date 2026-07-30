@@ -370,6 +370,9 @@ function heroMedia(hero, site) {
 
 function renderAbout(n, s) {
   const facts = list(s.facts).filter((f) => str(f?.value));
+  const paragraphs = list(s.paragraphs).filter((p) => str(p));
+  const firstParagraph = paragraphs[0];
+  const moreParagraphs = paragraphs.slice(1);
   return `
   <section class="pad" id="about" aria-labelledby="about-h">
     <div class="wrap">${sectionHead(n, s, "about")}
@@ -380,10 +383,18 @@ function renderAbout(n, s) {
         </div>
         <div class="about-copy rv">
           ${str(s.lede) ? `<p class="lede">${inline(s.lede)}</p>` : ""}
-          ${list(s.paragraphs)
-            .filter((p) => str(p))
-            .map((p) => `<p>${inline(p)}</p>`)
-            .join("\n          ")}
+          ${firstParagraph ? `<p>${inline(firstParagraph)}</p>` : ""}
+          ${
+            moreParagraphs.length
+              ? `<div class="about-more" id="about-more">
+            ${moreParagraphs.map((p) => `<p>${inline(p)}</p>`).join("\n            ")}
+          </div>
+          <button class="about-toggle mono" type="button" aria-controls="about-more" aria-expanded="false"
+                  data-more="${esc(UI.moreStory)}" data-less="${esc(UI.lessStory)}">${esc(
+                    UI.moreStory
+                  )}</button>`
+              : ""
+          }
           ${
             list(s.words).length
               ? `<div class="three-words">${list(s.words)
@@ -531,6 +542,7 @@ function showRow(sh, idx) {
 function renderShows(n, s) {
   const t = today();
   const items = list(s.items).filter((i) => str(i?.name));
+  if (!items.length) return "";
   const upcoming = items
     .filter((i) => !isoDate(i.date) || isoDate(i.date) >= t)
     .sort((a, b) => String(a.date).localeCompare(String(b.date)));
@@ -600,11 +612,14 @@ function renderGallery(n, s) {
   const items = list(s.items).filter((i) => safeUrl(i?.src));
   // Bilder zählen für die Lightbox-Beschriftung; Videos laufen dort nicht mit.
   const photos = items.filter((i) => !isVideoUrl(i.src));
+  const mobileLimit = Math.max(2, Math.min(8, Number.parseInt(s.mobileLimit, 10) || 4));
+  const remaining = Math.max(0, items.length - mobileLimit);
 
   const cell = (g, i) => {
+    const mobileExtra = i >= mobileLimit ? ' data-mobile-extra="true"' : "";
     if (isVideoUrl(g.src)) {
       const gf = fitAttrs(g);
-      return `<figure class="gal-video${gf.cls}">
+      return `<figure class="gal-video${gf.cls}"${mobileExtra}>
           <video src="${href(g.src)}" muted loop playsinline autoplay preload="metadata"${
         g.poster ? ` poster="${href(g.poster)}"` : ""
       }${gf.style} aria-label="${esc(g.alt || "")}"></video>
@@ -612,7 +627,7 @@ function renderGallery(n, s) {
         </figure>`;
     }
     const idx = photos.indexOf(g) + 1;
-    return `<figure>
+    return `<figure${mobileExtra}>
           <button type="button" class="gal-btn" aria-label="${esc(
             UI.openImage.replace("{n}", idx).replace("{total}", photos.length)
           )}">
@@ -628,6 +643,15 @@ function renderGallery(n, s) {
       <div class="gal rv" id="gal">
         ${items.map(cell).join("\n        ")}
       </div>
+      ${
+        remaining
+          ? `<button class="gal-more btn" type="button" aria-controls="gal" aria-expanded="false"
+                  data-more="${esc(UI.showMoreImages.replace("{n}", remaining))}"
+                  data-less="${esc(UI.showLessImages)}">${esc(
+                    UI.showMoreImages.replace("{n}", remaining)
+                  )}</button>`
+          : ""
+      }
     </div>
   </section>`;
 }
@@ -848,7 +872,7 @@ function socialIcon(label, url) {
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
 }
 
-function renderContact(n, s, hasBooking) {
+function renderContact(n, s, bookingTarget) {
   const mail = str(s.email);
   const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
   const meta = `
@@ -880,7 +904,11 @@ function renderContact(n, s, hasBooking) {
             <button class="copy-mail mono" type="button" data-mail="${esc(mail)}" data-done="${esc(
                   UI.copied
                 )}">${esc(UI.copyMail)}</button>
-            ${hasBooking ? `<a class="btn ink" href="#booking">${esc(UI.bookCta)}</a>` : ""}
+            ${
+              bookingTarget
+                ? `<a class="btn ink" href="${esc(bookingTarget)}">${esc(UI.bookCta)}</a>`
+                : ""
+            }
           </div>`
               : ""
           }
@@ -1127,9 +1155,13 @@ const UI_DEFAULTS = {
   cookieText: "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
   cookieOk: "Alles klar",
   replyNote: "Antwort meist innert 48 Stunden",
-  copyMail: "Adresse kopieren",
+  copyMail: "E-Mail kopieren",
   copied: "Kopiert ✓",
-  bookCta: "Jetzt buchen",
+  bookCta: "Booking anfragen",
+  moreStory: "Ganze Story lesen",
+  lessStory: "Weniger anzeigen",
+  showMoreImages: "{n} weitere Bilder",
+  showLessImages: "Weniger Bilder",
   follow: "Kanäle",
   twintSend: "Per TWINT bezahlen an",
   twintRef: "Vermerk",
@@ -1179,7 +1211,7 @@ const NO_TRANSLATE = new Set([
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
   "name", "venue", "inquiryId", "backgroundImage", "price", "currency", "twint",
-  "fit", "focus",
+  "fit", "focus", "mobileLimit",
 ]);
 
 const looksTechnical = (v) =>
@@ -1381,12 +1413,25 @@ function renderPage(c, page, pages, lang, langs) {
   const master = langs[0];
   UI = { ...UI_DEFAULTS, ...(c.ui || {}) };
   const ui = UI;
-  CTX = { page, pages, hideHead: null, prefix: navPrefix(lang, master) };
   const site = c.site;
   const base = site.domain.replace(/\/+$/, "");
   const sections = c.sections || {};
-  const order = page.sections;
   const isHome = !page.slug;
+  const hasShows = list(sections.shows?.items).some((item) => str(item?.name));
+  const order = list(page.sections).filter(
+    (key) =>
+      sections[key] &&
+      sections[key].enabled !== false &&
+      (key !== "shows" || hasShows)
+  );
+  const effectivePage = { ...page, sections: order };
+  CTX = { page: effectivePage, pages, hideHead: null, prefix: navPrefix(lang, master) };
+  const hasBooking = order.includes("booking");
+  const hasBookingForm =
+    hasBooking &&
+    sections.booking?.form?.enabled !== false &&
+    !!safeUrl(site.bookingApi);
+  const bookingTarget = hasBooking ? (hasBookingForm ? "#booking-form" : "#booking") : "";
 
   const renderers = {
     about: renderAbout,
@@ -1397,7 +1442,7 @@ function renderPage(c, page, pages, lang, langs) {
     gallery: renderGallery,
     shop: (n, s) => renderShop(n, s, str(sections.contact?.email)),
     booking: (n, s) => renderBooking(n, s, site),
-    contact: (n, s) => renderContact(n, s, order.includes("booking")),
+    contact: (n, s) => renderContact(n, s, bookingTarget),
   };
 
   const norm = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -1579,7 +1624,7 @@ function renderPage(c, page, pages, lang, langs) {
 <html lang="${esc(site.lang || "en")}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <!-- Primary SEO -->
   <title>${esc(title)}</title>
@@ -1687,13 +1732,9 @@ ${body}
 
   <a class="totop" href="#top" aria-label="${esc(ui.toTop || "Nach oben")}">↑</a>
 ${
-  order.includes("booking")
+  hasBooking
     ? `  <div class="actbar" id="actbar" aria-hidden="false">
-    <a class="btn solid" href="#booking">${esc(str(sections.booking?.navLabel, "Booking"))}</a>${
-        sections.shop && sections.shop.enabled !== false && order.includes("shop")
-          ? `<a class="btn" href="#shop">${esc(str(sections.shop.navLabel, "Shop"))}</a>`
-          : ""
-      }
+    <a class="btn solid" href="${esc(bookingTarget)}">${esc(ui.bookCta)}</a>
   </div>
 `
     : ""
@@ -1816,7 +1857,7 @@ function renderLegal(c, lang, langs) {
 <html lang="${esc(lang)}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(t.title)} — ${artist}</title>
   <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="${BASE}/assets/site.css">
@@ -1915,7 +1956,7 @@ function render404(c, langs) {
 <html lang="${esc(langs[0] || "de")}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>404 — ${esc(site.artist)}</title>
   <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="${BASE}/assets/site.css">

@@ -140,6 +140,36 @@
     }
   });
 
+  /* ----------------------------------------- mobile Inhaltsverdichtung */
+  // Die lange Künstlergeschichte bleibt auf grossen Bildschirmen vollständig
+  // sichtbar. Auf dem Handy startet sie bewusst kurz und lässt sich bei
+  // Interesse öffnen — so bleibt der Weg von Sound zu Booking klar.
+  var aboutToggle = document.querySelector(".about-toggle");
+  var aboutMore = document.getElementById("about-more");
+  if (aboutToggle && aboutMore) {
+    aboutToggle.addEventListener("click", function () {
+      var open = !aboutMore.classList.contains("expanded");
+      aboutMore.classList.toggle("expanded", open);
+      aboutToggle.setAttribute("aria-expanded", open ? "true" : "false");
+      aboutToggle.textContent = aboutToggle.getAttribute(open ? "data-less" : "data-more") || "";
+    });
+  }
+
+  // Mobil zunächst nur die kuratierte Auswahl zeigen. Weitere Bilder bleiben
+  // im Dokument und in der Lightbox vorhanden, verlängern die Seite aber erst
+  // nach einer bewussten Entscheidung.
+  var galleryToggle = document.querySelector(".gal-more");
+  var gallery = document.getElementById("gal");
+  if (galleryToggle && gallery) {
+    galleryToggle.addEventListener("click", function () {
+      var open = !gallery.classList.contains("expanded");
+      gallery.classList.toggle("expanded", open);
+      galleryToggle.setAttribute("aria-expanded", open ? "true" : "false");
+      galleryToggle.textContent =
+        galleryToggle.getAttribute(open ? "data-less" : "data-more") || "";
+    });
+  }
+
   /* -------------------------------------------- scroll progress + active nav */
   var progress = document.getElementById("progress");
   var toTop = document.querySelector(".totop");
@@ -726,8 +756,25 @@
   var copyBtn = document.querySelector(".copy-mail");
   if (copyBtn) {
     var copyLabel = copyBtn.textContent;
+    var fallbackCopy = function (mail, done) {
+      var tmp = document.createElement("textarea");
+      tmp.value = mail;
+      tmp.setAttribute("readonly", "");
+      tmp.style.position = "fixed";
+      tmp.style.left = "-9999px";
+      tmp.style.opacity = "0";
+      document.body.appendChild(tmp);
+      tmp.select();
+      tmp.setSelectionRange(0, tmp.value.length);
+      var copied = false;
+      try { copied = document.execCommand("copy"); } catch (e) {}
+      tmp.remove();
+      if (copied) done();
+      return copied;
+    };
     copyBtn.addEventListener("click", function () {
       var mail = copyBtn.getAttribute("data-mail") || "";
+      if (!mail) return;
       var done = function () {
         copyBtn.classList.add("done");
         copyBtn.textContent = copyBtn.getAttribute("data-done") || "OK";
@@ -737,17 +784,11 @@
         }, 1800);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(mail).then(done, function () {});
+        navigator.clipboard.writeText(mail).then(done, function () {
+          fallbackCopy(mail, done);
+        });
       } else {
-        // Fallback ohne Clipboard-API: unsichtbares Feld markieren + kopieren
-        var tmp = document.createElement("textarea");
-        tmp.value = mail;
-        tmp.style.position = "fixed";
-        tmp.style.left = "-9999px";
-        document.body.appendChild(tmp);
-        tmp.select();
-        try { document.execCommand("copy"); done(); } catch (e) {}
-        tmp.remove();
+        fallbackCopy(mail, done);
       }
     });
   }
