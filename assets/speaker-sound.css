@@ -1,0 +1,21 @@
+/* Experience speaker: clearer PA silhouette and visible sound output. */
+#experience .speaker-model{filter:drop-shadow(0 24px 45px rgba(0,0,0,.55))}
+#experience .speaker-aura{width:106%;opacity:1;background:radial-gradient(circle,rgba(46,107,255,.38),rgba(46,107,255,.12) 38%,transparent 70%)}
+#experience .speaker-rig{width:min(84%,380px);filter:drop-shadow(28px 38px 34px rgba(0,0,0,.82))}
+#experience .array-module{border-color:rgba(233,237,245,.38);background:linear-gradient(105deg,rgba(255,255,255,.14),transparent 24%),radial-gradient(circle at center,rgba(119,139,180,.48) 0 1px,transparent 1.4px) 0 0/5px 5px,linear-gradient(160deg,#1b2538,#050810 76%)}
+#experience .array-module i{width:34%;box-shadow:inset 0 0 7px #000,0 0 0 1px rgba(233,237,245,.14),0 0 13px rgba(46,107,255,.2);animation:speakerCone 1.15s ease-in-out infinite alternate;transform-origin:center}
+#experience .array-module i:nth-child(2){animation-delay:-.55s}
+#experience .sub-cabinet{width:71%;border-color:rgba(233,237,245,.38);box-shadow:inset 0 0 0 7px rgba(1,3,7,.5),inset 0 1px 0 rgba(255,255,255,.12),0 0 68px -22px var(--spark)}
+#experience .sub-driver{width:70%;border-color:rgba(233,237,245,.34);box-shadow:inset 0 0 30px 8px #010207,0 0 0 7px rgba(2,4,8,.74),0 0 46px -8px rgba(46,107,255,.95);animation:speakerCone 1.05s ease-in-out infinite alternate}
+#experience .sub-driver i{box-shadow:0 0 28px rgba(46,107,255,.96),inset 0 0 12px rgba(46,107,255,.92)}
+#experience .speaker-levels{opacity:.82;filter:drop-shadow(0 0 11px rgba(46,107,255,.82))}
+#experience .speaker-levels i{width:4px;animation:levelBounce .9s ease-in-out infinite alternate;transform-origin:bottom}
+#experience .speaker-levels i:nth-child(2n){animation-delay:-.32s}#experience .speaker-levels i:nth-child(3n){animation-delay:-.64s}
+#experience .sound-ring{border-width:2px;border-color:rgba(92,139,255,.72);box-shadow:0 0 20px rgba(46,107,255,.38);animation-duration:2.35s}
+#experience .sound-ring.ring-two{animation-delay:-1.175s}
+#experience .speaker-beam{opacity:.62;background:linear-gradient(180deg,rgba(140,172,255,.3),rgba(46,107,255,.05) 68%,transparent)}
+#experience .speaker-floor{width:100%;background:repeating-linear-gradient(90deg,transparent 0 42px,rgba(46,107,255,.22) 43px 44px),repeating-linear-gradient(0deg,transparent 0 24px,rgba(46,107,255,.15) 25px 26px),radial-gradient(ellipse,rgba(46,107,255,.2),transparent 67%)}
+@keyframes speakerCone{from{transform:scale(.985);filter:brightness(.9)}to{transform:scale(1.035);filter:brightness(1.18)}}
+@keyframes levelBounce{from{transform:scaleY(.45);filter:brightness(.85)}to{transform:scaleY(1);filter:brightness(1.35)}}
+@media(max-width:700px){#experience .speaker-model{height:min(84vw,345px);min-height:305px}#experience .speaker-rig{width:min(82%,305px)}#experience .speaker-levels{right:-2%;gap:4px}#experience .sound-ring{border-width:1.5px}}
+@media(prefers-reduced-motion:reduce){#experience .array-module i,#experience .sub-driver,#experience .speaker-levels i{animation:none}}
