@@ -1519,7 +1519,7 @@ function renderPage(c, page, pages, lang, langs) {
 <html lang="${esc(site.lang || "en")}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <!-- Primary SEO -->
   <title>${esc(title)}</title>
@@ -1756,7 +1756,7 @@ function renderLegal(c, lang, langs) {
 <html lang="${esc(lang)}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>${esc(t.title)} — ${artist}</title>
   <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="/assets/site.css">
@@ -1855,7 +1855,7 @@ function render404(c, langs) {
 <html lang="${esc(langs[0] || "de")}">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>404 — ${esc(site.artist)}</title>
   <meta name="robots" content="noindex, follow">
   <link rel="stylesheet" href="/assets/site.css">
