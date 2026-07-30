@@ -176,17 +176,29 @@
   // Daumen-Leiste: erscheint nach dem ersten Bildschirm, verschwindet, sobald
   // Booking/Kontakt selbst im Bild sind (sonst verdeckt sie das Formular)
   var actbar = document.getElementById("actbar");
+  var fullHero = document.querySelector(".hero:not(.hero-compact)");
+  var pageHeader = document.querySelector("header");
   var nearAction = false;
+  var updateActbar = function () {
+    if (!actbar) return;
+    var pastHero = fullHero
+      ? fullHero.getBoundingClientRect().bottom <= (pageHeader ? pageHeader.offsetHeight : 0)
+      : window.scrollY > window.innerHeight;
+    var show = pastHero && !nearAction;
+    actbar.classList.toggle("show", show);
+    actbar.setAttribute("aria-hidden", show ? "false" : "true");
+  };
   if (actbar && "IntersectionObserver" in window) {
     var actTargets = ["booking", "contact"].map(function (id) { return document.getElementById(id); }).filter(Boolean);
     var actSeen = {};
     var aio = new IntersectionObserver(function (es) {
       es.forEach(function (e) { actSeen[e.target.id] = e.isIntersecting; });
       nearAction = Object.keys(actSeen).some(function (k) { return actSeen[k]; });
-      actbar.classList.toggle("show", window.scrollY > 500 && !nearAction);
+      updateActbar();
     }, { rootMargin: "0px 0px -20% 0px" });
     actTargets.forEach(function (t) { aio.observe(t); });
   }
+  updateActbar();
   var subnav = document.querySelector(".subnav");
   var links = Array.prototype.slice.call(
     document.querySelectorAll('.subnav a[href^="#"], header nav a[href^="#"]')
@@ -210,7 +222,7 @@
         progress.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + "%";
       }
       if (toTop) toTop.classList.toggle("show", window.scrollY > 700);
-      if (actbar) actbar.classList.toggle("show", window.scrollY > 500 && !nearAction);
+      updateActbar();
       var y = window.scrollY + window.innerHeight * 0.32;
       var current = null;
       targets.forEach(function (t) {
