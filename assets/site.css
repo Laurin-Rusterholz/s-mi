@@ -896,10 +896,20 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
    HANDY — grössere Ziele, weniger Randabstand, ruhigere Typografie
    ========================================================================== */
 @media(max-width:700px){
-  :root{--head:54px;}
+  :root{--head:58px;}
+  html{scroll-padding-top:calc(var(--head) + 10px);}
+  body{padding-bottom:calc(68px + env(safe-area-inset-bottom,0px));}
   .actbar{display:flex;}
-  .totop{bottom:84px;}
-  .cookie{bottom:78px;}
+  .actbar{
+    gap:8px;padding:9px 12px calc(9px + env(safe-area-inset-bottom,0px));
+    box-shadow:0 -16px 36px rgba(0,0,0,.32);
+  }
+  .actbar .btn{min-height:48px;}
+  .totop{right:12px;bottom:calc(78px + env(safe-area-inset-bottom,0px));}
+  .cookie{
+    left:10px;right:10px;bottom:calc(74px + env(safe-area-inset-bottom,0px));
+    padding:14px;
+  }
   /* Unschaerfe-Effekte und Filmkorn kosten auf dem Handy spuerbar
      Scroll-Leistung — dort deckende Flaechen und Ruhe */
   body::after{animation:none;opacity:.025;}
@@ -907,21 +917,42 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .cookie{backdrop-filter:none;}
   .totop{backdrop-filter:none;background:rgba(8,11,20,.94);}
   body{font-size:16px;}
-  .wrap{padding:0 18px;}
-  .pad{padding:56px 0;}
+  .wrap{padding:0 16px;}
+  .pad{padding:52px 0;}
   /* nicht die kompakten Unterseiten-Heroes treffen — die bleiben auf auto */
-  .hero:not(.hero-compact){min-height:0;height:calc(92svh - var(--head));}
-  .hero-inner{padding:0 18px 34px;}
-  .hero h1{font-size:clamp(2rem,12vw,4.6rem);}
-  .hero h1 .sp{font-size:.4em;letter-spacing:.5em;}
+  .hero:not(.hero-compact){
+    min-height:520px;height:calc(100svh - var(--head) - 68px);
+    align-items:flex-end;
+  }
+  .hero-inner{padding:52px 16px 30px;}
+  .hero h1{font-size:clamp(2.7rem,15vw,5.2rem);line-height:.84;}
+  .hero h1 .sp{font-size:.36em;letter-spacing:.4em;margin-left:.4em;line-height:1.5;}
   .hero-sub{gap:12px 20px;margin-top:18px;padding-top:16px;}
   .hero-cta{width:100%;justify-content:center;}
   .hero-compact{padding:104px 0 22px;}
 
   /* Menü: Einträge als grossflächige Ziele */
-  header{padding:14px 18px;}
-  header nav a{font-size:1.25rem;padding:10px 0;}
+  header{
+    padding:0 max(16px,env(safe-area-inset-left,0px));
+    padding-right:max(16px,env(safe-area-inset-right,0px));
+  }
+  .logo{max-width:calc(100vw - 92px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .burger{min-width:48px;min-height:48px;}
+  header nav{
+    padding:
+      calc(var(--head) + 18px + env(safe-area-inset-top,0px))
+      max(18px,env(safe-area-inset-right,0px))
+      calc(24px + env(safe-area-inset-bottom,0px))
+      max(18px,env(safe-area-inset-left,0px));
+  }
+  header nav ul a{font-size:clamp(1rem,5.5vw,1.25rem);padding:15px 4px;}
   .langs{gap:8px;}
+  .langs a{flex:1;justify-content:center;padding-inline:10px;}
+  .subnav-inner{
+    margin-inline:-16px;padding-inline:16px;
+    scroll-padding-inline:16px;overscroll-behavior-inline:contain;
+  }
+  .subnav a{min-height:40px;display:inline-flex;align-items:center;}
 
   .shead{gap:12px;margin-bottom:26px;}
   .shead h2{font-size:clamp(1.9rem,9vw,2.6rem);}
@@ -948,9 +979,28 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .gal figure{margin-bottom:10px;}
   .gal figcaption{opacity:1;}          /* ohne Hover sonst nie sichtbar */
 
+  .cal{margin-inline:-4px;}
+  .cal-head{padding:11px 10px;}
+  .cal-nav{width:44px;height:44px;}
+  .cal-month{text-align:center;font-size:.9rem;}
+  .cal-wd{padding:7px 1px;font-size:.52rem;letter-spacing:.05em;}
+  .cal-day{min-height:46px;padding:5px 4px;}
+  .cal-day b{font-size:.72rem;}
+  .cal-dot{left:50%;bottom:6px;transform:translateX(-50%);}
+
+  .bform{margin-inline:-4px;padding:20px 14px;}
+  .bform-cols{margin-top:20px;gap:20px;}
   .bform-grid{gap:14px;}
+  .bform input,.bform textarea{font-size:16px;padding:13px 12px;}
+  .bform-cal{padding:13px 9px 11px;}
+  .bcal-grid{gap:2px;}
+  .bcal-day{min-height:44px;font-size:.72rem;}
+  .bcal-wd{font-size:.52rem;letter-spacing:.04em;}
   .bform-foot{flex-direction:column;align-items:stretch;}
   .bform-foot .btn{width:100%;}
+  .reply-note{line-height:1.55;letter-spacing:.1em;}
+  .rider li{align-items:flex-start;gap:10px;padding:12px;}
+  .rider li span:last-child{white-space:normal;text-align:right;}
   .contact .big-mail{font-size:clamp(.95rem,6vw,1.8rem);}
   .contact-meta{gap:16px;}
   .contact-meta div{min-width:0;flex:1 1 40%;}
@@ -966,9 +1016,15 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 
 /* Sehr schmale Geräte */
 @media(max-width:380px){
+  .hero h1{font-size:clamp(2.35rem,14vw,3.3rem);}
+  .hero h1 .sp{letter-spacing:.3em;margin-left:.3em;}
   .facts{grid-template-columns:1fr;}
   .show-list li{grid-template-columns:1fr;}
   .show-date{flex-direction:row;gap:8px;align-items:baseline;}
+  .cal-head{gap:6px;}
+  .cal-month{font-size:.78rem;}
+  .bform{margin-inline:-8px;padding-inline:11px;}
+  .bcal-day{min-height:40px;}
 }
 
 /* Touch-Geräte: Hover-Effekte lassen Karten sonst „kleben“ */
