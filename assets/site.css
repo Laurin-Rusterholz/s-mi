@@ -986,6 +986,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .facts>div{
     flex:0 0 46vw;min-width:150px;padding:18px 16px 20px;
     border-top:0;border-right:1px solid var(--line);scroll-snap-align:start;
+    scroll-snap-stop:always;
   }
   .facts dd{font-size:1.7rem;}
 
@@ -1005,7 +1006,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
   }
   .mix-stack::-webkit-scrollbar{display:none;}
-  .mix-card{flex:0 0 86vw;scroll-snap-align:center;padding:20px 18px;}
+  .mix-card{flex:0 0 86vw;scroll-snap-align:center;scroll-snap-stop:always;padding:20px 18px;}
 
   .show-list{gap:10px;}
   .show-list li{
@@ -1030,7 +1031,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .gal::-webkit-scrollbar{display:none;}
   .gal figure,.gal figure:nth-child(4n){
     flex:0 0 84vw;margin:0;scroll-snap-align:center;
-    aspect-ratio:4/5;background:var(--ink-2);
+    scroll-snap-stop:always;aspect-ratio:4/5;background:var(--ink-2);
   }
   .gal-btn,.gal-btn img,.gal-video video{height:100%;object-fit:cover;}
   .gal figcaption{opacity:1;}          /* ohne Hover sonst nie sichtbar */
@@ -1041,7 +1042,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     scrollbar-width:none;
   }
   .shop-grid::-webkit-scrollbar{display:none;}
-  .product{flex:0 0 82vw;scroll-snap-align:center;}
+  .product{flex:0 0 82vw;scroll-snap-align:center;scroll-snap-stop:always;}
   .product-body{padding:16px;}
 
   .cal{margin-inline:-4px;}
@@ -1074,6 +1075,9 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .contact-mark,.section-mark{opacity:.65;}
   .foot{gap:12px;align-items:flex-start;flex-direction:column;}
   footer{padding-bottom:24px;}
+
+  .facts,.mix-stack,.gal,.shop-grid{touch-action:pan-x;}
+  .hero-cta:active,.btn:active,.scard:active,.show-list li:active{transform:scale(.985);}
 
   /* Lightbox: Bedienelemente in Daumennähe */
   .lb-prev,.lb-next{top:auto;bottom:18px;transform:none;font-size:2.2rem;padding:12px 20px;}
