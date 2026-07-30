@@ -7,7 +7,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <!-- Primary SEO -->
   <title>Sam Sparkling — DJ et producteur hardstyle de Saint-Gall</title>
@@ -274,7 +274,6 @@
           <li><a href="#about">À propos</a></li>
           <li><a href="#sound">Sound</a></li>
           <li><a href="#experience">Experience</a></li>
-          <li><a href="#shows">Dates</a></li>
           <li><a href="#references">Références</a></li>
           <li><a href="#gallery">Galerie</a></li>
           <li class="nav-hot"><a href="#shop">Shop</a></li>
@@ -295,7 +294,7 @@
       <div class="hero-sub">
         <span class="tag">L&#39;énergie devient euphorie.</span>
         <span class="mono">Euphoric Hardstyle / Melodic Hardstyle</span>
-        <a class="hero-cta" href="#booking">Me réserver<span class="cta-arr" aria-hidden="true">→</span></a>
+        <a class="hero-cta" href="#booking-form">Me réserver<span class="cta-arr" aria-hidden="true">→</span></a>
         <a class="hero-cta alt" href="#shop">Shop</a>
       </div>
     </div>
@@ -323,9 +322,13 @@
         <div class="about-copy rv">
           <p class="lede">Je suis Sam Sparkling, 19 ans, DJ et producteur de Saint-Gall. Mon histoire a commencé bien avant que je me retrouve derrière des platines.</p>
           <p>J&#39;ai grandi avec les vidéos de festivals et je suis arrivé tôt dans le hardstyle. C&#39;est une vidéo de Defqon.1 qui m&#39;a montré pour la première fois ce que la musique peut vraiment faire. L&#39;énergie, l&#39;atmosphère, le lien entre le DJ et le public — ça m&#39;a touché immédiatement et ne m&#39;a plus lâché. À 15 ans, la fascination est devenue une direction : j&#39;ai vu un DJ tenir tout un dancefloor entre ses mains. À partir de ce moment, produire et mixer n&#39;était plus un projet parallèle, mais la seule voie qui avait du sens pour moi.</p>
-          <p>Quatre ans plus tard, je travaille mon son chaque jour, morceau après morceau. Inspiré par des artistes comme <strong>Sound Rush</strong>, <strong>Sub Zero Project</strong> et <strong>Headhunterz</strong>, je me concentre sur l&#39;euphoric hardstyle — des kicks puissants combinés à des mélodies émotionnelles qui t&#39;attrapent et ne te lâchent plus.</p>
-          <p>Le nom <strong>Sparkling</strong> n&#39;est pas un hasard. Il représente une énergie constante, une tête pleine d&#39;idées et un optimisme qui traverse chaque production. Mes sets reposent sur l&#39;émotion, la narration et l&#39;énergie du public — ils créent des moments où la musique et la foule se rejoignent vraiment.</p>
-          <p>Ma mission est simple : faire ressentir aux gens quelque chose de vrai. Cette décharge d&#39;énergie positive, cette envie d&#39;appuyer tout de suite sur repeat, ce sentiment irrésistible qui n&#39;arrive que lorsque la musique est exactement juste.</p>
+          <div class="about-more" id="about-more">
+            <p>Quatre ans plus tard, je travaille mon son chaque jour, morceau après morceau. Inspiré par des artistes comme <strong>Sound Rush</strong>, <strong>Sub Zero Project</strong> et <strong>Headhunterz</strong>, je me concentre sur l&#39;euphoric hardstyle — des kicks puissants combinés à des mélodies émotionnelles qui t&#39;attrapent et ne te lâchent plus.</p>
+            <p>Le nom <strong>Sparkling</strong> n&#39;est pas un hasard. Il représente une énergie constante, une tête pleine d&#39;idées et un optimisme qui traverse chaque production. Mes sets reposent sur l&#39;émotion, la narration et l&#39;énergie du public — ils créent des moments où la musique et la foule se rejoignent vraiment.</p>
+            <p>Ma mission est simple : faire ressentir aux gens quelque chose de vrai. Cette décharge d&#39;énergie positive, cette envie d&#39;appuyer tout de suite sur repeat, ce sentiment irrésistible qui n&#39;arrive que lorsque la musique est exactement juste.</p>
+          </div>
+          <button class="about-toggle mono" type="button" aria-controls="about-more" aria-expanded="false"
+                  data-more="Lire toute l’histoire" data-less="Afficher moins">Lire toute l’histoire</button>
           <div class="three-words"><span>Émotionnel</span><span>Puissant</span><span>Euphorique</span></div>
         </div>
       </div>
@@ -389,22 +392,10 @@
     </div>
   </section>
 
-  <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
-    <div class="wrap">
-      <div class="shead rv">
-        <span class="num" aria-hidden="true">04</span>
-        <h2 id="shows-h">Da<i>tes.</i></h2>
-        <span class="shead-rule" aria-hidden="true"></span>
-      </div>
-      <div class="empty-state rv"><span class="mono">Date</span><p>Je n&#39;ai aucune date annoncée pour l&#39;instant. Les nouveaux shows arrivent ici en premier — ou contacte-moi et réserve-moi pour ton événement.</p></div>
-      
-    </div>
-  </section>
-
   <section class="pad" id="references" aria-labelledby="references-h">
     <div class="wrap">
       <div class="shead rv">
-        <span class="num" aria-hidden="true">05</span>
+        <span class="num" aria-hidden="true">04</span>
         <h2 id="references-h">Réfé<i>rences.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
@@ -424,7 +415,7 @@
   <section class="pad" id="gallery" aria-labelledby="gallery-h">
     <div class="wrap">
       <div class="shead rv">
-        <span class="num" aria-hidden="true">06</span>
+        <span class="num" aria-hidden="true">05</span>
         <h2 id="gallery-h">Gal<i>erie.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
@@ -453,62 +444,65 @@
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 5 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbl%2Fdsc01363-2.jpg?alt=media&amp;token=a53f40fe-b244-4a1e-89ac-e9f6adc61f8f" alt="Le public à un show de Sam Sparkling" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 6 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU1vLnR1ajbjuKnSCI%2Fsartophotography-dsc04164-print.jpg?alt=media&amp;token=62cb2959-a9a7-430a-8adf-6fe756495f67" alt="Portrait de Sam Sparkling sur place" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 7 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQS%2Fdsc01434.jpg?alt=media&amp;token=e1f93b67-3278-4889-9cdc-e400b096bf9a" alt="Les mains en l&#39;air sur le dancefloor" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 8 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbm%2Fdsc01363.jpg?alt=media&amp;token=970a22f6-6e46-48d7-823f-9c9089f08e6f" alt="Sam Sparkling pendant son set" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 9 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbn%2Fdsc01395.jpg?alt=media&amp;token=9c942a63-b8db-4f72-8520-196106de2b3c" alt="Jeu de lumière au-dessus du dancefloor" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 10 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQP%2Fdsc01430.jpg?alt=media&amp;token=a2b80100-cb77-4120-878b-cc9ac62aff65" alt="Sam Sparkling sur scène" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 11 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbo%2Fdsc01396.jpg?alt=media&amp;token=98915a35-6435-4e3f-b05c-289364e37aa3" alt="Vue depuis la booth sur le public" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
-        <figure>
+        <figure data-mobile-extra="true">
           <button type="button" class="gal-btn" aria-label="Ouvrir l&#39;image 12 sur 12 en grand">
             <img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbp%2Fdsc01426.jpg?alt=media&amp;token=d2664e47-f9d9-4567-bd91-622adb8b567b" alt="Dernier moment de la nuit" loading="lazy" decoding="async" sizes="(max-width:700px) 100vw, 33vw">
             <figcaption>Sarto Photography</figcaption>
           </button>
         </figure>
       </div>
+      <button class="gal-more btn" type="button" aria-controls="gal" aria-expanded="false"
+                  data-more="8 images de plus"
+                  data-less="Afficher moins d’images">8 images de plus</button>
     </div>
   </section>
 
   <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
     <div class="wrap">
       <div class="shead rv">
-        <span class="num" aria-hidden="true">07</span>
+        <span class="num" aria-hidden="true">06</span>
         <h2 id="shop-h">Sh<i>op.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
@@ -534,7 +528,7 @@
     <span class="section-mark" aria-hidden="true">Booking.</span>
     <div class="wrap">
       <div class="shead rv">
-        <span class="num" aria-hidden="true">08</span>
+        <span class="num" aria-hidden="true">07</span>
         <h2 id="booking-h">Boo<i>king.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
@@ -622,7 +616,7 @@
     <span class="contact-mark" aria-hidden="true">Kontakt.</span>
     <div class="wrap">
       <div class="shead rv">
-        <span class="num" aria-hidden="true">09</span>
+        <span class="num" aria-hidden="true">08</span>
         <h2 id="contact-h">Kon<i>takt.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
@@ -631,8 +625,8 @@
           <span class="mono">Booking &amp; demandes</span>
           <a class="big-mail" href="mailto:info@samsparking.ch">info@samsparking.ch</a>
           <div class="mail-tools">
-            <button class="copy-mail mono" type="button" data-mail="info@samsparking.ch" data-done="Copié ✓">Copier l&#39;adresse</button>
-            <a class="btn ink" href="#booking">Réserver</a>
+            <button class="copy-mail mono" type="button" data-mail="info@samsparking.ch" data-done="Copié ✓">Copier l’e-mail</button>
+            <a class="btn ink" href="#booking-form">Demander un booking</a>
           </div>
           
         <div class="contact-meta">
@@ -664,7 +658,7 @@
 
   <a class="totop" href="#top" aria-label="En haut">↑</a>
   <div class="actbar" id="actbar" aria-hidden="false">
-    <a class="btn solid" href="#booking">Booking</a><a class="btn" href="#shop">Shop</a>
+    <a class="btn solid" href="#booking-form">Demander un booking</a>
   </div>
 
 
@@ -686,7 +680,6 @@
     </div>
   </footer>
 
-  <script type="application/json" id="shows-data">[]</script>
   <script src="/assets/site.js" defer></script>
 </body>
 </html>

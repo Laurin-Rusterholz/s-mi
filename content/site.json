@@ -1,6 +1,6 @@
 {
   "hero": {
-    "ctaHref": "#booking",
+    "ctaHref": "#booking-form",
     "ctaLabel": "Book me",
     "kicker": "DJ & producer — St. Gallen, Switzerland",
     "media": {
@@ -346,9 +346,13 @@
         "toTop": "Nach oben",
         "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
         "cookieOk": "Alles klar",
-        "copyMail": "Adresse kopieren",
+        "copyMail": "E-Mail kopieren",
         "copied": "Kopiert ✓",
-        "bookCta": "Jetzt buchen",
+        "bookCta": "Booking anfragen",
+        "moreStory": "Ganze Story lesen",
+        "lessStory": "Weniger anzeigen",
+        "showMoreImages": "{n} weitere Bilder",
+        "showLessImages": "Weniger Bilder",
         "follow": "Kanäle",
         "phone": "Telefon",
         "replyNote": "Antwort meist innert 48 Stunden"
@@ -670,9 +674,13 @@
         "toTop": "En haut",
         "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
         "cookieOk": "Compris",
-        "copyMail": "Copier l'adresse",
+        "copyMail": "Copier l’e-mail",
         "copied": "Copié ✓",
-        "bookCta": "Réserver",
+        "bookCta": "Demander un booking",
+        "moreStory": "Lire toute l’histoire",
+        "lessStory": "Afficher moins",
+        "showMoreImages": "{n} images de plus",
+        "showLessImages": "Afficher moins d’images",
         "follow": "Réseaux",
         "phone": "Téléphone",
         "replyNote": "Réponse en général sous 48 h"
@@ -1513,6 +1521,7 @@
     },
     "gallery": {
       "enabled": true,
+      "mobileLimit": 4,
       "items": [
         {
           "alt": "Sam Sparkling live — crowd with hands up",
@@ -1812,9 +1821,13 @@
     "toTop": "Back to top",
     "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
     "cookieOk": "Got it",
-    "copyMail": "Copy address",
+    "copyMail": "Copy e-mail",
     "copied": "Copied ✓",
-    "bookCta": "Book me",
+    "bookCta": "Start booking",
+    "moreStory": "Read the full story",
+    "lessStory": "Show less",
+    "showMoreImages": "Show {n} more",
+    "showLessImages": "Show fewer images",
     "follow": "Channels",
     "replyNote": "I usually reply within 48 hours"
   },
