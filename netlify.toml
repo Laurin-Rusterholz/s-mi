@@ -1,6 +1,6 @@
 [build]
   publish = "."
-  command = "node scripts/build.mjs"
+  command = "node scripts/build.mjs && cat assets/speaker-sound.css >> assets/site.css"
 
 [build.environment]
   NODE_VERSION = "22"
