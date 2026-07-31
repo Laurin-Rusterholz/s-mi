@@ -336,12 +336,10 @@
   <section class="booking pad" id="booking" aria-labelledby="booking-h">
     <span class="section-mark" aria-hidden="true">Booking.</span>
     <div class="wrap">
-      <div class="shead rv">
-        <span class="num" aria-hidden="true">02</span>
-        <h2 id="booking-h">Boo<i>king.</i></h2>
-        <span class="shead-rule" aria-hidden="true"></span>
-      </div>
+      <div class="booking-grid">
       <div class="booking-lead rv">
+        <span class="mono">Booking</span>
+        <h2 id="booking-h" class="booking-claim">Machen wir <i>was Eigenes.</i></h2>
         <p class="lede">Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort.</p>
         <span class="mono">Verfügbar für</span>
         <ul class="avail">
@@ -351,30 +349,35 @@
           <li><span class="mono">D</span>Schweiz &amp; Europa</li>
         </ul>
         <div class="btn-row">
-          <a class="btn solid" href="#booking-form">Anfrage senden</a>
           <a class="btn" href="/presskit/sam-sparkling-presskit-2026.pdf" download>Presskit (PDF)</a>
         </div>
+        
       </div>
       
-      <form class="bform rv" id="booking-form" data-endpoint="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json" data-sending="Wird gesendet …" data-invalid="Bitte die markierten Felder prüfen." novalidate>
+      <form class="bform rv" id="booking-form" data-endpoint="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json" data-sending="Wird gesendet …" data-invalid="Bitte die markierten Felder prüfen."
+            data-captcha="Die Rechnung stimmt noch nicht." novalidate>
         <div class="bform-head">
           <span class="mono">Booking-Anfrage</span>
           <h3>Erzähl mir von deinem Event</h3>
-          <p class="bform-required mono">Alle Felder sind Pflichtfelder.</p>
         </div>
-        <div class="bform-cols">
-          <div class="bform-grid">
-          <label><span class="lbl">Dein Name <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
+        <div class="bform-grid">
+          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
+            <input name="name" type="text" required maxlength="120" autocomplete="name"
+                   placeholder="Max Muster">
           </label>
           <label><span class="lbl">E-Mail <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
+            <input name="email" type="email" required maxlength="160" autocomplete="email"
+                   placeholder="deine@email.ch">
+          </label>
+          <label class="span-2"><span class="lbl">Telefon <i aria-hidden="true">*</i></span>
+            <input name="phone" type="tel" required maxlength="40" autocomplete="tel"
+                   placeholder="+41 79 123 45 67">
           </label>
           <label><span class="lbl">Event / Club <i aria-hidden="true">*</i></span>
-            <input name="event" type="text" required maxlength="160">
+            <input name="event" type="text" required maxlength="160" placeholder="Club, Festival, Firmenfest …">
           </label>
           <label><span class="lbl">Ort <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120">
+            <input name="city" type="text" required maxlength="120" placeholder="St. Gallen">
           </label>
           <label><span class="lbl">Datum <i aria-hidden="true">*</i></span>
             <input name="date" type="date" required>
@@ -383,24 +386,29 @@
             <input name="setLength" type="text" required maxlength="60" placeholder="z. B. 60 Min.">
           </label>
           <label class="span-2"><span class="lbl">Nachricht <i aria-hidden="true">*</i></span>
-            <textarea name="message" rows="4" required maxlength="4000"></textarea>
+            <textarea name="message" rows="5" required maxlength="4000"
+                      placeholder="Deine Nachricht …"></textarea>
+          </label>
+          <label class="span-2 bform-captcha"><span class="lbl">Anti-Spam — bitte lösen <i aria-hidden="true">*</i></span>
+            <span class="captcha-row">
+              <span class="captcha-sum" aria-hidden="true"><b data-a></b> + <b data-b></b> =</span>
+              <input name="captcha" type="text" required inputmode="numeric" maxlength="4"
+                     autocomplete="off" aria-label="Ergebnis der Rechenaufgabe" placeholder="?">
+            </span>
           </label>
           <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Bitte leer lassen</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
-          </div>
-          <div class="bform-side">
-            <div class="bform-cal" id="bform-cal"
-                 data-weekdays="Mo,Di,Mi,Do,Fr,Sa,So" data-hint="Oder Wunschdatum direkt im Kalender antippen:"
-                 data-busy="Belegt" hidden></div>
-          </div>
         </div>
+        <div class="bform-cal" id="bform-cal"
+             data-weekdays="Mo,Di,Mi,Do,Fr,Sa,So" data-hint="Oder Wunschdatum direkt im Kalender antippen:"
+             data-busy="Belegt" hidden></div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">Anfrage senden<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">Antwort meist innert 48 Stunden</span>
+          <button class="btn solid big wide" type="submit">Anfrage senden<span class="cta-arr" aria-hidden="true">→</span></button>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir."
              data-error="Da ist etwas schiefgelaufen. Schreib mir bitte direkt an info@samsparking.ch."></p>
+          <p class="bform-fine mono">* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet.</p>
         </div>
       </form>
 
@@ -559,12 +567,8 @@
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
       <p class="shop-note rv">Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.</p>
-      <button class="shop-open btn solid" type="button" aria-controls="shop-panel" aria-expanded="false"
-              data-more="Shop öffnen (1)"
-              data-less="Shop schliessen">Shop öffnen (1)</button>
-      <div class="shop-panel" id="shop-panel">
-        <div class="shop-grid">
-        <article class="product rv">
+      <div class="shop-grid">
+      <article class="product rv">
           <div class="product-img"><img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&amp;token=5fa53fdc-6095-4f9c-8c66-88563f120179" alt="Sam Sparkling Shirt" loading="lazy" decoding="async" sizes="(max-width:700px) 46vw, 280px"></div>
           <div class="product-body">
             <h3>Sam Sparkling Shirt</h3>
@@ -575,7 +579,7 @@
             </div>
           </div>
         </article>
-        </div>
+      </div>
 
       <div class="pay-methods rv">
         <!-- TODO Kunde: Zahlungsangaben fehlen noch. Benoetigt werden die
@@ -616,7 +620,7 @@
           <label><span class="lbl">Anzahl <i aria-hidden="true">*</i></span>
             <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
           </label>
-          <label><span class="lbl">Dein Name <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
             <input name="name" type="text" required maxlength="120" autocomplete="name">
           </label>
           <label><span class="lbl">E-Mail <i aria-hidden="true">*</i></span>
@@ -646,7 +650,6 @@
              data-success="Danke — deine Bestellung ist da. Die Zahlungsangaben kommen gleich per Mail." data-error="Das hat nicht geklappt. Schreib mir bitte direkt eine Mail."></p>
         </div>
       </form>
-      </div>
     </div>
   </section>
 
@@ -659,7 +662,7 @@
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
       <!-- TODO Kunde: Fuer diese Kanaele fehlt noch die Adresse, sie werden
-           deshalb weder hier noch im Fuss verlinkt: Mixcloud, Spotify.
+           deshalb weder hier noch im Fuss verlinkt: Instagram, Spotify.
            Eintragen in der Verwaltung unter Kontakt → Kanaele, jeweils die
            komplette Profil-Adresse (z. B. https://www.instagram.com/… bzw. das
            Spotify-Kuenstlerprofil ueber "Teilen → Link kopieren"). -->

@@ -764,35 +764,30 @@ blockquote.lede footer{
 
 /* ---------- SHOP ---------- */
 .shop-note{color:var(--bone-dim);max-width:60ch;margin-bottom:clamp(26px,4vw,40px);}
+/* Alles auf einen Blick: die Karten sind bewusst klein gehalten, damit
+   moeglichst viel Ware gleichzeitig sichtbar ist. */
 .shop-grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
-  gap:clamp(16px,2.5vw,26px);
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));
+  gap:clamp(12px,1.6vw,18px);
 }
 .product{
   background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;
   transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
 }
 .product:hover{transform:translateY(-3px);border-color:rgba(46,107,255,.55);}
-.product-img{aspect-ratio:4/5;overflow:hidden;}
-.product-img img{transition:transform .5s ease;}
+.product-img{aspect-ratio:1;overflow:hidden;}
+.product-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
 .product:hover .product-img img{transform:scale(1.04);}
-.product-body{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1;}
-.product-body h3{font-size:1.05rem;font-variation-settings:'wdth' 116,'wght' 740;}
-.product-body p{color:var(--bone-dim);font-size:.88rem;}
-.product-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:12px;}
-.price{font-variant-numeric:tabular-nums;font-family:var(--font-m);font-size:.85rem;color:var(--spark);letter-spacing:.06em;}
-.product .btn{margin-top:0;padding:11px 18px;font-size:.66rem;min-height:40px;}
+.product-body{padding:11px 12px 13px;display:flex;flex-direction:column;gap:5px;flex:1;}
+.product-body h3{font-size:.92rem;font-variation-settings:'wdth' 116,'wght' 740;}
+.product-body p{color:var(--bone-dim);font-size:.78rem;line-height:1.45;}
+.product-foot{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;}
+.price{font-variant-numeric:tabular-nums;font-family:var(--font-m);font-size:.8rem;color:var(--spark);letter-spacing:.06em;}
+.product .btn{margin-top:0;padding:9px 14px;font-size:.6rem;min-height:36px;}
 .btn.ghost{border-color:var(--line);color:var(--bone);}
 .btn.ghost:hover{border-color:var(--bone);background:none;color:var(--bone);}
 .product.soldout{opacity:.55;}
 .empty-note{color:var(--bone-dim);border:1px dashed var(--line);padding:26px 28px;max-width:52ch;}
-
-/* Der Shop ist ein eigener Bereich: zugeklappt hinter einem Knopf. Ohne
-   JavaScript fehlt die Klasse .js — dann steht alles offen und der Knopf weg. */
-.shop-open{display:none;}
-.js .shop-open{display:inline-flex;}
-.js .shop-panel:not(.expanded){display:none;}
-.shop-panel{margin-top:clamp(24px,3.4vw,38px);}
 
 /* Bezahlen: TWINT/Bank samt QR-Code zum Abscannen */
 .pay-methods{
@@ -992,10 +987,20 @@ blockquote.lede footer{
   background:linear-gradient(160deg,#0c1222 0%,var(--ink-2) 55%,#0a1226 100%);
 }
 .booking .wrap{position:relative;z-index:1;}
-/* Anfragen zuerst: kurze Einladung, wofuer gebucht wird, dann direkt das
-   Formular. Der technische Rider steht eingeklappt darunter. */
-.booking-lead{max-width:760px;}
-.booking-lead .lede{margin-bottom:26px;}
+/* Ansage links, Formular rechts — anfragen ohne Umweg. Der technische Rider
+   steht eingeklappt darunter. */
+.booking-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(30px,5vw,80px);align-items:start;}
+@media(max-width:960px){.booking-grid{grid-template-columns:1fr;gap:34px;}}
+.booking-lead{max-width:640px;}
+.booking-claim{
+  /* Muss in die halbe Zeilenbreite passen: das laengste Wort ("something.")
+     bestimmt die Groesse. Kein Umbruch im Wort — lieber kleiner setzen. */
+  font-size:clamp(1.9rem,3.8vw,3.3rem);line-height:1;margin:16px 0 26px;
+  font-variation-settings:'wdth' 118,'wght' 840;letter-spacing:-.02em;text-transform:uppercase;
+}
+.booking-claim i{font-style:normal;color:var(--spark);}
+.booking-lead .lede{margin-bottom:30px;max-width:46ch;}
+.booking-lead>.mono+.mono{display:block;margin-top:4px;}
 .avail li{position:relative;transition:border-color .25s;}
 .avail li::after{
   content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:var(--spark);
@@ -1006,15 +1011,16 @@ blockquote.lede footer{
 .avail{list-style:none;margin:18px 0 30px;}
 .avail{display:flex;flex-direction:column;gap:12px;}
 .avail li{
-  font-size:clamp(1.15rem,2.6vw,1.8rem);text-transform:uppercase;
-  font-variation-settings:'wdth' 116,'wght' 700;padding:14px 18px;
+  font-size:clamp(.92rem,1.5vw,1.12rem);text-transform:uppercase;
+  font-variation-settings:'wdth' 112,'wght' 700;padding:12px 15px;
   background:var(--card);border:1px solid var(--line);
-  display:flex;gap:16px;align-items:center;
+  display:flex;gap:11px;align-items:center;
+  overflow-wrap:anywhere;
 }
 .avail .mono{color:var(--spark);}
 .avail li::before{content:"✓";color:var(--spark);font-size:1rem;margin-right:2px;}
 .avail li .mono{display:none;}
-@media(min-width:700px){.avail{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));}}
+@media(min-width:520px){.avail{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));}}
 
 /* Rider: fakultativ, deshalb eingeklappt und optisch zurueckgenommen. */
 .rider{margin-top:clamp(28px,4vw,46px);border-top:1px solid var(--line);}
@@ -1068,22 +1074,25 @@ span.bcal-day:not(.busy){opacity:.35;}
 
 /* booking form */
 .bform{
-  margin-top:clamp(46px,7vw,84px);border:1px solid var(--line);border-top:2px solid var(--spark);
-  padding:clamp(22px,4vw,44px);background:rgba(11,17,32,.72);backdrop-filter:blur(6px);
+  border:1px solid var(--line);border-top:2px solid var(--spark);
+  padding:clamp(22px,3vw,36px);background:rgba(11,17,32,.72);backdrop-filter:blur(6px);
   box-shadow:0 40px 90px -50px rgba(0,0,0,.9);
 }
-.bform-head{display:flex;flex-direction:column;gap:2px;padding-bottom:22px;border-bottom:1px solid var(--line);}
-.bform-head h3{font-size:clamp(1.4rem,3vw,2.3rem);font-variation-settings:'wdth' 116,'wght' 780;margin-top:8px;text-transform:uppercase;}
+.bform-head{display:flex;flex-direction:column;gap:2px;padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:26px;}
+.bform-head h3{font-size:clamp(1.25rem,2.2vw,1.9rem);font-variation-settings:'wdth' 116,'wght' 780;margin-top:8px;text-transform:uppercase;}
 .bform-required{margin-top:10px;color:var(--bone-dim);}
-/* Felder links, Kalender rechts — der Kalender haengt nicht mehr verloren unten */
-.bform-cols{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(22px,3.4vw,44px);align-items:start;margin-top:28px;}
-.bform-side{position:sticky;top:calc(var(--head) + 16px);}
-.bform-side:has(> [hidden]){display:none;}
-.bform-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px;}
-@media(max-width:900px){
-  .bform-cols{grid-template-columns:1fr;}
-  .bform-side{position:static;}
+.bform-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;}
+@media(max-width:520px){.bform-grid{grid-template-columns:1fr;}}
+.bform-cal{margin-top:22px;}
+.bform-cal[hidden]{display:none;}
+/* Anti-Spam: kleine Rechenaufgabe, von site.js gefuellt */
+.captcha-row{display:flex;align-items:center;gap:12px;}
+.captcha-sum{
+  font-family:var(--font-m);font-size:1rem;color:var(--bone-dim);white-space:nowrap;
+  border:1px solid var(--line);padding:13px 15px;min-height:var(--tap);display:flex;align-items:center;
 }
+.captcha-sum b{color:var(--spark);font-weight:400;}
+.bform-captcha input{max-width:130px;}
 .bform label{display:flex;flex-direction:column;gap:8px;font-family:var(--font-m);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);}
 .bform .lbl i{color:var(--spark);font-style:normal;}
 .bform .span-2{grid-column:1/-1;}
@@ -1100,11 +1109,13 @@ span.bcal-day:not(.busy){opacity:.35;}
 .bform textarea{resize:vertical;min-height:110px;}
 .bform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
 .bform-foot{
-  display:flex;flex-wrap:wrap;gap:18px 26px;align-items:center;margin-top:28px;
+  display:flex;flex-direction:column;gap:14px;align-items:stretch;margin-top:26px;
   padding-top:22px;border-top:1px solid var(--line);
 }
 .bform-foot .btn{margin-top:0;}
 .btn.big{padding:17px 40px;font-size:.78rem;}
+.btn.wide{width:100%;justify-content:center;}
+.bform-fine{color:var(--bone-dim);font-size:.6rem;letter-spacing:.1em;line-height:1.7;text-transform:none;}
 .bform.sent .bform-foot{border-top:0;padding-top:0;}
 .reply-note{color:var(--bone-dim);font-size:.62rem;letter-spacing:.14em;}
 .reply-note::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok,#25c07a);background:#25c07a;margin-right:9px;vertical-align:1px;}
@@ -1307,14 +1318,10 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .gal-btn,.gal-btn img,.gal-video video{height:100%;object-fit:cover;}
   .gal figcaption{opacity:1;}          /* ohne Hover sonst nie sichtbar */
 
-  .shop-grid{
-    display:flex;gap:12px;margin-inline:-16px;padding-inline:16px;
-    overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;
-    scrollbar-width:none;
-  }
-  .shop-grid::-webkit-scrollbar{display:none;}
-  .product{flex:0 0 82vw;scroll-snap-align:center;scroll-snap-stop:always;}
-  .product-body{padding:16px;}
+  /* Kein seitliches Wischen: die Ware steht als kleines Raster untereinander,
+     damit auf dem Handy alles auf einmal zu sehen ist. */
+  .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .product-body{padding:10px 11px 12px;}
 
   .cal{margin-inline:-4px;}
   .cal-head{padding:11px 10px;}
@@ -1347,7 +1354,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .foot{gap:12px;align-items:flex-start;flex-direction:column;}
   footer{padding-bottom:24px;}
 
-  .facts,.mix-stack,.gal,.shop-grid{touch-action:pan-x;}
+  .facts,.mix-stack,.gal{touch-action:pan-x;}
   .hero-cta:active,.btn:active,.scard:active,.show-list li:active{transform:scale(.985);}
 
   /* Lightbox: Bedienelemente in Daumennähe */

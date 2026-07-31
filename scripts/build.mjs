@@ -947,25 +947,18 @@ function renderShop(n, s, contactEmail, site) {
   </section>`;
   }
 
-  // Der Shop ist ein eigener Bereich: er liegt zugeklappt hinter einem Knopf
-  // und nimmt erst Platz ein, wenn jemand ihn wirklich oeffnet. Ohne
-  // JavaScript ist er offen — dann faellt der Knopf weg (siehe .js-Regel).
+  // Der ganze Shop ist auf einen Blick da — Bilder, Preise, Bezahlung und
+  // Bestellung. Die Ware steht dafuer in kleineren Karten, damit mehr davon
+  // gleichzeitig ins Bild passt.
   return `
   <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
     <div class="wrap">${sectionHead(n, s, "shop")}
       ${str(s.note) ? `<p class="shop-note rv">${inline(s.note)}</p>` : ""}
-      <button class="shop-open btn solid" type="button" aria-controls="shop-panel" aria-expanded="false"
-              data-more="${esc(UI.shopOpen.replace("{n}", items.length))}"
-              data-less="${esc(UI.shopClose)}">${esc(
-        UI.shopOpen.replace("{n}", items.length)
-      )}</button>
-      <div class="shop-panel" id="shop-panel">
-        <div class="shop-grid">
-        ${cards}
-        </div>
+      <div class="shop-grid">
+      ${cards}
+      </div>
 ${payMethods(s)}
 ${form}
-      </div>
     </div>
   </section>`;
 }
@@ -1007,11 +1000,18 @@ function bookingRider(s) {
 function renderBooking(n, s, site) {
   const f = s.form || {};
   const formEnabled = f.enabled !== false && !!safeUrl(site.bookingApi);
+  // Anfragen ist der wichtigste Weg der Seite. Deshalb steht hier links die
+  // Ansage und rechts gleich das Formular — ohne Umweg über einen Knopf.
   return `
   <section class="booking pad" id="booking" aria-labelledby="booking-h">
     <span class="section-mark" aria-hidden="true">${esc(str(s.title) + str(s.titleAccent))}</span>
-    <div class="wrap">${sectionHead(n, s, "booking")}
+    <div class="wrap">
+      <div class="booking-grid">
       <div class="booking-lead rv">
+        <span class="mono">${esc(str(s.navLabel, "Booking"))}</span>
+        <h2 id="booking-h" class="booking-claim">${esc(str(s.claim, "Let's create"))} <i>${esc(
+    str(s.claimAccent, "something.")
+  )}</i></h2>
         ${str(s.lead) ? `<p class="lede">${inline(s.lead)}</p>` : ""}
         <span class="mono">${esc(str(s.availableKicker, "Available for"))}</span>
         <ul class="avail">
@@ -1023,43 +1023,54 @@ function renderBooking(n, s, site) {
             )
             .join("\n          ")}
         </ul>
-        <div class="btn-row">
-          <a class="btn solid" href="${
-            formEnabled ? "#booking-form" : anchorHref("#contact")
-          }">${esc(str(f.submitLabel, "Request a date"))}</a>
-          ${
-            safeUrl(s.presskitUrl)
-              ? `<a class="btn" href="${href(s.presskitUrl)}" download>${esc(
-                  str(s.presskitLabel, "Presskit (PDF)")
-                )}</a>`
-              : ""
-          }
-        </div>
+        ${
+          safeUrl(s.presskitUrl)
+            ? `<div class="btn-row">
+          <a class="btn" href="${href(s.presskitUrl)}" download>${esc(
+                str(s.presskitLabel, "Presskit (PDF)")
+              )}</a>
+        </div>`
+            : ""
+        }
+        ${
+          formEnabled
+            ? ""
+            : `<div class="btn-row">
+          <a class="btn solid" href="${anchorHref("#contact")}">${esc(
+                str(f.submitLabel, "Request a date")
+              )}</a>
+        </div>`
+        }
       </div>
       ${
         formEnabled
           ? `
       <form class="bform rv" id="booking-form" data-endpoint="${href(
         site.bookingApi
-      )}" data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}" novalidate>
+      )}" data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}"
+            data-captcha="${esc(UI.captchaWrong)}" novalidate>
         <div class="bform-head">
           <span class="mono">${esc(str(f.kicker, "Booking request"))}</span>
           <h3>${esc(str(f.title, "Tell me about your event"))}</h3>
-          <p class="bform-required mono">${esc(UI.allRequired)}</p>
         </div>
-        <div class="bform-cols">
-          <div class="bform-grid">
+        <div class="bform-grid">
           <label><span class="lbl">${esc(UI.fName)} <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
+            <input name="name" type="text" required maxlength="120" autocomplete="name"
+                   placeholder="${esc(UI.phName)}">
           </label>
           <label><span class="lbl">${esc(UI.fEmail)} <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
+            <input name="email" type="email" required maxlength="160" autocomplete="email"
+                   placeholder="${esc(UI.phEmail)}">
+          </label>
+          <label class="span-2"><span class="lbl">${esc(UI.fPhone)} <i aria-hidden="true">*</i></span>
+            <input name="phone" type="tel" required maxlength="40" autocomplete="tel"
+                   placeholder="${esc(UI.phPhone)}">
           </label>
           <label><span class="lbl">${esc(UI.fEvent)} <i aria-hidden="true">*</i></span>
-            <input name="event" type="text" required maxlength="160">
+            <input name="event" type="text" required maxlength="160" placeholder="${esc(UI.phEvent)}">
           </label>
           <label><span class="lbl">${esc(UI.fCity)} <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120">
+            <input name="city" type="text" required maxlength="120" placeholder="${esc(UI.phCity)}">
           </label>
           <label><span class="lbl">${esc(UI.fDate)} <i aria-hidden="true">*</i></span>
             <input name="date" type="date" required>
@@ -1068,26 +1079,31 @@ function renderBooking(n, s, site) {
             <input name="setLength" type="text" required maxlength="60" placeholder="${esc(UI.fSetLengthHint)}">
           </label>
           <label class="span-2"><span class="lbl">${esc(UI.fMessage)} <i aria-hidden="true">*</i></span>
-            <textarea name="message" rows="4" required maxlength="4000"></textarea>
+            <textarea name="message" rows="5" required maxlength="4000"
+                      placeholder="${esc(UI.phMessage)}"></textarea>
+          </label>
+          <label class="span-2 bform-captcha"><span class="lbl">${esc(UI.captcha)} <i aria-hidden="true">*</i></span>
+            <span class="captcha-row">
+              <span class="captcha-sum" aria-hidden="true"><b data-a></b> + <b data-b></b> =</span>
+              <input name="captcha" type="text" required inputmode="numeric" maxlength="4"
+                     autocomplete="off" aria-label="${esc(UI.captchaAria)}" placeholder="?">
+            </span>
           </label>
           <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">${esc(UI.fHoneypot)}</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
-          </div>
-          <div class="bform-side">
-            <div class="bform-cal" id="bform-cal"
-                 data-weekdays="${esc(UI.weekdays)}" data-hint="${esc(UI.pickDay)}"
-                 data-busy="${esc(UI.dayBusy)}" hidden></div>
-          </div>
         </div>
+        <div class="bform-cal" id="bform-cal"
+             data-weekdays="${esc(UI.weekdays)}" data-hint="${esc(UI.pickDay)}"
+             data-busy="${esc(UI.dayBusy)}" hidden></div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">${esc(
+          <button class="btn solid big wide" type="submit">${esc(
             str(f.submitLabel, "Send request")
           )}<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">${esc(UI.replyNote)}</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="${esc(str(f.successText, "Thanks — your request landed."))}"
              data-error="${esc(str(f.errorText, "Something went wrong. Please e-mail instead."))}"></p>
+          <p class="bform-fine mono">${esc(UI.formFine)}</p>
         </div>
       </form>`
           : ""
@@ -1436,8 +1452,6 @@ const UI_DEFAULTS = {
   afterMoviesEmpty: "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
   allRequired: "Alle Felder sind Pflichtfelder.",
   riderOptional: "Fakultativ — für die Technik",
-  shopOpen: "Shop öffnen ({n})",
-  shopClose: "Shop schliessen",
   payTitle: "Bezahlen",
   payBank: "Banküberweisung",
   payBankName: "Bank",
@@ -1469,8 +1483,9 @@ const UI_DEFAULTS = {
   weekdays: "Mo,Di,Mi,Do,Fr,Sa,So",
   sending: "Wird gesendet …",
   formInvalid: "Bitte die markierten Felder prüfen.",
-  fName: "Dein Name",
+  fName: "Name",
   fEmail: "E-Mail",
+  fPhone: "Telefon",
   fEvent: "Event / Club",
   fCity: "Ort",
   fDate: "Datum",
@@ -1478,6 +1493,17 @@ const UI_DEFAULTS = {
   fSetLengthHint: "z. B. 60 Min.",
   fMessage: "Nachricht",
   fHoneypot: "Bitte leer lassen",
+  phName: "Max Muster",
+  phEmail: "deine@email.ch",
+  phPhone: "+41 79 123 45 67",
+  phEvent: "Club, Festival, Firmenfest …",
+  phCity: "St. Gallen",
+  phMessage: "Deine Nachricht …",
+  captcha: "Anti-Spam — bitte lösen",
+  captchaAria: "Ergebnis der Rechenaufgabe",
+  captchaWrong: "Die Rechnung stimmt noch nicht.",
+  formFine:
+    "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet.",
 };
 
 /* Die gerade gültigen Oberflächentexte — von renderPage je Sprache gesetzt. */

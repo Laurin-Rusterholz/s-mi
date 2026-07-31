@@ -338,12 +338,10 @@
   <section class="booking pad" id="booking" aria-labelledby="booking-h">
     <span class="section-mark" aria-hidden="true">Booking.</span>
     <div class="wrap">
-      <div class="shead rv">
-        <span class="num" aria-hidden="true">02</span>
-        <h2 id="booking-h">Boo<i>king.</i></h2>
-        <span class="shead-rule" aria-hidden="true"></span>
-      </div>
+      <div class="booking-grid">
       <div class="booking-lead rv">
+        <span class="mono">Booking</span>
+        <h2 id="booking-h" class="booking-claim">Let&#39;s create <i>something.</i></h2>
         <p class="lede">Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.</p>
         <span class="mono">Available for</span>
         <ul class="avail">
@@ -353,30 +351,35 @@
           <li><span class="mono">D</span>Switzerland &amp; Europe</li>
         </ul>
         <div class="btn-row">
-          <a class="btn solid" href="#booking-form">Send request</a>
           <a class="btn" href="/presskit/sam-sparkling-presskit-2026.pdf" download>Presskit (PDF)</a>
         </div>
+        
       </div>
       
-      <form class="bform rv" id="booking-form" data-endpoint="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json" data-sending="Sending …" data-invalid="Please check the highlighted fields." novalidate>
+      <form class="bform rv" id="booking-form" data-endpoint="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json" data-sending="Sending …" data-invalid="Please check the highlighted fields."
+            data-captcha="That sum is not right yet." novalidate>
         <div class="bform-head">
           <span class="mono">Booking request</span>
           <h3>Tell me about your event</h3>
-          <p class="bform-required mono">All fields are required.</p>
         </div>
-        <div class="bform-cols">
-          <div class="bform-grid">
-          <label><span class="lbl">Your name <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
+        <div class="bform-grid">
+          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
+            <input name="name" type="text" required maxlength="120" autocomplete="name"
+                   placeholder="Max Muster">
           </label>
           <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
+            <input name="email" type="email" required maxlength="160" autocomplete="email"
+                   placeholder="your@email.ch">
+          </label>
+          <label class="span-2"><span class="lbl">Phone <i aria-hidden="true">*</i></span>
+            <input name="phone" type="tel" required maxlength="40" autocomplete="tel"
+                   placeholder="+41 79 123 45 67">
           </label>
           <label><span class="lbl">Event / club <i aria-hidden="true">*</i></span>
-            <input name="event" type="text" required maxlength="160">
+            <input name="event" type="text" required maxlength="160" placeholder="Club, festival, corporate party …">
           </label>
           <label><span class="lbl">City <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120">
+            <input name="city" type="text" required maxlength="120" placeholder="St. Gallen">
           </label>
           <label><span class="lbl">Date <i aria-hidden="true">*</i></span>
             <input name="date" type="date" required>
@@ -385,24 +388,29 @@
             <input name="setLength" type="text" required maxlength="60" placeholder="e.g. 60 min">
           </label>
           <label class="span-2"><span class="lbl">Message <i aria-hidden="true">*</i></span>
-            <textarea name="message" rows="4" required maxlength="4000"></textarea>
+            <textarea name="message" rows="5" required maxlength="4000"
+                      placeholder="Your message …"></textarea>
+          </label>
+          <label class="span-2 bform-captcha"><span class="lbl">Anti-spam — please solve <i aria-hidden="true">*</i></span>
+            <span class="captcha-row">
+              <span class="captcha-sum" aria-hidden="true"><b data-a></b> + <b data-b></b> =</span>
+              <input name="captcha" type="text" required inputmode="numeric" maxlength="4"
+                     autocomplete="off" aria-label="Result of the sum" placeholder="?">
+            </span>
           </label>
           <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Leave empty</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
-          </div>
-          <div class="bform-side">
-            <div class="bform-cal" id="bform-cal"
-                 data-weekdays="Mon,Tue,Wed,Thu,Fri,Sat,Sun" data-hint="Or tap your preferred date right in the calendar:"
-                 data-busy="Taken" hidden></div>
-          </div>
         </div>
+        <div class="bform-cal" id="bform-cal"
+             data-weekdays="Mon,Tue,Wed,Thu,Fri,Sat,Sun" data-hint="Or tap your preferred date right in the calendar:"
+             data-busy="Taken" hidden></div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">Send request<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">I usually reply within 48 hours</span>
+          <button class="btn solid big wide" type="submit">Send request<span class="cta-arr" aria-hidden="true">→</span></button>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="Thanks — your request arrived. You&#39;ll hear from me within 48 hours."
              data-error="Something went wrong. Please write to me directly at info@samsparking.ch."></p>
+          <p class="bform-fine mono">* Required · Your details are used only to handle your enquiry.</p>
         </div>
       </form>
 
@@ -561,12 +569,8 @@
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
       <p class="shop-note rv">Sam Sparkling merch — every piece helps fund the next production.</p>
-      <button class="shop-open btn solid" type="button" aria-controls="shop-panel" aria-expanded="false"
-              data-more="Open shop (1)"
-              data-less="Close shop">Open shop (1)</button>
-      <div class="shop-panel" id="shop-panel">
-        <div class="shop-grid">
-        <article class="product rv">
+      <div class="shop-grid">
+      <article class="product rv">
           <div class="product-img"><img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&amp;token=5fa53fdc-6095-4f9c-8c66-88563f120179" alt="Sam Sparkling Shirt" loading="lazy" decoding="async" sizes="(max-width:700px) 46vw, 280px"></div>
           <div class="product-body">
             <h3>Sam Sparkling Shirt</h3>
@@ -577,7 +581,7 @@
             </div>
           </div>
         </article>
-        </div>
+      </div>
 
       <div class="pay-methods rv">
         <!-- TODO Kunde: Zahlungsangaben fehlen noch. Benoetigt werden die
@@ -618,7 +622,7 @@
           <label><span class="lbl">Quantity <i aria-hidden="true">*</i></span>
             <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
           </label>
-          <label><span class="lbl">Your name <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
             <input name="name" type="text" required maxlength="120" autocomplete="name">
           </label>
           <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
@@ -648,7 +652,6 @@
              data-success="Thanks — your order arrived. The payment details are on their way by e-mail." data-error="That did not work. Please write me an e-mail instead."></p>
         </div>
       </form>
-      </div>
     </div>
   </section>
 

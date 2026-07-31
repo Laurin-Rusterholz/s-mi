@@ -116,7 +116,9 @@
           },
           "title": "Boo",
           "titleAccent": "king.",
-          "lead": "Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort."
+          "lead": "Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort.",
+          "claim": "Machen wir",
+          "claimAccent": "was Eigenes."
         },
         "contact": {
           "base": "St. Gallen, Schweiz",
@@ -124,6 +126,12 @@
           "navLabel": "Kontakt",
           "socials": {
             "0": {
+              "label": "Instagram"
+            },
+            "1": {
+              "label": "Spotify"
+            },
+            "2": {
               "label": "Mixcloud"
             }
           },
@@ -328,7 +336,7 @@
         "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So",
         "sending": "Wird gesendet …",
         "formInvalid": "Bitte die markierten Felder prüfen.",
-        "fName": "Dein Name",
+        "fName": "Name",
         "fEmail": "E-Mail",
         "fEvent": "Event / Club",
         "fCity": "Ort",
@@ -365,8 +373,6 @@
         "afterMoviesEmpty": "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
         "allRequired": "Alle Felder sind Pflichtfelder.",
         "riderOptional": "Fakultativ — für die Technik",
-        "shopOpen": "Shop öffnen ({n})",
-        "shopClose": "Shop schliessen",
         "payTitle": "Bezahlen",
         "payBank": "Banküberweisung",
         "payBankName": "Bank",
@@ -387,7 +393,18 @@
         "oReplyNote": "Bestätigung mit Zahlungsangaben folgt per Mail",
         "oSuccess": "Danke — deine Bestellung ist da. Die Zahlungsangaben kommen gleich per Mail.",
         "oError": "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail.",
-        "payPending": "folgt"
+        "payPending": "folgt",
+        "fPhone": "Telefon",
+        "phName": "Max Muster",
+        "phEmail": "deine@email.ch",
+        "phPhone": "+41 79 123 45 67",
+        "phEvent": "Club, Festival, Firmenfest …",
+        "phCity": "St. Gallen",
+        "phMessage": "Deine Nachricht …",
+        "captcha": "Anti-Spam — bitte lösen",
+        "captchaAria": "Ergebnis der Rechenaufgabe",
+        "captchaWrong": "Die Rechnung stimmt noch nicht.",
+        "formFine": "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet."
       }
     },
     "fr": {
@@ -644,7 +661,9 @@
             },
             "note": "Merci de prévoir des retours booth avec réglage de volume indépendant — indispensable pour un cueing et un mix propres."
           },
-          "lead": "Club, festival, fête privée ou événement d'entreprise — écris-moi ton projet et tu as une réponse sous 48 heures."
+          "lead": "Club, festival, fête privée ou événement d'entreprise — écris-moi ton projet et tu as une réponse sous 48 heures.",
+          "claim": "Créons",
+          "claimAccent": "quelque chose."
         },
         "contact": {
           "navLabel": "Kontakt",
@@ -654,6 +673,12 @@
           "base": "Saint-Gall, Suisse",
           "socials": {
             "0": {
+              "label": "Instagram"
+            },
+            "1": {
+              "label": "Spotify"
+            },
+            "2": {
               "label": "Mixcloud"
             }
           }
@@ -693,7 +718,7 @@
         "weekdays": "Lun,Mar,Mer,Jeu,Ven,Sam,Dim",
         "sending": "Envoi …",
         "formInvalid": "Merci de vérifier les champs signalés.",
-        "fName": "Ton nom",
+        "fName": "Nom",
         "fEmail": "E-mail",
         "fEvent": "Événement / club",
         "fCity": "Ville",
@@ -731,8 +756,6 @@
         "afterMoviesEmpty": "Les aftermovies des derniers shows sont au montage — ils arrivent ici dès qu'ils sont prêts.",
         "allRequired": "Tous les champs sont obligatoires.",
         "riderOptional": "Facultatif — pour la technique",
-        "shopOpen": "Ouvrir la boutique ({n})",
-        "shopClose": "Fermer la boutique",
         "payTitle": "Paiement",
         "payBank": "Virement bancaire",
         "payBankName": "Banque",
@@ -753,7 +776,18 @@
         "oReplyNote": "Confirmation avec les données de paiement par e-mail",
         "oSuccess": "Merci — ta commande est arrivée. Les données de paiement suivent par e-mail.",
         "oError": "Cela n'a pas fonctionné. Écris-moi directement un e-mail.",
-        "payPending": "à venir"
+        "payPending": "à venir",
+        "fPhone": "Téléphone",
+        "phName": "Max Muster",
+        "phEmail": "ton@email.ch",
+        "phPhone": "+41 79 123 45 67",
+        "phEvent": "Club, festival, fête d'entreprise …",
+        "phCity": "Saint-Gall",
+        "phMessage": "Ton message …",
+        "captcha": "Anti-spam — à résoudre",
+        "captchaAria": "Résultat du calcul",
+        "captchaWrong": "Le calcul n'est pas encore juste.",
+        "formFine": "* Champs obligatoires · Tes données servent uniquement au traitement de ta demande."
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -868,7 +902,9 @@
           },
           "title": "e0cb9023",
           "titleAccent": "454fdf68",
-          "lead": "7d9d8d28"
+          "lead": "7d9d8d28",
+          "claim": "7d9059c0",
+          "claimAccent": "0f51879f"
         },
         "contact": {
           "base": "23df4a6c",
@@ -876,6 +912,12 @@
           "navLabel": "73ac94c3",
           "socials": {
             "0": {
+              "label": "0f95701b"
+            },
+            "1": {
+              "label": "38f39455"
+            },
+            "2": {
               "label": "afc62f32"
             }
           },
@@ -1080,7 +1122,7 @@
         "weekdays": "82a27f69",
         "sending": "6e848d37",
         "formInvalid": "18ea1cdc",
-        "fName": "3a0663bd",
+        "fName": "0fe07306",
         "fEmail": "31bb94b0",
         "fEvent": "7b0d982e",
         "fCity": "906b3662",
@@ -1113,8 +1155,6 @@
         "afterMoviesEmpty": "cfc1974e",
         "allRequired": "ec33a35e",
         "riderOptional": "4e3ffa03",
-        "shopOpen": "a5138e00",
-        "shopClose": "5a975d65",
         "payTitle": "20f64111",
         "payBank": "1ea07f76",
         "payBankName": "a274c5b7",
@@ -1135,7 +1175,18 @@
         "oReplyNote": "30a312cc",
         "oSuccess": "0bdec3f7",
         "oError": "1a8d5298",
-        "payPending": "ee8061b9"
+        "payPending": "ee8061b9",
+        "fPhone": "4930944f",
+        "phName": "5445c545",
+        "phEmail": "5a74c80f",
+        "phPhone": "53f14931",
+        "phEvent": "92a3ad52",
+        "phCity": "0fcf8f7b",
+        "phMessage": "7e56ae33",
+        "captcha": "074c9046",
+        "captchaAria": "236102a9",
+        "captchaWrong": "bc9de2ce",
+        "formFine": "68fad56e"
       }
     },
     "fr": {
@@ -1392,7 +1443,9 @@
             },
             "note": "0aa5b4c5"
           },
-          "lead": "7d9d8d28"
+          "lead": "7d9d8d28",
+          "claim": "7d9059c0",
+          "claimAccent": "0f51879f"
         },
         "contact": {
           "navLabel": "73ac94c3",
@@ -1402,6 +1455,12 @@
           "base": "23df4a6c",
           "socials": {
             "0": {
+              "label": "0f95701b"
+            },
+            "1": {
+              "label": "38f39455"
+            },
+            "2": {
               "label": "afc62f32"
             }
           }
@@ -1441,7 +1500,7 @@
         "weekdays": "82a27f69",
         "sending": "6e848d37",
         "formInvalid": "18ea1cdc",
-        "fName": "3a0663bd",
+        "fName": "0fe07306",
         "fEmail": "31bb94b0",
         "fEvent": "7b0d982e",
         "fCity": "906b3662",
@@ -1475,8 +1534,6 @@
         "afterMoviesEmpty": "cfc1974e",
         "allRequired": "ec33a35e",
         "riderOptional": "4e3ffa03",
-        "shopOpen": "a5138e00",
-        "shopClose": "5a975d65",
         "payTitle": "20f64111",
         "payBank": "1ea07f76",
         "payBankName": "a274c5b7",
@@ -1497,7 +1554,18 @@
         "oReplyNote": "30a312cc",
         "oSuccess": "0bdec3f7",
         "oError": "1a8d5298",
-        "payPending": "ee8061b9"
+        "payPending": "ee8061b9",
+        "fPhone": "4930944f",
+        "phName": "5445c545",
+        "phEmail": "5a74c80f",
+        "phPhone": "53f14931",
+        "phEvent": "92a3ad52",
+        "phCity": "0fcf8f7b",
+        "phMessage": "7e56ae33",
+        "captcha": "074c9046",
+        "captchaAria": "236102a9",
+        "captchaWrong": "bc9de2ce",
+        "formFine": "68fad56e"
       },
       "hero": {
         "kicker": "0f636286",
@@ -1640,7 +1708,9 @@
       },
       "title": "Boo",
       "titleAccent": "king.",
-      "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours."
+      "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
+      "claim": "Let's create",
+      "claimAccent": "something."
     },
     "contact": {
       "base": "St. Gallen, Switzerland",
@@ -1973,7 +2043,7 @@
     "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
     "sending": "Sending …",
     "formInvalid": "Please check the highlighted fields.",
-    "fName": "Your name",
+    "fName": "Name",
     "fEmail": "E-mail",
     "fEvent": "Event / club",
     "fCity": "City",
@@ -2009,8 +2079,6 @@
     "afterMoviesEmpty": "The aftermovies of the latest shows are still in the edit — they land here as soon as they are done.",
     "allRequired": "All fields are required.",
     "riderOptional": "Optional — for the technical crew",
-    "shopOpen": "Open shop ({n})",
-    "shopClose": "Close shop",
     "payTitle": "Payment",
     "payBank": "Bank transfer",
     "payBankName": "Bank",
@@ -2031,7 +2099,18 @@
     "oReplyNote": "Confirmation with payment details follows by e-mail",
     "oSuccess": "Thanks — your order arrived. The payment details are on their way by e-mail.",
     "oError": "That did not work. Please write me an e-mail instead.",
-    "payPending": "follows"
+    "payPending": "follows",
+    "fPhone": "Phone",
+    "phName": "Max Muster",
+    "phEmail": "your@email.ch",
+    "phPhone": "+41 79 123 45 67",
+    "phEvent": "Club, festival, corporate party …",
+    "phCity": "St. Gallen",
+    "phMessage": "Your message …",
+    "captcha": "Anti-spam — please solve",
+    "captchaAria": "Result of the sum",
+    "captchaWrong": "That sum is not right yet.",
+    "formFine": "* Required · Your details are used only to handle your enquiry."
   },
   "updatedAt": "2026-07-27T04:36:05.224Z",
   "updatedBy": "Verwaltung"
