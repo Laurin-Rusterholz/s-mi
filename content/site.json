@@ -1581,8 +1581,7 @@
       "available": [
         "Clubs & Venues",
         "Festivals",
-        "Private & corporate events",
-        "Switzerland & Europe"
+        "Private & corporate events"
       ],
       "availableKicker": "Available for",
       "enabled": true,
@@ -1596,7 +1595,7 @@
       },
       "navLabel": "Booking",
       "presskitLabel": "Presskit (PDF)",
-      "presskitUrl": "presskit/sam-sparkling-presskit-2026.pdf",
+      "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
       "rider": {
         "groups": [
           {
@@ -1652,16 +1651,6 @@
       "socials": [
         {
           "label": "Instagram",
-          "url": "",
-          "handle": ""
-        },
-        {
-          "label": "Spotify",
-          "url": "",
-          "handle": ""
-        },
-        {
-          "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
         }
       ],
@@ -1744,48 +1733,31 @@
       "items": [
         {
           "city": "St. Gallen",
-          "highlight": true,
-          "name": "Ultrawild Festival"
+          "name": "Kugl"
         },
         {
           "city": "Luzern",
-          "highlight": true,
-          "name": "Aftersun Festival"
+          "name": "Sektor 11"
         },
         {
           "city": "St. Gallen",
-          "highlight": true,
-          "name": "Jugendopenair St. Gallen"
+          "name": "The Q"
         },
         {
           "city": "St. Gallen",
-          "name": "Kugl",
-          "highlight": false
+          "name": "IVY"
         },
         {
           "city": "Zurich",
-          "name": "Sektor 11",
-          "highlight": false
+          "name": "BBC"
         },
         {
           "city": "Schaan, FL",
-          "name": "The Q",
-          "highlight": false
+          "name": "B9"
         },
         {
           "city": "St. Gallen",
-          "name": "IVY",
-          "highlight": false
-        },
-        {
-          "city": "Gossau",
-          "name": "BBC",
-          "highlight": false
-        },
-        {
-          "city": "St. Gallen",
-          "name": "B9",
-          "highlight": false
+          "name": "Ultrawild Festival"
         }
       ],
       "navLabel": "References",
@@ -1796,17 +1768,18 @@
     },
     "shop": {
       "buyLabel": "Buy",
-      "currency": "CHF",
+      "currency": "CHF 5",
       "emptyText": "The shop opens soon — the first merch is in the works. Follow the channels below so you don't miss the drop.",
       "enabled": true,
       "items": [
         {
-          "name": "Sam Sparkling Shirt",
+          "alt": "Sam Sparkling Shirt",
+          "linkUrl": "asd",
+          "name": "Beispiel",
           "note": "Heavy cotton, front print, unisex sizing.",
           "price": "35",
-          "status": "available",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
-          "alt": "Sam Sparkling Shirt"
+          "status": "available"
         }
       ],
       "navLabel": "Shop",
@@ -1838,7 +1811,7 @@
       "items": []
     },
     "sound": {
-      "enabled": false,
+      "enabled": true,
       "genres": [
         {
           "meta": "Genre",
