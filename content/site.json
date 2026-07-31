@@ -67,7 +67,8 @@
           "available": {
             "0": "Clubs & Venues",
             "1": "Festivals",
-            "2": "Schweiz & Europa"
+            "2": "Private & Firmen-Events",
+            "3": "Schweiz & Europa"
           },
           "availableKicker": "Verfügbar für",
           "form": {
@@ -114,7 +115,8 @@
             "note": "Bitte Booth-Monitore mit unabhängiger Lautstärkeregelung bereitstellen — essenziell für sauberes Cueing und Mixing."
           },
           "title": "Boo",
-          "titleAccent": "king."
+          "titleAccent": "king.",
+          "lead": "Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort."
         },
         "contact": {
           "base": "St. Gallen, Schweiz",
@@ -181,7 +183,8 @@
           },
           "navLabel": "Galerie",
           "title": "Gal",
-          "titleAccent": "erie."
+          "titleAccent": "erie.",
+          "aftermoviesNote": "Rückblick auf die letzten Shows."
         },
         "references": {
           "items": {
@@ -189,21 +192,27 @@
               "city": "St. Gallen"
             },
             "1": {
-              "city": "Zürich"
+              "city": "Luzern"
             },
             "2": {
-              "city": "Schaan, FL"
+              "city": "St. Gallen"
             },
             "3": {
               "city": "St. Gallen"
             },
             "4": {
-              "city": "Gossau"
+              "city": "Zürich"
             },
             "5": {
-              "city": "St. Gallen"
+              "city": "Schaan, FL"
             },
             "6": {
+              "city": "St. Gallen"
+            },
+            "7": {
+              "city": "Gossau"
+            },
+            "8": {
               "city": "St. Gallen"
             }
           },
@@ -218,14 +227,14 @@
           "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
           "items": {
             "0": {
-              "alt": "as",
-              "note": "as"
+              "note": "Schweres Baumwollshirt, Frontprint, Unisex-Groessen."
             }
           },
           "navLabel": "Shop",
           "note": "Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.",
           "title": "Sh",
-          "titleAccent": "op."
+          "titleAccent": "op.",
+          "defaultCountry": "Schweiz"
         },
         "shows": {
           "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
@@ -338,10 +347,6 @@
         "bookDay": "Diesen Tag anfragen",
         "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
         "dayBusy": "Belegt",
-        "twintSend": "Per TWINT bezahlen an",
-        "twintRef": "Vermerk",
-        "twintNote": "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
-        "twintConfirm": "Bestellung per Mail bestätigen",
         "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
         "toTop": "Nach oben",
         "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
@@ -355,7 +360,34 @@
         "showLessImages": "Weniger Bilder",
         "follow": "Kanäle",
         "phone": "Telefon",
-        "replyNote": "Antwort meist innert 48 Stunden"
+        "replyNote": "Antwort meist innert 48 Stunden",
+        "afterMovies": "After Movies",
+        "afterMoviesEmpty": "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
+        "allRequired": "Alle Felder sind Pflichtfelder.",
+        "riderOptional": "Fakultativ — für die Technik",
+        "shopOpen": "Shop öffnen ({n})",
+        "shopClose": "Shop schliessen",
+        "payTitle": "Bezahlen",
+        "payBank": "Banküberweisung",
+        "payBankName": "Bank",
+        "payHolder": "Empfänger",
+        "payNote": "Nach dem Absenden kommt eine Bestätigung mit Betrag und Vermerk. Der Versand geht raus, sobald die Zahlung da ist.",
+        "payQrCaption": "QR-Code scannen und bezahlen",
+        "payQrMissing": "QR-Code folgt",
+        "orderTitle": "Bestellung",
+        "orderHeadline": "Wohin darf es gehen?",
+        "oProduct": "Artikel",
+        "oQuantity": "Anzahl",
+        "oStreet": "Strasse und Nummer",
+        "oZip": "PLZ",
+        "oCity": "Ort",
+        "oCountry": "Land",
+        "oPayment": "Bezahlung",
+        "oSubmit": "Bestellung abschicken",
+        "oReplyNote": "Bestätigung mit Zahlungsangaben folgt per Mail",
+        "oSuccess": "Danke — deine Bestellung ist da. Die Zahlungsangaben kommen gleich per Mail.",
+        "oError": "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail.",
+        "payPending": "folgt"
       }
     },
     "fr": {
@@ -478,21 +510,27 @@
               "city": "Saint-Gall"
             },
             "1": {
-              "city": "Zurich"
+              "city": "Lucerne"
             },
             "2": {
-              "city": "Schaan, FL"
+              "city": "Saint-Gall"
             },
             "3": {
               "city": "Saint-Gall"
             },
             "4": {
-              "city": "Gossau"
+              "city": "Zurich"
             },
             "5": {
-              "city": "Saint-Gall"
+              "city": "Schaan, FL"
             },
             "6": {
+              "city": "Saint-Gall"
+            },
+            "7": {
+              "city": "Gossau"
+            },
+            "8": {
               "city": "Saint-Gall"
             }
           }
@@ -550,7 +588,8 @@
               "alt": "Dernier moment de la nuit",
               "credit": "Sarto Photography"
             }
-          }
+          },
+          "aftermoviesNote": "Retour sur les derniers shows."
         },
         "booking": {
           "navLabel": "Booking",
@@ -560,7 +599,8 @@
           "available": {
             "0": "Clubs & salles",
             "1": "Festivals",
-            "2": "Suisse & Europe"
+            "2": "Événements privés & d'entreprise",
+            "3": "Suisse & Europe"
           },
           "presskitLabel": "Presskit (PDF)",
           "form": {
@@ -603,7 +643,8 @@
               }
             },
             "note": "Merci de prévoir des retours booth avec réglage de volume indépendant — indispensable pour un cueing et un mix propres."
-          }
+          },
+          "lead": "Club, festival, fête privée ou événement d'entreprise — écris-moi ton projet et tu as une réponse sous 48 heures."
         },
         "contact": {
           "navLabel": "Kontakt",
@@ -623,7 +664,13 @@
           "emptyText": "Le shop ouvre bientôt — le premier merch est en préparation. Suis les canaux ci-dessous pour ne pas rater le lancement.",
           "buyLabel": "Acheter",
           "title": "Sh",
-          "titleAccent": "op."
+          "titleAccent": "op.",
+          "defaultCountry": "Suisse",
+          "items": {
+            "0": {
+              "note": "Coton épais, imprimé devant, tailles unisexes."
+            }
+          }
         }
       },
       "ui": {
@@ -666,10 +713,6 @@
         "bookDay": "Demander cette date",
         "pickDay": "Ou choisis ta date directement dans le calendrier :",
         "dayBusy": "Occupé",
-        "twintSend": "Payer par TWINT au",
-        "twintRef": "Motif",
-        "twintNote": "Après le paiement, confirme par e-mail avec ton adresse de livraison — ta pièce part ensuite.",
-        "twintConfirm": "Confirmer la commande par e-mail",
         "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !",
         "toTop": "En haut",
         "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
@@ -683,7 +726,34 @@
         "showLessImages": "Afficher moins d’images",
         "follow": "Réseaux",
         "phone": "Téléphone",
-        "replyNote": "Réponse en général sous 48 h"
+        "replyNote": "Réponse en général sous 48 h",
+        "afterMovies": "After Movies",
+        "afterMoviesEmpty": "Les aftermovies des derniers shows sont au montage — ils arrivent ici dès qu'ils sont prêts.",
+        "allRequired": "Tous les champs sont obligatoires.",
+        "riderOptional": "Facultatif — pour la technique",
+        "shopOpen": "Ouvrir la boutique ({n})",
+        "shopClose": "Fermer la boutique",
+        "payTitle": "Paiement",
+        "payBank": "Virement bancaire",
+        "payBankName": "Banque",
+        "payHolder": "Bénéficiaire",
+        "payNote": "Après l'envoi, tu reçois une confirmation avec le montant et la référence. Le colis part dès réception du paiement.",
+        "payQrCaption": "Scanner le code QR pour payer",
+        "payQrMissing": "Code QR à venir",
+        "orderTitle": "Commande",
+        "orderHeadline": "Où faut-il l'envoyer ?",
+        "oProduct": "Article",
+        "oQuantity": "Quantité",
+        "oStreet": "Rue et numéro",
+        "oZip": "NPA",
+        "oCity": "Localité",
+        "oCountry": "Pays",
+        "oPayment": "Paiement",
+        "oSubmit": "Envoyer la commande",
+        "oReplyNote": "Confirmation avec les données de paiement par e-mail",
+        "oSuccess": "Merci — ta commande est arrivée. Les données de paiement suivent par e-mail.",
+        "oError": "Cela n'a pas fonctionné. Écris-moi directement un e-mail.",
+        "payPending": "à venir"
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -749,7 +819,8 @@
           "available": {
             "0": "adcfb620",
             "1": "d5521852",
-            "2": "621ec3a2"
+            "2": "bfffef16",
+            "3": "621ec3a2"
           },
           "availableKicker": "d7599fd7",
           "form": {
@@ -796,7 +867,8 @@
             "note": "0aa5b4c5"
           },
           "title": "e0cb9023",
-          "titleAccent": "454fdf68"
+          "titleAccent": "454fdf68",
+          "lead": "7d9d8d28"
         },
         "contact": {
           "base": "23df4a6c",
@@ -863,7 +935,8 @@
           },
           "navLabel": "d7b54cdd",
           "title": "9ea1a68b",
-          "titleAccent": "2759a437"
+          "titleAccent": "2759a437",
+          "aftermoviesNote": "766693dd"
         },
         "references": {
           "items": {
@@ -871,21 +944,27 @@
               "city": "0fcf8f7b"
             },
             "1": {
-              "city": "59dab0ce"
+              "city": "bf784cdb"
             },
             "2": {
-              "city": "3e5d36c9"
+              "city": "0fcf8f7b"
             },
             "3": {
               "city": "0fcf8f7b"
             },
             "4": {
-              "city": "fbd73a2f"
+              "city": "59dab0ce"
             },
             "5": {
-              "city": "0fcf8f7b"
+              "city": "3e5d36c9"
             },
             "6": {
+              "city": "0fcf8f7b"
+            },
+            "7": {
+              "city": "fbd73a2f"
+            },
+            "8": {
               "city": "0fcf8f7b"
             }
           },
@@ -900,14 +979,14 @@
           "emptyText": "29cb33e6",
           "items": {
             "0": {
-              "alt": "5e25208d",
-              "note": "5e25208d"
+              "note": "b9dc35fb"
             }
           },
           "navLabel": "28742cc9",
           "note": "9d4f0d9d",
           "title": "3f025d7e",
-          "titleAccent": "632213cc"
+          "titleAccent": "632213cc",
+          "defaultCountry": "9bcbf122"
         },
         "shows": {
           "emptyText": "335e234f",
@@ -1020,10 +1099,6 @@
         "bookDay": "aa2f019e",
         "pickDay": "c2e36ecb",
         "dayBusy": "d6152dc8",
-        "twintSend": "50680769",
-        "twintRef": "adc8c33a",
-        "twintNote": "eb378b74",
-        "twintConfirm": "93393f49",
         "orderMailBody": "92a8e3b2",
         "toTop": "0babbd70",
         "cookieText": "0252aaa9",
@@ -1033,7 +1108,34 @@
         "bookCta": "5747254e",
         "follow": "c9409495",
         "phone": "4930944f",
-        "replyNote": "273c1cf7"
+        "replyNote": "273c1cf7",
+        "afterMovies": "099836b6",
+        "afterMoviesEmpty": "cfc1974e",
+        "allRequired": "ec33a35e",
+        "riderOptional": "4e3ffa03",
+        "shopOpen": "a5138e00",
+        "shopClose": "5a975d65",
+        "payTitle": "20f64111",
+        "payBank": "1ea07f76",
+        "payBankName": "a274c5b7",
+        "payHolder": "da952418",
+        "payNote": "41dd34b6",
+        "payQrCaption": "24e02222",
+        "payQrMissing": "9b2badb5",
+        "orderTitle": "18e78237",
+        "orderHeadline": "6b2e4f27",
+        "oProduct": "1f648006",
+        "oQuantity": "2bf732f8",
+        "oStreet": "7416116c",
+        "oZip": "e7a57d06",
+        "oCity": "b3b4b365",
+        "oCountry": "04f4fe71",
+        "oPayment": "20f64111",
+        "oSubmit": "cdd0356f",
+        "oReplyNote": "30a312cc",
+        "oSuccess": "0bdec3f7",
+        "oError": "1a8d5298",
+        "payPending": "ee8061b9"
       }
     },
     "fr": {
@@ -1156,21 +1258,27 @@
               "city": "0fcf8f7b"
             },
             "1": {
-              "city": "59dab0ce"
+              "city": "bf784cdb"
             },
             "2": {
-              "city": "3e5d36c9"
+              "city": "0fcf8f7b"
             },
             "3": {
               "city": "0fcf8f7b"
             },
             "4": {
-              "city": "fbd73a2f"
+              "city": "59dab0ce"
             },
             "5": {
-              "city": "0fcf8f7b"
+              "city": "3e5d36c9"
             },
             "6": {
+              "city": "0fcf8f7b"
+            },
+            "7": {
+              "city": "fbd73a2f"
+            },
+            "8": {
               "city": "0fcf8f7b"
             }
           }
@@ -1228,7 +1336,8 @@
               "alt": "8b0c558c",
               "credit": "c9b915c3"
             }
-          }
+          },
+          "aftermoviesNote": "766693dd"
         },
         "booking": {
           "navLabel": "12a938f0",
@@ -1238,7 +1347,8 @@
           "available": {
             "0": "adcfb620",
             "1": "d5521852",
-            "2": "621ec3a2"
+            "2": "bfffef16",
+            "3": "621ec3a2"
           },
           "presskitLabel": "d483ae75",
           "form": {
@@ -1281,7 +1391,8 @@
               }
             },
             "note": "0aa5b4c5"
-          }
+          },
+          "lead": "7d9d8d28"
         },
         "contact": {
           "navLabel": "73ac94c3",
@@ -1301,7 +1412,13 @@
           "emptyText": "29cb33e6",
           "buyLabel": "cada780b",
           "title": "3f025d7e",
-          "titleAccent": "632213cc"
+          "titleAccent": "632213cc",
+          "defaultCountry": "9bcbf122",
+          "items": {
+            "0": {
+              "note": "b9dc35fb"
+            }
+          }
         }
       },
       "ui": {
@@ -1344,10 +1461,6 @@
         "bookDay": "aa2f019e",
         "pickDay": "c2e36ecb",
         "dayBusy": "d6152dc8",
-        "twintSend": "50680769",
-        "twintRef": "adc8c33a",
-        "twintNote": "eb378b74",
-        "twintConfirm": "93393f49",
         "orderMailBody": "92a8e3b2",
         "toTop": "0babbd70",
         "cookieText": "0252aaa9",
@@ -1357,7 +1470,34 @@
         "bookCta": "5747254e",
         "follow": "c9409495",
         "phone": "4930944f",
-        "replyNote": "273c1cf7"
+        "replyNote": "273c1cf7",
+        "afterMovies": "099836b6",
+        "afterMoviesEmpty": "cfc1974e",
+        "allRequired": "ec33a35e",
+        "riderOptional": "4e3ffa03",
+        "shopOpen": "a5138e00",
+        "shopClose": "5a975d65",
+        "payTitle": "20f64111",
+        "payBank": "1ea07f76",
+        "payBankName": "a274c5b7",
+        "payHolder": "da952418",
+        "payNote": "41dd34b6",
+        "payQrCaption": "24e02222",
+        "payQrMissing": "9b2badb5",
+        "orderTitle": "18e78237",
+        "orderHeadline": "6b2e4f27",
+        "oProduct": "1f648006",
+        "oQuantity": "2bf732f8",
+        "oStreet": "7416116c",
+        "oZip": "e7a57d06",
+        "oCity": "b3b4b365",
+        "oCountry": "04f4fe71",
+        "oPayment": "20f64111",
+        "oSubmit": "cdd0356f",
+        "oReplyNote": "30a312cc",
+        "oSuccess": "0bdec3f7",
+        "oError": "1a8d5298",
+        "payPending": "ee8061b9"
       },
       "hero": {
         "kicker": "0f636286",
@@ -1372,13 +1512,11 @@
   },
   "layout": [
     "about",
-    "sound",
-    "experience",
+    "booking",
     "shows",
     "references",
     "gallery",
     "shop",
-    "booking",
     "contact"
   ],
   "pages": [
@@ -1391,13 +1529,11 @@
       "inNav": true,
       "sections": [
         "about",
-        "sound",
-        "experience",
+        "booking",
         "shows",
         "references",
         "gallery",
         "shop",
-        "booking",
         "contact"
       ]
     }
@@ -1445,6 +1581,7 @@
       "available": [
         "Clubs & Venues",
         "Festivals",
+        "Private & corporate events",
         "Switzerland & Europe"
       ],
       "availableKicker": "Available for",
@@ -1459,7 +1596,7 @@
       },
       "navLabel": "Booking",
       "presskitLabel": "Presskit (PDF)",
-      "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
+      "presskitUrl": "presskit/sam-sparkling-presskit-2026.pdf",
       "rider": {
         "groups": [
           {
@@ -1498,10 +1635,12 @@
           }
         ],
         "kicker": "Preferred setup",
-        "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
+        "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing.",
+        "enabled": true
       },
       "title": "Boo",
-      "titleAccent": "king."
+      "titleAccent": "king.",
+      "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours."
     },
     "contact": {
       "base": "St. Gallen, Switzerland",
@@ -1511,6 +1650,16 @@
       "navLabel": "Contact",
       "phone": "+41 77 509 11 71",
       "socials": [
+        {
+          "label": "Instagram",
+          "url": "",
+          "handle": ""
+        },
+        {
+          "label": "Spotify",
+          "url": "",
+          "handle": ""
+        },
         {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
@@ -1586,38 +1735,57 @@
       "navLabel": "Gallery",
       "title": "Gal",
       "titleAccent": "lery.",
-      "mobileLimit": 4
+      "mobileLimit": 6,
+      "aftermovies": [],
+      "aftermoviesNote": "A look back at the latest shows."
     },
     "references": {
       "enabled": true,
       "items": [
         {
           "city": "St. Gallen",
-          "name": "Kugl"
+          "highlight": true,
+          "name": "Ultrawild Festival"
+        },
+        {
+          "city": "Luzern",
+          "highlight": true,
+          "name": "Aftersun Festival"
+        },
+        {
+          "city": "St. Gallen",
+          "highlight": true,
+          "name": "Jugendopenair St. Gallen"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Kugl",
+          "highlight": false
         },
         {
           "city": "Zurich",
-          "name": "Sektor 11"
+          "name": "Sektor 11",
+          "highlight": false
         },
         {
           "city": "Schaan, FL",
-          "name": "The Q"
+          "name": "The Q",
+          "highlight": false
         },
         {
           "city": "St. Gallen",
-          "name": "IVY"
+          "name": "IVY",
+          "highlight": false
         },
         {
           "city": "Gossau",
-          "name": "BBC"
+          "name": "BBC",
+          "highlight": false
         },
         {
           "city": "St. Gallen",
-          "name": "B9"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "Ultrawild Festival"
+          "name": "B9",
+          "highlight": false
         }
       ],
       "navLabel": "References",
@@ -1628,25 +1796,36 @@
     },
     "shop": {
       "buyLabel": "Buy",
-      "currency": "CHF 5",
+      "currency": "CHF",
       "emptyText": "The shop opens soon — the first merch is in the works. Follow the channels below so you don't miss the drop.",
       "enabled": true,
       "items": [
         {
-          "alt": "as",
-          "linkUrl": "asd",
-          "name": "Beispiel",
-          "note": "as",
+          "name": "Sam Sparkling Shirt",
+          "note": "Heavy cotton, front print, unisex sizing.",
           "price": "35",
+          "status": "available",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
-          "status": "available"
+          "alt": "Sam Sparkling Shirt"
         }
       ],
       "navLabel": "Shop",
       "note": "Sam Sparkling merch — every piece helps fund the next production.",
       "title": "Sh",
       "titleAccent": "op.",
-      "twint": ""
+      "twint": "",
+      "bank": {
+        "label": "",
+        "holder": "",
+        "iban": "",
+        "bank": ""
+      },
+      "qr": {
+        "src": "",
+        "alt": "",
+        "caption": ""
+      },
+      "defaultCountry": "Switzerland"
     },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -1659,7 +1838,7 @@
       "items": []
     },
     "sound": {
-      "enabled": true,
+      "enabled": false,
       "genres": [
         {
           "meta": "Genre",
@@ -1685,7 +1864,7 @@
       "titleAccent": "res."
     },
     "experience": {
-      "enabled": true,
+      "enabled": false,
       "navLabel": "Experience",
       "title": "Experi",
       "titleAccent": "ence.",
@@ -1813,10 +1992,6 @@
     "bookDay": "Request this date",
     "pickDay": "Or tap your preferred date right in the calendar:",
     "dayBusy": "Taken",
-    "twintSend": "Pay by TWINT to",
-    "twintRef": "Reference",
-    "twintNote": "After paying, confirm briefly by e-mail with your shipping address — then your piece ships.",
-    "twintConfirm": "Confirm order by e-mail",
     "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!",
     "toTop": "Back to top",
     "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
@@ -1829,7 +2004,34 @@
     "showMoreImages": "Show {n} more",
     "showLessImages": "Show fewer images",
     "follow": "Channels",
-    "replyNote": "I usually reply within 48 hours"
+    "replyNote": "I usually reply within 48 hours",
+    "afterMovies": "After Movies",
+    "afterMoviesEmpty": "The aftermovies of the latest shows are still in the edit — they land here as soon as they are done.",
+    "allRequired": "All fields are required.",
+    "riderOptional": "Optional — for the technical crew",
+    "shopOpen": "Open shop ({n})",
+    "shopClose": "Close shop",
+    "payTitle": "Payment",
+    "payBank": "Bank transfer",
+    "payBankName": "Bank",
+    "payHolder": "Recipient",
+    "payNote": "You get a confirmation with the amount and reference right after ordering. Your parcel ships as soon as the payment arrives.",
+    "payQrCaption": "Scan the QR code to pay",
+    "payQrMissing": "QR code follows",
+    "orderTitle": "Order",
+    "orderHeadline": "Where should it go?",
+    "oProduct": "Item",
+    "oQuantity": "Quantity",
+    "oStreet": "Street and number",
+    "oZip": "Postcode",
+    "oCity": "Town",
+    "oCountry": "Country",
+    "oPayment": "Payment",
+    "oSubmit": "Send order",
+    "oReplyNote": "Confirmation with payment details follows by e-mail",
+    "oSuccess": "Thanks — your order arrived. The payment details are on their way by e-mail.",
+    "oError": "That did not work. Please write me an e-mail instead.",
+    "payPending": "follows"
   },
   "updatedAt": "2026-07-27T04:36:05.224Z",
   "updatedBy": "Verwaltung"
