@@ -228,7 +228,7 @@
     },
     {
       "@type": "Product",
-      "name": "Beispiel",
+      "name": "Sam Sparkling Shirt",
       "image": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
       "description": "Heavy cotton, front print, unisex sizing.",
       "brand": {
@@ -238,9 +238,8 @@
       "offers": {
         "@type": "Offer",
         "price": "35",
-        "priceCurrency": "CHF 5",
-        "availability": "https://schema.org/InStock",
-        "url": "asd"
+        "priceCurrency": "CHF",
+        "availability": "https://schema.org/InStock"
       }
     }
   ]
@@ -339,44 +338,48 @@
   <section class="booking pad" id="booking" aria-labelledby="booking-h">
     <span class="section-mark" aria-hidden="true">Booking.</span>
     <div class="wrap">
-      <div class="shead rv">
-        <span class="num" aria-hidden="true">02</span>
-        <h2 id="booking-h">Boo<i>king.</i></h2>
-        <span class="shead-rule" aria-hidden="true"></span>
-      </div>
+      <div class="booking-grid">
       <div class="booking-lead rv">
+        <span class="mono">Booking</span>
+        <h2 id="booking-h" class="booking-claim">Let&#39;s create <i>something.</i></h2>
         <p class="lede">Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.</p>
         <span class="mono">Available for</span>
         <ul class="avail">
           <li><span class="mono">A</span>Clubs &amp; Venues</li>
           <li><span class="mono">B</span>Festivals</li>
           <li><span class="mono">C</span>Private &amp; corporate events</li>
+          <li><span class="mono">D</span>Switzerland &amp; Europe</li>
         </ul>
         <div class="btn-row">
-          <a class="btn solid" href="#booking-form">Send request</a>
-          <a class="btn" href="/presskit/sam-sparking-presskit-2026.pdf" download>Presskit (PDF)</a>
+          <a class="btn" href="/presskit/sam-sparkling-presskit-2026.pdf" download>Presskit (PDF)</a>
         </div>
+        
       </div>
       
-      <form class="bform rv" id="booking-form" data-endpoint="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json" data-sending="Sending …" data-invalid="Please check the highlighted fields." novalidate>
+      <form class="bform rv" id="booking-form" data-endpoint="https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json" data-sending="Sending …" data-invalid="Please check the highlighted fields."
+            data-captcha="That sum is not right yet." novalidate>
         <div class="bform-head">
           <span class="mono">Booking request</span>
           <h3>Tell me about your event</h3>
-          <p class="bform-required mono">All fields are required.</p>
         </div>
-        <div class="bform-cols">
-          <div class="bform-grid">
-          <label><span class="lbl">Your name <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
+        <div class="bform-grid">
+          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
+            <input name="name" type="text" required maxlength="120" autocomplete="name"
+                   placeholder="Max Muster">
           </label>
           <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
+            <input name="email" type="email" required maxlength="160" autocomplete="email"
+                   placeholder="your@email.ch">
+          </label>
+          <label class="span-2"><span class="lbl">Phone <i aria-hidden="true">*</i></span>
+            <input name="phone" type="tel" required maxlength="40" autocomplete="tel"
+                   placeholder="+41 79 123 45 67">
           </label>
           <label><span class="lbl">Event / club <i aria-hidden="true">*</i></span>
-            <input name="event" type="text" required maxlength="160">
+            <input name="event" type="text" required maxlength="160" placeholder="Club, festival, corporate party …">
           </label>
           <label><span class="lbl">City <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120">
+            <input name="city" type="text" required maxlength="120" placeholder="St. Gallen">
           </label>
           <label><span class="lbl">Date <i aria-hidden="true">*</i></span>
             <input name="date" type="date" required>
@@ -385,24 +388,29 @@
             <input name="setLength" type="text" required maxlength="60" placeholder="e.g. 60 min">
           </label>
           <label class="span-2"><span class="lbl">Message <i aria-hidden="true">*</i></span>
-            <textarea name="message" rows="4" required maxlength="4000"></textarea>
+            <textarea name="message" rows="5" required maxlength="4000"
+                      placeholder="Your message …"></textarea>
+          </label>
+          <label class="span-2 bform-captcha"><span class="lbl">Anti-spam — please solve <i aria-hidden="true">*</i></span>
+            <span class="captcha-row">
+              <span class="captcha-sum" aria-hidden="true"><b data-a></b> + <b data-b></b> =</span>
+              <input name="captcha" type="text" required inputmode="numeric" maxlength="4"
+                     autocomplete="off" aria-label="Result of the sum" placeholder="?">
+            </span>
           </label>
           <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Leave empty</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
-          </div>
-          <div class="bform-side">
-            <div class="bform-cal" id="bform-cal"
-                 data-weekdays="Mon,Tue,Wed,Thu,Fri,Sat,Sun" data-hint="Or tap your preferred date right in the calendar:"
-                 data-busy="Taken" hidden></div>
-          </div>
         </div>
+        <div class="bform-cal" id="bform-cal"
+             data-weekdays="Mon,Tue,Wed,Thu,Fri,Sat,Sun" data-hint="Or tap your preferred date right in the calendar:"
+             data-busy="Taken" hidden></div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">Send request<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">I usually reply within 48 hours</span>
+          <button class="btn solid big wide" type="submit">Send request<span class="cta-arr" aria-hidden="true">→</span></button>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="Thanks — your request arrived. You&#39;ll hear from me within 48 hours."
              data-error="Something went wrong. Please write to me directly at info@samsparking.ch."></p>
+          <p class="bform-fine mono">* Required · Your details are used only to handle your enquiry.</p>
         </div>
       </form>
 
@@ -441,13 +449,15 @@
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
       <ul class="venue-list rv">
-        <li><a href="#booking"><span class="venue-idx">01</span><span class="venue-name">Kugl</span><span class="venue-city">St. Gallen</span></a></li>
-        <li><a href="#booking"><span class="venue-idx">02</span><span class="venue-name">Sektor 11</span><span class="venue-city">Luzern</span></a></li>
-        <li><a href="#booking"><span class="venue-idx">03</span><span class="venue-name">The Q</span><span class="venue-city">St. Gallen</span></a></li>
-        <li><a href="#booking"><span class="venue-idx">04</span><span class="venue-name">IVY</span><span class="venue-city">St. Gallen</span></a></li>
-        <li><a href="#booking"><span class="venue-idx">05</span><span class="venue-name">BBC</span><span class="venue-city">Zurich</span></a></li>
-        <li><a href="#booking"><span class="venue-idx">06</span><span class="venue-name">B9</span><span class="venue-city">Schaan, FL</span></a></li>
-        <li><a href="#booking"><span class="venue-idx">07</span><span class="venue-name">Ultrawild Festival</span><span class="venue-city">St. Gallen</span></a></li>
+        <li class="lead"><a href="#booking"><span class="venue-idx">01</span><span class="venue-name">Ultrawild Festival</span><span class="venue-city">St. Gallen</span></a></li>
+        <li class="lead"><a href="#booking"><span class="venue-idx">02</span><span class="venue-name">Aftersun Festival</span><span class="venue-city">Luzern</span></a></li>
+        <li class="lead"><a href="#booking"><span class="venue-idx">03</span><span class="venue-name">Jugendopenair St. Gallen</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="#booking"><span class="venue-idx">04</span><span class="venue-name">Kugl</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="#booking"><span class="venue-idx">05</span><span class="venue-name">Sektor 11</span><span class="venue-city">Zurich</span></a></li>
+        <li><a href="#booking"><span class="venue-idx">06</span><span class="venue-name">The Q</span><span class="venue-city">Schaan, FL</span></a></li>
+        <li><a href="#booking"><span class="venue-idx">07</span><span class="venue-name">IVY</span><span class="venue-city">St. Gallen</span></a></li>
+        <li><a href="#booking"><span class="venue-idx">08</span><span class="venue-name">BBC</span><span class="venue-city">Gossau</span></a></li>
+        <li><a href="#booking"><span class="venue-idx">09</span><span class="venue-name">B9</span><span class="venue-city">St. Gallen</span></a></li>
       </ul>
       <p class="live-note rv">Your club or festival next? <a class="accent" href="#contact">Write to me →</a></p>
     </div>
@@ -559,23 +569,19 @@
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
       <p class="shop-note rv">Sam Sparkling merch — every piece helps fund the next production.</p>
-      <button class="shop-open btn solid" type="button" aria-controls="shop-panel" aria-expanded="false"
-              data-more="Open shop (1)"
-              data-less="Close shop">Open shop (1)</button>
-      <div class="shop-panel" id="shop-panel">
-        <div class="shop-grid">
-        <article class="product rv">
+      <div class="shop-grid">
+      <article class="product rv">
           <div class="product-img"><img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&amp;token=5fa53fdc-6095-4f9c-8c66-88563f120179" alt="Sam Sparkling Shirt" loading="lazy" decoding="async" sizes="(max-width:700px) 46vw, 280px"></div>
           <div class="product-body">
-            <h3>Beispiel</h3>
+            <h3>Sam Sparkling Shirt</h3>
             <p>Heavy cotton, front print, unisex sizing.</p>
             <div class="product-foot">
-              <span class="price">CHF 5 35.—</span>
-              <a class="btn sm order-jump" href="#order-form" data-product="Beispiel">Buy</a>
+              <span class="price">CHF 35.—</span>
+              <a class="btn sm order-jump" href="#order-form" data-product="Sam Sparkling Shirt">Buy</a>
             </div>
           </div>
         </article>
-        </div>
+      </div>
 
       <div class="pay-methods rv">
         <!-- TODO Kunde: Zahlungsangaben fehlen noch. Benoetigt werden die
@@ -610,13 +616,13 @@
         <div class="bform-grid">
           <label><span class="lbl">Item <i aria-hidden="true">*</i></span>
             <select name="product" required>
-              <option value="Beispiel">Beispiel — CHF 5 35.—</option>
+              <option value="Sam Sparkling Shirt">Sam Sparkling Shirt — CHF 35.—</option>
             </select>
           </label>
           <label><span class="lbl">Quantity <i aria-hidden="true">*</i></span>
             <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
           </label>
-          <label><span class="lbl">Your name <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
             <input name="name" type="text" required maxlength="120" autocomplete="name">
           </label>
           <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
@@ -646,7 +652,6 @@
              data-success="Thanks — your order arrived. The payment details are on their way by e-mail." data-error="That did not work. Please write me an e-mail instead."></p>
         </div>
       </form>
-      </div>
     </div>
   </section>
 
@@ -658,6 +663,11 @@
         <h2 id="contact-h">Con<i>tact.</i></h2>
         <span class="shead-rule" aria-hidden="true"></span>
       </div>
+      <!-- TODO Kunde: Fuer diese Kanaele fehlt noch die Adresse, sie werden
+           deshalb weder hier noch im Fuss verlinkt: Instagram, Spotify.
+           Eintragen in der Verwaltung unter Kontakt → Kanaele, jeweils die
+           komplette Profil-Adresse (z. B. https://www.instagram.com/… bzw. das
+           Spotify-Kuenstlerprofil ueber "Teilen → Link kopieren"). -->
       <div class="contact-grid rv">
         <div class="contact-main">
           <span class="mono">Booking &amp; enquiries</span>
@@ -676,9 +686,9 @@
           <span class="mono side-label">Channels</span>
           <div class="social-cards">
           <a class="scard" href="https://www.mixcloud.com/samsparking/" target="_blank" rel="noopener me">
-            <span class="scard-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></span>
+            <span class="scard-ico" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3M6.5 15v-5M9 15V8M11.5 15V6.5M14 15V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 15h3.5a2.5 2.5 0 0 0 .4-4.97A4 4 0 0 0 14 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
             <span class="scard-arrow" aria-hidden="true">↗</span>
-            <span class="scard-name">Instagram</span>
+            <span class="scard-name">Mixcloud</span>
             <span class="mono">@samsparking</span>
           </a>
           </div>
@@ -709,7 +719,7 @@
     <div class="wrap foot-social">
       <span class="mono">Channels</span>
       <ul>
-        <li><a href="https://www.mixcloud.com/samsparking/" target="_blank" rel="noopener me" title="Instagram"><span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></span><span>Instagram</span></a></li>
+        <li><a href="https://www.mixcloud.com/samsparking/" target="_blank" rel="noopener me" title="Mixcloud"><span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3M6.5 15v-5M9 15V8M11.5 15V6.5M14 15V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 15h3.5a2.5 2.5 0 0 0 .4-4.97A4 4 0 0 0 14 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Mixcloud</span></a></li>
       </ul>
     </div>
     <div class="wrap foot">

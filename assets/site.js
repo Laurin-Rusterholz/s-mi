@@ -170,29 +170,6 @@
     });
   }
 
-  // Der Shop ist ein eigener Bereich hinter einem Knopf: er liegt zugeklappt
-  // da und oeffnet sich erst auf Wunsch. Ein Link auf #shop-panel oder
-  // #order-form (etwa aus dem Menue) klappt ihn automatisch auf.
-  var shopToggle = document.querySelector(".shop-open");
-  var shopPanel = document.getElementById("shop-panel");
-  var setShop = function (open) {
-    if (!shopPanel || !shopToggle) return;
-    shopPanel.classList.toggle("expanded", open);
-    shopToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    shopToggle.textContent = shopToggle.getAttribute(open ? "data-less" : "data-more") || "";
-  };
-  if (shopToggle && shopPanel) {
-    setShop(false);
-    shopToggle.addEventListener("click", function () {
-      setShop(!shopPanel.classList.contains("expanded"));
-    });
-    document.addEventListener("click", function (e) {
-      var a = e.target.closest && e.target.closest('a[href*="#order-form"],a[href*="#shop"]');
-      if (a) setShop(true);
-    });
-    if (/#(shop-panel|order-form)$/.test(location.hash)) setShop(true);
-  }
-
   // „Kaufen" an einer Ware waehlt sie im Bestellformular gleich aus.
   document.addEventListener("click", function (e) {
     var jump = e.target.closest && e.target.closest(".order-jump");
@@ -731,6 +708,21 @@
     var msg = form.querySelector(".bform-msg");
     var opened = Date.now();
 
+    // Anti-Spam: kleine Rechenaufgabe. Wird erst hier erzeugt, damit jede
+    // Seitenansicht eine andere Aufgabe zeigt und der Build gleich bleibt.
+    var capA = form.querySelector(".captcha-sum [data-a]");
+    var capB = form.querySelector(".captcha-sum [data-b]");
+    var capSum = 0;
+    var newCaptcha = function () {
+      if (!capA || !capB) return;
+      var a = 2 + Math.floor(Math.random() * 9);
+      var b = 2 + Math.floor(Math.random() * 9);
+      capA.textContent = String(a);
+      capB.textContent = String(b);
+      capSum = a + b;
+    };
+    newCaptcha();
+
     var setMsg = function (text, cls) {
       if (!msg) return;
       msg.textContent = text;
@@ -742,10 +734,12 @@
       if (form.classList.contains("busy")) return;
 
       var data = {};
-      ["name", "email", "event", "city", "date", "setLength", "message"].forEach(function (k) {
-        var f = form.elements[k];
-        data[k] = f ? String(f.value || "").trim() : "";
-      });
+      ["name", "email", "phone", "event", "city", "date", "setLength", "message"].forEach(
+        function (k) {
+          var f = form.elements[k];
+          data[k] = f ? String(f.value || "").trim() : "";
+        }
+      );
 
       // Pflichtfelder — es sind alle sichtbaren Felder. Die Mindestlängen
       // halten "a" oder "-" als Antwort fern; die E-Mail wird zusätzlich auf
@@ -754,6 +748,7 @@
       [
         ["name", 2],
         ["email", 5],
+        ["phone", 6],
         ["event", 2],
         ["city", 2],
         ["date", 1],
@@ -772,6 +767,20 @@
         setMsg(invalidText, "err");
         bad.focus();
         return;
+      }
+
+      // Rechenaufgabe. Falsch beantwortet: neue Aufgabe, Feld leeren.
+      var cap = form.elements.captcha;
+      if (cap && capA) {
+        var solved = Number(String(cap.value || "").trim()) === capSum;
+        cap.setAttribute("aria-invalid", solved ? "false" : "true");
+        if (!solved) {
+          setMsg(form.getAttribute("data-captcha") || invalidText, "err");
+          newCaptcha();
+          cap.value = "";
+          cap.focus();
+          return;
+        }
       }
 
       // Spam-Schutz: Honeypot + minimale Ausfüllzeit
