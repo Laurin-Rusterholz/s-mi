@@ -124,11 +124,27 @@ function withDefaults(target, defaults) {
  * gibt. Bilder, Videos, Termine, Farben und Links bleiben unangetastet.
  * Dieselbe Regel wie der Knopf „Texte umstellen" in der Verwaltung.
  */
-function adoptTexts(live, template) {
+export function adoptTexts(live, template) {
   for (const [path, text] of collectStrings(template)) {
     const keys = path.split(".");
     let cur = live;
-    for (let i = 0; i < keys.length - 1 && cur != null; i++) cur = cur[keys[i]];
+    let tpl = template;
+    let mismatch = false;
+    for (let i = 0; i < keys.length - 1 && cur != null; i++) {
+      // Übernommen wird Feld für Feld über den Pfad. In Listen zählt dabei nur
+      // die Position — stehen dort unterschiedlich viele Einträge, gehört
+      // Position 2 der Vorlage nicht zu Position 2 des Live-Inhalts. Genau so
+      // ist "Luzern" schon einmal auf "Sektor 11" gerutscht. Solche Pfade
+      // bleiben deshalb unangetastet.
+      if (Array.isArray(cur) && Array.isArray(tpl) && cur.length !== tpl.length) {
+        mismatch = true;
+        break;
+      }
+      cur = cur[keys[i]];
+      tpl = tpl == null ? null : tpl[keys[i]];
+    }
+    if (mismatch) continue;
+    if (Array.isArray(cur) && Array.isArray(tpl) && cur.length !== tpl.length) continue;
     const last = keys[keys.length - 1];
     if (cur && typeof cur === "object" && cur[last] !== undefined) cur[last] = text;
   }
@@ -2460,7 +2476,11 @@ async function main() {
   if (missing) console.log(`[build] Übersetzungen: ${missing}`);
 }
 
-main().catch((err) => {
-  console.error("[build] FEHLER:", err.message);
-  process.exit(1);
-});
+// Nur bauen, wenn die Datei direkt aufgerufen wurde — beim Importieren aus
+// einem Test soll nichts geschrieben werden.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error("[build] FEHLER:", err.message);
+    process.exit(1);
+  });
+}
