@@ -434,125 +434,7 @@ function renderAbout(n, s) {
   </section>`;
 }
 
-function renderSound(n, s) {
-  const mixes = list(s.mixes).filter((m) => str(m?.title));
-  return `
-  <section class="sound pad" id="sound" aria-labelledby="sound-h">
-    <div class="wrap">${sectionHead(n, s, "sound")}
-      <div class="sound-grid">
-        <div class="rv">
-          <ul class="genre-list">
-            ${list(s.genres)
-              .filter((g) => str(g?.name))
-              .map(
-                (g) =>
-                  `<li>${esc(g.name)} <span class="mono">${esc(str(g.meta, "Genre"))}</span></li>`
-              )
-              .join("\n            ")}
-          </ul>
-          ${str(s.note) ? `<p class="live-note">${inline(s.note)}</p>` : ""}
-        </div>
-        <div class="mix-stack rv">
-          ${mixes
-            .map(
-              (m) => `<article class="mix-card">
-            ${str(m.kicker) ? `<span class="mono">${esc(m.kicker)}</span>` : ""}
-            <h3>${esc(m.title)}</h3>
-            ${str(m.text) ? `<p>${inline(m.text)}</p>` : ""}
-            ${
-              safeUrl(m.embedUrl)
-                ? `<div class="mix-embed"><iframe src="${href(m.embedUrl)}" title="${esc(
-                    m.title
-                  )}" loading="lazy" allow="autoplay" frameborder="0"></iframe></div>`
-                : ""
-            }
-            ${
-              safeUrl(m.linkUrl)
-                ? `<a class="btn" href="${href(m.linkUrl)}" target="_blank" rel="noopener">${esc(
-                    str(m.linkLabel, "Listen")
-                  )}</a>`
-                : ""
-            }
-          </article>`
-            )
-            .join("\n          ")}
-        </div>
-      </div>
-    </div>
-  </section>`;
-}
 
-function renderExperience(n, s) {
-  const moments = list(s.moments).filter((m) => str(m?.title));
-  return `
-  <section class="pad" id="experience" aria-labelledby="experience-h">
-    <div class="wrap">${sectionHead(n, s, "experience")}
-      ${str(s.lede) ? `<p class="lede rv">${inline(s.lede)}</p>` : ""}
-      ${
-        moments.length
-          ? `<div class="experience-composition rv">
-        <div class="speaker-model" aria-hidden="true">
-          <span class="speaker-aura"></span>
-          <span class="sound-ring ring-one"></span>
-          <span class="sound-ring ring-two"></span>
-          <span class="speaker-beam beam-left"></span>
-          <span class="speaker-beam beam-right"></span>
-          <span class="speaker-levels">
-            <i style="--level:28%"></i><i style="--level:54%"></i><i style="--level:82%"></i>
-            <i style="--level:46%"></i><i style="--level:70%"></i><i style="--level:38%"></i>
-          </span>
-          <div class="speaker-rig">
-            <span class="rig-hook"></span>
-            <div class="line-array">
-              <span class="array-module"><i></i><i></i></span>
-              <span class="array-module"><i></i><i></i></span>
-              <span class="array-module"><i></i><i></i></span>
-              <span class="array-module"><i></i><i></i></span>
-            </div>
-            <div class="sub-cabinet">
-              <span class="speaker-brand">SAM SPARKLING<small>LIVE SYSTEM</small></span>
-              <span class="sub-driver"><i></i></span>
-              <span class="speaker-port"></span>
-            </div>
-          </div>
-          <span class="speaker-floor"></span>
-        </div>
-        <div class="moment-grid">${moments
-              .map(
-                (m, index) => `<article class="mix-card" data-step="${String(index + 1).padStart(
-                  2,
-                  "0"
-                )}">
-            ${str(m.kicker) ? `<span class="mono">${esc(m.kicker)}</span>` : ""}
-            <h3>${esc(m.title)}</h3>
-            ${str(m.text) ? `<p>${inline(m.text)}</p>` : ""}
-          </article>`
-              )
-              .join("\n          ")}</div>
-      </div>`
-          : ""
-      }
-      ${
-        safeUrl(s.embedUrl)
-          ? `<div class="mix-embed rv"><iframe src="${href(s.embedUrl)}" title="${esc(
-              str(s.embedLabel, "Aftermovie")
-            )}" loading="lazy" allow="autoplay" frameborder="0"></iframe></div>`
-          : ""
-      }
-      ${
-        str(s.quote?.text)
-          ? `<blockquote class="lede rv">${inline(s.quote.text)}${
-              [str(s.quote.name), str(s.quote.venue)].filter(Boolean).length
-                ? `<footer class="mono">— ${[esc(s.quote.name), esc(s.quote.venue)]
-                    .filter(Boolean)
-                    .join(", ")}</footer>`
-                : ""
-            }</blockquote>`
-          : ""
-      }
-    </div>
-  </section>`;
-}
 
 function showRow(sh, idx) {
   const date = isoDate(sh.date);
@@ -585,6 +467,12 @@ function showRow(sh, idx) {
           }</span>
         </li>`;
 }
+
+/* Die Abschnitte "Sound & Genres", "Erlebnis" und der Shop sind im August 2026
+   auf Wunsch des Kunden von der Seite genommen worden — samt Bestellformular
+   und Bezahlangaben. Steht im Inhalt noch ein sound-, experience- oder
+   shop-Knoten, wird er nicht mehr gelesen; die Felder dafuer sind auch aus der
+   Verwaltung raus. Zum Zurueckholen: git revert des zugehoerigen Commits. */
 
 function renderShows(n, s) {
   const t = today();
@@ -766,235 +654,9 @@ function priceTag(price, currency) {
   return /[A-Za-z]/.test(v) ? v : `${currency} ${v}${/[.,]/.test(v) ? "" : ".—"}`;
 }
 
-/**
- * Bezahlmöglichkeiten: TWINT und Banküberweisung, dazu — sofern hinterlegt —
- * der QR-Code zum Abscannen. Alles rein statisch; es wird nichts eingezogen,
- * die Kundin überweist selbst und der Versand geht nach Zahlungseingang raus.
- */
-function payMethods(s) {
-  const twint = str(s.twint);
-  const bank = s.bank || {};
-  const hasBank = str(bank.iban);
-  // Fehlen Nummer und IBAN noch, steht hier bewusst der Platzhalter statt
-  // nichts — sonst faellt beim Abnehmen niemandem auf, dass die Angaben fehlen.
-  const missing = !twint && !hasBank;
-  const qr = safeUrl(s.qr?.src)
-    ? `<figure class="pay-qr">
-            ${picture(s.qr, { widths: [280, 560], sizes: "220px" })}
-            <figcaption class="mono">${esc(str(s.qr.caption, UI.payQrCaption))}</figcaption>
-          </figure>`
-    : `<!-- TODO Kunde: QR-Code fehlt noch. Benötigt wird entweder der TWINT-QR
-             (in der TWINT-App unter "Geld empfangen" → QR speichern) oder der
-             Einzahlungsschein-QR der Bank (QR-Rechnung). Bild in der Verwaltung
-             unter Shop → Bezahlung hochladen; es erscheint dann hier.
-             Offene Frage: TWINT-QR, Bank-QR oder beide? -->
-        <div class="pay-qr pay-qr-missing"><span class="mono">${esc(UI.payQrMissing)}</span></div>`;
-  const details = missing
-    ? `<li><b>TWINT</b><span>${esc(UI.payPending)}</span></li>
-              <li><b>${esc(UI.payBank)}</b><span>${esc(UI.payPending)}</span></li>`
-    : `${twint ? `<li><b>TWINT</b><span>${esc(twint)}</span></li>` : ""}
-              ${hasBank ? `<li><b>${esc(str(bank.label, UI.payBank))}</b><span>${esc(bank.iban)}</span></li>` : ""}
-              ${hasBank && str(bank.holder) ? `<li><b>${esc(UI.payHolder)}</b><span>${esc(bank.holder)}</span></li>` : ""}
-              ${hasBank && str(bank.bank) ? `<li><b>${esc(UI.payBankName)}</b><span>${esc(bank.bank)}</span></li>` : ""}`;
-  return `
-      <div class="pay-methods rv">${
-        missing
-          ? `
-        <!-- TODO Kunde: Zahlungsangaben fehlen noch. Benoetigt werden die
-             TWINT-Nummer und/oder IBAN samt Empfaenger und Bank. Eintragen in
-             der Verwaltung unter Shop → Bezahlung; sobald etwas hinterlegt ist,
-             ersetzt es diesen Platzhalter und die Auswahl im Bestellformular. -->`
-          : ""
-      }
-        <div class="pay-cols">
-          <div>
-            <span class="mono">${esc(UI.payTitle)}</span>
-            <ul class="pay-list">
-              ${details}
-            </ul>
-            <p class="pay-note">${esc(UI.payNote)}</p>
-          </div>
-          ${qr}
-        </div>
-      </div>`;
-}
 
-/**
- * Bestellformular. Der Shop verschickt Ware, deshalb sind Liefer- und
- * Kontaktangaben Pflicht — ohne sie kann nichts versendet werden. Die
- * Bestellung landet im selben Eingang wie die Booking-Anfragen (kind:"order").
- */
-function orderForm(s, site, items, cur) {
-  const endpoint = safeUrl(site.shopApi) || safeUrl(site.bookingApi);
-  if (!endpoint || !items.length) return "";
-  const options = items
-    .filter((p) => p.status !== "soldout")
-    .map((p) => {
-      const price = priceTag(p.price, cur);
-      return `<option value="${esc(p.name)}">${esc(
-        [str(p.name), price].filter(Boolean).join(" — ")
-      )}</option>`;
-    })
-    .join("\n              ");
-  if (!options) return "";
-  const pay = [
-    str(s.twint) ? ["twint", "TWINT"] : null,
-    str(s.bank?.iban) ? ["bank", str(s.bank?.label, UI.payBank)] : null,
-  ].filter(Boolean);
-  return `
-      <form class="oform rv" id="order-form" data-endpoint="${esc(endpoint)}"
-            data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}" novalidate>
-        <div class="bform-head">
-          <span class="mono">${esc(UI.orderTitle)}</span>
-          <h3>${esc(UI.orderHeadline)}</h3>
-          <p class="bform-required mono">${esc(UI.allRequired)}</p>
-        </div>
-        <div class="bform-grid">
-          <label><span class="lbl">${esc(UI.oProduct)} <i aria-hidden="true">*</i></span>
-            <select name="product" required>
-              ${options}
-            </select>
-          </label>
-          <label><span class="lbl">${esc(UI.oQuantity)} <i aria-hidden="true">*</i></span>
-            <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
-          </label>
-          <label><span class="lbl">${esc(UI.fName)} <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
-          </label>
-          <label><span class="lbl">${esc(UI.fEmail)} <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
-          </label>
-          <label class="span-2"><span class="lbl">${esc(UI.oStreet)} <i aria-hidden="true">*</i></span>
-            <input name="street" type="text" required maxlength="160" autocomplete="street-address">
-          </label>
-          <label><span class="lbl">${esc(UI.oZip)} <i aria-hidden="true">*</i></span>
-            <input name="zip" type="text" required maxlength="12" autocomplete="postal-code">
-          </label>
-          <label><span class="lbl">${esc(UI.oCity)} <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120" autocomplete="address-level2">
-          </label>
-          <label><span class="lbl">${esc(UI.oCountry)} <i aria-hidden="true">*</i></span>
-            <input name="country" type="text" required maxlength="80" value="${esc(
-              str(s.defaultCountry, "Schweiz")
-            )}" autocomplete="country-name">
-          </label>
-          ${
-            pay.length
-              ? `<fieldset class="span-2 opay">
-            <legend class="lbl">${esc(UI.oPayment)} <i aria-hidden="true">*</i></legend>
-            ${pay
-              .map(
-                ([v, label], i) =>
-                  `<label class="opay-opt"><input name="payment" type="radio" value="${esc(
-                    v
-                  )}" required${i === 0 ? " checked" : ""}><span>${esc(label)}</span></label>`
-              )
-              .join("\n            ")}
-          </fieldset>`
-              : ""
-          }
-          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">${esc(UI.fHoneypot)}</span>
-            <input name="website" type="text" tabindex="-1" autocomplete="off">
-          </label>
-        </div>
-        <div class="bform-foot">
-          <button class="btn solid big" type="submit">${esc(UI.oSubmit)}<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">${esc(UI.oReplyNote)}</span>
-          <p class="bform-msg" role="status" aria-live="polite"
-             data-success="${esc(UI.oSuccess)}" data-error="${esc(UI.oError)}"></p>
-        </div>
-      </form>`;
-}
 
-/**
- * Wie breit eine Ware-Kachel mindestens sein darf, je nachdem wie viel im Shop
- * steht. Je mehr Ware, desto kleiner die Kachel — damit auch ein voller Shop
- * ohne Wischen und ohne endloses Scrollen auf einmal zu sehen ist. Bei wenig
- * Ware bleiben die Kacheln gross, sonst sähen drei Artikel verloren aus.
- *
- * Die Zahl geht als `--tile` in die Seite; das Raster (`.shop-grid`) füllt
- * damit `auto-fill` und rechnet die Spalten selbst aus.
- */
-function kachelbreite(anzahl) {
-  if (anzahl <= 3) return 240;
-  if (anzahl <= 6) return 196;
-  if (anzahl <= 10) return 164;
-  if (anzahl <= 16) return 136;
-  return 116;
-}
 
-function renderShop(n, s, contactEmail, site) {
-  const items = list(s.items).filter((p) => str(p?.name));
-  const cur = str(s.currency, "CHF");
-  const buy = str(s.buyLabel, UI.buy);
-  const form = orderForm(s, site, items, cur);
-  const hasOrderForm = !!form;
-  const cards = items
-    .map((p) => {
-      const sold = p.status === "soldout";
-      // Nur echte Adressen zaehlen als Bezahl-Link — Tippreste wie "asd"
-      // fallen sonst als toter Kauf-Knopf auf die Website
-      const link = /^https?:\/\//i.test(String(p.linkUrl || "")) ? safeUrl(p.linkUrl) : "";
-      const price = priceTag(p.price, cur);
-      const mail = contactEmail
-        ? `mailto:${contactEmail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}` +
-          `&body=${encodeURIComponent(UI.orderMailBody.replace("{product}", [str(p.name), price].filter(Boolean).join(" — ")))}`
-        : "";
-      // Ohne eigenen Bezahl-Link fuehrt der Knopf ins Bestellformular weiter
-      // unten und waehlt das Produkt dort schon aus. Gibt es kein Formular
-      // (kein Endpunkt hinterlegt), bleibt die Bestellung per Mail.
-      const cta = sold
-        ? `<span class="mono">${esc(UI.soldOut)}</span>`
-        : link
-        ? `<a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">${esc(buy)} ↗</a>`
-        : hasOrderForm
-        ? `<a class="btn sm order-jump" href="#order-form" data-product="${esc(p.name)}">${esc(
-            buy
-          )}</a>`
-        : mail
-        ? `<a class="btn sm ghost" href="${esc(mail)}">${esc(UI.orderByMail)}</a>`
-        : "";
-      return `<article class="product rv${sold ? " soldout" : ""}">
-          ${p.src ? `<div class="product-img">${picture(p, { sizes: "(max-width:700px) 46vw, 280px", widths: [480, 800] })}</div>` : ""}
-          <div class="product-body">
-            <h3>${esc(p.name)}</h3>
-            ${str(p.note) ? `<p>${esc(p.note)}</p>` : ""}
-            <div class="product-foot">
-              ${str(p.price) ? `<span class="price">${esc(price)}</span>` : ""}
-              ${cta}
-            </div>
-          </div>
-        </article>`;
-    })
-    .join("\n        ");
-
-  if (!items.length) {
-    return `
-  <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
-    <div class="wrap">${sectionHead(n, s, "shop")}
-      ${str(s.note) ? `<p class="shop-note rv">${inline(s.note)}</p>` : ""}
-      <div class="empty-state rv"><span class="mono">Shop</span><p>${esc(
-        str(s.emptyText, "Merch ist in Arbeit.")
-      )}</p></div>
-    </div>
-  </section>`;
-  }
-
-  // Der ganze Shop ist auf einen Blick da — Bilder, Preise, Bezahlung und
-  // Bestellung. Die Ware steht dafuer in kleineren Karten, damit mehr davon
-  // gleichzeitig ins Bild passt.
-  return `
-  <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
-    <div class="wrap">${sectionHead(n, s, "shop")}
-      ${str(s.note) ? `<p class="shop-note rv">${inline(s.note)}</p>` : ""}
-      <div class="shop-grid" style="--tile:${kachelbreite(items.length)}px">
-      ${cards}
-      </div>
-${payMethods(s)}
-${form}
-    </div>
-  </section>`;
-}
 
 /* Der technische Rider ("Preferred setup", CDJs, Mixer, Booth-Monitore) stand
    hier bis August 2026 eingeklappt unter dem Formular. Der Kunde wollte ihn
@@ -1772,12 +1434,9 @@ function renderPage(c, page, pages, lang, langs) {
 
   const renderers = {
     about: renderAbout,
-    sound: renderSound,
-    experience: renderExperience,
     shows: renderShows,
     references: renderReferences,
     gallery: renderGallery,
-    shop: (n, s) => renderShop(n, s, str(sections.contact?.email), site),
     booking: (n, s) => renderBooking(n, s, site),
     contact: (n, s) => renderContact(n, s, bookingTarget),
   };

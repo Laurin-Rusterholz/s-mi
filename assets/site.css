@@ -127,7 +127,6 @@ h2 i{margin-left:.06em;}
 a{color:inherit;text-decoration:none;}
 a.accent,.accent{color:var(--spark);}
 img,video{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.88) contrast(1.06);transition:filter .4s ease;}
-.gal figure:hover img,.product:hover img,.about-photo:hover img{filter:saturate(1.02) contrast(1.04);}
 section{position:relative;}
 /* Sprungziele halten Abstand zur festen Kopfleiste — greift auch dort, wo
    ein Browser scroll-padding ignoriert. */
@@ -491,39 +490,9 @@ blockquote.lede footer{
 @media(max-width:900px){.about-grid{grid-template-columns:1fr;}.about-photo{max-width:420px;}}
 
 /* ---------- SOUND ---------- */
-.sound{background:rgba(10,14,25,.55);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
-.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,90px);align-items:center;}
-.genre-list{list-style:none;}
-.genre-list{display:flex;flex-direction:column;gap:14px;}
-.genre-list li{
-  display:flex;justify-content:space-between;align-items:center;gap:16px;
-  padding:18px 20px;background:var(--card);border:1px solid var(--line);
-  font-size:clamp(1.2rem,3vw,2.1rem);text-transform:uppercase;font-variation-settings:'wdth' 116,'wght' 720;
-}
-.mix-stack{display:grid;gap:22px;}
-.mix-card{border:1px solid var(--line);background:var(--card);padding:clamp(22px,3.4vw,36px);}
-.mix-card h3{font-size:1.15rem;font-variation-settings:'wdth' 116,'wght' 720;margin:14px 0 8px;}
-.mix-card p{color:var(--bone-dim);font-size:.95rem;max-width:44ch;}
-.mix-embed{margin-top:20px;aspect-ratio:16/6;min-height:120px;}
-.mix-embed iframe{width:100%;height:100%;border:0;display:block;}
 #experience{overflow:clip;background:
   radial-gradient(circle at 22% 48%,rgba(46,107,255,.13),transparent 32%),
   linear-gradient(180deg,rgba(11,15,26,.18),rgba(11,15,26,.5));}
-.experience-composition{
-  display:grid;grid-template-columns:minmax(280px,.82fr) minmax(0,1.18fr);
-  gap:clamp(34px,6vw,88px);align-items:center;margin-top:clamp(34px,5vw,62px);
-}
-.speaker-model{
-  position:relative;min-height:clamp(410px,44vw,550px);perspective:1100px;
-  isolation:isolate;overflow:visible;
-}
-.speaker-aura{
-  position:absolute;left:50%;top:52%;width:96%;aspect-ratio:1;border-radius:50%;
-  transform:translate(-50%,-50%);
-  background:
-    radial-gradient(circle,rgba(46,107,255,.28),rgba(46,107,255,.09) 39%,transparent 68%);
-  filter:blur(13px);
-}
 .speaker-beam{
   position:absolute;top:13%;width:44%;height:72%;z-index:-1;opacity:.46;
   clip-path:polygon(47% 0,56% 0,100% 100%,0 100%);
@@ -656,32 +625,11 @@ blockquote.lede footer{
     radial-gradient(ellipse,rgba(46,107,255,.14),transparent 66%);
   clip-path:polygon(16% 0,84% 0,100% 100%,0 100%);filter:blur(.2px);
 }
-.sound-ring{
-  position:absolute;left:50%;top:58%;width:64%;aspect-ratio:1;border:1px solid rgba(46,107,255,.34);
-  border-radius:50%;transform:translate(-50%,-50%) rotateX(68deg);opacity:.5;
-  animation:sound-ring 3.6s ease-out infinite;
-}
-.sound-ring.ring-two{animation-delay:-1.8s;}
 @keyframes sound-ring{
   0%{width:52%;opacity:0}
   28%{opacity:.55}
   100%{width:108%;opacity:0}
 }
-.moment-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:0;}
-#experience .moment-grid .mix-card{
-  position:relative;min-height:138px;padding:24px 26px 24px 76px;
-  border-color:rgba(233,237,245,.17);
-  background:linear-gradient(110deg,rgba(26,33,50,.92),rgba(15,20,32,.62));
-}
-#experience .moment-grid .mix-card::before{
-  content:attr(data-step);position:absolute;left:22px;top:24px;
-  font-family:var(--font-m);font-size:.62rem;letter-spacing:.13em;color:var(--spark);
-}
-#experience .moment-grid .mix-card::after{
-  content:"";position:absolute;left:47px;top:24px;bottom:24px;width:1px;
-  background:linear-gradient(var(--spark),rgba(46,107,255,.08));
-}
-#experience .moment-grid .mix-card h3{margin-top:10px;}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;margin-top:26px;
   font-family:var(--font-m);font-size:.73rem;letter-spacing:.16em;text-transform:uppercase;
@@ -763,57 +711,18 @@ blockquote.lede footer{
 .live-note{margin-top:26px;color:var(--bone-dim);font-size:.92rem;}
 
 /* ---------- SHOP ---------- */
-.shop-note{color:var(--bone-dim);max-width:60ch;margin-bottom:clamp(26px,4vw,40px);}
 /* Alles auf einen Blick: die Karten sind bewusst klein gehalten, damit
    moeglichst viel Ware gleichzeitig sichtbar ist. Wie klein, haengt an der
    Menge — `--tile` setzt der Generator je nach Anzahl Produkte (siehe
    kachelbreite() in scripts/build.mjs). Das min() haelt eine Kachel davon ab,
    breiter zu werden als das Raster selbst. */
-.shop-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(min(var(--tile,168px),100%),1fr));
-  gap:clamp(12px,1.6vw,18px);
-}
-.product{
-  background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;
-  transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
-}
-.product:hover{transform:translateY(-3px);border-color:rgba(46,107,255,.55);}
-.product-img{aspect-ratio:1;overflow:hidden;}
-.product-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
-.product:hover .product-img img{transform:scale(1.04);}
-.product-body{padding:11px 12px 13px;display:flex;flex-direction:column;gap:5px;flex:1;}
-.product-body h3{font-size:.92rem;font-variation-settings:'wdth' 116,'wght' 740;}
-.product-body p{color:var(--bone-dim);font-size:.78rem;line-height:1.45;}
-.product-foot{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;}
-.price{font-variant-numeric:tabular-nums;font-family:var(--font-m);font-size:.8rem;color:var(--spark);letter-spacing:.06em;}
 .product .btn{margin-top:0;padding:9px 14px;font-size:.6rem;min-height:36px;}
 .btn.ghost{border-color:var(--line);color:var(--bone);}
 .btn.ghost:hover{border-color:var(--bone);background:none;color:var(--bone);}
-.product.soldout{opacity:.55;}
 .empty-note{color:var(--bone-dim);border:1px dashed var(--line);padding:26px 28px;max-width:52ch;}
 
 /* Bezahlen: TWINT/Bank samt QR-Code zum Abscannen */
-.pay-methods{
-  margin-top:clamp(26px,3.6vw,42px);border:1px solid var(--line);
-  background:rgba(9,13,24,.65);padding:clamp(18px,2.6vw,28px);
-}
-.pay-cols{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(20px,3vw,40px);align-items:start;}
 @media(max-width:700px){.pay-cols{grid-template-columns:1fr;}}
-.pay-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:16px 0 14px;}
-.pay-list li{display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:space-between;
-  border-bottom:1px solid var(--line);padding-bottom:8px;}
-.pay-list b{font-family:var(--font-m);font-size:.66rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--bone-dim);font-weight:400;}
-.pay-list span{font-family:var(--font-m);font-size:.98rem;letter-spacing:.05em;color:var(--bone);user-select:all;}
-.pay-note{color:var(--bone-dim);font-size:.82rem;max-width:52ch;}
-.pay-qr{width:220px;max-width:100%;}
-.pay-qr img{width:100%;height:auto;display:block;background:#fff;padding:10px;}
-.pay-qr figcaption{margin-top:10px;text-align:center;}
-.pay-qr-missing{
-  display:flex;align-items:center;justify-content:center;aspect-ratio:1;
-  border:1px dashed var(--line);color:var(--bone-dim);text-align:center;padding:16px;
-}
 
 /* Bestellformular — teilt sich das Aussehen mit dem Booking-Formular */
 .oform{margin-top:clamp(26px,3.6vw,42px);}
@@ -1254,19 +1163,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .show-date b{font-size:1.5rem;}
   .show-cta{grid-column:1/-1;}
   .show-cta .btn{width:100%;}
-  .sound{background:rgba(10,14,25,.76);}
-  .sound-grid{gap:34px;}
-  .genre-list{gap:0;border-top:1px solid var(--line);}
-  .genre-list li{
-    background:none;border:0;border-bottom:1px solid var(--line);
-    padding:15px 2px;font-size:1.35rem;
-  }
-  .mix-stack{
-    display:flex;gap:12px;margin-inline:-16px;padding-inline:16px;
-    overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
-  }
-  .mix-stack::-webkit-scrollbar{display:none;}
-  .mix-card{flex:0 0 86vw;scroll-snap-align:center;scroll-snap-stop:always;padding:20px 18px;}
 
   .show-list{gap:10px;}
   .show-list li{
@@ -1280,7 +1176,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   }
   .venue-name{font-size:1.35rem;}
   .venue-city{grid-column:2;}
-  .genre-list li{font-size:1.15rem;padding:16px;}
   .avail li{font-size:1.05rem;}
 
   .gal{
@@ -1300,11 +1195,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
      damit auf dem Handy alles auf einmal zu sehen ist. Zwei Spalten sind die
      Untergrenze; steht viel im Shop, wird `--tile` klein genug fuer drei oder
      vier. */
-  .shop-grid{
-    grid-template-columns:repeat(auto-fill,minmax(min(calc(var(--tile,168px)*.66),46vw),1fr));
-    gap:10px;
-  }
-  .product-body{padding:10px 11px 12px;}
 
   .cal{margin-inline:-4px;}
   .cal-head{padding:11px 10px;}
@@ -1335,7 +1225,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .foot{gap:12px;align-items:flex-start;flex-direction:column;}
   footer{padding-bottom:24px;}
 
-  .facts,.mix-stack,.gal{touch-action:pan-x;}
   .hero-cta:active,.btn:active,.scard:active,.show-list li:active{transform:scale(.985);}
 
   /* Lightbox: Bedienelemente in Daumennähe */
@@ -1454,42 +1343,13 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .facts dt{font-size:.48rem;letter-spacing:.08em;line-height:1.3;}
   .facts dd{font-size:1.2rem;margin-top:5px;}
 
-  .sound-grid{gap:20px;}
-  .genre-list li{
-    padding:11px 2px;font-size:1rem;line-height:1.2;
-  }
   .genre-list li .mono{font-size:.5rem;}
   .live-note{font-size:.9rem;line-height:1.5;}
-  .mix-stack{
-    display:block;margin:0;padding:0;overflow:visible;touch-action:auto;
-  }
-  .mix-card{padding:16px 14px;}
-  .mix-card h3{font-size:1rem;margin:10px 0 6px;}
-  .mix-card p{font-size:.88rem;}
   .mix-card .btn{width:100%;margin-top:16px;padding:11px 14px;}
   #experience>.wrap>.lede{font-size:1rem;line-height:1.48;}
-  .experience-composition{display:block;margin-top:24px;}
-  .speaker-model{
-    width:min(100%,390px);height:min(78vw,320px);min-height:282px;margin:0 auto 17px;
-  }
   .speaker-rig{width:min(77%,286px);height:96%;top:49%;}
-  .speaker-aura{width:92%;top:51%;}
   .speaker-levels{right:0;top:23%;height:47%;gap:4px;}
   .speaker-floor{bottom:-6%;width:94%;height:27%;}
-  .sound-ring{top:59%;}
-  .moment-grid{
-    display:grid;grid-template-columns:1fr;gap:8px;margin:0;padding:0;
-    overflow:visible;touch-action:auto;
-  }
-  #experience .moment-grid .mix-card{
-    min-height:0;padding:16px 14px 16px 58px;
-  }
-  #experience .moment-grid .mix-card::before{
-    left:14px;top:17px;font-size:.55rem;
-  }
-  #experience .moment-grid .mix-card::after{
-    left:40px;top:16px;bottom:16px;
-  }
   #experience blockquote.lede{font-size:1rem;line-height:1.5;margin-top:24px;}
 
   .show-list{gap:7px;}
@@ -1527,9 +1387,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   /* Reste der frueheren Wisch-Reihe (randlose Breite, flex-basis:76vw) sind
      hier raus: die Ware steht laengst im Raster, und 76vw pro Karte hiess auf
      dem Handy eine Ware pro Bildschirm. */
-  .shop-grid{gap:10px;}
-  .product-body{padding:13px;}
-  .product h3{font-size:1rem;}
 
   .avail{gap:7px;margin:14px 0 20px;}
   .avail li{font-size:.92rem;padding:10px 12px;gap:9px;}
@@ -1585,7 +1442,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 
   /* Der Shop wischt nicht mehr seitlich, also darf er auch das senkrechte
      Scrollen nicht mehr abfangen (frueher: touch-action:pan-x). */
-  .facts,.gal,.shop-grid{touch-action:auto;}
 }
 
 /* Touch-Geräte: Hover-Effekte lassen Karten sonst „kleben“ */
@@ -1600,7 +1456,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .lb-fig{transform:none;opacity:1;transition:none;}
   .cal-day.has-show:hover .cal-dot{animation:none;}
   .ticker-track{animation:none;}
-  .sound-ring{animation:none;opacity:.25;}
   body::after{animation:none;}
   html{scroll-behavior:auto;}
   .gal figure:hover img{transform:none;}
@@ -1625,20 +1480,11 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 .hero-cta:hover{transform:translateY(-1px);}
 
 /* Genre-Zeilen: Akzentkante waechst von links */
-.genre-list li{position:relative;transition:border-color .25s;}
-.genre-list li::before{
-  content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:var(--spark);
-  transition:width .25s cubic-bezier(.22,.8,.28,1);
-}
-.genre-list li:hover{border-color:rgba(46,107,255,.5);}
-.genre-list li:hover::before{width:3px;}
 
 /* Referenzen: Nummer springt beim Hover auf Blau */
 .venue-list a:hover .venue-idx{color:var(--spark);opacity:1;}
 
 /* Mix-Karte reagiert wie die anderen Karten */
-.mix-card{transition:border-color .25s;}
-.mix-card:hover{border-color:rgba(46,107,255,.5);}
 
 /* Galerie: dunkler Verlauf unten, damit die Bildunterschrift lesbar ist */
 .gal-btn::after{

@@ -170,18 +170,6 @@
     });
   }
 
-  // „Kaufen" an einer Ware waehlt sie im Bestellformular gleich aus.
-  document.addEventListener("click", function (e) {
-    var jump = e.target.closest && e.target.closest(".order-jump");
-    if (!jump) return;
-    var sel = document.querySelector('#order-form select[name="product"]');
-    if (!sel) return;
-    var wanted = jump.getAttribute("data-product");
-    Array.prototype.forEach.call(sel.options, function (o) {
-      if (o.value === wanted) sel.value = o.value;
-    });
-  });
-
   /* -------------------------------------------- scroll progress + active nav */
   var progress = document.getElementById("progress");
   var toTop = document.querySelector(".totop");
@@ -813,90 +801,6 @@
         .catch(function () {
           form.classList.remove("busy");
           setMsg(msg.getAttribute("data-error"), "err");
-        });
-    });
-  }
-
-  /* ----------------------------------------------------------- bestellform */
-  // Versand braucht vollstaendige Angaben — deshalb ist hier jedes Feld
-  // Pflicht. Die Bestellung geht in denselben Eingang wie die Booking-
-  // Anfragen, aber mit kind:"order" gekennzeichnet.
-  var oform = document.getElementById("order-form");
-  if (oform) {
-    var oEndpoint = oform.getAttribute("data-endpoint");
-    var oSending = oform.getAttribute("data-sending") || "…";
-    var oInvalid = oform.getAttribute("data-invalid") || "";
-    var oMsg = oform.querySelector(".bform-msg");
-    var oOpened = Date.now();
-    var FIELDS = ["product", "quantity", "name", "email", "street", "zip", "city", "country"];
-
-    var setOMsg = function (text, cls) {
-      if (!oMsg) return;
-      oMsg.textContent = text;
-      oMsg.className = "bform-msg" + (cls ? " " + cls : "");
-    };
-
-    oform.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (oform.classList.contains("busy")) return;
-
-      var data = {};
-      FIELDS.forEach(function (k) {
-        var f = oform.elements[k];
-        data[k] = f ? String(f.value || "").trim() : "";
-      });
-      var pay = oform.querySelector('input[name="payment"]:checked');
-      data.payment = pay ? pay.value : "";
-
-      var bad = null;
-      FIELDS.forEach(function (k) {
-        var f = oform.elements[k];
-        if (!f) return;
-        var ok = data[k].length >= (k === "zip" ? 3 : 2);
-        if (k === "email") ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email);
-        if (k === "quantity") ok = Number(data.quantity) >= 1 && Number(data.quantity) <= 20;
-        f.setAttribute("aria-invalid", ok ? "false" : "true");
-        if (!ok && !bad) bad = f;
-      });
-      if (!bad && oform.querySelector('input[name="payment"]') && !data.payment) {
-        bad = oform.querySelector('input[name="payment"]');
-      }
-      if (bad) {
-        setOMsg(oInvalid, "err");
-        bad.focus();
-        return;
-      }
-
-      var hp = oform.elements.website;
-      if ((hp && hp.value) || Date.now() - oOpened < 2500) {
-        oform.classList.add("sent");
-        setOMsg(oMsg ? oMsg.getAttribute("data-success") : "Danke!", "ok");
-        return;
-      }
-
-      data.kind = "order";
-      data.createdAt = new Date().toISOString();
-      data.status = "new";
-      data.source = location.hostname || "website";
-
-      oform.classList.add("busy");
-      setOMsg(oSending, "");
-
-      fetch(oEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          oform.classList.remove("busy");
-          oform.classList.add("sent");
-          oform.reset();
-          setOMsg(oMsg.getAttribute("data-success"), "ok");
-        })
-        .catch(function () {
-          oform.classList.remove("busy");
-          setOMsg(oMsg.getAttribute("data-error"), "err");
         });
     });
   }

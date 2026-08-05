@@ -68,7 +68,6 @@
   },
   "layout": [
     "about",
-    "sound",
     "shows",
     "references",
     "gallery",
@@ -179,33 +178,6 @@
         {
           "value": "150",
           "label": "BPM home base"
-        }
-      ]
-    },
-    "sound": {
-      "enabled": true,
-      "navLabel": "Sound",
-      "title": "Gen",
-      "titleAccent": "res.",
-      "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
-      "genres": [
-        {
-          "name": "Euphoric Hardstyle",
-          "meta": "Genre"
-        },
-        {
-          "name": "Melodic Hardstyle",
-          "meta": "Genre"
-        }
-      ],
-      "mixes": [
-        {
-          "kicker": "Latest Mix",
-          "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-          "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
-          "linkLabel": "Listen on Mixcloud",
-          "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
-          "embedUrl": ""
         }
       ]
     },

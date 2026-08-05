@@ -185,48 +185,12 @@
           "title": "Refe",
           "titleAccent": "renzen."
         },
-        "shop": {
-          "buyLabel": "Kaufen",
-          "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
-          "items": {
-            "0": {
-              "note": "Schweres Baumwollshirt, Frontprint, Unisex-Groessen."
-            }
-          },
-          "navLabel": "Shop",
-          "note": "Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.",
-          "title": "Sh",
-          "titleAccent": "op.",
-          "defaultCountry": "Schweiz"
-        },
         "shows": {
           "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
           "navLabel": "Shows",
           "pastLabel": "Schon gespielt",
           "title": "Sh",
           "titleAccent": "ows."
-        },
-        "sound": {
-          "genres": {
-            "0": {
-              "meta": "Genre"
-            },
-            "1": {
-              "meta": "Genre"
-            }
-          },
-          "mixes": {
-            "0": {
-              "kicker": "Aktueller Mix",
-              "linkLabel": "Auf Mixcloud hören",
-              "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparkling einen Raum.",
-              "title": "Euphoric & Melodic Hardstyle — Recorded Set"
-            }
-          },
-          "navLabel": "Sound",
-          "note": "Druckvolle Kicks. Emotionale Melodien. Ich baue Sets, die von Storytelling und Crowd-Energie leben.",
-          "title": "Gen",
-          "titleAccent": "res."
         }
       },
       "site": {
@@ -283,7 +247,6 @@
         "photography": "Fotografie",
         "base": "Standort",
         "tickets": "Tickets",
-        "soldOut": "Ausverkauft",
         "booked": "Gebucht",
         "calShow": "Termin",
         "prevMonth": "Vorheriger Monat",
@@ -304,13 +267,9 @@
         "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
         "notFoundCta": "Zur Startseite",
         "language": "Sprache",
-        "buy": "Kaufen",
-        "orderByMail": "Per Mail bestellen",
-        "orderSubject": "Bestellung",
         "bookDay": "Diesen Tag anfragen",
         "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
         "dayBusy": "Belegt",
-        "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
         "toTop": "Nach oben",
         "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
         "cookieOk": "Alles klar",
@@ -334,19 +293,6 @@
         "payNote": "Nach dem Absenden kommt eine Bestätigung mit Betrag und Vermerk. Der Versand geht raus, sobald die Zahlung da ist.",
         "payQrCaption": "QR-Code scannen und bezahlen",
         "payQrMissing": "QR-Code folgt",
-        "orderTitle": "Bestellung",
-        "orderHeadline": "Wohin darf es gehen?",
-        "oProduct": "Artikel",
-        "oQuantity": "Anzahl",
-        "oStreet": "Strasse und Nummer",
-        "oZip": "PLZ",
-        "oCity": "Ort",
-        "oCountry": "Land",
-        "oPayment": "Bezahlung",
-        "oSubmit": "Bestellung abschicken",
-        "oReplyNote": "Bestätigung mit Zahlungsangaben folgt per Mail",
-        "oSuccess": "Danke — deine Bestellung ist da. Die Zahlungsangaben kommen gleich per Mail.",
-        "oError": "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail.",
         "payPending": "folgt",
         "fPhone": "Telefon",
         "phName": "Max Muster",
@@ -438,28 +384,6 @@
             },
             "2": {
               "label": "BPM de référence"
-            }
-          }
-        },
-        "sound": {
-          "navLabel": "Sound",
-          "title": "Gen",
-          "titleAccent": "res.",
-          "note": "Des kicks puissants. Des mélodies émotionnelles. Je construis des sets qui vivent de narration et d'énergie du public.",
-          "genres": {
-            "0": {
-              "meta": "Genre"
-            },
-            "1": {
-              "meta": "Genre"
-            }
-          },
-          "mixes": {
-            "0": {
-              "kicker": "Dernier mix",
-              "title": "Euphoric & Melodic Hardstyle — Recorded Set",
-              "text": "Une seule prise, sans raccourcis. De quoi sentir comment un set de Sam Sparkling soulève une salle.",
-              "linkLabel": "Écouter sur Mixcloud"
             }
           }
         },
@@ -591,20 +515,6 @@
           "titleAccent": "takt.",
           "kicker": "Booking & demandes",
           "base": "Saint-Gall, Suisse"
-        },
-        "shop": {
-          "navLabel": "Shop",
-          "note": "Le merch de Sam Sparkling — chaque pièce aide à financer la prochaine production.",
-          "emptyText": "Le shop ouvre bientôt — le premier merch est en préparation. Suis les canaux ci-dessous pour ne pas rater le lancement.",
-          "buyLabel": "Acheter",
-          "title": "Sh",
-          "titleAccent": "op.",
-          "defaultCountry": "Suisse",
-          "items": {
-            "0": {
-              "note": "Coton épais, imprimé devant, tailles unisexes."
-            }
-          }
         }
       },
       "ui": {
@@ -620,7 +530,6 @@
         "photography": "Photographie",
         "base": "Basé à",
         "tickets": "Billets",
-        "soldOut": "Complet",
         "booked": "Réservé",
         "prevMonth": "Mois précédent",
         "nextMonth": "Mois suivant",
@@ -641,13 +550,9 @@
         "notFoundText": "Cette page n'existe pas (ou plus). Retour à l'accueil — tout ce qui est actuel s'y trouve.",
         "notFoundCta": "Retour à l'accueil",
         "language": "Langue",
-        "buy": "Acheter",
-        "orderByMail": "Commander par e-mail",
-        "orderSubject": "Commande",
         "bookDay": "Demander cette date",
         "pickDay": "Ou choisis ta date directement dans le calendrier :",
         "dayBusy": "Occupé",
-        "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !",
         "toTop": "En haut",
         "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
         "cookieOk": "Compris",
@@ -671,19 +576,6 @@
         "payNote": "Après l'envoi, tu reçois une confirmation avec le montant et la référence. Le colis part dès réception du paiement.",
         "payQrCaption": "Scanner le code QR pour payer",
         "payQrMissing": "Code QR à venir",
-        "orderTitle": "Commande",
-        "orderHeadline": "Où faut-il l'envoyer ?",
-        "oProduct": "Article",
-        "oQuantity": "Quantité",
-        "oStreet": "Rue et numéro",
-        "oZip": "NPA",
-        "oCity": "Localité",
-        "oCountry": "Pays",
-        "oPayment": "Paiement",
-        "oSubmit": "Envoyer la commande",
-        "oReplyNote": "Confirmation avec les données de paiement par e-mail",
-        "oSuccess": "Merci — ta commande est arrivée. Les données de paiement suivent par e-mail.",
-        "oError": "Cela n'a pas fonctionné. Écris-moi directement un e-mail.",
         "payPending": "à venir",
         "fPhone": "Téléphone",
         "phName": "Max Muster",
@@ -879,48 +771,12 @@
           "title": "4e18ba45",
           "titleAccent": "1f0cb59f"
         },
-        "shop": {
-          "buyLabel": "cada780b",
-          "emptyText": "29cb33e6",
-          "items": {
-            "0": {
-              "note": "b9dc35fb"
-            }
-          },
-          "navLabel": "28742cc9",
-          "note": "9d4f0d9d",
-          "title": "3f025d7e",
-          "titleAccent": "632213cc",
-          "defaultCountry": "9bcbf122"
-        },
         "shows": {
           "emptyText": "335e234f",
           "navLabel": "70e4b3fd",
           "pastLabel": "dcef0772",
           "title": "3f025d7e",
           "titleAccent": "505289f2"
-        },
-        "sound": {
-          "genres": {
-            "0": {
-              "meta": "1c27eb60"
-            },
-            "1": {
-              "meta": "1c27eb60"
-            }
-          },
-          "mixes": {
-            "0": {
-              "kicker": "e37c4d5c",
-              "linkLabel": "417850f6",
-              "text": "94891c63",
-              "title": "2bd0b949"
-            }
-          },
-          "navLabel": "b3ca9a34",
-          "note": "c2ad77e1",
-          "title": "c0974eb5",
-          "titleAccent": "b4bce895"
         }
       },
       "site": {
@@ -977,7 +833,6 @@
         "photography": "f7926338",
         "base": "a4bc2bf8",
         "tickets": "9241e6c2",
-        "soldOut": "0fe973c7",
         "booked": "9bf344d9",
         "calShow": "29742e5c",
         "prevMonth": "0d6437b6",
@@ -998,13 +853,9 @@
         "notFoundText": "48825a82",
         "notFoundCta": "4448fb13",
         "language": "9a73db9b",
-        "buy": "cada780b",
-        "orderByMail": "62151401",
-        "orderSubject": "18e78237",
         "bookDay": "aa2f019e",
         "pickDay": "c2e36ecb",
         "dayBusy": "d6152dc8",
-        "orderMailBody": "92a8e3b2",
         "toTop": "0babbd70",
         "cookieText": "0252aaa9",
         "cookieOk": "4c891c6a",
@@ -1024,19 +875,6 @@
         "payNote": "41dd34b6",
         "payQrCaption": "24e02222",
         "payQrMissing": "9b2badb5",
-        "orderTitle": "18e78237",
-        "orderHeadline": "6b2e4f27",
-        "oProduct": "1f648006",
-        "oQuantity": "2bf732f8",
-        "oStreet": "7416116c",
-        "oZip": "e7a57d06",
-        "oCity": "b3b4b365",
-        "oCountry": "04f4fe71",
-        "oPayment": "20f64111",
-        "oSubmit": "cdd0356f",
-        "oReplyNote": "30a312cc",
-        "oSuccess": "0bdec3f7",
-        "oError": "1a8d5298",
         "payPending": "ee8061b9",
         "fPhone": "4930944f",
         "phName": "5445c545",
@@ -1128,28 +966,6 @@
             },
             "2": {
               "label": "6921445a"
-            }
-          }
-        },
-        "sound": {
-          "navLabel": "b3ca9a34",
-          "title": "c0974eb5",
-          "titleAccent": "b4bce895",
-          "note": "c2ad77e1",
-          "genres": {
-            "0": {
-              "meta": "1c27eb60"
-            },
-            "1": {
-              "meta": "1c27eb60"
-            }
-          },
-          "mixes": {
-            "0": {
-              "kicker": "e37c4d5c",
-              "title": "2bd0b949",
-              "text": "94891c63",
-              "linkLabel": "417850f6"
             }
           }
         },
@@ -1281,20 +1097,6 @@
           "titleAccent": "a26feecd",
           "kicker": "c49a5387",
           "base": "23df4a6c"
-        },
-        "shop": {
-          "navLabel": "28742cc9",
-          "note": "9d4f0d9d",
-          "emptyText": "29cb33e6",
-          "buyLabel": "cada780b",
-          "title": "3f025d7e",
-          "titleAccent": "632213cc",
-          "defaultCountry": "9bcbf122",
-          "items": {
-            "0": {
-              "note": "b9dc35fb"
-            }
-          }
         }
       },
       "ui": {
@@ -1310,7 +1112,6 @@
         "photography": "f7926338",
         "base": "a4bc2bf8",
         "tickets": "9241e6c2",
-        "soldOut": "0fe973c7",
         "booked": "9bf344d9",
         "prevMonth": "0d6437b6",
         "nextMonth": "711101f6",
@@ -1331,13 +1132,9 @@
         "notFoundText": "48825a82",
         "notFoundCta": "4448fb13",
         "language": "9a73db9b",
-        "buy": "cada780b",
-        "orderByMail": "62151401",
-        "orderSubject": "18e78237",
         "bookDay": "aa2f019e",
         "pickDay": "c2e36ecb",
         "dayBusy": "d6152dc8",
-        "orderMailBody": "92a8e3b2",
         "toTop": "0babbd70",
         "cookieText": "0252aaa9",
         "cookieOk": "4c891c6a",
@@ -1357,19 +1154,6 @@
         "payNote": "41dd34b6",
         "payQrCaption": "24e02222",
         "payQrMissing": "9b2badb5",
-        "orderTitle": "18e78237",
-        "orderHeadline": "6b2e4f27",
-        "oProduct": "1f648006",
-        "oQuantity": "2bf732f8",
-        "oStreet": "7416116c",
-        "oZip": "e7a57d06",
-        "oCity": "b3b4b365",
-        "oCountry": "04f4fe71",
-        "oPayment": "20f64111",
-        "oSubmit": "cdd0356f",
-        "oReplyNote": "30a312cc",
-        "oSuccess": "0bdec3f7",
-        "oError": "1a8d5298",
         "payPending": "ee8061b9",
         "fPhone": "4930944f",
         "phName": "5445c545",
@@ -1400,7 +1184,6 @@
     "shows",
     "references",
     "gallery",
-    "shop",
     "contact"
   ],
   "pages": [
@@ -1615,40 +1398,6 @@
       "title": "Refe",
       "titleAccent": "rences."
     },
-    "shop": {
-      "buyLabel": "Buy",
-      "currency": "CHF 5",
-      "emptyText": "The shop opens soon — the first merch is in the works. Follow the channels below so you don't miss the drop.",
-      "enabled": true,
-      "items": [
-        {
-          "alt": "Sam Sparkling Shirt",
-          "linkUrl": "asd",
-          "name": "Beispiel",
-          "note": "Heavy cotton, front print, unisex sizing.",
-          "price": "35",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
-          "status": "available"
-        }
-      ],
-      "navLabel": "Shop",
-      "note": "Sam Sparkling merch — every piece helps fund the next production.",
-      "title": "Sh",
-      "titleAccent": "op.",
-      "twint": "",
-      "bank": {
-        "label": "",
-        "holder": "",
-        "iban": "",
-        "bank": ""
-      },
-      "qr": {
-        "src": "",
-        "alt": "",
-        "caption": ""
-      },
-      "defaultCountry": "Switzerland"
-    },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
       "enabled": true,
@@ -1658,63 +1407,6 @@
       "titleAccent": "ows.",
       "view": "calendar",
       "items": []
-    },
-    "sound": {
-      "enabled": true,
-      "genres": [
-        {
-          "meta": "Genre",
-          "name": "Euphoric Hardstyle"
-        },
-        {
-          "meta": "Genre",
-          "name": "Melodic Hardstyle"
-        }
-      ],
-      "mixes": [
-        {
-          "kicker": "Latest Mix",
-          "linkLabel": "Listen on Mixcloud",
-          "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
-          "text": "One take, no shortcuts. Get a feel for how a Sam Sparkling set moves a room.",
-          "title": "Euphoric & Melodic Hardstyle — Recorded Set"
-        }
-      ],
-      "navLabel": "Sound",
-      "note": "Hard kicks. Emotional melodies. I build sets that live on storytelling and crowd energy.",
-      "title": "Gen",
-      "titleAccent": "res."
-    },
-    "experience": {
-      "enabled": false,
-      "navLabel": "Experience",
-      "title": "Experi",
-      "titleAccent": "ence.",
-      "lede": "A Sam Sparkling set is built like a story: a slow burn, a hard turn, and a last hour nobody wants to end.",
-      "moments": [
-        {
-          "kicker": "Warm-up",
-          "title": "The Build",
-          "text": "Melodic, patient, and loud enough to pull people off the wall. The room fills before the first kick lands."
-        },
-        {
-          "kicker": "Peak time",
-          "title": "The Drop",
-          "text": "Euphoric hardstyle at full width — hard kicks under melodies you can sing back. This is what people come for."
-        },
-        {
-          "kicker": "Closing",
-          "title": "The Last Hour",
-          "text": "Raw energy, no filler. Tracks I only play when the floor has earned them."
-        }
-      ],
-      "embedUrl": "",
-      "embedLabel": "Aftermovie",
-      "quote": {
-        "text": "",
-        "name": "",
-        "venue": ""
-      }
     }
   },
   "site": {
@@ -1787,7 +1479,6 @@
     "phone": "Phone",
     "base": "Base",
     "tickets": "Tickets",
-    "soldOut": "Sold out",
     "booked": "Booked",
     "calShow": "Show",
     "prevMonth": "Previous month",
@@ -1808,13 +1499,9 @@
     "notFoundText": "This page doesn't exist (any more). Head back to the start — everything current is there.",
     "notFoundCta": "Back to start",
     "language": "Language",
-    "buy": "Buy",
-    "orderByMail": "Order by e-mail",
-    "orderSubject": "Order",
     "bookDay": "Request this date",
     "pickDay": "Or tap your preferred date right in the calendar:",
     "dayBusy": "Taken",
-    "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!",
     "toTop": "Back to top",
     "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
     "cookieOk": "Got it",
@@ -1837,19 +1524,6 @@
     "payNote": "You get a confirmation with the amount and reference right after ordering. Your parcel ships as soon as the payment arrives.",
     "payQrCaption": "Scan the QR code to pay",
     "payQrMissing": "QR code follows",
-    "orderTitle": "Order",
-    "orderHeadline": "Where should it go?",
-    "oProduct": "Item",
-    "oQuantity": "Quantity",
-    "oStreet": "Street and number",
-    "oZip": "Postcode",
-    "oCity": "Town",
-    "oCountry": "Country",
-    "oPayment": "Payment",
-    "oSubmit": "Send order",
-    "oReplyNote": "Confirmation with payment details follows by e-mail",
-    "oSuccess": "Thanks — your order arrived. The payment details are on their way by e-mail.",
-    "oError": "That did not work. Please write me an e-mail instead.",
     "payPending": "follows",
     "fPhone": "Phone",
     "phName": "Max Muster",
