@@ -1234,7 +1234,7 @@
       "photo": {
         "alt": "Portrait of Sam Sparkling",
         "credit": "Photo — Sarto Photography",
-        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU1vLnR1ajbjuKnSCI%2Fsartophotography-dsc04164-print.jpg?alt=media&token=62cb2959-a9a7-430a-8adf-6fe756495f67"
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&token=325c944f-ff1b-479c-bdea-473b0b1257db"
       },
       "title": "About",
       "titleAccent": "Me.",
@@ -1263,6 +1263,46 @@
       "navLabel": "Booking",
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
+      "rider": {
+        "groups": [
+          {
+            "items": [
+              {
+                "meta": "1st choice",
+                "name": "Pioneer CDJ-3000X"
+              },
+              {
+                "meta": "2nd choice",
+                "name": "Pioneer CDJ-3000"
+              },
+              {
+                "meta": "3rd choice",
+                "name": "Pioneer CDJ-2000NXS2"
+              }
+            ],
+            "title": "CDJs — 4× required"
+          },
+          {
+            "items": [
+              {
+                "meta": "1st choice",
+                "name": "Pioneer DJM-V10"
+              },
+              {
+                "meta": "2nd choice",
+                "name": "Pioneer DJM-A9"
+              },
+              {
+                "meta": "3rd choice",
+                "name": "Pioneer DJM-2000NXS"
+              }
+            ],
+            "title": "Mixer — one of the following"
+          }
+        ],
+        "kicker": "Preferred Setup",
+        "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
+      },
       "title": "Boo",
       "titleAccent": "king.",
       "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
@@ -1284,6 +1324,31 @@
       ],
       "title": "Con",
       "titleAccent": "tact."
+    },
+    "experience": {
+      "embedLabel": "Aftermovie",
+      "enabled": true,
+      "lede": "A Sam Sparkling set is built like a story: a slow burn, a hard turn, and a last hour nobody wants to end.",
+      "moments": [
+        {
+          "kicker": "Warm-up",
+          "text": "Melodic, patient, and loud enough to pull people off the wall. The room fills before the first kick lands.",
+          "title": "The Build"
+        },
+        {
+          "kicker": "Peak time",
+          "text": "Euphoric hardstyle at full width — hard kicks under melodies you can sing back. This is what people come for.",
+          "title": "The Drop"
+        },
+        {
+          "kicker": "Closing",
+          "text": "Raw energy, no filler. Tracks I only play when the floor has earned them.",
+          "title": "The Last Hour"
+        }
+      ],
+      "navLabel": "Experience",
+      "title": "Experi",
+      "titleAccent": "ence."
     },
     "gallery": {
       "enabled": true,
@@ -1349,10 +1414,10 @@
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbp%2Fdsc01426.jpg?alt=media&token=d2664e47-f9d9-4567-bd91-622adb8b567b"
         }
       ],
+      "mobileLimit": 4,
       "navLabel": "Gallery",
       "title": "Gal",
       "titleAccent": "lery.",
-      "mobileLimit": 6,
       "aftermovies": [],
       "aftermoviesNote": "A look back at the latest shows."
     },
@@ -1386,10 +1451,6 @@
         {
           "city": "St. Gallen",
           "name": "Ultrawild Festival"
-        },
-        {
-          "city": "Wattwil",
-          "name": "Jugendopenair"
         }
       ],
       "navLabel": "References",
@@ -1398,15 +1459,71 @@
       "title": "Refe",
       "titleAccent": "rences."
     },
+    "shop": {
+      "buyLabel": "Kaufen",
+      "currency": "CHF 5",
+      "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
+      "enabled": true,
+      "items": [
+        {
+          "alt": "as",
+          "linkUrl": "asd",
+          "name": "Beispiel",
+          "note": "as",
+          "price": "35",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
+          "status": "available"
+        }
+      ],
+      "navLabel": "Shop",
+      "note": "Merch von Sam Sparkling — jedes Teil hilft, die nächste Produktion zu stemmen.",
+      "title": "Sh",
+      "titleAccent": "op."
+    },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
       "enabled": true,
+      "items": [
+        {
+          "city": "Herisau",
+          "country": "CH",
+          "date": "2026-08-29",
+          "inquiryId": "-OynrY4vxLnlzNN0U2G1",
+          "name": "Test",
+          "status": "booked"
+        }
+      ],
       "navLabel": "Shows",
       "pastLabel": "Already played",
       "title": "Sh",
       "titleAccent": "ows.",
-      "view": "calendar",
-      "items": []
+      "view": "calendar"
+    },
+    "sound": {
+      "enabled": true,
+      "genres": [
+        {
+          "meta": "Genre",
+          "name": "Euphoric Hardstyle"
+        },
+        {
+          "meta": "Genre",
+          "name": "Melodic Hardstyle"
+        }
+      ],
+      "mixes": [
+        {
+          "kicker": "Latest Mix",
+          "linkLabel": "Listen on Mixcloud",
+          "linkUrl": "https://www.mixcloud.com/samsparking/euphoric-melodic-hardstyle-rec/",
+          "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
+          "title": "Euphoric & Melodic Hardstyle — Recorded Set"
+        }
+      ],
+      "navLabel": "Sound",
+      "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
+      "title": "Gen",
+      "titleAccent": "res."
     }
   },
   "site": {
@@ -1537,6 +1654,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-07-27T04:36:05.224Z",
+  "updatedAt": "2026-08-05T18:03:39.232Z",
   "updatedBy": "Verwaltung"
 }
