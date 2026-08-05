@@ -906,6 +906,23 @@ function orderForm(s, site, items, cur) {
       </form>`;
 }
 
+/**
+ * Wie breit eine Ware-Kachel mindestens sein darf, je nachdem wie viel im Shop
+ * steht. Je mehr Ware, desto kleiner die Kachel — damit auch ein voller Shop
+ * ohne Wischen und ohne endloses Scrollen auf einmal zu sehen ist. Bei wenig
+ * Ware bleiben die Kacheln gross, sonst sähen drei Artikel verloren aus.
+ *
+ * Die Zahl geht als `--tile` in die Seite; das Raster (`.shop-grid`) füllt
+ * damit `auto-fill` und rechnet die Spalten selbst aus.
+ */
+function kachelbreite(anzahl) {
+  if (anzahl <= 3) return 240;
+  if (anzahl <= 6) return 196;
+  if (anzahl <= 10) return 164;
+  if (anzahl <= 16) return 136;
+  return 116;
+}
+
 function renderShop(n, s, contactEmail, site) {
   const items = list(s.items).filter((p) => str(p?.name));
   const cur = str(s.currency, "CHF");
@@ -970,7 +987,7 @@ function renderShop(n, s, contactEmail, site) {
   <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
     <div class="wrap">${sectionHead(n, s, "shop")}
       ${str(s.note) ? `<p class="shop-note rv">${inline(s.note)}</p>` : ""}
-      <div class="shop-grid">
+      <div class="shop-grid" style="--tile:${kachelbreite(items.length)}px">
       ${cards}
       </div>
 ${payMethods(s)}
@@ -979,39 +996,11 @@ ${form}
   </section>`;
 }
 
-/**
- * Technischer Rider. Steht bewusst nicht mehr neben der Einladung, sondern
- * eingeklappt unter dem Formular: anfragen soll niedrigschwellig sein, die
- * Geräteliste interessiert erst den Techniker. Leere Gruppen -> nichts.
- */
-function bookingRider(s) {
-  const groups = list(s.rider?.groups).filter((g) => list(g?.items).some((i) => str(i?.name)));
-  if (!groups.length || s.rider?.enabled === false) return "";
-  return `
-      <!-- TODO Kunde: "Preferred setup / CDJs" ist vorerst NICHT geloescht, sondern
-           fakultativ — der Rider ist eingeklappt und oeffnet sich nur auf Wunsch.
-           Offene Frage: soll der Bereich ganz verschwinden? Dann in der Verwaltung
-           unter Booking → Rider "enabled" auf false setzen (oder die Gruppen leeren);
-           der Abschnitt faellt dann komplett weg. -->
-      <details class="rider rv">
-        <summary><span class="mono">${esc(str(s.rider?.kicker, "Preferred setup"))}</span>
-          <span class="rider-hint">${esc(UI.riderOptional)}</span></summary>
-        <div class="rider-body">
-          ${groups
-            .map(
-              (g) => `<h3>${esc(g.title)}</h3>
-          <ul>
-            ${list(g.items)
-              .filter((i) => str(i?.name))
-              .map((i) => `<li><span>${esc(i.name)}</span><span>${esc(i.meta)}</span></li>`)
-              .join("\n            ")}
-          </ul>`
-            )
-            .join("\n          ")}
-          ${str(s.rider?.note) ? `<p class="note">${inline(s.rider.note)}</p>` : ""}
-        </div>
-      </details>`;
-}
+/* Der technische Rider ("Preferred setup", CDJs, Mixer, Booth-Monitore) stand
+   hier bis August 2026 eingeklappt unter dem Formular. Der Kunde wollte ihn
+   ganz weg: die Geräteliste gehört ins Gespräch mit der Technik, nicht auf die
+   Seite. Damit fallen auch die Rider-Felder in der Verwaltung weg — steht im
+   Inhalt noch ein `rider`-Knoten, wird er schlicht nicht mehr gelesen. */
 
 function renderBooking(n, s, site) {
   const f = s.form || {};
@@ -1124,7 +1113,6 @@ function renderBooking(n, s, site) {
       </form>`
           : ""
       }
-${bookingRider(s)}
     </div>
   </section>`;
 }
@@ -1467,7 +1455,6 @@ const UI_DEFAULTS = {
   afterMovies: "After Movies",
   afterMoviesEmpty: "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
   allRequired: "Alle Felder sind Pflichtfelder.",
-  riderOptional: "Fakultativ — für die Technik",
   payTitle: "Bezahlen",
   payBank: "Banküberweisung",
   payBankName: "Bank",

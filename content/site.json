@@ -80,40 +80,6 @@
           },
           "navLabel": "Booking",
           "presskitLabel": "Presskit (PDF)",
-          "rider": {
-            "groups": {
-              "0": {
-                "items": {
-                  "0": {
-                    "meta": "1. Wahl"
-                  },
-                  "1": {
-                    "meta": "2. Wahl"
-                  },
-                  "2": {
-                    "meta": "3. Wahl"
-                  }
-                },
-                "title": "CDJs — 4× erforderlich"
-              },
-              "1": {
-                "items": {
-                  "0": {
-                    "meta": "1. Wahl"
-                  },
-                  "1": {
-                    "meta": "2. Wahl"
-                  },
-                  "2": {
-                    "meta": "3. Wahl"
-                  }
-                },
-                "title": "Mixer — eines der folgenden"
-              }
-            },
-            "kicker": "Bevorzugtes Setup",
-            "note": "Bitte Booth-Monitore mit unabhängiger Lautstärkeregelung bereitstellen — essenziell für sauberes Cueing und Mixing."
-          },
           "title": "Boo",
           "titleAccent": "king.",
           "lead": "Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort.",
@@ -361,7 +327,6 @@
         "afterMovies": "After Movies",
         "afterMoviesEmpty": "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
         "allRequired": "Alle Felder sind Pflichtfelder.",
-        "riderOptional": "Fakultativ — für die Technik",
         "payTitle": "Bezahlen",
         "payBank": "Banküberweisung",
         "payBankName": "Bank",
@@ -616,40 +581,6 @@
             "errorText": "Quelque chose n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
             "submitLabel": "Envoyer la demande"
           },
-          "rider": {
-            "kicker": "Setup souhaité",
-            "groups": {
-              "0": {
-                "title": "CDJ — 4× requis",
-                "items": {
-                  "0": {
-                    "meta": "1er choix"
-                  },
-                  "1": {
-                    "meta": "2e choix"
-                  },
-                  "2": {
-                    "meta": "3e choix"
-                  }
-                }
-              },
-              "1": {
-                "title": "Mixer — l'un des suivants",
-                "items": {
-                  "0": {
-                    "meta": "1er choix"
-                  },
-                  "1": {
-                    "meta": "2e choix"
-                  },
-                  "2": {
-                    "meta": "3e choix"
-                  }
-                }
-              }
-            },
-            "note": "Merci de prévoir des retours booth avec réglage de volume indépendant — indispensable pour un cueing et un mix propres."
-          },
           "lead": "Club, festival, fête privée ou événement d'entreprise — écris-moi ton projet et tu as une réponse sous 48 heures.",
           "claim": "Créons",
           "claimAccent": "quelque chose."
@@ -733,7 +664,6 @@
         "afterMovies": "After Movies",
         "afterMoviesEmpty": "Les aftermovies des derniers shows sont au montage — ils arrivent ici dès qu'ils sont prêts.",
         "allRequired": "Tous les champs sont obligatoires.",
-        "riderOptional": "Facultatif — pour la technique",
         "payTitle": "Paiement",
         "payBank": "Virement bancaire",
         "payBankName": "Banque",
@@ -844,40 +774,6 @@
           },
           "navLabel": "12a938f0",
           "presskitLabel": "d483ae75",
-          "rider": {
-            "groups": {
-              "0": {
-                "items": {
-                  "0": {
-                    "meta": "132bae32"
-                  },
-                  "1": {
-                    "meta": "4ac4842e"
-                  },
-                  "2": {
-                    "meta": "0e9aaaff"
-                  }
-                },
-                "title": "2fc7c7af"
-              },
-              "1": {
-                "items": {
-                  "0": {
-                    "meta": "132bae32"
-                  },
-                  "1": {
-                    "meta": "4ac4842e"
-                  },
-                  "2": {
-                    "meta": "0e9aaaff"
-                  }
-                },
-                "title": "c13e7aaf"
-              }
-            },
-            "kicker": "86449877",
-            "note": "0aa5b4c5"
-          },
           "title": "e0cb9023",
           "titleAccent": "454fdf68",
           "lead": "7d9d8d28",
@@ -1121,7 +1017,6 @@
         "afterMovies": "099836b6",
         "afterMoviesEmpty": "cfc1974e",
         "allRequired": "ec33a35e",
-        "riderOptional": "4e3ffa03",
         "payTitle": "20f64111",
         "payBank": "1ea07f76",
         "payBankName": "a274c5b7",
@@ -1376,40 +1271,6 @@
             "errorText": "7a37cbc4",
             "submitLabel": "4a783e3a"
           },
-          "rider": {
-            "kicker": "86449877",
-            "groups": {
-              "0": {
-                "title": "2fc7c7af",
-                "items": {
-                  "0": {
-                    "meta": "132bae32"
-                  },
-                  "1": {
-                    "meta": "4ac4842e"
-                  },
-                  "2": {
-                    "meta": "0e9aaaff"
-                  }
-                }
-              },
-              "1": {
-                "title": "c13e7aaf",
-                "items": {
-                  "0": {
-                    "meta": "132bae32"
-                  },
-                  "1": {
-                    "meta": "4ac4842e"
-                  },
-                  "2": {
-                    "meta": "0e9aaaff"
-                  }
-                }
-              }
-            },
-            "note": "0aa5b4c5"
-          },
           "lead": "7d9d8d28",
           "claim": "7d9059c0",
           "claimAccent": "0f51879f"
@@ -1489,7 +1350,6 @@
         "afterMovies": "099836b6",
         "afterMoviesEmpty": "cfc1974e",
         "allRequired": "ec33a35e",
-        "riderOptional": "4e3ffa03",
         "payTitle": "20f64111",
         "payBank": "1ea07f76",
         "payBankName": "a274c5b7",
@@ -1620,47 +1480,6 @@
       "navLabel": "Booking",
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
-      "rider": {
-        "groups": [
-          {
-            "items": [
-              {
-                "meta": "1st choice",
-                "name": "Pioneer CDJ-3000X"
-              },
-              {
-                "meta": "2nd choice",
-                "name": "Pioneer CDJ-3000"
-              },
-              {
-                "meta": "3rd choice",
-                "name": "Pioneer CDJ-2000NXS2"
-              }
-            ],
-            "title": "CDJs — 4× required"
-          },
-          {
-            "items": [
-              {
-                "meta": "1st choice",
-                "name": "Pioneer DJM-V10"
-              },
-              {
-                "meta": "2nd choice",
-                "name": "Pioneer DJM-A9"
-              },
-              {
-                "meta": "3rd choice",
-                "name": "Pioneer DJM-2000NXS"
-              }
-            ],
-            "title": "Mixer — one of the following"
-          }
-        ],
-        "kicker": "Preferred setup",
-        "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing.",
-        "enabled": true
-      },
       "title": "Boo",
       "titleAccent": "king.",
       "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
@@ -1784,6 +1603,10 @@
         {
           "city": "St. Gallen",
           "name": "Ultrawild Festival"
+        },
+        {
+          "city": "Wattwil",
+          "name": "Jugendopenair"
         }
       ],
       "navLabel": "References",
@@ -2007,7 +1830,6 @@
     "afterMovies": "After Movies",
     "afterMoviesEmpty": "The aftermovies of the latest shows are still in the edit — they land here as soon as they are done.",
     "allRequired": "All fields are required.",
-    "riderOptional": "Optional — for the technical crew",
     "payTitle": "Payment",
     "payBank": "Bank transfer",
     "payBankName": "Bank",
