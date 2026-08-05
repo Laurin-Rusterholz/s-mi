@@ -1554,8 +1554,19 @@ const looksTechnical = (v) =>
   /^#[0-9a-f]{3,8}$/i.test(v) ||
   /^\d{4}-\d{2}-\d{2}$/.test(v);
 
-/** Pfade, die technische Schlüssel enthalten (Abschnitts-Namen, keine Texte). */
-const NO_TRANSLATE_PATH = /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$/;
+/**
+ * Pfade, die technische Schlüssel enthalten (Abschnitts-Namen, keine Texte)
+ * oder Eigennamen tragen.
+ *
+ * Kanäle gehören dazu: "Instagram", "Spotify" und "Mixcloud" heissen in jeder
+ * Sprache gleich. Übersetzt man sie trotzdem, zeigt die Übersetzungstabelle
+ * über die Position auf den Kanal — und sobald in der Verwaltung ein Kanal
+ * gelöscht wird, rutscht der Name des gelöschten auf den nächsten Eintrag.
+ * Genau so trug der Mixcloud-Link auf /de/ und /fr/ die Aufschrift "Instagram"
+ * (dieselbe Falle wie "Luzern" auf "Sektor 11", siehe adoptTexts).
+ */
+const NO_TRANSLATE_PATH =
+  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\./;
 
 /** Alle übersetzbaren Textstellen als [pfad, text]. */
 export function collectStrings(node, prefix = "", out = []) {
@@ -1611,12 +1622,16 @@ export function flattenI18n(node, prefix = "", out = {}) {
 }
 
 /** Inhalt in eine Sprache übersetzen. Fehlende Stellen bleiben deutsch. */
-function localize(content, lang) {
+export function localize(content, lang) {
   const master = String(content.site?.lang || "de");
   if (lang === master) return content;
   const table = flattenI18n((content.i18n && content.i18n[lang]) || {});
   const copy = JSON.parse(JSON.stringify(content));
   for (const [path, value] of Object.entries(table)) {
+    // Dieselbe Sperre wie beim Einsammeln: was nie übersetzt werden durfte,
+    // wird auch nicht eingesetzt. Ältere Stände in der Datenbank tragen solche
+    // Einträge noch — sie dürfen die Kanäle nicht umbenennen.
+    if (NO_TRANSLATE_PATH.test(path)) continue;
     if (typeof value === "string" && value.trim()) setDeep(copy, path, value);
   }
   copy.site.lang = lang;

@@ -12,12 +12,14 @@
 import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { adoptTexts } from "./build.mjs";
+import { adoptTexts, collectStrings, localize } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const template = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
 
-/* Der Stand, wie ihn die Verwaltung liefert: kürzere Listen als die Vorlage. */
+/* Der Stand, wie ihn die Verwaltung liefert: kürzere Listen als die Vorlage.
+   Die Vorlage führt sieben Referenzen — hier stehen sechs, damit die Sperre
+   gegen ungleich lange Listen überhaupt geprüft wird. */
 const live = JSON.parse(JSON.stringify(template));
 live.site.lang = "de"; // weicht von der Vorlage ab -> adoptTexts greift
 live.sections.references.items = [
@@ -27,7 +29,6 @@ live.sections.references.items = [
   { city: "St. Gallen", name: "IVY" },
   { city: "Gossau", name: "BBC" },
   { city: "St. Gallen", name: "B9" },
-  { city: "St. Gallen", name: "Ultrawild Festival" },
 ];
 live.sections.contact.socials = [
   { label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" },
@@ -43,7 +44,6 @@ const ORTE = {
   IVY: "St. Gallen",
   BBC: "Gossau",
   B9: "St. Gallen",
-  "Ultrawild Festival": "St. Gallen",
 };
 
 let fehler = 0;
@@ -52,8 +52,8 @@ const meckern = (text) => {
   console.error("  FEHLER: " + text);
 };
 
-if (live.sections.references.items.length !== 7) {
-  meckern(`Referenzliste hat neu ${live.sections.references.items.length} statt 7 Einträge`);
+if (live.sections.references.items.length !== 6) {
+  meckern(`Referenzliste hat neu ${live.sections.references.items.length} statt 6 Einträge`);
 }
 for (const r of live.sections.references.items) {
   if (ORTE[r.name] !== r.city) {
@@ -86,8 +86,49 @@ if (live2.sections.references.items[1].city !== template.sections.references.ite
   meckern("Bei gleich langen Listen wird nicht mehr übernommen — adoptTexts ist wirkungslos");
 }
 
+/* --------------------------------------------------------------------------
+   Kanal-Namen sind Eigennamen und werden nie übersetzt.
+
+   Vorher trug die Übersetzungstabelle "sections.contact.socials.0.label" —
+   die zeigt über die Position auf den Kanal. Nachdem in der Verwaltung
+   Instagram und Spotify gelöscht worden waren, rutschte "Instagram" auf
+   Position 0 und der Mixcloud-Link hiess auf /de/ und /fr/ "Instagram".
+   -------------------------------------------------------------------------- */
+
+if (collectStrings(template).some(([pfad]) => /^sections\.contact\.socials\./.test(pfad))) {
+  meckern("Kanal-Namen werden zum Übersetzen angeboten — sie sind Eigennamen");
+}
+
+/* Ein alter Stand aus der Datenbank: Übersetzungen für Kanäle, die es nicht
+   mehr gibt. Die dürfen keinen Kanal umbenennen. */
+const altbestand = JSON.parse(JSON.stringify(template));
+altbestand.site.lang = "en";
+altbestand.sections.contact.socials = [
+  { label: "Instagram", url: "https://www.instagram.com/sam_sparking/" },
+  { label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" },
+];
+altbestand.i18n = altbestand.i18n || {};
+altbestand.i18n.de = altbestand.i18n.de || {};
+altbestand.i18n.de.sections = altbestand.i18n.de.sections || {};
+altbestand.i18n.de.sections.contact = altbestand.i18n.de.sections.contact || {};
+altbestand.i18n.de.sections.contact.socials = {
+  0: { label: "Spotify" },
+  1: { label: "Instagram" },
+};
+
+const uebersetzt = localize(altbestand, "de").sections.contact.socials;
+for (const [i, erwartet] of ["Instagram", "Mixcloud"].entries()) {
+  if (uebersetzt[i].label !== erwartet) {
+    meckern(`Kanal ${i} heisst auf /de/ neu "${uebersetzt[i].label}" statt "${erwartet}"`);
+  }
+}
+if (uebersetzt[0].url !== "https://www.instagram.com/sam_sparking/") {
+  meckern("Instagram-Adresse verändert: " + uebersetzt[0].url);
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler — adoptTexts schmiert Texte über die Listen.`);
   process.exit(1);
 }
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
+console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");

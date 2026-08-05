@@ -124,17 +124,6 @@
           "base": "St. Gallen, Schweiz",
           "kicker": "Booking & Anfragen",
           "navLabel": "Kontakt",
-          "socials": {
-            "0": {
-              "label": "Instagram"
-            },
-            "1": {
-              "label": "Spotify"
-            },
-            "2": {
-              "label": "Mixcloud"
-            }
-          },
           "title": "Kon",
           "titleAccent": "takt."
         },
@@ -670,18 +659,7 @@
           "title": "Kon",
           "titleAccent": "takt.",
           "kicker": "Booking & demandes",
-          "base": "Saint-Gall, Suisse",
-          "socials": {
-            "0": {
-              "label": "Instagram"
-            },
-            "1": {
-              "label": "Spotify"
-            },
-            "2": {
-              "label": "Mixcloud"
-            }
-          }
+          "base": "Saint-Gall, Suisse"
         },
         "shop": {
           "navLabel": "Shop",
@@ -910,17 +888,6 @@
           "base": "23df4a6c",
           "kicker": "c49a5387",
           "navLabel": "73ac94c3",
-          "socials": {
-            "0": {
-              "label": "0f95701b"
-            },
-            "1": {
-              "label": "38f39455"
-            },
-            "2": {
-              "label": "afc62f32"
-            }
-          },
           "title": "531868eb",
           "titleAccent": "a26feecd"
         },
@@ -1452,18 +1419,7 @@
           "title": "531868eb",
           "titleAccent": "a26feecd",
           "kicker": "c49a5387",
-          "base": "23df4a6c",
-          "socials": {
-            "0": {
-              "label": "0f95701b"
-            },
-            "1": {
-              "label": "38f39455"
-            },
-            "2": {
-              "label": "afc62f32"
-            }
-          }
+          "base": "23df4a6c"
         },
         "shop": {
           "navLabel": "28742cc9",
@@ -1719,6 +1675,10 @@
       "navLabel": "Contact",
       "phone": "+41 77 509 11 71",
       "socials": [
+        {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/sam_sparking/"
+        },
         {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
