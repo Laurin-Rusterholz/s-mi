@@ -1311,6 +1311,7 @@ function renderBooking(n, s, site) {
       </form>`
           : ""
       }
+      </div>
     </div>
   </section>`;
 }
