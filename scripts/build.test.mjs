@@ -12,7 +12,7 @@
 import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { adoptTexts, collectStrings, localize } from "./build.mjs";
+import { adoptTexts, collectStrings, localize, nachziehen } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const template = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
@@ -126,9 +126,48 @@ if (uebersetzt[0].url !== "https://www.instagram.com/sam_sparking/") {
   meckern("Instagram-Adresse verändert: " + uebersetzt[0].url);
 }
 
+/* ------------------------------------------------------------------------
+   nachziehen(): die Datenbank traegt noch den Stand von vor der Umbenennung.
+   Erwartet: jede Schreibweise korrigiert, Hostname unversehrt, Referenzen und
+   Kanaele aus der Vorlage, Shop aus — und beim zweiten Aufruf passiert nichts
+   mehr, weil der Stand jetzt in der Datenbank steht.
+   ------------------------------------------------------------------------ */
+{
+  const alt = JSON.parse(JSON.stringify(template));
+  delete alt.contentRevision;
+  alt.site.artist = "Sam Sparkling";
+  alt.site.logoText = "Sam Sparkling";
+  alt.hero.nameMain = "Sparkling";
+  alt.site.domain = "https://djsamsparkling.netlify.app";
+  alt.site.keywords = ["Sam Sparkling", "Hardstyle DJ"];
+  alt.sections.about.paragraphs = ["Der Name **Sparkling** ist kein Zufall."];
+  alt.sections.contact.socials = [{ label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" }];
+  alt.sections.references.items = [{ city: "St. Gallen", name: "Kugl" }];
+  alt.sections.shop.enabled = true;
+
+  const vorher = nachziehen(alt, template);
+  if (vorher !== 0) meckern(`nachziehen() meldet Stand ${vorher} statt 0`);
+
+  const alsText = JSON.stringify(alt);
+  const hosts = (alsText.match(/djsamsparkling/gi) || []).length;
+  const reste = (alsText.match(/[Ss]parkling/g) || []).length - hosts;
+  if (reste !== 0) meckern(`${reste}x "Sparkling" nach dem Nachziehen uebrig`);
+  if (!hosts) meckern("Hostname djsamsparkling wurde mitkorrigiert — Canonical und Sitemap zeigen ins Leere");
+  if (alt.site.artist !== "Sam Sparking") meckern("Kuenstlername nicht korrigiert: " + alt.site.artist);
+  if (alt.site.domain !== "https://djsamsparkling.netlify.app") meckern("Domain veraendert: " + alt.site.domain);
+  if (alt.sections.references.items.length !== template.sections.references.items.length)
+    meckern("Referenzliste nicht aus der Vorlage uebernommen");
+  if (!alt.sections.contact.socials.some((s) => s.label === "Instagram"))
+    meckern("Instagram fehlt nach dem Nachziehen");
+  if (alt.sections.shop.enabled !== false) meckern("Shop steht nach dem Nachziehen wieder auf sichtbar");
+  if (alt.contentRevision !== template.contentRevision) meckern("Stand nicht mitgeschrieben");
+  if (nachziehen(alt, template) !== null) meckern("nachziehen() greift ein zweites Mal");
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler — adoptTexts schmiert Texte über die Listen.`);
   process.exit(1);
 }
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
+console.log("nachziehen: Schreibweise korrigiert, Hostname unversehrt, Shop bleibt aus, greift nur einmal.");

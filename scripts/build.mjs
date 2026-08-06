@@ -177,6 +177,102 @@ function looksLikeLegacy(live, legacy) {
   return hits;
 }
 
+/**
+ * Stand der Vorlage. Wird erhöht, wenn im Repo etwas geändert wurde, das die
+ * Verwaltung noch nicht kennt — die Datenbank gewinnt sonst über `withDefaults`
+ * gegen jede Korrektur im Repo, und der Build würde den alten Stand
+ * wiederherstellen.
+ *
+ * Solange die Datenbank eine kleinere Zahl trägt, zieht `nachziehen()` die
+ * betroffenen Stellen aus der Vorlage nach. Sobald in der Verwaltung einmal
+ * gespeichert wurde, steht die Zahl auch dort und der Build lässt die
+ * Datenbank wieder unangetastet gewinnen.
+ *
+ *   2  Schreibweise "Sam Sparking", vollständige Referenzliste, Instagram als
+ *      Kanal, Kennzahlen im Hero statt Fakten unter About, Shop/Sound/Erlebnis
+ *      ausgeschaltet.
+ */
+const VORLAGEN_STAND = 2;
+
+/**
+ * "Sam Sparkling" war jahrelang falsch geschrieben. Ausgenommen ist der
+ * Hostname djsamsparkling.netlify.app — das ist eine Adresse: wird sie
+ * mitkorrigiert, zeigen Canonical, hreflang und Sitemap ins Leere. Er wird
+ * darum vor der Ersetzung beiseitegelegt und danach unveraendert zurueck-
+ * geschrieben.
+ */
+const HOST_MARKE = "\u0001";
+function schreibweise(v) {
+  if (typeof v !== "string" || !v.includes("parkling")) return v;
+  const hosts = [];
+  return v
+    .replace(/djsamsparkling/gi, (m) => {
+      hosts.push(m);
+      return HOST_MARKE;
+    })
+    .replace(/Sparkling/g, "Sparking")
+    .replace(/sparkling/g, "sparking")
+    .replace(new RegExp(HOST_MARKE, "g"), () => hosts.shift());
+}
+
+/**
+ * Schreibweise in jedem Text des Baums korrigieren — auch in Listen aus
+ * reinem Text (Absaetze, Keywords, Stichworte). Die werden ueber den Index
+ * zurueckgeschrieben; ein blosses forEach wuerde den Ersatz verwerfen.
+ */
+function schreibweiseTief(node) {
+  if (Array.isArray(node)) {
+    node.forEach((v, i) => {
+      if (typeof v === "string") node[i] = schreibweise(v);
+      else schreibweiseTief(v);
+    });
+    return;
+  }
+  if (!node || typeof node !== "object") return;
+  for (const [k, v] of Object.entries(node)) {
+    if (typeof v === "string") node[k] = schreibweise(v);
+    else schreibweiseTief(v);
+  }
+}
+
+/**
+ * Holt die Stellen aus der Vorlage nach, die in der Datenbank noch den Stand
+ * von vor dieser Änderung tragen. Alles andere — Bilder, Videos, Termine,
+ * Texte, Links — bleibt unangetastet: die Verwaltung behält die Hoheit.
+ */
+export function nachziehen(live, template) {
+  const stand = Number(live?.contentRevision || 0);
+  if (stand >= VORLAGEN_STAND) return null;
+
+  schreibweiseTief(live);
+
+  const ls = live.sections || (live.sections = {});
+  const ts = template.sections || {};
+
+  // Listen: die Datenbank gewinnt bei Listen immer, darum hier gezielt setzen.
+  if (ts.references?.items) ls.references = { ...ls.references, items: JSON.parse(JSON.stringify(ts.references.items)) };
+  if (ts.contact?.socials) ls.contact = { ...ls.contact, socials: JSON.parse(JSON.stringify(ts.contact.socials)) };
+  if (ts.about) ls.about = { ...ls.about, facts: JSON.parse(JSON.stringify(ts.about.facts || [])) };
+  if (template.hero?.stats) live.hero = { ...live.hero, stats: JSON.parse(JSON.stringify(template.hero.stats)) };
+
+  // Sichtbarkeit und Aufbau: Shop, Sound und Erlebnis stehen in der Datenbank
+  // noch auf "an" — der Kunde will sie aus. Ab jetzt entscheidet wieder die
+  // Verwaltung, dieser Abgleich läuft nur bis zum ersten Speichern dort.
+  for (const [k, sec] of Object.entries(ts)) {
+    if (ls[k] && typeof sec?.enabled === "boolean") ls[k].enabled = sec.enabled;
+  }
+  if (template.layout) live.layout = list(template.layout).slice();
+  if (Array.isArray(template.pages) && Array.isArray(live.pages)) {
+    live.pages.forEach((p, i) => {
+      const t = template.pages[i];
+      if (p && t && Array.isArray(t.sections)) p.sections = t.sections.slice();
+    });
+  }
+
+  live.contentRevision = VORLAGEN_STAND;
+  return stand;
+}
+
 async function loadContent() {
   const apiUrl = process.env.CONTENT_API_URL;
   if (apiUrl) {
@@ -214,6 +310,14 @@ async function loadContent() {
               `Texte, Übersetzungen und Seitenaufteilung aus der Vorlage übernommen.`
           );
           adoptTexts(live, template);
+        }
+        const vorher = nachziehen(live, template);
+        if (vorher !== null) {
+          console.log(
+            `[build] Datenbank trägt Stand ${vorher} < ${VORLAGEN_STAND} — ` +
+              `Schreibweise, Referenzen, Kanäle und Sichtbarkeit aus der Vorlage ` +
+              `nachgezogen. Nach dem ersten Speichern in der Verwaltung entfällt das.`
+          );
         }
         content = withDefaults(live, template);
       } catch (e) {
