@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Sam Sparkling — Website-Interaktion
+   Sam Sparking — Website-Interaktion
    Vanilla JS, keine Abhängigkeiten.
    ========================================================================== */
 (function () {
@@ -8,6 +8,43 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   document.documentElement.classList.add("js");
+
+  /* --------------------------------------------------- Video-Zuschnitt */
+  // In der Verwaltung lässt sich je Video angeben, ab und bis zu welcher
+  // Sekunde es laufen soll. Geschnitten wird nur die Wiedergabe: das Video
+  // springt an den Anfang des Ausschnitts und kehrt an dessen Ende dorthin
+  // zurück. Ohne Angabe läuft das ganze Video wie bisher.
+  var clipStartOf = function (v) {
+    var n = parseFloat(v.getAttribute("data-clip-start"));
+    return isFinite(n) && n > 0 ? n : 0;
+  };
+  var clipEndOf = function (v) {
+    var n = parseFloat(v.getAttribute("data-clip-end"));
+    return isFinite(n) && n > 0 ? n : Infinity;
+  };
+  var clipEndeErreicht = function (v) {
+    var ende = Math.min(clipEndOf(v), isFinite(v.duration) ? v.duration : Infinity);
+    // timeupdate meldet sich nur etwa viermal je Sekunde — der Puffer sorgt
+    // dafür, dass der Sprung nicht erst nach dem Schnittpunkt passiert.
+    return isFinite(ende) && v.currentTime >= ende - 0.12;
+  };
+  var clipAnwenden = function (v) {
+    var start = clipStartOf(v);
+    if (!start && clipEndOf(v) === Infinity) return;   // ganzes Video
+    var anAnfang = function () {
+      try {
+        if (Math.abs(v.currentTime - start) > 0.05) v.currentTime = start;
+      } catch (e) { /* Seek vor dem Laden der Metadaten */ }
+    };
+    if (v.readyState >= 1) anAnfang();
+    v.addEventListener("loadedmetadata", anAnfang);
+    v.addEventListener("timeupdate", function () {
+      if (clipEndeErreicht(v) || v.currentTime < start - 0.3) {
+        v.currentTime = start;
+        if (!v.paused) v.play().catch(function () {});
+      }
+    });
+  };
 
   /* ------------------------------------------------------------ mobile nav */
   var burger = document.getElementById("burger");
@@ -140,6 +177,77 @@
     }
   });
 
+  /* ------------------------------------------------- Kennzahlen im Hero */
+  // Die fertige Zahl steht bereits im HTML. Hier wird sie nur kurz von 1 auf
+  // ihren Wert hochgezählt — in zwei Sekunden, sobald der Hero im Bild ist.
+  // Bei "Bewegung reduzieren" bleibt schlicht die fertige Zahl stehen.
+  var heroStats = Array.prototype.slice.call(document.querySelectorAll(".hstat-value[data-to]"));
+  if (heroStats.length && !reduce) {
+    var COUNT_MS = 2000;
+    var zaehlen = function (node) {
+      if (node._counted) return;
+      node._counted = true;
+      var from = parseInt(node.getAttribute("data-from"), 10);
+      var to = parseInt(node.getAttribute("data-to"), 10);
+      var pre = node.getAttribute("data-pre") || "";
+      var post = node.getAttribute("data-post") || "";
+      if (!isFinite(from) || !isFinite(to) || to <= from) return;
+      var startZeit = 0;
+      var schritt = function (jetzt) {
+        if (!startZeit) startZeit = jetzt;
+        var t = Math.min(1, (jetzt - startZeit) / COUNT_MS);
+        // Zum Schluss langsamer — die Zielzahl wirkt dadurch "eingerastet".
+        var e = 1 - Math.pow(1 - t, 3);
+        node.textContent = pre + String(Math.round(from + (to - from) * e)) + post;
+        if (t < 1) requestAnimationFrame(schritt);
+      };
+      node.textContent = pre + String(from) + post;
+      requestAnimationFrame(schritt);
+    };
+
+    if ("IntersectionObserver" in window) {
+      var sio = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            zaehlen(e.target);
+            sio.unobserve(e.target);
+          });
+        },
+        { threshold: 0.4 }
+      );
+      heroStats.forEach(function (n) { sio.observe(n); });
+    } else {
+      heroStats.forEach(zaehlen);
+    }
+  }
+
+  /* ------------------------------------ Referenzen: Namen auf einer Zeile */
+  // Die Schriftgrössen im CSS sind so gewählt, dass die Namen normalerweise
+  // passen. Für die wirklich langen ("Firehouse Party Wittenbach") wird hier
+  // so weit verkleinert, bis der Name in seine Zeile geht — nie umbrechen.
+  var venueNames = Array.prototype.slice.call(document.querySelectorAll(".venue-name"));
+  if (venueNames.length) {
+    var einpassen = function () {
+      venueNames.forEach(function (n) {
+        n.style.setProperty("--venue-fit", "1");
+        var faktor = 1;
+        // Höchstens acht Schritte à 6 % — darunter wäre der Name unlesbar.
+        for (var i = 0; i < 8 && n.scrollWidth > n.clientWidth + 1; i++) {
+          faktor -= 0.06;
+          n.style.setProperty("--venue-fit", String(faktor));
+        }
+      });
+    };
+    einpassen();
+    var fitTimer;
+    window.addEventListener("resize", function () {
+      clearTimeout(fitTimer);
+      fitTimer = setTimeout(einpassen, 150);
+    });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(einpassen);
+  }
+
   /* ----------------------------------------- mobile Inhaltsverdichtung */
   // Die lange Künstlergeschichte bleibt auf grossen Bildschirmen vollständig
   // sichtbar. Auf dem Handy startet sie bewusst kurz und lässt sich bei
@@ -169,6 +277,18 @@
         galleryToggle.getAttribute(open ? "data-less" : "data-more") || "";
     });
   }
+
+  // „Kaufen" an einer Ware waehlt sie im Bestellformular gleich aus.
+  document.addEventListener("click", function (e) {
+    var jump = e.target.closest && e.target.closest(".order-jump");
+    if (!jump) return;
+    var sel = document.querySelector('#order-form select[name="product"]');
+    if (!sel) return;
+    var wanted = jump.getAttribute("data-product");
+    Array.prototype.forEach.call(sel.options, function (o) {
+      if (o.value === wanted) sel.value = o.value;
+    });
+  });
 
   /* -------------------------------------------- scroll progress + active nav */
   var progress = document.getElementById("progress");
@@ -395,16 +515,29 @@
       // kurz stocken oder bleiben stehen. Kurz vor Schluss selbst zurueck an
       // den Anfang setzen und weiterlaufen lassen.
       heroVideo.addEventListener("timeupdate", function () {
-        var d = heroVideo.duration;
-        if (d && isFinite(d) && d - heroVideo.currentTime < 0.25) {
-          heroVideo.currentTime = 0;
+        var ende = Math.min(
+          clipEndOf(heroVideo),
+          isFinite(heroVideo.duration) ? heroVideo.duration : Infinity
+        );
+        if (isFinite(ende) && ende - heroVideo.currentTime < 0.25) {
+          heroVideo.currentTime = clipStartOf(heroVideo);
           kick();
         }
       });
       heroVideo.addEventListener("ended", function () {
-        heroVideo.currentTime = 0;
+        heroVideo.currentTime = clipStartOf(heroVideo);
         kick();
       });
+      // Bei gesetztem Anfang gleich dorthin springen, sobald die Länge bekannt ist.
+      if (clipStartOf(heroVideo)) {
+        var heroAnAnfang = function () {
+          if (heroVideo.currentTime < clipStartOf(heroVideo)) {
+            try { heroVideo.currentTime = clipStartOf(heroVideo); } catch (e) {}
+          }
+        };
+        if (heroVideo.readyState >= 1) heroAnAnfang();
+        heroVideo.addEventListener("loadedmetadata", heroAnAnfang);
+      }
 
       // Beharrlich bleiben: in den ersten Sekunden mehrfach anstossen und
       // nachziehen, sobald das Hero sichtbar ist
@@ -423,24 +556,57 @@
     }
   } catch (e) { /* Video darf nie den Rest der Seite mitreissen */ }
 
-  // Galerie-Videos nur abspielen, solange sie sichtbar sind
+  /* -------------------------------------------------------- galerie-videos */
+  // Am Rechner startet ein Video erst, wenn der Zeiger auf der Kachel liegt,
+  // und springt beim Verlassen auf den Anfang zurück. Wo es keinen Zeiger gibt
+  // (Handy, Tablet), laufen die sichtbaren Kacheln wie bisher von allein — dort
+  // wäre "beim Darüberfahren" sonst gar nicht auslösbar.
   var galVideos = Array.prototype.slice.call(document.querySelectorAll(".gal-video video"));
-  galVideos.forEach(function (v) {
-    v.addEventListener("ended", function () { v.currentTime = 0; v.play().catch(function () {}); });
-  });
+  galVideos.forEach(clipAnwenden);
   if (galVideos.length) {
+    var hoverPointer =
+      window.matchMedia && window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+
+    var markPlaying = function (v, on) {
+      var fig = v.closest ? v.closest(".gal-video") : v.parentNode;
+      if (fig) fig.classList.toggle("playing", on);
+    };
+    var start = function (v) {
+      var p = v.play();
+      if (p && p.then) p.then(function () { markPlaying(v, true); }).catch(function () {});
+      else markPlaying(v, true);
+    };
+    var stop = function (v, rewind) {
+      v.pause();
+      // Zurück an den Anfang des Ausschnitts, nicht an den Anfang der Datei.
+      if (rewind) {
+        try { v.currentTime = clipStartOf(v); } catch (e) {}
+      }
+      markPlaying(v, false);
+    };
+
     if (reduce) {
+      // Bei "Bewegung reduzieren" nichts von allein abspielen — dafür die
+      // Bedienelemente zeigen, damit das Video trotzdem erreichbar bleibt.
       galVideos.forEach(function (v) {
-        v.removeAttribute("autoplay");
         v.pause();
         v.setAttribute("controls", "");
+      });
+    } else if (hoverPointer) {
+      galVideos.forEach(function (v) {
+        var fig = v.closest ? v.closest(".gal-video") : v.parentNode;
+        (fig || v).addEventListener("pointerenter", function () { start(v); });
+        (fig || v).addEventListener("pointerleave", function () { stop(v, true); });
+        // Tastatur: die Kachel ist kein Knopf, aber der Fokus soll dasselbe tun.
+        v.addEventListener("focus", function () { start(v); });
+        v.addEventListener("blur", function () { stop(v, true); });
       });
     } else if ("IntersectionObserver" in window) {
       var vio = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (e) {
-            if (e.isIntersecting) e.target.play().catch(function () {});
-            else e.target.pause();
+            if (e.isIntersecting) start(e.target);
+            else stop(e.target, false);
           });
         },
         { threshold: 0.25 }
@@ -801,6 +967,90 @@
         .catch(function () {
           form.classList.remove("busy");
           setMsg(msg.getAttribute("data-error"), "err");
+        });
+    });
+  }
+
+  /* ----------------------------------------------------------- bestellform */
+  // Versand braucht vollstaendige Angaben — deshalb ist hier jedes Feld
+  // Pflicht. Die Bestellung geht in denselben Eingang wie die Booking-
+  // Anfragen, aber mit kind:"order" gekennzeichnet.
+  var oform = document.getElementById("order-form");
+  if (oform) {
+    var oEndpoint = oform.getAttribute("data-endpoint");
+    var oSending = oform.getAttribute("data-sending") || "…";
+    var oInvalid = oform.getAttribute("data-invalid") || "";
+    var oMsg = oform.querySelector(".bform-msg");
+    var oOpened = Date.now();
+    var FIELDS = ["product", "quantity", "name", "email", "street", "zip", "city", "country"];
+
+    var setOMsg = function (text, cls) {
+      if (!oMsg) return;
+      oMsg.textContent = text;
+      oMsg.className = "bform-msg" + (cls ? " " + cls : "");
+    };
+
+    oform.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (oform.classList.contains("busy")) return;
+
+      var data = {};
+      FIELDS.forEach(function (k) {
+        var f = oform.elements[k];
+        data[k] = f ? String(f.value || "").trim() : "";
+      });
+      var pay = oform.querySelector('input[name="payment"]:checked');
+      data.payment = pay ? pay.value : "";
+
+      var bad = null;
+      FIELDS.forEach(function (k) {
+        var f = oform.elements[k];
+        if (!f) return;
+        var ok = data[k].length >= (k === "zip" ? 3 : 2);
+        if (k === "email") ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email);
+        if (k === "quantity") ok = Number(data.quantity) >= 1 && Number(data.quantity) <= 20;
+        f.setAttribute("aria-invalid", ok ? "false" : "true");
+        if (!ok && !bad) bad = f;
+      });
+      if (!bad && oform.querySelector('input[name="payment"]') && !data.payment) {
+        bad = oform.querySelector('input[name="payment"]');
+      }
+      if (bad) {
+        setOMsg(oInvalid, "err");
+        bad.focus();
+        return;
+      }
+
+      var hp = oform.elements.website;
+      if ((hp && hp.value) || Date.now() - oOpened < 2500) {
+        oform.classList.add("sent");
+        setOMsg(oMsg ? oMsg.getAttribute("data-success") : "Danke!", "ok");
+        return;
+      }
+
+      data.kind = "order";
+      data.createdAt = new Date().toISOString();
+      data.status = "new";
+      data.source = location.hostname || "website";
+
+      oform.classList.add("busy");
+      setOMsg(oSending, "");
+
+      fetch(oEndpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          oform.classList.remove("busy");
+          oform.classList.add("sent");
+          oform.reset();
+          setOMsg(oMsg.getAttribute("data-success"), "ok");
+        })
+        .catch(function () {
+          oform.classList.remove("busy");
+          setOMsg(oMsg.getAttribute("data-error"), "err");
         });
     });
   }

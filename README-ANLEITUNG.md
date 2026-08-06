@@ -1,4 +1,4 @@
-# Sam Sparkling — Website
+# Sam Sparking — Website
 
 Statische Website in **Englisch (Hauptsprache), Deutsch und Französisch**,
 generiert aus einer Inhalts-Datei. Inhalte pflegst du

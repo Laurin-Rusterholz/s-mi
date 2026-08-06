@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Sam Sparkling — Website
+   Sam Sparking — Website
    Farben --ink / --spark werden vom Generator inline überschrieben (CMS).
    ========================================================================== */
 
@@ -127,6 +127,7 @@ h2 i{margin-left:.06em;}
 a{color:inherit;text-decoration:none;}
 a.accent,.accent{color:var(--spark);}
 img,video{display:block;width:100%;height:100%;object-fit:cover;filter:saturate(.88) contrast(1.06);transition:filter .4s ease;}
+.gal figure:hover img,.product:hover img,.about-photo:hover img{filter:saturate(1.02) contrast(1.04);}
 section{position:relative;}
 /* Sprungziele halten Abstand zur festen Kopfleiste — greift auch dort, wo
    ein Browser scroll-padding ignoriert. */
@@ -154,7 +155,7 @@ section.pad + section.pad{border-top:1px solid rgba(233,237,245,.16);}
    oder lose wirkende Leisten produziert. */
 header{
   position:sticky;top:0;z-index:100;height:var(--head);
-  display:flex;justify-content:space-between;align-items:center;
+  display:flex;align-items:center;gap:clamp(12px,2vw,26px);
   padding:0 clamp(20px,4vw,56px);
   background:rgb(12,16,27);
   border-bottom:1px solid rgba(233,237,245,.09);
@@ -167,7 +168,17 @@ header::before{
   content:"";position:absolute;bottom:100%;left:0;right:0;height:220px;
   background:rgb(12,16,27);
 }
-.logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;}
+.logo{font-variation-settings:'wdth' 122,'wght' 800;text-transform:uppercase;font-size:1.05rem;letter-spacing:.02em;
+  margin-right:auto;}
+/* Kanäle im Kopf: nur das Zeichen, jeder Kanal sein eigenes. Bleibt auch im
+   Mobil-Kopf neben dem Menü-Knopf stehen — das Menü verdeckt es nicht. */
+.head-social{display:flex;align-items:center;gap:6px;}
+.head-social a{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;color:var(--bone-dim);transition:color .2s,transform .2s;
+}
+.head-social a:hover{color:var(--bone);transform:translateY(-1px);}
+.head-social svg{width:19px;height:19px;}
 header nav ul{display:flex;gap:clamp(18px,2.4vw,34px);list-style:none;}
 header nav a{font-family:var(--font-m);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;position:relative;padding:4px 0;}
 header nav a::after{content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:currentColor;transition:width .25s;}
@@ -214,6 +225,10 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
   header nav .nav-hot a{font-variation-settings:'wdth' 110,'wght' 650;}
   header nav .nav-langs{display:flex;gap:8px;margin-top:auto;padding-top:26px;}
   .burger{display:block;position:relative;z-index:2;}
+  /* Das offene Menü legt sich über die ganze Seite — die Kanal-Zeichen im
+     Kopf dürfen dann nicht darüber stehen bleiben. */
+  .nav-open .head-social{opacity:0;pointer-events:none;}
+  .head-social a{width:34px;height:34px;}
 }
 
 /* Schliessen-Knopf und Sprachwahl gibt es nur im Mobil-Menü */
@@ -269,6 +284,23 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
   writing-mode:vertical-rl;letter-spacing:.32em;opacity:.55;
 }
 @media(max-width:900px){.hero-cta{margin-left:0;}.hero-scroll{display:none;}}
+
+/* Kennzahlen im Hero. Der Zähl-Effekt steckt in assets/site.js; damit die
+   Zeile beim Hochzählen nicht zappelt, sind die Ziffern tabellarisch. */
+.hero-stats{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:14px clamp(28px,6vw,72px);
+  margin:clamp(22px,4vh,38px) auto 0;max-width:min(900px,90%);
+}
+.hstat{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.hstat-value{
+  font-size:clamp(1.7rem,4.4vw,3rem);line-height:1;
+  font-variation-settings:'wdth' 118,'wght' 800;
+  font-variant-numeric:tabular-nums;color:var(--bone);
+}
+.hstat-label{
+  font-family:var(--font-m);font-size:.62rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--bone-dim);
+}
 
 .totop{
   position:fixed;right:18px;bottom:18px;z-index:90;width:48px;height:48px;
@@ -490,9 +522,39 @@ blockquote.lede footer{
 @media(max-width:900px){.about-grid{grid-template-columns:1fr;}.about-photo{max-width:420px;}}
 
 /* ---------- SOUND ---------- */
+.sound{background:rgba(10,14,25,.55);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,90px);align-items:center;}
+.genre-list{list-style:none;}
+.genre-list{display:flex;flex-direction:column;gap:14px;}
+.genre-list li{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:18px 20px;background:var(--card);border:1px solid var(--line);
+  font-size:clamp(1.2rem,3vw,2.1rem);text-transform:uppercase;font-variation-settings:'wdth' 116,'wght' 720;
+}
+.mix-stack{display:grid;gap:22px;}
+.mix-card{border:1px solid var(--line);background:var(--card);padding:clamp(22px,3.4vw,36px);}
+.mix-card h3{font-size:1.15rem;font-variation-settings:'wdth' 116,'wght' 720;margin:14px 0 8px;}
+.mix-card p{color:var(--bone-dim);font-size:.95rem;max-width:44ch;}
+.mix-embed{margin-top:20px;aspect-ratio:16/6;min-height:120px;}
+.mix-embed iframe{width:100%;height:100%;border:0;display:block;}
 #experience{overflow:clip;background:
   radial-gradient(circle at 22% 48%,rgba(46,107,255,.13),transparent 32%),
   linear-gradient(180deg,rgba(11,15,26,.18),rgba(11,15,26,.5));}
+.experience-composition{
+  display:grid;grid-template-columns:minmax(280px,.82fr) minmax(0,1.18fr);
+  gap:clamp(34px,6vw,88px);align-items:center;margin-top:clamp(34px,5vw,62px);
+}
+.speaker-model{
+  position:relative;min-height:clamp(410px,44vw,550px);perspective:1100px;
+  isolation:isolate;overflow:visible;
+}
+.speaker-aura{
+  position:absolute;left:50%;top:52%;width:96%;aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:
+    radial-gradient(circle,rgba(46,107,255,.28),rgba(46,107,255,.09) 39%,transparent 68%);
+  filter:blur(13px);
+}
 .speaker-beam{
   position:absolute;top:13%;width:44%;height:72%;z-index:-1;opacity:.46;
   clip-path:polygon(47% 0,56% 0,100% 100%,0 100%);
@@ -625,11 +687,32 @@ blockquote.lede footer{
     radial-gradient(ellipse,rgba(46,107,255,.14),transparent 66%);
   clip-path:polygon(16% 0,84% 0,100% 100%,0 100%);filter:blur(.2px);
 }
+.sound-ring{
+  position:absolute;left:50%;top:58%;width:64%;aspect-ratio:1;border:1px solid rgba(46,107,255,.34);
+  border-radius:50%;transform:translate(-50%,-50%) rotateX(68deg);opacity:.5;
+  animation:sound-ring 3.6s ease-out infinite;
+}
+.sound-ring.ring-two{animation-delay:-1.8s;}
 @keyframes sound-ring{
   0%{width:52%;opacity:0}
   28%{opacity:.55}
   100%{width:108%;opacity:0}
 }
+.moment-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:0;}
+#experience .moment-grid .mix-card{
+  position:relative;min-height:138px;padding:24px 26px 24px 76px;
+  border-color:rgba(233,237,245,.17);
+  background:linear-gradient(110deg,rgba(26,33,50,.92),rgba(15,20,32,.62));
+}
+#experience .moment-grid .mix-card::before{
+  content:attr(data-step);position:absolute;left:22px;top:24px;
+  font-family:var(--font-m);font-size:.62rem;letter-spacing:.13em;color:var(--spark);
+}
+#experience .moment-grid .mix-card::after{
+  content:"";position:absolute;left:47px;top:24px;bottom:24px;width:1px;
+  background:linear-gradient(var(--spark),rgba(46,107,255,.08));
+}
+#experience .moment-grid .mix-card h3{margin-top:10px;}
 .btn{
   display:inline-flex;align-items:center;justify-content:center;margin-top:26px;
   font-family:var(--font-m);font-size:.73rem;letter-spacing:.16em;text-transform:uppercase;
@@ -695,7 +778,7 @@ blockquote.lede footer{
 .venue-list{list-style:none;display:flex;flex-direction:column;gap:14px;}
 @media(min-width:860px){.venue-list{display:grid;grid-template-columns:1fr 1fr;}}
 .venue-list a{
-  display:grid;grid-template-columns:56px 1fr auto;gap:18px;align-items:center;
+  display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:18px;align-items:center;
   padding:18px 20px;background:var(--card);border:1px solid var(--line);
   min-height:var(--tap);
   transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
@@ -705,24 +788,72 @@ blockquote.lede footer{
 @media(min-width:860px){.venue-list .lead{grid-column:1/-1;}}
 .venue-list .lead a{border-color:rgba(46,107,255,.45);background:linear-gradient(90deg,rgba(46,107,255,.10),var(--card) 55%);}
 .venue-list .lead .venue-idx{color:var(--spark);opacity:1;}
-.venue-name{font-size:clamp(1.3rem,3.4vw,2.6rem);text-transform:uppercase;font-variation-settings:'wdth' 116,'wght' 700;}
+/* Der Name steht immer auf EINER Zeile. Die Grundgrösse ist darum bewusst
+   zurückhaltend; passt ein langer Name trotzdem nicht, verkleinert ihn
+   assets/site.js so weit, bis er in die Zeile geht (--venue-fit). */
+.venue-name{
+  font-size:calc(clamp(1rem,2.1vw,1.55rem) * var(--venue-fit,1));
+  text-transform:uppercase;font-variation-settings:'wdth' 116,'wght' 700;
+  display:block;min-width:0;white-space:nowrap;overflow:hidden;
+}
+/* Die beiden wichtigsten Referenzen stehen gross über die ganze Breite. */
+.venue-list .lead .venue-name{font-size:calc(clamp(1.5rem,4vw,2.9rem) * var(--venue-fit,1));}
 .venue-city{font-family:var(--font-m);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);}
 .venue-idx{font-family:var(--font-m);font-size:.72rem;color:var(--warm);opacity:.65;font-variant-numeric:tabular-nums;}
 .live-note{margin-top:26px;color:var(--bone-dim);font-size:.92rem;}
 
 /* ---------- SHOP ---------- */
+.shop-note{color:var(--bone-dim);max-width:60ch;margin-bottom:clamp(26px,4vw,40px);}
 /* Alles auf einen Blick: die Karten sind bewusst klein gehalten, damit
    moeglichst viel Ware gleichzeitig sichtbar ist. Wie klein, haengt an der
    Menge — `--tile` setzt der Generator je nach Anzahl Produkte (siehe
    kachelbreite() in scripts/build.mjs). Das min() haelt eine Kachel davon ab,
    breiter zu werden als das Raster selbst. */
+.shop-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(var(--tile,168px),100%),1fr));
+  gap:clamp(12px,1.6vw,18px);
+}
+.product{
+  background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;
+  transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
+}
+.product:hover{transform:translateY(-3px);border-color:rgba(46,107,255,.55);}
+.product-img{aspect-ratio:1;overflow:hidden;}
+.product-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.product:hover .product-img img{transform:scale(1.04);}
+.product-body{padding:11px 12px 13px;display:flex;flex-direction:column;gap:5px;flex:1;}
+.product-body h3{font-size:.92rem;font-variation-settings:'wdth' 116,'wght' 740;}
+.product-body p{color:var(--bone-dim);font-size:.78rem;line-height:1.45;}
+.product-foot{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;}
+.price{font-variant-numeric:tabular-nums;font-family:var(--font-m);font-size:.8rem;color:var(--spark);letter-spacing:.06em;}
 .product .btn{margin-top:0;padding:9px 14px;font-size:.6rem;min-height:36px;}
 .btn.ghost{border-color:var(--line);color:var(--bone);}
 .btn.ghost:hover{border-color:var(--bone);background:none;color:var(--bone);}
+.product.soldout{opacity:.55;}
 .empty-note{color:var(--bone-dim);border:1px dashed var(--line);padding:26px 28px;max-width:52ch;}
 
 /* Bezahlen: TWINT/Bank samt QR-Code zum Abscannen */
+.pay-methods{
+  margin-top:clamp(26px,3.6vw,42px);border:1px solid var(--line);
+  background:rgba(9,13,24,.65);padding:clamp(18px,2.6vw,28px);
+}
+.pay-cols{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(20px,3vw,40px);align-items:start;}
 @media(max-width:700px){.pay-cols{grid-template-columns:1fr;}}
+.pay-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:16px 0 14px;}
+.pay-list li{display:flex;flex-wrap:wrap;gap:4px 16px;justify-content:space-between;
+  border-bottom:1px solid var(--line);padding-bottom:8px;}
+.pay-list b{font-family:var(--font-m);font-size:.66rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--bone-dim);font-weight:400;}
+.pay-list span{font-family:var(--font-m);font-size:.98rem;letter-spacing:.05em;color:var(--bone);user-select:all;}
+.pay-note{color:var(--bone-dim);font-size:.82rem;max-width:52ch;}
+.pay-qr{width:220px;max-width:100%;}
+.pay-qr img{width:100%;height:auto;display:block;background:#fff;padding:10px;}
+.pay-qr figcaption{margin-top:10px;text-align:center;}
+.pay-qr-missing{
+  display:flex;align-items:center;justify-content:center;aspect-ratio:1;
+  border:1px dashed var(--line);color:var(--bone-dim);text-align:center;padding:16px;
+}
 
 /* Bestellformular — teilt sich das Aussehen mit dem Booking-Formular */
 .oform{margin-top:clamp(26px,3.6vw,42px);}
@@ -854,6 +985,25 @@ blockquote.lede footer{
 
 .gal-video{position:relative;background:transparent;}
 .gal-video video{width:100%;height:auto;display:block;}
+/* Video-Kacheln zeigen ihr Vorschaubild und laufen erst, wenn der Zeiger
+   darauf liegt (Handy: sobald sie im Bild sind). Das Zeichen verschwindet,
+   sobald abgespielt wird. */
+.gal-play{
+  position:absolute;left:10px;bottom:10px;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;pointer-events:none;
+  background:rgba(8,11,20,.55);border:1px solid rgba(233,237,245,.28);
+  transition:opacity .25s ease;
+}
+.gal-play::before{
+  content:"";width:0;height:0;margin-left:3px;
+  border:6px solid transparent;border-left:10px solid #fff;
+}
+.gal-video.playing .gal-play{opacity:0;}
+.gal-video::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(233,237,245,0);transition:box-shadow .25s ease;
+}
+.gal-video:hover::after{box-shadow:inset 0 0 0 1px rgba(46,107,255,.55);}
 .gal-video figcaption{
   position:absolute;left:12px;bottom:10px;font-family:var(--font-m);font-size:.62rem;
   letter-spacing:.12em;color:rgba(233,237,245,.78);text-transform:uppercase;pointer-events:none;
@@ -934,6 +1084,17 @@ blockquote.lede footer{
 .avail li::before{content:"✓";color:var(--spark);font-size:1rem;margin-right:2px;}
 .avail li .mono{display:none;}
 @media(min-width:520px){.avail{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));}}
+
+/* Bild im Booking-Abschnitt — steht unter „Available for“ und gibt der
+   Anfrage-Seite ein Gesicht. Ohne hinterlegtes Bild entfällt der Block. */
+.booking-photo{position:relative;margin:0 0 30px;aspect-ratio:3/2;overflow:hidden;}
+.booking-photo img{width:100%;height:100%;object-fit:cover;
+  box-shadow:0 26px 60px -30px rgba(0,0,0,.9);}
+.booking-photo figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:10px 12px;
+  font-size:.56rem;letter-spacing:.18em;color:var(--bone-dim);
+  background:linear-gradient(to top,rgba(8,11,20,.75),transparent);
+}
 
 /* Datumswahl-Kalender im Booking-Formular */
 .bform-cal{border:1px solid var(--line);background:rgba(9,13,24,.6);padding:16px 16px 14px;}
@@ -1163,6 +1324,19 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .show-date b{font-size:1.5rem;}
   .show-cta{grid-column:1/-1;}
   .show-cta .btn{width:100%;}
+  .sound{background:rgba(10,14,25,.76);}
+  .sound-grid{gap:34px;}
+  .genre-list{gap:0;border-top:1px solid var(--line);}
+  .genre-list li{
+    background:none;border:0;border-bottom:1px solid var(--line);
+    padding:15px 2px;font-size:1.35rem;
+  }
+  .mix-stack{
+    display:flex;gap:12px;margin-inline:-16px;padding-inline:16px;
+    overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  }
+  .mix-stack::-webkit-scrollbar{display:none;}
+  .mix-card{flex:0 0 86vw;scroll-snap-align:center;scroll-snap-stop:always;padding:20px 18px;}
 
   .show-list{gap:10px;}
   .show-list li{
@@ -1174,8 +1348,10 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     grid-template-columns:32px minmax(0,1fr);gap:10px;padding:17px 2px;
     background:none;border:0;border-bottom:1px solid var(--line);
   }
-  .venue-name{font-size:1.35rem;}
+  .venue-name{font-size:calc(1.12rem * var(--venue-fit,1));}
+  .venue-list .lead .venue-name{font-size:calc(1.5rem * var(--venue-fit,1));}
   .venue-city{grid-column:2;}
+  .genre-list li{font-size:1.15rem;padding:16px;}
   .avail li{font-size:1.05rem;}
 
   .gal{
@@ -1195,6 +1371,11 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
      damit auf dem Handy alles auf einmal zu sehen ist. Zwei Spalten sind die
      Untergrenze; steht viel im Shop, wird `--tile` klein genug fuer drei oder
      vier. */
+  .shop-grid{
+    grid-template-columns:repeat(auto-fill,minmax(min(calc(var(--tile,168px)*.66),46vw),1fr));
+    gap:10px;
+  }
+  .product-body{padding:10px 11px 12px;}
 
   .cal{margin-inline:-4px;}
   .cal-head{padding:11px 10px;}
@@ -1225,6 +1406,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .foot{gap:12px;align-items:flex-start;flex-direction:column;}
   footer{padding-bottom:24px;}
 
+  .facts,.mix-stack,.gal{touch-action:pan-x;}
   .hero-cta:active,.btn:active,.scard:active,.show-list li:active{transform:scale(.985);}
 
   /* Lightbox: Bedienelemente in Daumennähe */
@@ -1343,13 +1525,42 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .facts dt{font-size:.48rem;letter-spacing:.08em;line-height:1.3;}
   .facts dd{font-size:1.2rem;margin-top:5px;}
 
+  .sound-grid{gap:20px;}
+  .genre-list li{
+    padding:11px 2px;font-size:1rem;line-height:1.2;
+  }
   .genre-list li .mono{font-size:.5rem;}
   .live-note{font-size:.9rem;line-height:1.5;}
+  .mix-stack{
+    display:block;margin:0;padding:0;overflow:visible;touch-action:auto;
+  }
+  .mix-card{padding:16px 14px;}
+  .mix-card h3{font-size:1rem;margin:10px 0 6px;}
+  .mix-card p{font-size:.88rem;}
   .mix-card .btn{width:100%;margin-top:16px;padding:11px 14px;}
   #experience>.wrap>.lede{font-size:1rem;line-height:1.48;}
+  .experience-composition{display:block;margin-top:24px;}
+  .speaker-model{
+    width:min(100%,390px);height:min(78vw,320px);min-height:282px;margin:0 auto 17px;
+  }
   .speaker-rig{width:min(77%,286px);height:96%;top:49%;}
+  .speaker-aura{width:92%;top:51%;}
   .speaker-levels{right:0;top:23%;height:47%;gap:4px;}
   .speaker-floor{bottom:-6%;width:94%;height:27%;}
+  .sound-ring{top:59%;}
+  .moment-grid{
+    display:grid;grid-template-columns:1fr;gap:8px;margin:0;padding:0;
+    overflow:visible;touch-action:auto;
+  }
+  #experience .moment-grid .mix-card{
+    min-height:0;padding:16px 14px 16px 58px;
+  }
+  #experience .moment-grid .mix-card::before{
+    left:14px;top:17px;font-size:.55rem;
+  }
+  #experience .moment-grid .mix-card::after{
+    left:40px;top:16px;bottom:16px;
+  }
   #experience blockquote.lede{font-size:1rem;line-height:1.5;margin-top:24px;}
 
   .show-list{gap:7px;}
@@ -1362,7 +1573,8 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .venue-list a{
     grid-template-columns:28px minmax(0,1fr);gap:8px;padding:12px 1px;
   }
-  .venue-name{font-size:1.08rem;}
+  .venue-name{font-size:calc(.98rem * var(--venue-fit,1));}
+  .venue-list .lead .venue-name{font-size:calc(1.3rem * var(--venue-fit,1));}
   .venue-city{font-size:.56rem;}
 
   .gal{
@@ -1387,6 +1599,9 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   /* Reste der frueheren Wisch-Reihe (randlose Breite, flex-basis:76vw) sind
      hier raus: die Ware steht laengst im Raster, und 76vw pro Karte hiess auf
      dem Handy eine Ware pro Bildschirm. */
+  .shop-grid{gap:10px;}
+  .product-body{padding:13px;}
+  .product h3{font-size:1rem;}
 
   .avail{gap:7px;margin:14px 0 20px;}
   .avail li{font-size:.92rem;padding:10px 12px;gap:9px;}
@@ -1442,6 +1657,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 
   /* Der Shop wischt nicht mehr seitlich, also darf er auch das senkrechte
      Scrollen nicht mehr abfangen (frueher: touch-action:pan-x). */
+  .facts,.gal,.shop-grid{touch-action:auto;}
 }
 
 /* Touch-Geräte: Hover-Effekte lassen Karten sonst „kleben“ */
@@ -1456,6 +1672,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .lb-fig{transform:none;opacity:1;transition:none;}
   .cal-day.has-show:hover .cal-dot{animation:none;}
   .ticker-track{animation:none;}
+  .sound-ring{animation:none;opacity:.25;}
   body::after{animation:none;}
   html{scroll-behavior:auto;}
   .gal figure:hover img{transform:none;}
@@ -1480,11 +1697,20 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 .hero-cta:hover{transform:translateY(-1px);}
 
 /* Genre-Zeilen: Akzentkante waechst von links */
+.genre-list li{position:relative;transition:border-color .25s;}
+.genre-list li::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:var(--spark);
+  transition:width .25s cubic-bezier(.22,.8,.28,1);
+}
+.genre-list li:hover{border-color:rgba(46,107,255,.5);}
+.genre-list li:hover::before{width:3px;}
 
 /* Referenzen: Nummer springt beim Hover auf Blau */
 .venue-list a:hover .venue-idx{color:var(--spark);opacity:1;}
 
 /* Mix-Karte reagiert wie die anderen Karten */
+.mix-card{transition:border-color .25s;}
+.mix-card:hover{border-color:rgba(46,107,255,.5);}
 
 /* Galerie: dunkler Verlauf unten, damit die Bildunterschrift lesbar ist */
 .gal-btn::after{

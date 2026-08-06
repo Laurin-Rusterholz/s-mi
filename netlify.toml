@@ -79,10 +79,11 @@
   to = "/404.html"
   status = 404
 
-# Das Presskit hiess frueher "sparking" (Schreibfehler) — alte Links weiterleiten.
+# Die Datei hiess frueher "sparkling" (Schreibfehler im Namen) — alte Links
+# auf den richtig geschriebenen Namen weiterleiten.
 [[redirects]]
-  from = "/presskit/sam-sparking-presskit-2026.pdf"
-  to = "/presskit/sam-sparkling-presskit-2026.pdf"
+  from = "/presskit/sam-sparkling-presskit-2026.pdf"
+  to = "/presskit/sam-sparking-presskit-2026.pdf"
   status = 301
 
 # Der Inhalts-Schnappschuss ist eine Bau-Zutat, keine Seite.
