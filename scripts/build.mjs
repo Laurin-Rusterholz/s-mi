@@ -241,39 +241,63 @@ function schreibweiseTief(node) {
  * von vor dieser Änderung tragen. Alles andere — Bilder, Videos, Termine,
  * Texte, Links — bleibt unangetastet: die Verwaltung behält die Hoheit.
  */
+const kopie = (v) => JSON.parse(JSON.stringify(v));
+
+/**
+ * Jeder Schritt gehört genau zu der Fassung, die ihn gebracht hat, und läuft
+ * nur einmal. Das ist der springende Punkt: würde bei jeder neuen Fassung
+ * wieder der ganze Satz laufen, käme mit Fassung 3 auch die Sichtbarkeit aus
+ * Fassung 2 zurück — ein in der Verwaltung eingeschalteter Shop wäre beim
+ * nächsten Build wieder aus, ohne dass jemand etwas dagegen tun kann.
+ */
+const NACHZIEH_SCHRITTE = [
+  {
+    ab: 2,
+    tun(live, template) {
+      schreibweiseTief(live);
+
+      const ls = live.sections || (live.sections = {});
+      const ts = template.sections || {};
+
+      // Listen: die Datenbank gewinnt bei Listen immer, darum gezielt setzen.
+      if (ts.references?.items) ls.references = { ...ls.references, items: kopie(ts.references.items) };
+      if (ts.contact?.socials) ls.contact = { ...ls.contact, socials: kopie(ts.contact.socials) };
+      if (ts.about) ls.about = { ...ls.about, facts: kopie(ts.about.facts || []) };
+      if (template.hero?.stats) live.hero = { ...live.hero, stats: kopie(template.hero.stats) };
+
+      // Einmalig: Shop, Sound und Erlebnis standen in der Datenbank noch auf
+      // "an", der Kunde will sie aus. Danach entscheidet allein die Verwaltung.
+      for (const [k, sec] of Object.entries(ts)) {
+        if (ls[k] && typeof sec?.enabled === "boolean") ls[k].enabled = sec.enabled;
+      }
+      if (template.layout) live.layout = list(template.layout).slice();
+      if (Array.isArray(template.pages) && Array.isArray(live.pages)) {
+        live.pages.forEach((p, i) => {
+          const t = template.pages[i];
+          if (p && t && Array.isArray(t.sections)) p.sections = t.sections.slice();
+        });
+      }
+    },
+  },
+  {
+    ab: 3,
+    tun(live, template) {
+      // Nur setzen, wenn in der Verwaltung noch kein Bild gewählt wurde.
+      const tp = template.sections?.booking?.photo;
+      const ls = live.sections || (live.sections = {});
+      if (tp?.src && !ls.booking?.photo?.src) ls.booking = { ...ls.booking, photo: kopie(tp) };
+    },
+  },
+];
+
 export function nachziehen(live, template) {
   const stand = Number(live?.contentRevision || 0);
-  if (stand >= VORLAGEN_STAND) return null;
+  const ziel = Number(template?.contentRevision) || VORLAGEN_STAND;
+  if (stand >= ziel) return null;
 
-  schreibweiseTief(live);
+  NACHZIEH_SCHRITTE.filter((s) => stand < s.ab && s.ab <= ziel).forEach((s) => s.tun(live, template));
 
-  const ls = live.sections || (live.sections = {});
-  const ts = template.sections || {};
-
-  // Listen: die Datenbank gewinnt bei Listen immer, darum hier gezielt setzen.
-  if (ts.references?.items) ls.references = { ...ls.references, items: JSON.parse(JSON.stringify(ts.references.items)) };
-  if (ts.contact?.socials) ls.contact = { ...ls.contact, socials: JSON.parse(JSON.stringify(ts.contact.socials)) };
-  if (ts.about) ls.about = { ...ls.about, facts: JSON.parse(JSON.stringify(ts.about.facts || [])) };
-  if (template.hero?.stats) live.hero = { ...live.hero, stats: JSON.parse(JSON.stringify(template.hero.stats)) };
-  if (ts.booking?.photo?.src && !ls.booking?.photo?.src) {
-    ls.booking = { ...ls.booking, photo: JSON.parse(JSON.stringify(ts.booking.photo)) };
-  }
-
-  // Sichtbarkeit und Aufbau: Shop, Sound und Erlebnis stehen in der Datenbank
-  // noch auf "an" — der Kunde will sie aus. Ab jetzt entscheidet wieder die
-  // Verwaltung, dieser Abgleich läuft nur bis zum ersten Speichern dort.
-  for (const [k, sec] of Object.entries(ts)) {
-    if (ls[k] && typeof sec?.enabled === "boolean") ls[k].enabled = sec.enabled;
-  }
-  if (template.layout) live.layout = list(template.layout).slice();
-  if (Array.isArray(template.pages) && Array.isArray(live.pages)) {
-    live.pages.forEach((p, i) => {
-      const t = template.pages[i];
-      if (p && t && Array.isArray(t.sections)) p.sections = t.sections.slice();
-    });
-  }
-
-  live.contentRevision = VORLAGEN_STAND;
+  live.contentRevision = ziel;
   return stand;
 }
 

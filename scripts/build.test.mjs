@@ -164,10 +164,29 @@ if (uebersetzt[0].url !== "https://www.instagram.com/sam_sparking/") {
   if (nachziehen(alt, template) !== null) meckern("nachziehen() greift ein zweites Mal");
 }
 
+/* Ein in der Verwaltung eingeschalteter Abschnitt darf durch eine neuere
+   Vorlagen-Fassung nicht wieder ausgehen: nur die Schritte laufen, die seit
+   dem Stand der Datenbank dazugekommen sind. */
+{
+  const db = JSON.parse(JSON.stringify(template));
+  db.contentRevision = 2;
+  db.sections.shop.enabled = true;
+  db.sections.booking.photo = { src: "", alt: "", credit: "" };
+
+  nachziehen(db, template);
+
+  if (db.sections.shop.enabled !== true)
+    meckern("Der in der Verwaltung eingeschaltete Shop wurde vom Nachziehen wieder ausgeschaltet");
+  if (!db.sections.booking.photo.src)
+    meckern("Schritt 3 (Bild im Booking) ist nicht gelaufen");
+  if (db.contentRevision !== template.contentRevision)
+    meckern("Stand nach dem Teil-Nachziehen falsch: " + db.contentRevision);
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler — adoptTexts schmiert Texte über die Listen.`);
   process.exit(1);
 }
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
-console.log("nachziehen: Schreibweise korrigiert, Hostname unversehrt, Shop bleibt aus, greift nur einmal.");
+console.log("nachziehen: Schreibweise korrigiert, Hostname unversehrt, greift nur einmal — und ein\n            in der Verwaltung eingeschalteter Abschnitt bleibt eingeschaltet.");
