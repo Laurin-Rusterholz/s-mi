@@ -178,17 +178,23 @@
   });
 
   /* ------------------------------------------------- Kennzahlen im Hero */
-  // Die fertige Zahl steht bereits im HTML. Hier wird sie nur kurz von 1 auf
-  // ihren Wert hochgezählt — in zwei Sekunden, sobald der Hero im Bild ist.
-  // Bei "Bewegung reduzieren" bleibt schlicht die fertige Zahl stehen.
+  // Die fertige Zahl steht bereits im HTML. Hier wird sie in drei Sekunden
+  // hochgezählt, sobald der Hero im Bild ist. Bei "Bewegung reduzieren"
+  // bleibt schlicht die fertige Zahl stehen.
   var heroStats = Array.prototype.slice.call(document.querySelectorAll(".hstat-value[data-to]"));
   if (heroStats.length && !reduce) {
-    var COUNT_MS = 2000;
+    var COUNT_MS = 3000;
+    // Alle Zahlen laufen gleich lang. Zaehlte jede ab 1, raste die 2021 durch
+    // 2020 Schritte, waehrend die 7 sechs Schritte kriecht — dieselbe Dauer,
+    // voellig verschiedenes Tempo. Darum legt nicht der Startwert 1, sondern
+    // eine feste Zahl SCHRITTE die Strecke fest: je groesser das Ziel, desto
+    // hoeher faengt es an. Kleine Zahlen zaehlen einfach ab 1.
+    var SCHRITTE = 40;
     var zaehlen = function (node) {
       if (node._counted) return;
       node._counted = true;
-      var from = parseInt(node.getAttribute("data-from"), 10);
       var to = parseInt(node.getAttribute("data-to"), 10);
+      var from = Math.max(1, to - SCHRITTE);
       var pre = node.getAttribute("data-pre") || "";
       var post = node.getAttribute("data-post") || "";
       if (!isFinite(from) || !isFinite(to) || to <= from) return;
@@ -226,18 +232,29 @@
   // Die Schriftgrössen im CSS sind so gewählt, dass die Namen normalerweise
   // passen. Für die wirklich langen ("Firehouse Party Wittenbach") wird hier
   // so weit verkleinert, bis der Name in seine Zeile geht — nie umbrechen.
-  var venueNames = Array.prototype.slice.call(document.querySelectorAll(".venue-name"));
-  if (venueNames.length) {
+  var venueList = document.querySelector(".venue-list");
+  if (venueList) {
+    // Entscheidend ist EIN gemeinsamer Faktor je Gruppe: würde jede Kachel für
+    // sich verkleinert, hätte jede eine andere Schriftgrösse und die Liste
+    // wirkt zusammengewürfelt. Der längste Name bestimmt darum die Grösse
+    // aller anderen — grosse Referenzen und kleine je für sich.
+    var gruppe = function (auswahl, variable) {
+      var namen = Array.prototype.slice.call(venueList.querySelectorAll(auswahl));
+      if (!namen.length) return;
+      venueList.style.setProperty(variable, "1");
+      var faktor = 1;
+      var passtNicht = function () {
+        return namen.some(function (n) { return n.scrollWidth > n.clientWidth + 1; });
+      };
+      // Höchstens zwölf Schritte à 4 % — darunter wäre der Name unlesbar.
+      for (var i = 0; i < 12 && passtNicht(); i++) {
+        faktor -= 0.04;
+        venueList.style.setProperty(variable, String(faktor));
+      }
+    };
     var einpassen = function () {
-      venueNames.forEach(function (n) {
-        n.style.setProperty("--venue-fit", "1");
-        var faktor = 1;
-        // Höchstens acht Schritte à 6 % — darunter wäre der Name unlesbar.
-        for (var i = 0; i < 8 && n.scrollWidth > n.clientWidth + 1; i++) {
-          faktor -= 0.06;
-          n.style.setProperty("--venue-fit", String(faktor));
-        }
-      });
+      gruppe(".lead .venue-name", "--venue-lead-fit");
+      gruppe("li:not(.lead) .venue-name", "--venue-fit");
     };
     einpassen();
     var fitTimer;

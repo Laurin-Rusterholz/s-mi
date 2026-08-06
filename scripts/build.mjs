@@ -191,8 +191,9 @@ function looksLikeLegacy(live, legacy) {
  *   2  Schreibweise "Sam Sparking", vollständige Referenzliste, Instagram als
  *      Kanal, Kennzahlen im Hero statt Fakten unter About, Shop/Sound/Erlebnis
  *      ausgeschaltet.
+ *   3  Bild im Booking-Abschnitt.
  */
-const VORLAGEN_STAND = 2;
+const VORLAGEN_STAND = 3;
 
 /**
  * "Sam Sparkling" war jahrelang falsch geschrieben. Ausgenommen ist der
@@ -254,6 +255,9 @@ export function nachziehen(live, template) {
   if (ts.contact?.socials) ls.contact = { ...ls.contact, socials: JSON.parse(JSON.stringify(ts.contact.socials)) };
   if (ts.about) ls.about = { ...ls.about, facts: JSON.parse(JSON.stringify(ts.about.facts || [])) };
   if (template.hero?.stats) live.hero = { ...live.hero, stats: JSON.parse(JSON.stringify(template.hero.stats)) };
+  if (ts.booking?.photo?.src && !ls.booking?.photo?.src) {
+    ls.booking = { ...ls.booking, photo: JSON.parse(JSON.stringify(ts.booking.photo)) };
+  }
 
   // Sichtbarkeit und Aufbau: Shop, Sound und Erlebnis stehen in der Datenbank
   // noch auf "an" — der Kunde will sie aus. Ab jetzt entscheidet wieder die
@@ -523,7 +527,7 @@ function heroStats(hero) {
       // "7+" → Ziffern "7", Nachsatz "+";  "CHF 5" → Vorsatz "CHF ", Ziffern "5"
       const m = value.match(/^([^\d]*)(\d[\d'’.,]*)(.*)$/);
       const data = m
-        ? ` data-from="1" data-to="${esc(m[2].replace(/[^\d]/g, ""))}"` +
+        ? ` data-to="${esc(m[2].replace(/[^\d]/g, ""))}"` +
           ` data-pre="${esc(m[1])}" data-post="${esc(m[3])}"`
         : "";
       return `<div class="hstat">
@@ -1237,7 +1241,7 @@ function renderBooking(n, s, site) {
             <input name="email" type="email" required maxlength="160" autocomplete="email"
                    placeholder="${esc(UI.phEmail)}">
           </label>
-          <label class="span-2"><span class="lbl">${esc(UI.fPhone)} <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">${esc(UI.fPhone)} <i aria-hidden="true">*</i></span>
             <input name="phone" type="tel" required maxlength="40" autocomplete="tel"
                    placeholder="${esc(UI.phPhone)}">
           </label>
@@ -1253,16 +1257,16 @@ function renderBooking(n, s, site) {
           <label><span class="lbl">${esc(UI.fSetLength)} <i aria-hidden="true">*</i></span>
             <input name="setLength" type="text" required maxlength="60" placeholder="${esc(UI.fSetLengthHint)}">
           </label>
-          <label class="span-2"><span class="lbl">${esc(UI.fMessage)} <i aria-hidden="true">*</i></span>
-            <textarea name="message" rows="5" required maxlength="4000"
-                      placeholder="${esc(UI.phMessage)}"></textarea>
-          </label>
-          <label class="span-2 bform-captcha"><span class="lbl">${esc(UI.captcha)} <i aria-hidden="true">*</i></span>
+          <label class="bform-captcha"><span class="lbl">${esc(UI.captcha)} <i aria-hidden="true">*</i></span>
             <span class="captcha-row">
               <span class="captcha-sum" aria-hidden="true"><b data-a></b> + <b data-b></b> =</span>
               <input name="captcha" type="text" required inputmode="numeric" maxlength="4"
                      autocomplete="off" aria-label="${esc(UI.captchaAria)}" placeholder="?">
             </span>
+          </label>
+          <label class="span-2"><span class="lbl">${esc(UI.fMessage)} <i aria-hidden="true">*</i></span>
+            <textarea name="message" rows="3" required maxlength="4000"
+                      placeholder="${esc(UI.phMessage)}"></textarea>
           </label>
           <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">${esc(UI.fHoneypot)}</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
