@@ -796,12 +796,6 @@ blockquote.lede footer{
 @media(max-width:900px){.contact .contact-grid .big-mail{font-size:clamp(1.05rem,5.4vw,2.35rem);}}
 .contact-side{padding-top:4px;}
 .contact-side .side-label{display:block;margin-bottom:12px;}
-/* Vorübergehender Hinweis über den Kanälen (z. B. Kanal wird erneuert).
-   Der Generator baut ihn nur bis zu einem Stichtag ein. */
-.channel-notice{
-  border-left:2px solid rgba(8,12,22,.35);padding:10px 0 10px 14px;margin:0 0 16px;
-  max-width:44ch;font-size:.9rem;line-height:1.5;color:#080c16;
-}
 .mail-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 26px;}
 .mail-tools .btn{margin-top:0;}
 .copy-mail{

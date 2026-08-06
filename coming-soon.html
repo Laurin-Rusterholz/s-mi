@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sam Sparkling — Coming soon</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:,">
+<!--
+  Wartungsseite. Netlify liefert sie ueber die erste Regel in netlify.toml
+  fuer JEDE Adresse aus, mit Status 503 (voruebergehend, nicht "geloescht" —
+  damit Suchmaschinen die Seite nicht aus dem Index werfen).
+
+  Wieder online: in netlify.toml den Block "Wartung" entfernen. Sonst nichts —
+  die gebaute Website liegt unveraendert darunter und ist sofort wieder da.
+
+  Alles steht bewusst in dieser einen Datei: die Umleitung erfasst auch
+  /assets/*, es kann also kein CSS und keine Schrift nachgeladen werden.
+-->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    min-height:100vh;display:grid;place-items:center;padding:32px;
+    background:#05070e;color:#eceae5;
+    font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  main{max-width:34rem;text-align:center}
+  .name{
+    font-size:.72rem;letter-spacing:.42em;text-transform:uppercase;
+    color:#a9a9a6;margin-bottom:28px;
+  }
+  h1{
+    font-size:clamp(2.4rem,11vw,4.5rem);line-height:1;font-weight:700;
+    letter-spacing:-.02em;margin-bottom:8px;
+  }
+  h1 i{font-style:normal;color:#2e6bff}
+  .rule{width:56px;height:2px;background:#2e6bff;margin:28px auto}
+  p{color:#a9a9a6;font-size:1rem;line-height:1.6;margin-bottom:10px}
+  p.lead{color:#eceae5}
+  .mail{margin-top:32px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#a9a9a6}
+  .mail a{color:#eceae5;text-decoration:underline;text-decoration-color:#2e6bff;text-underline-offset:5px}
+  .mail a:hover{color:#2e6bff}
+</style>
+</head>
+<body>
+  <main>
+    <div class="name">Sam Sparkling</div>
+    <h1>Coming<i>.</i> Soon<i>.</i></h1>
+    <div class="rule"></div>
+    <p class="lead" lang="de">Die Website wird gerade erneuert und ist in Kürze wieder verfügbar.</p>
+    <p lang="en">The site is being rebuilt and will be back shortly.</p>
+    <p lang="fr">Le site est en cours de refonte et sera de retour très bientôt.</p>
+    <p class="mail">Booking &amp; Anfragen — <a href="mailto:info@samsparking.ch">info@samsparking.ch</a></p>
+  </main>
+</body>
+</html>
