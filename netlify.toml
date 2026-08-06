@@ -66,11 +66,35 @@
 # WIEDER ONLINE STELLEN: diesen Block loeschen (bis einschliesslich der
 # naechsten Zeile) und pushen. Die gebaute Website liegt unveraendert darunter
 # und ist mit dem naechsten Deploy sofort wieder da.
+#
+# AUSNAHMEN, die VOR der Wartungsregel stehen muessen (erste Regel gewinnt):
+# robots.txt darf nie mit 5xx antworten. Google wertet eine ueber laengere
+# Zeit fehlerhafte robots.txt als "alles gesperrt" und hoert auf, die Domain
+# ueberhaupt zu besuchen — die Wartung wuerde damit die Sichtbarkeit kosten,
+# statt sie nur zu pausieren. Die sitemap.xml bleibt aus demselben Grund
+# erreichbar: Google sieht weiter, welche Adressen es gibt, bekommt dort 503
+# und kommt wieder.
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+
 [[redirects]]
   from = "/*"
   to = "/coming-soon.html"
   status = 503
   force = true
+
+# Sagt Suchmaschinen und Browsern, wann sich ein neuer Versuch lohnt (Sekunden
+# = ein Tag). Gehoert zur Wartung und faellt mit diesem Block wieder weg.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Retry-After = "86400"
 # ===========================================================================
 
 # Quelldateien des Generators nicht ausliefern.

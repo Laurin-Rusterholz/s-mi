@@ -2156,8 +2156,10 @@ ${pageBackground(site)}
     ${headSocialsBlock}
     <button class="burger" id="burger" aria-label="${esc(ui.menu)}" aria-expanded="false" aria-controls="nav" data-open="${esc(ui.menu)}" data-close="${esc(ui.close)}">${esc(ui.menu)}</button>
   </header>
+  <main id="main">
 ${hero}${tickerBlock}${subNav}
 ${body}
+  </main>
 
   <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="${esc(ui.imageViewer)}" hidden>
     <button class="lb-close" id="lb-close" aria-label="${esc(ui.close)}">✕</button>
