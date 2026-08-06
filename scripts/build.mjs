@@ -812,10 +812,23 @@ function socialIcon(label, url) {
 const pendingSocials = (s) =>
   list(s?.socials).filter((x) => str(x?.label) && !safeUrl(x?.url));
 
+/**
+ * Vorübergehender Hinweis bei den Kanälen: Instagram wird gerade erneuert.
+ *
+ * Der Hinweis verschwindet von allein — ab diesem Tag baut ihn der Generator
+ * nicht mehr ein, und weil der Inhalts-Abgleich stündlich neu baut, ist er
+ * ohne Zutun weg. Das Datum steht auch im Text (ui.channelNotice), damit die
+ * Übersetzungen es ausformulieren können; beide gehören zusammen.
+ * Frueher entfernen: die Zeile hier auf ein vergangenes Datum setzen.
+ */
+const CHANNEL_NOTICE_UNTIL = "2026-08-07";
+const channelNotice = () => (today() < CHANNEL_NOTICE_UNTIL ? str(UI.channelNotice) : "");
+
 function renderContact(n, s, bookingTarget) {
   const mail = str(s.email);
   const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
   const pending = pendingSocials(s);
+  const notice = channelNotice();
   const meta = `
         <div class="contact-meta">
           ${
@@ -867,9 +880,10 @@ function renderContact(n, s, bookingTarget) {
           ${meta}
         </div>
         ${
-          socials.length
+          socials.length || notice
             ? `<div class="contact-side">
           <span class="mono side-label">${esc(UI.follow)}</span>
+          ${notice ? `<p class="channel-notice">${esc(notice)}</p>` : ""}
           <div class="social-cards">
           ${socials
             .map((x) => {
@@ -1139,6 +1153,7 @@ const UI_DEFAULTS = {
   oSuccess: "Danke — deine Bestellung ist da. Die Zahlungsangaben kommen gleich per Mail.",
   oError: "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail.",
   follow: "Kanäle",
+  channelNotice: "Instagram wird gerade erneuert und ist ab dem 7. August wieder verfügbar.",
   orderMailBody: "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",

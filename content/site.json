@@ -304,7 +304,8 @@
         "captcha": "Anti-Spam — bitte lösen",
         "captchaAria": "Ergebnis der Rechenaufgabe",
         "captchaWrong": "Die Rechnung stimmt noch nicht.",
-        "formFine": "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet."
+        "formFine": "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet.",
+        "channelNotice": "Instagram wird gerade erneuert und ist ab dem 7. August wieder verfügbar."
       }
     },
     "fr": {
@@ -587,7 +588,8 @@
         "captcha": "Anti-spam — à résoudre",
         "captchaAria": "Résultat du calcul",
         "captchaWrong": "Le calcul n'est pas encore juste.",
-        "formFine": "* Champs obligatoires · Tes données servent uniquement au traitement de ta demande."
+        "formFine": "* Champs obligatoires · Tes données servent uniquement au traitement de ta demande.",
+        "channelNotice": "Instagram est en cours de refonte et sera de nouveau disponible le 7 août."
       },
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
@@ -886,7 +888,8 @@
         "captcha": "074c9046",
         "captchaAria": "236102a9",
         "captchaWrong": "bc9de2ce",
-        "formFine": "68fad56e"
+        "formFine": "68fad56e",
+        "channelNotice": "b0e89c39"
       }
     },
     "fr": {
@@ -1165,7 +1168,8 @@
         "captcha": "074c9046",
         "captchaAria": "236102a9",
         "captchaWrong": "bc9de2ce",
-        "formFine": "68fad56e"
+        "formFine": "68fad56e",
+        "channelNotice": "b0e89c39"
       },
       "hero": {
         "kicker": "0f636286",
@@ -1652,7 +1656,8 @@
     "captcha": "Anti-spam — please solve",
     "captchaAria": "Result of the sum",
     "captchaWrong": "That sum is not right yet.",
-    "formFine": "* Required · Your details are used only to handle your enquiry."
+    "formFine": "* Required · Your details are used only to handle your enquiry.",
+    "channelNotice": "Instagram is being rebuilt and will be back on 7 August."
   },
   "updatedAt": "2026-08-05T18:03:39.232Z",
   "updatedBy": "Verwaltung"
