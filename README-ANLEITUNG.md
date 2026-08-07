@@ -27,6 +27,10 @@ Verwaltung (Admin)  ──schreibt──▶  Firebase Realtime Database
 - **`content/site.json`** — der Inhalt. Wird beim Build automatisch mit dem Stand
   aus der Verwaltung überschrieben; ist die Datenbank nicht erreichbar, baut
   Netlify mit dieser eingecheckten Datei weiter (mit Warnung im Build-Log).
+- **`content/bildmasse.json`** — Breite und Höhe je Bild, aus der
+  Medienbibliothek der Verwaltung. Damit stehen `width` und `height` am `<img>`
+  und die Seite springt beim Nachladen nicht mehr. Wird beim Build erneuert;
+  von Hand ist hier nichts zu pflegen.
 - **`scripts/build.mjs`** — der Generator. Keine Abhängigkeiten, reines Node.
 - **`index.html`** und die Seiten-Verzeichnisse (`shows/`, `gallery/`, …) —
   **generiert, nicht von Hand bearbeiten.** Änderungen hier gehen beim nächsten

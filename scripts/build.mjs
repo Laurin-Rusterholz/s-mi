@@ -20,6 +20,8 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LOCAL_CONTENT = resolve(ROOT, "content/site.json");
+/** Schnappschuss der Bildmasse aus der Medienbibliothek (siehe ladeBildmasse). */
+const LOCAL_MASSE = resolve(ROOT, "content/bildmasse.json");
 
 /** Verzeichnisse, die der Generator nie anfasst. */
 const KEEP_DIRS = new Set(["assets", "img", "media", "content", "scripts", "presskit", "node_modules"]);
@@ -301,6 +303,53 @@ export function nachziehen(live, template) {
   return stand;
 }
 
+/**
+ * Bildmasse aus der Medienbibliothek der Verwaltung. Sie stehen dort seit dem
+ * Hochladen (width/height je Datei), kamen bisher aber nie in der Website an.
+ *
+ * Die Masse liegen bewusst NICHT im Inhalt: dort müssten sie bei jedem
+ * Bildwechsel mitgepflegt werden und wären schnell falsch. Der Generator
+ * schlägt sie stattdessen über die Bild-Adresse nach und schreibt einen
+ * Schnappschuss mit, damit ein Build ohne API (und die lokale Vorschau)
+ * dieselben Zahlen hat.
+ */
+async function ladeBildmasse() {
+  const api = process.env.MEDIA_API_URL || process.env.CONTENT_API_URL?.replace(/content\.json/, "media.json");
+  const map = new Map();
+
+  if (api && /media\.json/.test(api)) {
+    try {
+      const res = await fetch(api, { headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = (await res.json()) || {};
+      for (const m of Object.values(data)) {
+        const url = str(m?.url);
+        const w = Number(m?.width) || 0;
+        const h = Number(m?.height) || 0;
+        if (url && w > 0 && h > 0) map.set(url, { w, h });
+      }
+      if (map.size) {
+        await writeFile(LOCAL_MASSE, JSON.stringify(Object.fromEntries(map), null, 2) + "\n");
+        console.log(`[build] Bildmasse aus der Medienbibliothek: ${map.size} Bild(er)`);
+        return map;
+      }
+    } catch (err) {
+      console.warn("[build] Medienbibliothek nicht lesbar:", err.message);
+    }
+  }
+
+  try {
+    const roh = JSON.parse(await readFile(LOCAL_MASSE, "utf8"));
+    for (const [url, m] of Object.entries(roh)) {
+      if (Number(m?.w) > 0 && Number(m?.h) > 0) map.set(url, { w: Number(m.w), h: Number(m.h) });
+    }
+    if (map.size) console.log(`[build] Bildmasse aus dem Schnappschuss: ${map.size} Bild(er)`);
+  } catch (e) {
+    /* noch kein Schnappschuss — dann bleiben die Bilder ohne width/height */
+  }
+  return map;
+}
+
 async function loadContent() {
   const apiUrl = process.env.CONTENT_API_URL;
   if (apiUrl) {
@@ -402,15 +451,36 @@ function cdnUrl(src, w) {
   return `/.netlify/images?url=${encodeURIComponent(rooted(clean))}&w=${w}&q=72`;
 }
 
+/**
+ * Bildmasse aus der Medienbibliothek, nach Adresse. Wird in ladeBildmasse()
+ * gefüllt. Ohne Eintrag bleibt das Bild ohne width/height — dann verhält es
+ * sich wie bisher.
+ */
+let BILDMASSE = new Map();
+
+/** Masse eines Bildes: erst am Inhalt, sonst aus der Medienbibliothek. */
+function masseVon(media, raw) {
+  const w = Number(media?.width) || 0;
+  const h = Number(media?.height) || 0;
+  if (w > 0 && h > 0) return { w, h };
+  const m = BILDMASSE.get(raw);
+  return m && m.w > 0 && m.h > 0 ? m : null;
+}
+
 function picture(media, { className = "", eager = false, sizes = "", widths = [480, 800, 1200], style = "" } = {}) {
   const raw = String(media?.src || "").trim();
   if (!raw || !safeUrl(raw)) return "";
   const srcset = CDN
     ? ` srcset="${widths.map((w) => `${esc(cdnUrl(raw, w))} ${w}w`).join(", ")}"`
     : "";
+  // width/height reservieren den Platz, bevor das Bild da ist — ohne sie
+  // springt der Text beim Nachladen nach unten (Layout Shift). Die Zahlen
+  // sind nur das Seitenverhältnis; die tatsächliche Grösse macht das CSS.
+  const masse = masseVon(media, raw);
   const attrs = [
     `src="${esc(cdnUrl(raw, widths[widths.length - 1]))}"`,
     `alt="${esc(media?.alt || "")}"`,
+    masse ? `width="${masse.w}" height="${masse.h}"` : "",
     eager ? 'fetchpriority="high" decoding="async"' : 'loading="lazy" decoding="async"',
     sizes ? `sizes="${esc(sizes)}"` : "",
     className ? `class="${esc(className)}"` : "",
@@ -2582,6 +2652,7 @@ Sitemap: ${base}/sitemap.xml
 
 async function main() {
   const content = await loadContent();
+  BILDMASSE = await ladeBildmasse();
   if (!content.site || !content.site.domain) {
     throw new Error("content: site.domain fehlt");
   }
