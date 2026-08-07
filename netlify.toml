@@ -55,37 +55,40 @@
     Cache-Control = "public, max-age=86400"
 
 # ===========================================================================
-# WARTUNG — abgeschaltet, die Website ist online.
+# WARTUNG — EINGESCHALTET: die Website ist durch "Coming soon" ersetzt.
 #
-# WIEDER AUF "COMING SOON" STELLEN: die naechsten vier Zeilen einkommentieren.
-# Netlify nimmt die erste passende Regel, diese faengt damit alles ab — auch
-# /de/, /fr/ und die Dateien unter /assets/. Status 503 (nicht 404) sorgt
-# dafuer, dass Suchmaschinen die Seite im Index behalten und wiederkommen.
+# WIEDER ONLINE STELLEN: alles ab hier bis zur Schlusslinie auskommentieren
+# (jede Zeile mit "# " davor). Die gebaute Website liegt unveraendert darunter
+# und ist mit dem naechsten Deploy sofort wieder da.
 #
-# ACHTUNG, falls wieder eingeschaltet wird: /robots.txt und /sitemap.xml
-# muessen als Ausnahmen DAVOR stehen (Beispiel unten auskommentiert). Eine
-# robots.txt, die laenger 5xx liefert, wertet Google als "alles gesperrt" —
-# die Wartung wuerde dann Sichtbarkeit kosten statt sie nur zu pausieren.
+# Netlify nimmt die erste passende Regel, die Sternchen-Regel faengt damit
+# alles ab — auch /de/, /fr/ und die Dateien unter /assets/. Status 503 (nicht
+# 404) sorgt dafuer, dass Suchmaschinen die Seite im Index behalten und
+# wiederkommen.
 #
-# [[redirects]]
-#   from = "/robots.txt"
-#   to = "/robots.txt"
-#   status = 200
-# [[redirects]]
-#   from = "/sitemap.xml"
-#   to = "/sitemap.xml"
-#   status = 200
-#
-# [[redirects]]
-#   from = "/*"
-#   to = "/coming-soon.html"
-#   status = 503
-#   force = true
-#
-# [[headers]]
-#   for = "/*"
-#   [headers.values]
-#     Retry-After = "86400"
+# robots.txt und sitemap.xml stehen bewusst DAVOR und bleiben mit 200
+# erreichbar: eine robots.txt, die laenger 5xx liefert, wertet Google als
+# "alles gesperrt" — die Wartung wuerde dann Sichtbarkeit kosten, statt sie
+# nur zu pausieren.
+[[redirects]]
+  from = "/robots.txt"
+  to = "/robots.txt"
+  status = 200
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/coming-soon.html"
+  status = 503
+  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Retry-After = "86400"
 # ===========================================================================
 
 # Quelldateien des Generators nicht ausliefern.
