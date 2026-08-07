@@ -2034,6 +2034,27 @@ function rooted(url) {
 
 /* --------------------------------------------------------------- dokument */
 
+/**
+ * Welche Abschnitte diese Website überhaupt bauen kann — dieselben Schlüssel
+ * wie `renderers` weiter unten, und beide gehören zusammen.
+ *
+ * Der Grund für die Liste: Der Inhalt kommt aus der Verwaltung und trägt
+ * mitunter Abschnitte, die es hier nicht mehr gibt — der Shop etwa, den der
+ * Kunde 2026 von der Seite genommen hat, liegt in der Datenbank weiter. Ein
+ * solcher Abschnitt fiel bisher zwar aus dem Rumpf (kein Baustein), stand aber
+ * weiter im Menü: ein Menüpunkt „Shop", der auf `#shop` zeigt und ins Leere
+ * läuft. Unbekannte Abschnitte fallen deshalb schon hier weg — im Menü wie im
+ * Rumpf.
+ */
+const BAUBAR = new Set([
+  "about",
+  "shows",
+  "references",
+  "gallery",
+  "booking",
+  "contact",
+]);
+
 function renderPage(c, page, pages, lang, langs) {
   const master = langs[0];
   UI = { ...UI_DEFAULTS, ...(c.ui || {}) };
@@ -2046,6 +2067,7 @@ function renderPage(c, page, pages, lang, langs) {
   const order = list(page.sections).filter(
     (key) =>
       sections[key] &&
+      BAUBAR.has(key) &&
       sections[key].enabled !== false &&
       (key !== "shows" || hasShows)
   );
@@ -2716,9 +2738,13 @@ async function main() {
       const html = renderPage(localized, page, localizedPages, lang, langs);
       await writeFile(file, html);
       written.push(rel);
+      // Gemeldet wird, was wirklich in der Datei steht — nicht, was der Inhalt
+      // vorschlägt. Sonst führt die Meldung Abschnitte auf, die es hier gar
+      // nicht mehr gibt (siehe BAUBAR) und die niemand auf der Seite findet.
+      const gebaut = list(page.sections).filter((k) => BAUBAR.has(k));
       console.log(
         `[build] ${rel.padEnd(30)} ${(html.length / 1024).toFixed(1).padStart(5)} kB  ` +
-          `(${page.sections.join(", ") || "keine Abschnitte"})`
+          `(${gebaut.join(", ") || "keine Abschnitte"})`
       );
     }
   }
