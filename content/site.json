@@ -184,10 +184,10 @@
               "city": "St. Gallen"
             },
             "6": {
-              "city": "SG"
+              "city": "St. Gallen"
             },
             "7": {
-              "city": "AR"
+              "city": "Herisau"
             },
             "8": {
               "city": "Herisau"
@@ -196,7 +196,7 @@
               "city": "Sirnach"
             },
             "10": {
-              "city": "GL"
+              "city": "Glarus"
             },
             "11": {
               "city": "Bazenheid"
@@ -441,10 +441,10 @@
               "city": "Saint-Gall"
             },
             "6": {
-              "city": "SG"
+              "city": "Saint-Gall"
             },
             "7": {
-              "city": "AR"
+              "city": "Herisau"
             },
             "8": {
               "city": "Herisau"
@@ -453,7 +453,7 @@
               "city": "Sirnach"
             },
             "10": {
-              "city": "GL"
+              "city": "Glaris"
             },
             "11": {
               "city": "Bazenheid"
@@ -806,10 +806,10 @@
               "city": "0fcf8f7b"
             },
             "6": {
-              "city": "5a0287ff"
+              "city": "0fcf8f7b"
             },
             "7": {
-              "city": "3cd53aba"
+              "city": "2a8d0bbe"
             },
             "8": {
               "city": "2a8d0bbe"
@@ -818,7 +818,7 @@
               "city": "b288f8df"
             },
             "10": {
-              "city": "62d0f95e"
+              "city": "08dfc821"
             },
             "11": {
               "city": "0aebc3d7"
@@ -1059,10 +1059,10 @@
               "city": "0fcf8f7b"
             },
             "6": {
-              "city": "5a0287ff"
+              "city": "0fcf8f7b"
             },
             "7": {
-              "city": "3cd53aba"
+              "city": "2a8d0bbe"
             },
             "8": {
               "city": "2a8d0bbe"
@@ -1071,7 +1071,7 @@
               "city": "b288f8df"
             },
             "10": {
-              "city": "62d0f95e"
+              "city": "08dfc821"
             },
             "11": {
               "city": "0aebc3d7"
@@ -1540,11 +1540,11 @@
           "name": "Ultrawild Festival"
         },
         {
-          "city": "SG",
+          "city": "St. Gallen",
           "name": "Monoevents"
         },
         {
-          "city": "AR",
+          "city": "Herisau",
           "name": "Amadeusbar"
         },
         {
@@ -1556,7 +1556,7 @@
           "name": "Turnunterhaltung Sirnach"
         },
         {
-          "city": "GL",
+          "city": "Glarus",
           "name": "Xploration Events"
         },
         {
@@ -1779,5 +1779,5 @@
   },
   "updatedAt": "2026-08-05T18:03:39.232Z",
   "updatedBy": "Verwaltung",
-  "contentRevision": 3
+  "contentRevision": 4
 }

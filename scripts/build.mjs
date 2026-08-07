@@ -194,8 +194,10 @@ function looksLikeLegacy(live, legacy) {
  *      Kanal, Kennzahlen im Hero statt Fakten unter About, Shop/Sound/Erlebnis
  *      ausgeschaltet.
  *   3  Bild im Booking-Abschnitt.
+ *   4  Orte der Referenzen vervollstaendigt (Herisau, St. Gallen, Glarus
+ *      statt der blossen Kantonskuerzel).
  */
-const VORLAGEN_STAND = 3;
+const VORLAGEN_STAND = 4;
 
 /**
  * "Sam Sparkling" war jahrelang falsch geschrieben. Ausgenommen ist der
@@ -282,6 +284,21 @@ const NACHZIEH_SCHRITTE = [
     },
   },
   {
+    ab: 4,
+    tun(live, template) {
+      // Nur die Orte anfassen — Namen, Reihenfolge und Hervorhebung bleiben,
+      // wie sie in der Verwaltung stehen.
+      const tItems = template.sections?.references?.items || [];
+      const lItems = live.sections?.references?.items;
+      if (!Array.isArray(lItems)) return;
+      const nachName = new Map(tItems.map((i) => [str(i.name), str(i.city)]));
+      lItems.forEach((i) => {
+        const ort = nachName.get(str(i?.name));
+        if (ort) i.city = ort;
+      });
+    },
+  },
+  {
     ab: 3,
     tun(live, template) {
       // Nur setzen, wenn in der Verwaltung noch kein Bild gewählt wurde.
@@ -297,7 +314,9 @@ export function nachziehen(live, template) {
   const ziel = Number(template?.contentRevision) || VORLAGEN_STAND;
   if (stand >= ziel) return null;
 
-  NACHZIEH_SCHRITTE.filter((s) => stand < s.ab && s.ab <= ziel).forEach((s) => s.tun(live, template));
+  NACHZIEH_SCHRITTE.filter((s) => stand < s.ab && s.ab <= ziel)
+    .sort((a, b) => a.ab - b.ab)   // in der Reihenfolge der Fassungen, nicht der Notation
+    .forEach((s) => s.tun(live, template));
 
   live.contentRevision = ziel;
   return stand;

@@ -55,46 +55,37 @@
     Cache-Control = "public, max-age=86400"
 
 # ===========================================================================
-# WARTUNG — die Website ist voruebergehend durch "Coming soon" ersetzt.
+# WARTUNG — abgeschaltet, die Website ist online.
 #
-# Diese Regel steht bewusst GANZ OBEN: Netlify nimmt die erste passende, so
-# faengt sie alles ab, auch /de/, /fr/ und die Dateien unter /assets/.
-#   status 503  Dienst voruebergehend nicht verfuegbar. Wichtig statt 404:
-#               Suchmaschinen behalten die Seite im Index und kommen wieder.
-#   force       gilt auch dort, wo eine echte Datei liegt (index.html usw.).
+# WIEDER AUF "COMING SOON" STELLEN: die naechsten vier Zeilen einkommentieren.
+# Netlify nimmt die erste passende Regel, diese faengt damit alles ab — auch
+# /de/, /fr/ und die Dateien unter /assets/. Status 503 (nicht 404) sorgt
+# dafuer, dass Suchmaschinen die Seite im Index behalten und wiederkommen.
 #
-# WIEDER ONLINE STELLEN: diesen Block loeschen (bis einschliesslich der
-# naechsten Zeile) und pushen. Die gebaute Website liegt unveraendert darunter
-# und ist mit dem naechsten Deploy sofort wieder da.
+# ACHTUNG, falls wieder eingeschaltet wird: /robots.txt und /sitemap.xml
+# muessen als Ausnahmen DAVOR stehen (Beispiel unten auskommentiert). Eine
+# robots.txt, die laenger 5xx liefert, wertet Google als "alles gesperrt" —
+# die Wartung wuerde dann Sichtbarkeit kosten statt sie nur zu pausieren.
 #
-# AUSNAHMEN, die VOR der Wartungsregel stehen muessen (erste Regel gewinnt):
-# robots.txt darf nie mit 5xx antworten. Google wertet eine ueber laengere
-# Zeit fehlerhafte robots.txt als "alles gesperrt" und hoert auf, die Domain
-# ueberhaupt zu besuchen — die Wartung wuerde damit die Sichtbarkeit kosten,
-# statt sie nur zu pausieren. Die sitemap.xml bleibt aus demselben Grund
-# erreichbar: Google sieht weiter, welche Adressen es gibt, bekommt dort 503
-# und kommt wieder.
-[[redirects]]
-  from = "/robots.txt"
-  to = "/robots.txt"
-  status = 200
-[[redirects]]
-  from = "/sitemap.xml"
-  to = "/sitemap.xml"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
-
-# Sagt Suchmaschinen und Browsern, wann sich ein neuer Versuch lohnt (Sekunden
-# = ein Tag). Gehoert zur Wartung und faellt mit diesem Block wieder weg.
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Retry-After = "86400"
+# [[redirects]]
+#   from = "/robots.txt"
+#   to = "/robots.txt"
+#   status = 200
+# [[redirects]]
+#   from = "/sitemap.xml"
+#   to = "/sitemap.xml"
+#   status = 200
+#
+# [[redirects]]
+#   from = "/*"
+#   to = "/coming-soon.html"
+#   status = 503
+#   force = true
+#
+# [[headers]]
+#   for = "/*"
+#   [headers.values]
+#     Retry-After = "86400"
 # ===========================================================================
 
 # Quelldateien des Generators nicht ausliefern.
