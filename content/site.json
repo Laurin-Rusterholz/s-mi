@@ -1,5 +1,4 @@
 {
-  "contentRevision": 4,
   "hero": {
     "ctaHref": "#booking",
     "ctaLabel": "Book me",
@@ -11,7 +10,7 @@
       "type": "video"
     },
     "meta": "Euphoric Hardstyle / Melodic Hardstyle",
-    "nameMain": "Sparkling",
+    "nameMain": "Sparking",
     "nameSpaced": "S A M",
     "stats": [
       {
@@ -1416,6 +1415,10 @@
       "phone": "+41 77 509 11 71",
       "socials": [
         {
+          "label": "Instagram",
+          "url": "https://www.instagram.com/sam_sparking/"
+        },
+        {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
         }
@@ -1523,32 +1526,66 @@
       "enabled": true,
       "items": [
         {
+          "city": "Zürich",
+          "name": "Sektor 11",
+          "highlight": true
+        },
+        {
+          "city": "Wattwil",
+          "name": "Jugendopenair",
+          "highlight": true
+        },
+        {
           "city": "St. Gallen",
           "name": "Kugl"
         },
         {
-          "city": "Zürich",
-          "name": "Sektor 11"
-        },
-        {
-          "city": "Schaan, FL",
-          "name": "The Q"
+          "city": "St. Gallen",
+          "name": "B9 eventlocation"
         },
         {
           "city": "St. Gallen",
           "name": "IVY"
         },
         {
+          "city": "St. Gallen",
+          "name": "Ultrawild Festival"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Monoevents"
+        },
+        {
+          "city": "Herisau",
+          "name": "Amadeusbar"
+        },
+        {
+          "city": "Herisau",
+          "name": "Dorffest Herisau"
+        },
+        {
+          "city": "Sirnach",
+          "name": "Turnunterhaltung Sirnach"
+        },
+        {
+          "city": "Glarus",
+          "name": "Xploration Events"
+        },
+        {
+          "city": "Bazenheid",
+          "name": "Winterzauber Bazenheid"
+        },
+        {
+          "city": "Wittenbach",
+          "name": "Firehouse Party Wittenbach"
+        },
+        {
           "city": "Gossau",
           "name": "BBC"
         },
         {
-          "city": "St. Gallen",
-          "name": "B9"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "Ultrawild Festival"
+          "city": "Schaan, FL",
+          "name": "The Q"
         }
       ],
       "navLabel": "References",
@@ -1626,7 +1663,7 @@
   },
   "site": {
     "accentColor": "#2e6bff",
-    "artist": "Sam Sparkling",
+    "artist": "Sam Sparking",
     "backgroundImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3Y6YTa6zJklnO4%2Fdsc00389-verbessert-rr.jpg?alt=media&token=24cc6380-f841-4b19-a437-358805f25892",
     "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json",
     "claim": "Turning energy into euphoria",
@@ -1647,7 +1684,7 @@
       "de",
       "fr"
     ],
-    "logoText": "Sam Sparkling",
+    "logoText": "Sam Sparking",
     "ogDescription": "Hardstyle DJ and producer from St. Gallen. Hard kicks, emotional melodies. Book me for your club or festival — Switzerland and Europe.",
     "ogImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171",
     "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",

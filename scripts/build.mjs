@@ -180,24 +180,30 @@ function looksLikeLegacy(live, legacy) {
 }
 
 /**
- * Stand der Vorlage. Wird erhöht, wenn im Repo etwas geändert wurde, das die
- * Verwaltung noch nicht kennt — die Datenbank gewinnt sonst über `withDefaults`
- * gegen jede Korrektur im Repo, und der Build würde den alten Stand
- * wiederherstellen.
+ * Korrekturen an dem, was aus der Verwaltung kommt.
  *
- * Solange die Datenbank eine kleinere Zahl trägt, zieht `nachziehen()` die
- * betroffenen Stellen aus der Vorlage nach. Sobald in der Verwaltung einmal
- * gespeichert wurde, steht die Zahl auch dort und der Build lässt die
- * Datenbank wieder unangetastet gewinnen.
+ * Hintergrund: `withDefaults` laesst bei jedem Wert die Datenbank gewinnen.
+ * Eine Korrektur, die nur im Repo steht, waere daher wirkungslos.
  *
- *   2  Schreibweise "Sam Sparking", vollständige Referenzliste, Instagram als
- *      Kanal, Kennzahlen im Hero statt Fakten unter About, Shop/Sound/Erlebnis
- *      ausgeschaltet.
- *   3  Bild im Booking-Abschnitt.
- *   4  Orte der Referenzen vervollstaendigt (Herisau, St. Gallen, Glarus
- *      statt der blossen Kantonskuerzel).
+ * Eine frueher hier eingebaute Fassungsnummer (contentRevision) hat sich als
+ * falsch erwiesen: sie stand in defaults/site.json, die Verwaltung uebernahm
+ * sie beim Laden in ihren Inhalt und schrieb sie beim Speichern in die
+ * Datenbank — zusammen mit dem UNkorrigierten Stand. Danach hielt der Build
+ * die Datenbank fuer aktuell und der alte Name kam zurueck. Genau so ist
+ * "Sam Sparkling" wieder aufgetaucht.
+ *
+ * Deshalb ohne Nummer, mit zwei Arten von Regeln:
+ *
+ *   IMMER          Die Schreibweise. Sie kann nie falsch sein und nie zu oft
+ *                  laufen — der Name heisst "Sam Sparking", fertig.
+ *
+ *   NUR SOLANGE    Alles andere greift nur, solange die Daten noch exakt den
+ *   UNANGETASTET   alten Stand tragen. Sobald in der Verwaltung etwas daran
+ *                  geaendert wurde, passt die Bedingung nicht mehr und der
+ *                  Build laesst die Stelle in Ruhe. Die Verwaltung behaelt
+ *                  damit immer das letzte Wort, ohne dass jemand irgendwo
+ *                  eine Nummer mitfuehren muss.
  */
-const VORLAGEN_STAND = 4;
 
 /**
  * "Sam Sparkling" war jahrelang falsch geschrieben. Ausgenommen ist der
@@ -254,81 +260,94 @@ const kopie = (v) => JSON.parse(JSON.stringify(v));
  * Fassung 2 zurück — ein in der Verwaltung eingeschalteter Shop wäre beim
  * nächsten Build wieder aus, ohne dass jemand etwas dagegen tun kann.
  */
-const NACHZIEH_SCHRITTE = [
-  {
-    ab: 2,
-    tun(live, template) {
-      schreibweiseTief(live);
+const LOCAL_KORREKTUREN = resolve(ROOT, "content/korrekturen.json");
 
-      const ls = live.sections || (live.sections = {});
-      const ts = template.sections || {};
+/** Wird in loadContent() gefuellt; leer heisst: keine Korrekturen hinterlegt. */
+let KORREKTUREN = null;
 
-      // Listen: die Datenbank gewinnt bei Listen immer, darum gezielt setzen.
-      if (ts.references?.items) ls.references = { ...ls.references, items: kopie(ts.references.items) };
-      if (ts.contact?.socials) ls.contact = { ...ls.contact, socials: kopie(ts.contact.socials) };
-      if (ts.about) ls.about = { ...ls.about, facts: kopie(ts.about.facts || []) };
-      if (template.hero?.stats) live.hero = { ...live.hero, stats: kopie(template.hero.stats) };
+const gleicheNamen = (items, namen) =>
+  Array.isArray(items) &&
+  Array.isArray(namen) &&
+  items.length === namen.length &&
+  items.every((i, n) => str(i?.name) === namen[n]);
 
-      // Einmalig: Shop, Sound und Erlebnis standen in der Datenbank noch auf
-      // "an", der Kunde will sie aus. Danach entscheidet allein die Verwaltung.
-      for (const [k, sec] of Object.entries(ts)) {
-        if (ls[k] && typeof sec?.enabled === "boolean") ls[k].enabled = sec.enabled;
-      }
-      if (template.layout) live.layout = list(template.layout).slice();
-      if (Array.isArray(template.pages) && Array.isArray(live.pages)) {
-        live.pages.forEach((p, i) => {
-          const t = template.pages[i];
-          if (p && t && Array.isArray(t.sections)) p.sections = t.sections.slice();
-        });
-      }
-    },
-  },
-  {
-    ab: 4,
-    tun(live, template) {
-      // Nur die Orte anfassen — Namen, Reihenfolge und Hervorhebung bleiben,
-      // wie sie in der Verwaltung stehen.
-      const tItems = template.sections?.references?.items || [];
-      const lItems = live.sections?.references?.items;
-      if (!Array.isArray(lItems)) return;
-      const nachName = new Map(tItems.map((i) => [str(i.name), str(i.city)]));
-      lItems.forEach((i) => {
-        const ort = nachName.get(str(i?.name));
-        if (ort) i.city = ort;
-      });
-    },
-  },
-  {
-    ab: 3,
-    tun(live, template) {
-      // Nur setzen, wenn in der Verwaltung noch kein Bild gewählt wurde.
-      const tp = template.sections?.booking?.photo;
-      const ls = live.sections || (live.sections = {});
-      if (tp?.src && !ls.booking?.photo?.src) ls.booking = { ...ls.booking, photo: kopie(tp) };
-    },
-  },
-];
+/**
+ * Korrigiert den Stand aus der Verwaltung. Gibt zurueck, was angefasst wurde —
+ * fuer das Build-Protokoll, damit nachvollziehbar bleibt, warum sich etwas
+ * geaendert hat.
+ */
+export function nachziehen(live, korr) {
+  const getan = [];
+  if (!live || typeof live !== "object") return getan;
 
-export function nachziehen(live, template) {
-  const stand = Number(live?.contentRevision || 0);
-  const ziel = Number(template?.contentRevision) || VORLAGEN_STAND;
-  if (stand >= ziel) return null;
+  // --- immer ---------------------------------------------------------------
+  const vorher = JSON.stringify(live);
+  schreibweiseTief(live);
+  if (JSON.stringify(live) !== vorher) getan.push("Schreibweise");
 
-  NACHZIEH_SCHRITTE.filter((s) => stand < s.ab && s.ab <= ziel)
-    .sort((a, b) => a.ab - b.ab)   // in der Reihenfolge der Fassungen, nicht der Notation
-    .forEach((s) => s.tun(live, template));
+  if (!korr || typeof korr !== "object") return getan;
 
-  live.contentRevision = ziel;
-  return stand;
+  const ls = live.sections || (live.sections = {});
+
+  // --- nur solange die Stelle noch unangetastet ist ------------------------
+
+  // Referenzen: nur ersetzen, solange exakt die alte Liste dasteht.
+  if (list(korr.referenzen).length && gleicheNamen(ls.references?.items, korr.alteReferenzen)) {
+    ls.references = { ...ls.references, items: kopie(korr.referenzen) };
+    getan.push(`Referenzliste (${korr.referenzen.length})`);
+  }
+
+  // Orte nachtragen, wo in der Verwaltung noch das blosse Kantonskuerzel steht.
+  const nachName = new Map(list(korr.referenzen).map((i) => [str(i.name), str(i.city)]));
+  let orte = 0;
+  list(ls.references?.items).forEach((i) => {
+    const ort = nachName.get(str(i?.name));
+    if (ort && /^[A-Z]{2}$/.test(str(i.city)) && ort !== str(i.city)) {
+      i.city = ort;
+      orte++;
+    }
+  });
+  if (orte) getan.push(`${orte} Ort(e)`);
+
+  // Instagram: nur ergaenzen, wenn ueberhaupt kein Instagram hinterlegt ist.
+  const istInsta = (x) => /instagram/i.test(str(x?.url) + str(x?.label));
+  if (korr.instagram && !list(ls.contact?.socials).some(istInsta)) {
+    ls.contact = { ...ls.contact, socials: [kopie(korr.instagram), ...list(ls.contact?.socials)] };
+    getan.push("Instagram");
+  }
+
+  // Kennzahlen und Booking-Bild: nur, wenn dort noch nichts steht.
+  if (list(korr.heroStats).length && !list(live.hero?.stats).length) {
+    live.hero = { ...live.hero, stats: kopie(korr.heroStats) };
+    getan.push("Kennzahlen");
+  }
+  if (korr.bookingBild?.src && !ls.booking?.photo?.src) {
+    ls.booking = { ...ls.booking, photo: kopie(korr.bookingBild) };
+    getan.push("Booking-Bild");
+  }
+
+  // Uebersetzungen zu den ersetzten Listen mitziehen.
+  for (const lang of ["de", "fr"]) {
+    const q = korr.i18n?.[lang];
+    if (!q) continue;
+    const zielS = live.i18n?.[lang]?.sections;
+    if (q.referenzen && zielS?.references) zielS.references.items = kopie(q.referenzen);
+    if (q.heroStats && live.i18n?.[lang]?.hero) live.i18n[lang].hero.stats = kopie(q.heroStats);
+  }
+
+  // Sichtbarkeit, Reihenfolge und Seitenaufbau bleiben unangetastet — darueber
+  // entscheidet allein die Verwaltung. Ein frueherer Versuch, sie hier zu
+  // erzwingen, hat den Schalter fuer den Shop wirkungslos gemacht.
+  return getan;
 }
 
 /**
  * Bildmasse aus der Medienbibliothek der Verwaltung. Sie stehen dort seit dem
  * Hochladen (width/height je Datei), kamen bisher aber nie in der Website an.
  *
- * Die Masse liegen bewusst NICHT im Inhalt: dort müssten sie bei jedem
- * Bildwechsel mitgepflegt werden und wären schnell falsch. Der Generator
- * schlägt sie stattdessen über die Bild-Adresse nach und schreibt einen
+ * Die Masse liegen bewusst NICHT im Inhalt: dort muessten sie bei jedem
+ * Bildwechsel mitgepflegt werden und waeren schnell falsch. Der Generator
+ * schlaegt sie stattdessen ueber die Bild-Adresse nach und schreibt einen
  * Schnappschuss mit, damit ein Build ohne API (und die lokale Vorschau)
  * dieselben Zahlen hat.
  */
@@ -369,7 +388,18 @@ async function ladeBildmasse() {
   return map;
 }
 
+/** Korrekturen laden. Fehlt die Datei, bleibt nur die Schreibweise. */
+async function ladeKorrekturen() {
+  try {
+    return JSON.parse(await readFile(LOCAL_KORREKTUREN, "utf8"));
+  } catch (e) {
+    console.warn("[build] content/korrekturen.json nicht lesbar:", e.message);
+    return null;
+  }
+}
+
 async function loadContent() {
+  KORREKTUREN = await ladeKorrekturen();
   const apiUrl = process.env.CONTENT_API_URL;
   if (apiUrl) {
     try {
@@ -407,13 +437,9 @@ async function loadContent() {
           );
           adoptTexts(live, template);
         }
-        const vorher = nachziehen(live, template);
-        if (vorher !== null) {
-          console.log(
-            `[build] Datenbank trägt Stand ${vorher} < ${VORLAGEN_STAND} — ` +
-              `Schreibweise, Referenzen, Kanäle und Sichtbarkeit aus der Vorlage ` +
-              `nachgezogen. Nach dem ersten Speichern in der Verwaltung entfällt das.`
-          );
+        const korrigiert = nachziehen(live, KORREKTUREN);
+        if (korrigiert.length) {
+          console.log(`[build] Aus der Vorlage nachgezogen: ${korrigiert.join(", ")}.`);
         }
         content = withDefaults(live, template);
       } catch (e) {
@@ -436,8 +462,19 @@ async function loadContent() {
     }
   }
   const raw = await readFile(LOCAL_CONTENT, "utf8");
-  console.log("[build] Inhalt aus content/site.json geladen");
-  return JSON.parse(raw);
+  const lokal = JSON.parse(raw);
+  // Auch hier korrigieren: der eingecheckte Stand ist ein Abzug der Datenbank
+  // und traegt darum dieselben alten Stellen. Ohne diesen Schritt haette die
+  // Vorschau ohne API einen anderen Inhalt als die Website.
+  const korrigiert = nachziehen(lokal, KORREKTUREN);
+  console.log(
+    "[build] Inhalt aus content/site.json geladen" +
+      (korrigiert.length ? ` — nachgezogen: ${korrigiert.join(", ")}` : "")
+  );
+  // Korrigierten Stand zurueckschreiben, sonst weicht die eingecheckte Datei
+  // von dem ab, was gebaut wurde.
+  if (korrigiert.length) await writeFile(LOCAL_CONTENT, JSON.stringify(lokal, null, 2) + "\n");
+  return lokal;
 }
 
 /* --------------------------------------------------------------- bausteine */

@@ -127,66 +127,78 @@ if (uebersetzt[0].url !== "https://www.instagram.com/sam_sparking/") {
 }
 
 /* ------------------------------------------------------------------------
-   nachziehen(): die Datenbank traegt noch den Stand von vor der Umbenennung.
-   Erwartet: jede Schreibweise korrigiert, Hostname unversehrt, Referenzen und
-   Kanaele aus der Vorlage, Shop aus — und beim zweiten Aufruf passiert nichts
-   mehr, weil der Stand jetzt in der Datenbank steht.
+   nachziehen(): korrigiert den Stand aus der Verwaltung.
+
+   Zwei Arten von Regeln — die Schreibweise immer, alles andere nur solange
+   die Stelle unangetastet ist. Genau daran ist die fruehere Fassung mit einer
+   Nummer gescheitert: die Verwaltung uebernahm die Nummer aus den Defaults
+   und schrieb sie mit dem UNkorrigierten Stand in die Datenbank; danach hielt
+   der Build sie fuer aktuell und "Sam Sparkling" kam zurueck.
    ------------------------------------------------------------------------ */
+const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json"), "utf8"));
+
 {
-  const alt = JSON.parse(JSON.stringify(template));
-  delete alt.contentRevision;
-  alt.site.artist = "Sam Sparkling";
-  alt.site.logoText = "Sam Sparkling";
-  alt.hero.nameMain = "Sparkling";
-  alt.site.domain = "https://djsamsparkling.netlify.app";
-  alt.site.keywords = ["Sam Sparkling", "Hardstyle DJ"];
-  alt.sections.about.paragraphs = ["Der Name **Sparkling** ist kein Zufall."];
-  alt.sections.contact.socials = [{ label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" }];
-  alt.sections.references.items = [{ city: "St. Gallen", name: "Kugl" }];
-  alt.sections.shop.enabled = true;
-
-  const vorher = nachziehen(alt, template);
-  if (vorher !== 0) meckern(`nachziehen() meldet Stand ${vorher} statt 0`);
-
-  const alsText = JSON.stringify(alt);
-  const hosts = (alsText.match(/djsamsparkling/gi) || []).length;
-  const reste = (alsText.match(/[Ss]parkling/g) || []).length - hosts;
-  if (reste !== 0) meckern(`${reste}x "Sparkling" nach dem Nachziehen uebrig`);
-  if (!hosts) meckern("Hostname djsamsparkling wurde mitkorrigiert — Canonical und Sitemap zeigen ins Leere");
-  if (alt.site.artist !== "Sam Sparking") meckern("Kuenstlername nicht korrigiert: " + alt.site.artist);
-  if (alt.site.domain !== "https://djsamsparkling.netlify.app") meckern("Domain veraendert: " + alt.site.domain);
-  if (alt.sections.references.items.length !== template.sections.references.items.length)
-    meckern("Referenzliste nicht aus der Vorlage uebernommen");
-  if (!alt.sections.contact.socials.some((s) => s.label === "Instagram"))
-    meckern("Instagram fehlt nach dem Nachziehen");
-  if (alt.sections.shop.enabled !== false) meckern("Shop steht nach dem Nachziehen wieder auf sichtbar");
-  if (alt.contentRevision !== template.contentRevision) meckern("Stand nicht mitgeschrieben");
-  if (nachziehen(alt, template) !== null) meckern("nachziehen() greift ein zweites Mal");
-}
-
-/* Ein in der Verwaltung eingeschalteter Abschnitt darf durch eine neuere
-   Vorlagen-Fassung nicht wieder ausgehen: nur die Schritte laufen, die seit
-   dem Stand der Datenbank dazugekommen sind. */
-{
+  // Der Stand, wie er nach jenem Speichern in der Datenbank stand
   const db = JSON.parse(JSON.stringify(template));
-  db.contentRevision = 2;
+  db.contentRevision = 4;                       // Altlast, darf nichts mehr bewirken
+  db.site.artist = "Sam Sparkling";
+  db.site.logoText = "Sam Sparkling";
+  db.hero.nameMain = "Sparkling";
+  db.site.domain = "https://djsamsparkling.netlify.app";
+  db.sections.about.paragraphs = ["Der Name **Sparkling** ist kein Zufall."];
+  db.sections.references.items = korr.alteReferenzen.map((n) => ({ name: n, city: "?" }));
+  db.sections.contact.socials = [{ label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" }];
   db.sections.shop.enabled = true;
+  db.hero.stats = [];
   db.sections.booking.photo = { src: "", alt: "", credit: "" };
 
-  nachziehen(db, template);
+  const getan = nachziehen(db, korr);
+  const alsText = JSON.stringify(db);
+  const hosts = (alsText.match(/djsamsparkling/gi) || []).length;
+  const reste = (alsText.match(/[Ss]parkling/g) || []).length - hosts;
 
+  if (reste !== 0) meckern(`${reste}x "Sparkling" nach dem Nachziehen uebrig`);
+  if (!hosts) meckern("Hostname djsamsparkling mitkorrigiert — Canonical und Sitemap zeigen ins Leere");
+  if (db.site.artist !== "Sam Sparking") meckern("Kuenstlername nicht korrigiert: " + db.site.artist);
+  if (db.sections.references.items.length !== korr.referenzen.length)
+    meckern("Referenzliste nicht ersetzt: " + db.sections.references.items.length);
+  if (!db.sections.contact.socials.some((x) => /instagram/i.test(x.label))) meckern("Instagram fehlt");
+  if (!db.hero.stats.length) meckern("Kennzahlen fehlen");
+  if (!db.sections.booking.photo.src) meckern("Booking-Bild fehlt");
   if (db.sections.shop.enabled !== true)
-    meckern("Der in der Verwaltung eingeschaltete Shop wurde vom Nachziehen wieder ausgeschaltet");
-  if (!db.sections.booking.photo.src)
-    meckern("Schritt 3 (Bild im Booking) ist nicht gelaufen");
-  if (db.contentRevision !== template.contentRevision)
-    meckern("Stand nach dem Teil-Nachziehen falsch: " + db.contentRevision);
+    meckern("Der Shop-Schalter aus der Verwaltung wurde ueberschrieben");
+  if (!getan.includes("Schreibweise")) meckern("Schreibweise nicht als Aenderung gemeldet");
+}
+
+{
+  // Der Kunde hat die Referenzen selbst bearbeitet — dann nichts anfassen.
+  const eigen = JSON.parse(JSON.stringify(template));
+  eigen.sections.references.items = [{ name: "Nur ein Club", city: "Chur" }];
+  eigen.sections.contact.socials = [{ label: "Instagram", url: "https://instagram.com/anders" }];
+  eigen.hero.stats = [{ value: "9", label: "Eigene Zahl" }];
+  eigen.sections.booking.photo = { src: "eigenes.jpg", alt: "", credit: "" };
+
+  nachziehen(eigen, korr);
+  if (eigen.sections.references.items.length !== 1)
+    meckern("Eigene Referenzliste wurde ueberschrieben");
+  if (eigen.sections.contact.socials.length !== 1)
+    meckern("Instagram doppelt eingetragen, obwohl schon vorhanden");
+  if (eigen.hero.stats[0].value !== "9") meckern("Eigene Kennzahlen ueberschrieben");
+  if (eigen.sections.booking.photo.src !== "eigenes.jpg") meckern("Eigenes Booking-Bild ueberschrieben");
+}
+
+{
+  // Ohne Korrekturdatei bleibt wenigstens die Schreibweise.
+  const nur = JSON.parse(JSON.stringify(template));
+  nur.site.artist = "Sam Sparkling";
+  nachziehen(nur, null);
+  if (nur.site.artist !== "Sam Sparking") meckern("Schreibweise braucht die Korrekturdatei — darf sie nicht");
 }
 
 if (fehler) {
-  console.error(`\n${fehler} Fehler — adoptTexts schmiert Texte über die Listen.`);
+  console.error(`\n${fehler} Fehler.`);
   process.exit(1);
 }
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
-console.log("nachziehen: Schreibweise korrigiert, Hostname unversehrt, greift nur einmal — und ein\n            in der Verwaltung eingeschalteter Abschnitt bleibt eingeschaltet.");
+console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");

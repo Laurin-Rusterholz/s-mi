@@ -1,0 +1,233 @@
+{
+  "_kommentar": [
+    "Korrekturen, die der Generator auf den Stand aus der Verwaltung anwendet.",
+    "",
+    "WARUM EIGENE DATEI: content/site.json wird bei JEDEM Build mit dem Stand",
+    "aus der Verwaltung ueberschrieben. Als Bezugspunkt fuer Korrekturen taugt",
+    "sie deshalb nicht — steht in der Datenbank der alte Stand, wird er in die",
+    "Vorlage geschrieben und die Korrektur verliert ihren Massstab. Diese Datei",
+    "fasst der Build nie an.",
+    "",
+    "Jede Regel greift nur, solange die Stelle in der Verwaltung unangetastet",
+    "ist (siehe nachziehen() in scripts/build.mjs). Wer dort etwas aendert,",
+    "behaelt das letzte Wort."
+  ],
+  "alteReferenzen": [
+    "Kugl",
+    "Sektor 11",
+    "The Q",
+    "IVY",
+    "BBC",
+    "B9",
+    "Ultrawild Festival"
+  ],
+  "referenzen": [
+    {
+      "city": "Zürich",
+      "name": "Sektor 11",
+      "highlight": true
+    },
+    {
+      "city": "Wattwil",
+      "name": "Jugendopenair",
+      "highlight": true
+    },
+    {
+      "city": "St. Gallen",
+      "name": "Kugl"
+    },
+    {
+      "city": "St. Gallen",
+      "name": "B9 eventlocation"
+    },
+    {
+      "city": "St. Gallen",
+      "name": "IVY"
+    },
+    {
+      "city": "St. Gallen",
+      "name": "Ultrawild Festival"
+    },
+    {
+      "city": "St. Gallen",
+      "name": "Monoevents"
+    },
+    {
+      "city": "Herisau",
+      "name": "Amadeusbar"
+    },
+    {
+      "city": "Herisau",
+      "name": "Dorffest Herisau"
+    },
+    {
+      "city": "Sirnach",
+      "name": "Turnunterhaltung Sirnach"
+    },
+    {
+      "city": "Glarus",
+      "name": "Xploration Events"
+    },
+    {
+      "city": "Bazenheid",
+      "name": "Winterzauber Bazenheid"
+    },
+    {
+      "city": "Wittenbach",
+      "name": "Firehouse Party Wittenbach"
+    },
+    {
+      "city": "Gossau",
+      "name": "BBC"
+    },
+    {
+      "city": "Schaan, FL",
+      "name": "The Q"
+    }
+  ],
+  "instagram": {
+    "label": "Instagram",
+    "url": "https://www.instagram.com/sam_sparking/"
+  },
+  "heroStats": [
+    {
+      "value": "2021",
+      "label": "First set"
+    },
+    {
+      "value": "7+",
+      "label": "Clubs & Festivals"
+    },
+    {
+      "value": "150",
+      "label": "BPM home base"
+    }
+  ],
+  "bookingBild": {
+    "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQP%2Fdsc01430.jpg?alt=media&token=a2b80100-cb77-4120-878b-cc9ac62aff65",
+    "alt": "Sam Sparking on stage",
+    "credit": "Sarto Photography"
+  },
+  "i18n": {
+    "de": {
+      "referenzen": {
+        "0": {
+          "city": "Zürich"
+        },
+        "1": {
+          "city": "Wattwil"
+        },
+        "2": {
+          "city": "St. Gallen"
+        },
+        "3": {
+          "city": "St. Gallen"
+        },
+        "4": {
+          "city": "St. Gallen"
+        },
+        "5": {
+          "city": "St. Gallen"
+        },
+        "6": {
+          "city": "St. Gallen"
+        },
+        "7": {
+          "city": "Herisau"
+        },
+        "8": {
+          "city": "Herisau"
+        },
+        "9": {
+          "city": "Sirnach"
+        },
+        "10": {
+          "city": "Glarus"
+        },
+        "11": {
+          "city": "Bazenheid"
+        },
+        "12": {
+          "city": "Wittenbach"
+        },
+        "13": {
+          "city": "Gossau"
+        },
+        "14": {
+          "city": "Schaan, FL"
+        }
+      },
+      "heroStats": {
+        "0": {
+          "label": "Erstes Set"
+        },
+        "1": {
+          "label": "Clubs & Festivals"
+        },
+        "2": {
+          "label": "BPM Zuhause"
+        }
+      }
+    },
+    "fr": {
+      "referenzen": {
+        "0": {
+          "city": "Zurich"
+        },
+        "1": {
+          "city": "Wattwil"
+        },
+        "2": {
+          "city": "Saint-Gall"
+        },
+        "3": {
+          "city": "Saint-Gall"
+        },
+        "4": {
+          "city": "Saint-Gall"
+        },
+        "5": {
+          "city": "Saint-Gall"
+        },
+        "6": {
+          "city": "Saint-Gall"
+        },
+        "7": {
+          "city": "Herisau"
+        },
+        "8": {
+          "city": "Herisau"
+        },
+        "9": {
+          "city": "Sirnach"
+        },
+        "10": {
+          "city": "Glaris"
+        },
+        "11": {
+          "city": "Bazenheid"
+        },
+        "12": {
+          "city": "Wittenbach"
+        },
+        "13": {
+          "city": "Gossau"
+        },
+        "14": {
+          "city": "Schaan, FL"
+        }
+      },
+      "heroStats": {
+        "0": {
+          "label": "Premier set"
+        },
+        "1": {
+          "label": "Clubs & Festivals"
+        },
+        "2": {
+          "label": "BPM de référence"
+        }
+      }
+    }
+  }
+}
