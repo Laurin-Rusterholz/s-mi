@@ -168,12 +168,22 @@
     );
   }
 
-  /* Galerie-Bilder erst zeigen, wenn sie geladen sind — kein hartes Aufpoppen */
+  /* Galerie-Bilder erst zeigen, wenn sie geladen sind — kein hartes Aufpoppen.
+     Laesst sich ein Bild nicht laden, verschwindet die Kachel ganz: das
+     Bruchstueck-Symbol des Browsers mitten in der Galerie sieht schlimmer aus
+     als ein Foto weniger. Damit der Fehler auffindbar bleibt, steht die
+     Adresse in der Konsole. */
   Array.prototype.forEach.call(document.querySelectorAll(".gal img"), function (img) {
+    var kaputt = function () {
+      var fig = img.closest ? img.closest("figure") : null;
+      if (fig) fig.hidden = true;
+      if (window.console) console.warn("[Galerie] Bild nicht ladbar:", img.currentSrc || img.src);
+    };
     if (img.complete && img.naturalWidth) img.classList.add("ld");
+    else if (img.complete && !img.naturalWidth) kaputt();
     else {
       img.addEventListener("load", function () { img.classList.add("ld"); });
-      img.addEventListener("error", function () { img.classList.add("ld"); });
+      img.addEventListener("error", kaputt);
     }
   });
 
@@ -242,15 +252,19 @@
       var namen = Array.prototype.slice.call(venueList.querySelectorAll(auswahl));
       if (!namen.length) return;
       venueList.style.setProperty(variable, "1");
+      // In einem Rutsch statt tastend: der Name, der am staerksten ueber seine
+      // Zeile hinausragt, gibt das Verhaeltnis vor. Ein Schleifendurchlauf, der
+      // nach jedem Schritt neu misst, haengt davon ab, dass der Browser
+      // zwischendrin wirklich neu rechnet — hier reicht eine einzige Messung.
       var faktor = 1;
-      var passtNicht = function () {
-        return namen.some(function (n) { return n.scrollWidth > n.clientWidth + 1; });
-      };
-      // Höchstens zwölf Schritte à 4 % — darunter wäre der Name unlesbar.
-      for (var i = 0; i < 12 && passtNicht(); i++) {
-        faktor -= 0.04;
-        venueList.style.setProperty(variable, String(faktor));
-      }
+      namen.forEach(function (n) {
+        var platz = n.clientWidth;
+        var breite = n.scrollWidth;
+        if (platz > 0 && breite > platz) faktor = Math.min(faktor, platz / breite);
+      });
+      // Nicht unter 60 % — darunter waere der Name nicht mehr lesbar.
+      faktor = Math.max(0.6, Math.floor(faktor * 100) / 100);
+      venueList.style.setProperty(variable, String(faktor));
     };
     var einpassen = function () {
       gruppe(".lead .venue-name", "--venue-lead-fit");
@@ -292,6 +306,17 @@
       galleryToggle.setAttribute("aria-expanded", open ? "true" : "false");
       galleryToggle.textContent =
         galleryToggle.getAttribute(open ? "data-less" : "data-more") || "";
+      // Die zusaetzlichen Bilder standen bis eben auf display:none. Ein
+      // Browser laedt "lazy" markierte Bilder in einem unsichtbaren Element
+      // nicht — und holt das nach dem Einblenden nicht immer nach. Beim
+      // Aufklappen deshalb ausdruecklich anfordern.
+      if (open) {
+        Array.prototype.forEach.call(gallery.querySelectorAll('[data-extra] img[loading="lazy"]'),
+          function (img) {
+            img.setAttribute("loading", "eager");
+            if (!img.complete) img.src = img.src;   // Ladevorgang anstossen
+          });
+      }
     });
   }
 
