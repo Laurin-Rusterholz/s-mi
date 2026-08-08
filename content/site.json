@@ -1,32 +1,33 @@
 {
+  "contentRevision": 4,
   "hero": {
     "ctaHref": "#booking",
     "ctaLabel": "Book me",
     "kicker": "DJ & producer — St. Gallen, Switzerland",
     "media": {
       "alt": "Sam Sparking behind the decks, lasers and crowd in front of the stage",
-      "poster": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&token=325c944f-ff1b-479c-bdea-473b0b1257db",
+      "poster": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac",
       "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&token=d89f8d1b-067a-49e6-a950-0939b27a4b11",
       "type": "video"
     },
     "meta": "Euphoric Hardstyle / Melodic Hardstyle",
-    "nameMain": "Sparking",
+    "nameMain": "Sparkling",
     "nameSpaced": "S A M",
-    "tagline": "Turning energy into euphoria.",
     "stats": [
       {
-        "value": "2021",
-        "label": "First set"
+        "label": "First set",
+        "value": "2021"
       },
       {
-        "value": "7+",
-        "label": "Clubs & Festivals"
+        "label": "Clubs & Festivals",
+        "value": "7+"
       },
       {
-        "value": "150",
-        "label": "BPM home base"
+        "label": "BPM home base",
+        "value": "150"
       }
-    ]
+    ],
+    "tagline": "Turning energy into euphoria."
   },
   "i18n": {
     "de": {
@@ -1301,7 +1302,20 @@
   "sections": {
     "about": {
       "enabled": true,
-      "facts": [],
+      "facts": [
+        {
+          "label": "First set",
+          "value": "2021"
+        },
+        {
+          "label": "Clubs & festivals",
+          "value": "7+"
+        },
+        {
+          "label": "BPM home base",
+          "value": "150"
+        }
+      ],
       "lede": "I'm Sam Sparking, 19, a DJ and producer from St. Gallen. My story started long before I first stood behind a DJ setup.",
       "navLabel": "About",
       "paragraphs": [
@@ -1313,7 +1327,7 @@
       "photo": {
         "alt": "Portrait of Sam Sparking",
         "credit": "Photo — Sarto Photography",
-        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&token=325c944f-ff1b-479c-bdea-473b0b1257db"
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taDB2aSb6Kdnnoy%2Fsartophotography-dsc4055-web.jpg?alt=media&token=094be674-3bad-499f-a569-9da857835482"
       },
       "title": "About",
       "titleAccent": "Me.",
@@ -1340,6 +1354,11 @@
         "title": "Tell me about your event"
       },
       "navLabel": "Booking",
+      "photo": {
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac",
+        "alt": "Sam Sparking on stage",
+        "credit": "Sarto Photography"
+      },
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
       "rider": {
@@ -1384,11 +1403,6 @@
       },
       "title": "Boo",
       "titleAccent": "king.",
-      "photo": {
-        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQP%2Fdsc01430.jpg?alt=media&token=a2b80100-cb77-4120-878b-cc9ac62aff65",
-        "alt": "Sam Sparking on stage",
-        "credit": "Sarto Photography"
-      },
       "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
       "claim": "Let's create",
       "claimAccent": "something."
@@ -1402,13 +1416,8 @@
       "phone": "+41 77 509 11 71",
       "socials": [
         {
-          "label": "Instagram",
-          "url": "https://www.instagram.com/sam_sparking/"
-        },
-        {
           "label": "Mixcloud",
-          "url": "https://www.mixcloud.com/samsparking/",
-          "inHeader": false
+          "url": "https://www.mixcloud.com/samsparking/"
         }
       ],
       "title": "Con",
@@ -1416,7 +1425,7 @@
     },
     "experience": {
       "embedLabel": "Aftermovie",
-      "enabled": false,
+      "enabled": true,
       "lede": "A Sam Sparking set is built like a story: a slow burn, a hard turn, and a last hour nobody wants to end.",
       "moments": [
         {
@@ -1445,62 +1454,62 @@
         {
           "alt": "Sam Sparking live — crowd with hands up",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQT%2Fdsc01436.jpg?alt=media&token=325c944f-ff1b-479c-bdea-473b0b1257db"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3_49XRpdJGchwN%2Fdsc01425.jpg?alt=media&token=76fab1fc-1f56-45cc-abf6-6971d1486ae0"
         },
         {
           "alt": "Sam Sparking mixing on CDJs",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taELJFkGAtqd2op%2Fsartophotography-dsc4058-web.jpg?alt=media&token=a8e8b84e-8deb-46e5-8537-a61ccd087da7"
         },
         {
           "alt": "Stage lights during a hardstyle set",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQQ%2Fdsc01431.jpg?alt=media&token=927faf36-b359-4b57-81f2-46c6ca1cd1aa"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taJEEU43ln7Hjaa%2Fsartophotography-dsc4078-web.jpg?alt=media&token=60fcaf01-8d88-4e24-aa3f-a0ce2085822c"
         },
         {
           "alt": "Sam Sparking behind the booth",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQR%2Fdsc01432.jpg?alt=media&token=c595b476-15fd-4cc8-a61d-f5288ca30c39"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taB3CDXRaKT2_rn%2Fsartophotography-dsc3972-web.jpg?alt=media&token=c8170381-57ce-4355-9124-dae2a3387a31"
         },
         {
           "alt": "Crowd at a Sam Sparking show",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbl%2Fdsc01363-2.jpg?alt=media&token=a53f40fe-b244-4a1e-89ac-e9f6adc61f8f"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac"
         },
         {
           "alt": "Sam Sparking portrait at the venue",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU1vLnR1ajbjuKnSCI%2Fsartophotography-dsc04164-print.jpg?alt=media&token=62cb2959-a9a7-430a-8adf-6fe756495f67"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YK4HDdMJktnkQf%2Fsartophotography-dsc4392-web.jpg?alt=media&token=58a1a029-06ed-40ff-ab5d-df7b57aa0c40"
         },
         {
           "alt": "Hands in the air on the dancefloor",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQS%2Fdsc01434.jpg?alt=media&token=e1f93b67-3278-4889-9cdc-e400b096bf9a"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YG0XLRP9aPtp9B%2Fsartophotography-dsc4098-web.jpg?alt=media&token=84a5838b-63b7-468e-858f-f4dad69bf5a4"
         },
         {
           "alt": "Sam Sparking during his set",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbm%2Fdsc01363.jpg?alt=media&token=970a22f6-6e46-48d7-823f-9c9089f08e6f"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3Y6YTa6zJklnO4%2Fdsc00389-verbessert-rr.jpg?alt=media&token=24cc6380-f841-4b19-a437-358805f25892"
         },
         {
           "alt": "Light show over the dancefloor",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbn%2Fdsc01395.jpg?alt=media&token=9c942a63-b8db-4f72-8520-196106de2b3c"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_oi%2Fsartophotography-dsc4219-web.jpg?alt=media&token=90384443-09a8-4e3d-b5c3-afbaaf34759a"
         },
         {
           "alt": "Sam Sparking on stage",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQP%2Fdsc01430.jpg?alt=media&token=a2b80100-cb77-4120-878b-cc9ac62aff65"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YHvd161CnSHPU2%2Fsartophotography-dsc4140-web.jpg?alt=media&token=e44630f0-1794-416c-a8db-e5d4b680d501"
         },
         {
           "alt": "Booth view over the crowd",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbo%2Fdsc01396.jpg?alt=media&token=98915a35-6435-4e3f-b05c-289364e37aa3"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YN6eeqCrSxcDYs%2Fsartophotography-dsc4452-web.jpg?alt=media&token=b4464950-b476-4a67-b243-810903d80183"
         },
         {
           "alt": "Closing moment of the night",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbp%2Fdsc01426.jpg?alt=media&token=d2664e47-f9d9-4567-bd91-622adb8b567b"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_ok%2Fsartophotography-dsc4221-web.jpg?alt=media&token=25ae32de-c987-4ea8-bd17-adbcbdbbd3e7"
         }
       ],
       "mobileLimit": 4,
@@ -1514,66 +1523,32 @@
       "enabled": true,
       "items": [
         {
-          "city": "Zürich",
-          "name": "Sektor 11",
-          "highlight": true
-        },
-        {
-          "city": "Wattwil",
-          "name": "Jugendopenair",
-          "highlight": true
-        },
-        {
           "city": "St. Gallen",
           "name": "Kugl"
         },
         {
-          "city": "St. Gallen",
-          "name": "B9 eventlocation"
+          "city": "Zürich",
+          "name": "Sektor 11"
+        },
+        {
+          "city": "Schaan, FL",
+          "name": "The Q"
         },
         {
           "city": "St. Gallen",
           "name": "IVY"
         },
         {
-          "city": "St. Gallen",
-          "name": "Ultrawild Festival"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "Monoevents"
-        },
-        {
-          "city": "Herisau",
-          "name": "Amadeusbar"
-        },
-        {
-          "city": "Herisau",
-          "name": "Dorffest Herisau"
-        },
-        {
-          "city": "Sirnach",
-          "name": "Turnunterhaltung Sirnach"
-        },
-        {
-          "city": "Glarus",
-          "name": "Xploration Events"
-        },
-        {
-          "city": "Bazenheid",
-          "name": "Winterzauber Bazenheid"
-        },
-        {
-          "city": "Wittenbach",
-          "name": "Firehouse Party Wittenbach"
-        },
-        {
           "city": "Gossau",
           "name": "BBC"
         },
         {
-          "city": "Schaan, FL",
-          "name": "The Q"
+          "city": "St. Gallen",
+          "name": "B9"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Ultrawild Festival"
         }
       ],
       "navLabel": "References",
@@ -1586,7 +1561,7 @@
       "buyLabel": "Kaufen",
       "currency": "CHF 5",
       "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
-      "enabled": false,
+      "enabled": true,
       "items": [
         {
           "alt": "as",
@@ -1623,7 +1598,7 @@
       "view": "calendar"
     },
     "sound": {
-      "enabled": false,
+      "enabled": true,
       "genres": [
         {
           "meta": "Genre",
@@ -1651,8 +1626,8 @@
   },
   "site": {
     "accentColor": "#2e6bff",
-    "artist": "Sam Sparking",
-    "backgroundImage": "img/hero.jpg",
+    "artist": "Sam Sparkling",
+    "backgroundImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3Y6YTa6zJklnO4%2Fdsc00389-verbessert-rr.jpg?alt=media&token=24cc6380-f841-4b19-a437-358805f25892",
     "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json",
     "claim": "Turning energy into euphoria",
     "description": "I'm Sam Sparking, a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
@@ -1672,7 +1647,7 @@
       "de",
       "fr"
     ],
-    "logoText": "Sam Sparking",
+    "logoText": "Sam Sparkling",
     "ogDescription": "Hardstyle DJ and producer from St. Gallen. Hard kicks, emotional melodies. Book me for your club or festival — Switzerland and Europe.",
     "ogImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171",
     "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
@@ -1777,7 +1752,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-05T18:03:39.232Z",
-  "updatedBy": "Verwaltung",
-  "contentRevision": 4
+  "updatedAt": "2026-08-08T11:24:15.621Z",
+  "updatedBy": "Verwaltung"
 }
