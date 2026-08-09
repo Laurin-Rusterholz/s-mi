@@ -1505,7 +1505,8 @@
         },
         {
           "alt": "Headphones and equipment at Sam Sparking's DJ booth.",
-          "credit": "Sarto Photography"
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72tz%2Fimg-0637.png?alt=media&token=8f07fa3f-70f5-40cd-aa12-245354fd3b29"
         },
         {
           "alt": "Wide view from the stage during a Sam Sparking show.",
@@ -1513,7 +1514,8 @@
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_ok%2Fsartophotography-dsc4221-web.jpg?alt=media&token=25ae32de-c987-4ea8-bd17-adbcbdbbd3e7"
         },
         {
-          "alt": "Sam Sparking performing live on stage."
+          "alt": "Sam Sparking performing live on stage.",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72u-%2Fimg-0638.png?alt=media&token=ba98d6e9-4985-4a77-9ebb-17aa40dbe75e"
         },
         {
           "alt": "Sam Sparking performing at Sektor 11.",
@@ -1794,6 +1796,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-08T13:20:36.696Z",
+  "updatedAt": "2026-08-09T09:06:36.676Z",
   "updatedBy": "Verwaltung"
 }
