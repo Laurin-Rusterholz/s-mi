@@ -1631,7 +1631,7 @@
           "country": "CH",
           "date": "2026-08-29",
           "inquiryId": "-OynrY4vxLnlzNN0U2G1",
-          "name": "Test",
+          "name": "Aftersun ",
           "status": "booked"
         }
       ],
@@ -1796,6 +1796,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-09T09:06:36.676Z",
+  "updatedAt": "2026-08-09T11:49:04.770Z",
   "updatedBy": "Verwaltung"
 }
