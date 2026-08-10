@@ -54,6 +54,24 @@
     </image:image>
   </url>
   <url>
+    <loc>https://djsamsparkling.netlify.app/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://djsamsparkling.netlify.app/de/</loc>
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
@@ -107,6 +125,24 @@
     </image:image>
   </url>
   <url>
+    <loc>https://djsamsparkling.netlify.app/de/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/de/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://djsamsparkling.netlify.app/fr/</loc>
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
@@ -158,5 +194,23 @@
       <image:loc>https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72u-%2Fimg-0638.png?alt=media&amp;token=ba98d6e9-4985-4a77-9ebb-17aa40dbe75e</image:loc>
       <image:title>Sam Sparking performing live on stage.</image:title>
     </image:image>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/fr/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/fr/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

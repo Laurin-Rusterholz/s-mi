@@ -268,7 +268,14 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
 }
 .hero-sub{display:flex;flex-wrap:wrap;gap:16px 34px;align-items:center;justify-content:center;
   margin:26px auto 0;max-width:min(900px,90%);border-top:1px solid rgba(233,237,245,.25);padding-top:20px;}
-.hero-sub .tag{font-size:1rem;color:var(--bone);}
+/* Der Anspruch steht als einzige Zeile unter dem Namen — in der Akzentfarbe,
+   damit er traegt. Frueher stand daneben noch die Genre-Zeile; zu zweit hoben
+   sich die beiden gegenseitig auf. Etwas kraeftiger und breiter gesetzt als
+   der Fliesstext, sonst geht Blau auf fast Schwarz unter. */
+.hero-sub .tag{
+  font-size:1.12rem;color:var(--spark);
+  font-variation-settings:'wdth' 106,'wght' 620;letter-spacing:.01em;
+}
 .hero-cta{
   display:inline-flex;align-items:center;min-height:var(--tap);
   font-family:var(--font-m);font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;
@@ -1169,12 +1176,29 @@ span.bcal-day:not(.busy){opacity:.35;}
 .reply-note::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ok,#25c07a);background:#25c07a;margin-right:9px;vertical-align:1px;}
 .bform.sent .reply-note{display:none;}
 .bform-msg{font-size:.9rem;}
-.bform-msg.ok,.bform-msg.err{padding:12px 16px;border:1px solid;}
+.bform-msg.ok,.bform-msg.err{padding:14px 18px;border:1px solid;}
 /* Bestaetigung und Fehler muessen auf dem dunklen Grund sicher lesbar sein.
-   Die helle Variante bleibt stehen — das fruehere color:var(--spark) (Blau auf
-   fast Schwarz) kam nicht auf das noetige Verhaeltnis von 4.5:1. */
-.bform-msg.ok{border-color:rgba(37,192,122,.5);background:rgba(37,192,122,.12);color:#8ee9c0;}
+   Die helle Schrift bleibt — das fruehere color:var(--spark) (Blau auf fast
+   Schwarz) kam nicht auf das noetige Verhaeltnis von 4.5:1.
+   Die Dankesmeldung steht zusaetzlich auf einem eigenen, deutlich
+   abgesetzten Grund und traegt einen Haken: sie ist der Moment, in dem die
+   Anfrage angekommen ist, und darf nicht wie eine Randnotiz aussehen. */
+.bform-msg.ok{
+  border-color:rgba(37,192,122,.65);background:rgba(37,192,122,.16);color:#b6f5d8;
+  font-size:1rem;line-height:1.45;font-variation-settings:'wght' 600;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.bform-msg.ok::before{
+  content:"✓";flex:none;width:24px;height:24px;border-radius:50%;
+  display:grid;place-items:center;background:#25c07a;color:#04120b;
+  font-size:.8rem;font-variation-settings:'wght' 800;
+}
 .bform-msg.err{border-color:rgba(255,84,112,.5);background:rgba(255,84,112,.1);color:#ffb3c0;}
+/* Vorfuehr-Fassung: das Formular sagt selbst, dass es nichts verschickt. */
+.bform-demo{
+  margin-top:10px;font-size:.62rem;letter-spacing:.14em;color:var(--warm);
+  border:1px dashed rgba(255,255,255,.28);padding:8px 12px;
+}
 .bform.sent .bform-cols,.bform.sent .bform-foot .btn{display:none;}
 @media(max-width:700px){.bform-grid{grid-template-columns:1fr;}}
 
@@ -1739,3 +1763,40 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 
 /* Sanftere Kante zwischen Booking und Kontakt */
 .booking{border-bottom:1px solid var(--line);}
+
+/* ---------- REFERENZEN: Rest unter den Top-Adressen ---------- */
+/* Die fuenf wichtigsten stehen als grosse Zeilen (.venue-list .lead). Alles
+   Weitere gehoert dazu, soll aber nicht gleich laut sein: kleinere Schrift,
+   mehrspaltig, nach Gruppen gebuendelt. So bleibt die Liste vollstaendig,
+   ohne dass fuenfzehn gleich grosse Zeilen den Abschnitt erschlagen. */
+.venue-rest{margin-top:clamp(26px,4vw,44px);display:flex;flex-direction:column;gap:26px;}
+.venue-group-h{display:block;color:var(--warm);margin-bottom:12px;font-size:.66rem;letter-spacing:.18em;}
+.venue-more{list-style:none;display:grid;gap:8px 22px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));}
+.venue-more a{
+  display:flex;align-items:baseline;justify-content:space-between;gap:14px;
+  padding:9px 12px;border:1px solid var(--line);background:var(--card);
+  text-decoration:none;transition:border-color .2s,transform .2s;
+}
+.venue-more a:hover{border-color:rgba(46,107,255,.5);transform:translateY(-1px);}
+.venue-more .venue-name{font-size:1rem;font-variation-settings:'wdth' 106,'wght' 600;}
+.venue-more .venue-city{font-size:.6rem;white-space:nowrap;}
+
+/* ---------- AFTER MOVIES: aufklappbar ---------- */
+/* Zugeklappt ist die Bilderwand sofort zu sehen; die Videos holt ein Klick.
+   <details> braucht dafuer kein Javascript. */
+.after{margin-bottom:clamp(34px,5vw,58px);border:1px solid var(--line);background:var(--card);}
+.after-sum{
+  display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;
+  padding:14px 16px;color:var(--bone);
+}
+.after-sum::-webkit-details-marker{display:none;}
+.after-sum:hover{background:rgba(255,255,255,.03);}
+.after-sum:focus-visible{outline:2px solid var(--spark);outline-offset:-2px;}
+.after-count{
+  margin-left:auto;color:var(--warm);border:1px solid var(--line);
+  padding:1px 8px;font-size:.62rem;
+}
+.after-arr{transition:transform .2s;color:var(--bone-dim);}
+.after[open] .after-arr{transform:rotate(180deg);}
+.after .after-head,.after .after-grid{padding:0 16px;}
+.after .after-grid{padding-bottom:16px;}
