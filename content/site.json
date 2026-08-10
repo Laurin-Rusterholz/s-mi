@@ -183,7 +183,7 @@
               "city": "Gossau"
             },
             "4": {
-              "city": "St. Gallen"
+              "city": "Luzern"
             },
             "5": {
               "city": "Herisau"
@@ -192,13 +192,13 @@
               "city": "St. Gallen"
             },
             "7": {
-              "city": "St. Gallen"
-            },
-            "8": {
               "city": "Herisau"
             },
-            "9": {
+            "8": {
               "city": "Wittenbach"
+            },
+            "9": {
+              "city": "St. Gallen"
             },
             "10": {
               "city": "Wattwil"
@@ -210,19 +210,16 @@
               "city": "St. Gallen"
             },
             "13": {
-              "city": "Sirnach"
+              "city": "Schaan, FL"
             },
             "14": {
-              "city": "Bazenheid"
+              "city": "Sirnach"
             },
             "15": {
-              "city": "Luzern"
+              "city": "Bazenheid"
             },
             "16": {
               "city": "Glarus"
-            },
-            "17": {
-              "city": "Schaan, FL"
             }
           },
           "navLabel": "Referenzen",
@@ -455,59 +452,43 @@
               "city": "Gossau"
             },
             "4": {
-              "city": "Saint-Gall"
+              "city": "Lucerne"
             },
             "5": {
-              "city": "Herisau",
-              "group": "Suisse orientale"
+              "city": "Herisau"
             },
             "6": {
-              "city": "Saint-Gall",
-              "group": "Suisse orientale"
+              "city": "Saint-Gall"
             },
             "7": {
-              "city": "Saint-Gall",
-              "group": "Suisse orientale"
+              "city": "Herisau"
             },
             "8": {
-              "city": "Herisau",
-              "group": "Suisse orientale"
+              "city": "Wittenbach"
             },
             "9": {
-              "city": "Wittenbach",
-              "group": "Suisse orientale"
+              "city": "Saint-Gall"
             },
             "10": {
-              "city": "Wattwil",
-              "group": "Suisse orientale"
+              "city": "Wattwil"
             },
             "11": {
-              "city": "Saint-Gall",
-              "group": "Suisse orientale"
+              "city": "Saint-Gall"
             },
             "12": {
-              "city": "Saint-Gall",
-              "group": "Suisse orientale"
+              "city": "Saint-Gall"
             },
             "13": {
-              "city": "Sirnach",
-              "group": "Suisse orientale"
+              "city": "Schaan, FL"
             },
             "14": {
-              "city": "Bazenheid",
-              "group": "Suisse orientale"
+              "city": "Sirnach"
             },
             "15": {
-              "city": "Lucerne",
-              "group": "Suisse"
+              "city": "Bazenheid"
             },
             "16": {
-              "city": "Glaris",
-              "group": "Suisse"
-            },
-            "17": {
-              "city": "Schaan, FL",
-              "group": "International"
+              "city": "Glaris"
             }
           }
         },
@@ -1615,74 +1596,56 @@
           "highlight": true
         },
         {
-          "name": "Jugendopenair",
-          "city": "St. Gallen",
-          "highlight": true
+          "name": "Aftersun Festival",
+          "city": "Luzern"
         },
         {
           "name": "Amadeusbar",
-          "city": "Herisau",
-          "group": "Ostschweiz"
+          "city": "Herisau"
         },
         {
           "name": "B9 eventlocation",
-          "city": "St. Gallen",
-          "group": "Ostschweiz"
-        },
-        {
-          "name": "Club Eden",
-          "city": "St. Gallen",
-          "group": "Ostschweiz"
+          "city": "St. Gallen"
         },
         {
           "name": "Dorffest Herisau",
-          "city": "Herisau",
-          "group": "Ostschweiz"
+          "city": "Herisau"
         },
         {
           "name": "Firehouse Party Wittenbach",
-          "city": "Wittenbach",
-          "group": "Ostschweiz"
+          "city": "Wittenbach"
+        },
+        {
+          "name": "IVY",
+          "city": "St. Gallen"
         },
         {
           "name": "Jugendopenair",
-          "city": "Wattwil",
-          "group": "Ostschweiz"
+          "city": "Wattwil"
         },
         {
           "name": "Monoevents",
-          "city": "St. Gallen",
-          "group": "Ostschweiz"
+          "city": "St. Gallen"
         },
         {
           "name": "Picante",
-          "city": "St. Gallen",
-          "group": "Ostschweiz"
-        },
-        {
-          "name": "Turnunterhaltung Sirnach",
-          "city": "Sirnach",
-          "group": "Ostschweiz"
-        },
-        {
-          "name": "Winterzauber Bazenheid",
-          "city": "Bazenheid",
-          "group": "Ostschweiz"
-        },
-        {
-          "name": "Aftersun Festival",
-          "city": "Luzern",
-          "group": "Schweiz"
-        },
-        {
-          "name": "Xploration Events",
-          "city": "Glarus",
-          "group": "Schweiz"
+          "city": "St. Gallen"
         },
         {
           "name": "The Q",
-          "city": "Schaan, FL",
-          "group": "International"
+          "city": "Schaan, FL"
+        },
+        {
+          "name": "Turnunterhaltung Sirnach",
+          "city": "Sirnach"
+        },
+        {
+          "name": "Winterzauber Bazenheid",
+          "city": "Bazenheid"
+        },
+        {
+          "name": "Xploration Events",
+          "city": "Glarus"
         }
       ],
       "navLabel": "References",

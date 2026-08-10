@@ -91,7 +91,7 @@ aber es ist eine Sackgasse, solange die Startseite zu ist.
 | 4 | Experience- und Genres-Abschnitt entfernen | **erfüllt** | Beide waren schon nicht mehr baubar; jetzt sind auch die Eingabemasken aus der Verwaltung raus |
 | 5a | Show „Aftersun, Luzern, 29. August“ | **behoben** | Ort war „Herisau“; Name hatte ein Leerzeichen am Ende |
 | 5b | Leere Shows dominieren die Navigation nicht | **behoben** | siehe 2c |
-| 6 | Referenzen | **behoben** | Neue Liste, siehe unten |
+| 6 | Referenzen | **behoben, zwei Entscheide offen** | Neue Liste, siehe unten. Ersatz für IVY und der fünfte Eintrag der oberen Gruppe sind **nicht** entschieden |
 | 7 | Galerie: Aftermovies und weitere Bilder aufklappbar | **behoben** | Aftermovies in `<details>`; weitere Bilder hatten schon einen Aufklapp-Knopf. Ohne hinterlegte Videos erscheint der Block gar nicht (statt „noch nichts da“) |
 | 8a | Booking nach oben / eigenständiger Bereich | **behoben** | Eigene Seite `/booking/`, erster Menüpunkt auf jeder Seite |
 | 8b | „Preferred setup / CDJs“ weg | **erfüllt** | Rider war schon entfernt; im gebauten HTML kein Treffer |
@@ -110,23 +110,50 @@ aber es ist eine Sackgasse, solange die Startseite zu ist.
 
 ### Referenzen — neue Liste
 
-Oben fünf hervorgehobene (Rangfolge, nicht sortiert):
+**Hervorgehoben oben** (die vier ausdrücklich genannten Events, in genau der
+genannten Reihenfolge):
 
 1. Kugl, St. Gallen · 2. Sektor 11, Zürich · 3. Ultrawild Festival, St. Gallen ·
-4. BBC, Gossau · 5. Jugendopenair, St. Gallen
+4. BBC, Gossau
 
-Darunter kleiner gesetzt und alphabetisch, nach Bündeln:
+**Darunter klein und alphabetisch**, ohne Bündel-Überschriften: Aftersun
+Festival (Luzern, *neu*), Amadeusbar (Herisau), B9 eventlocation (St. Gallen),
+Dorffest Herisau, Firehouse Party Wittenbach, **IVY** (St. Gallen,
+*unverändert — siehe offene Entscheide*), Jugendopenair (Wattwil), Monoevents
+(St. Gallen), **Picante** (St. Gallen, *neu*), The Q (Schaan, FL),
+Turnunterhaltung Sirnach, Winterzauber Bazenheid, Xploration Events (Glarus).
 
-* **Ostschweiz** — Amadeusbar (Herisau), B9 eventlocation (St. Gallen),
-  **Club Eden** (St. Gallen, *ersetzt IVY*), Dorffest Herisau, Firehouse Party
-  Wittenbach, Jugendopenair (Wattwil), Monoevents (St. Gallen),
-  **Picante** (St. Gallen, *neu*), Turnunterhaltung Sirnach, Winterzauber Bazenheid
-* **Schweiz** — **Aftersun Festival** (Luzern, *neu*), Xploration Events (Glarus)
-* **International** — The Q (Schaan, FL)
+#### Zwei Entscheide fehlen — nicht geraten
 
-Als fünfter Eintrag oben steht **Jugendopenair St. Gallen** und nicht Aftersun:
-Aftersun findet erst am 29.08.2026 statt und wäre als „Referenz“ ein Versprechen
-statt einer Erfahrung.
+1. **Wodurch wird IVY ersetzt?** Die Vorgaben nennen *beides*: „Jugendopenair
+   St. Gallen statt IVY“ **und** „Club Eden SG statt IVY“. Das schliesst sich
+   aus. IVY bleibt deshalb unverändert stehen, bis entschieden ist, welcher
+   Eintrag gilt. Eine frühere Fassung hatte hier eigenmächtig Club Eden
+   eingesetzt und zusätzlich ein „Jugendopenair St. Gallen“ erfunden — beides
+   ist zurückgenommen.
+2. **Wer ist der fünfte in der oberen Gruppe?** Verlangt sind „Top 5“, genannt
+   sind vier: Kugl, Sektor 11, Ultrawild Festival, BBC. Es stehen darum vier
+   oben. Ein fünfter Eintrag wird nicht erfunden.
+
+#### Warum die Liste bis zum 10.08.2026 gar nicht ankam
+
+Die Ersetzung greift nur, solange die Liste in der Verwaltung noch einem
+bekannten Altstand entspricht — sonst würde sie eine selbst gepflegte Liste
+überschreiben. Dieser Massstab (`alteReferenzen`) war auf **eine** Liste
+festgelegt, und zwar auf die falsche: in der Datenbank stand die 7er-Liste
+(Kugl, Sektor 11, The Q, IVY, BBC, B9, Ultrawild Festival), verglichen wurde
+gegen eine 15er-Liste. Der Abgleich traf nie zu, die Ersetzung lief still ins
+Leere, und die Website zeigte weiter die alte Liste.
+
+Drei Änderungen daran:
+
+* `alteReferenzen` hält jetzt **mehrere** bekannte Altstände.
+* Verglichen wird **ohne Rücksicht auf die Reihenfolge** — die Verwaltung
+  sortiert beim Speichern um, ein Vergleich Platz für Platz wäre schon
+  dadurch hinfällig.
+* Passt die Liste zu keinem Stand **und** ist sie nicht schon die gewünschte,
+  **warnt der Build**. Genau diese Stille war das Problem: eine wirkungslose
+  Regel sah aus wie eine erfüllte.
 
 ---
 
@@ -233,14 +260,19 @@ dieser Domain setzen.
    `Beispiel` — und `/shop/` ist jetzt öffentlich. Umbenennen in der
    Verwaltung → Shop → Ware. *(Die Tippreste `as` / `asd` in Beschreibung,
    Bildtext und Link räumt der Build selbst weg.)*
-3. **TikTok- und Spotify-Adresse.** Beide sind im Projekt nirgends hinterlegt
+3. **Wodurch wird IVY ersetzt?** Die Vorgaben nennen „Jugendopenair
+   St. Gallen“ **und** „Club Eden SG“ als Ersatz — das schliesst sich aus.
+   Bis das entschieden ist, bleibt IVY stehen.
+4. **Fünfter Eintrag der hervorgehobenen Gruppe.** „Top 5“, aber nur vier
+   Events genannt. Es stehen vier oben.
+5. **TikTok- und Spotify-Adresse.** Beide sind im Projekt nirgends hinterlegt
    und liessen sich von hier aus nicht nachschlagen. Geratene Adressen wären
    tote Links geworden. Eintragen in der Verwaltung → Kontakt → Kanäle
    (Instagram und Mixcloud stehen schon, TikTok und Spotify sind als leere
    Einträge vorbereitet — ohne Adresse verlinkt die Website einen Kanal nicht).
-4. **`RESEND_API_KEY` und `MAIL_FROM`** setzen, sonst kommt keine E-Mail an.
-5. **`STRIPE_WEBHOOK_SECRET`** setzen, sonst antwortet der Webhook mit `503`.
-6. **Startseite freigeben**, wenn es so weit ist: die sechs
+6. **`RESEND_API_KEY` und `MAIL_FROM`** setzen, sonst kommt keine E-Mail an.
+7. **`STRIPE_WEBHOOK_SECRET`** setzen, sonst antwortet der Webhook mit `503`.
+8. **Startseite freigeben**, wenn es so weit ist: die sechs
    Startseiten-Regeln in `netlify.toml` auskommentieren (Block „TEILWARTUNG“).
 
 ---
