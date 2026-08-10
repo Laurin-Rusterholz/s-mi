@@ -339,6 +339,34 @@ export function nachziehen(live, korr) {
     getan.push("Kennzahl-Aufschriften");
   }
 
+  /* Die Zahl neben "Shows" nennt die Gesamtzahl gespielter Shows. In der
+     Datenbank stand zuletzt 2, die Seite zeigte darum "2+ SHOWS" — verlangt
+     sind 30. Gesucht wird die Kennzahl ueber ihre Aufschrift (die steht nach
+     der Umbenennung oben schon auf "Shows"); nur wenn keine passt, greift der
+     Platz in der Liste.
+
+     Wie bei shop.sichtbar ueberstimmt diese Regel bewusst die Verwaltung —
+     sonst waere die Zahl beim naechsten Speichern wieder eine andere. Wer sie
+     dort wieder selbst setzen will, loescht `heroShows` aus der
+     Korrekturdatei. */
+  const hs = korr.heroShows;
+  if (hs && str(hs.wert)) {
+    // Nur ueber die Aufschrift, bewusst ohne Rueckfall auf den Platz in der
+    // Liste: stuende dort eine ganz eigene Kennzahl, wuerde ein Rueckfall
+    // ausgerechnet die ueberschreiben. Erkannt werden die heutige Aufschrift
+    // und die alte, falls die Umbenennung oben nicht mehr gegriffen hat.
+    const namen = [str(hs.label, "Shows"), ...list(hs.auchLabel).map(str)]
+      .filter(Boolean)
+      .map((n) => n.toLowerCase());
+    const ziel = list(live.hero?.stats).find((s) =>
+      namen.includes(str(s?.label).toLowerCase())
+    );
+    if (ziel && str(ziel.value) !== str(hs.wert)) {
+      ziel.value = str(hs.wert);
+      getan.push(`Kennzahl ${str(ziel.label)} = ${str(hs.wert)}`);
+    }
+  }
+
   // Die Genre-Zeile im Hero ist weg (siehe renderPage). Der Wert bleibt in der
   // Datenbank stehen und wird nur nicht mehr gelesen — hier wird er auch aus
   // dem Schnappschuss geraeumt, damit niemand ihn dort noch pflegt.

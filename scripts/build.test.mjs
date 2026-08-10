@@ -207,6 +207,8 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 
   if (db.hero.stats[1].label !== "Shows")
     meckern('Kennzahl heisst weiter "' + db.hero.stats[1].label + '" statt "Shows"');
+  if (db.hero.stats[1].value !== korr.heroShows.wert)
+    meckern("Kennzahl Shows steht auf " + db.hero.stats[1].value + " statt " + korr.heroShows.wert);
   if (db.hero.meta) meckern("Genre-Zeile im Hero nicht geraeumt");
   if (db.sections.shows.items[0].city !== "Luzern")
     meckern("Aftersun steht weiter in " + db.sections.shows.items[0].city);
@@ -221,6 +223,51 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
     meckern("Seitenadressen stimmen nicht: " + db.pages.map((p) => p.slug).join(", "));
   if (db.pages[0].sections.includes("booking"))
     meckern("Booking steht weiter als Abschnitt auf der Startseite");
+}
+
+{
+  /* Die Zahl neben "Shows" wird immer gesetzt — genau darum geht es: in der
+     Datenbank stand 2, die Seite zeigte "2+ SHOWS". Geprueft wird beides,
+     der Weg ueber die Aufschrift und der ueber den Platz in der Liste. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.hero.stats = [
+    { value: "2021", label: "First set" },
+    { value: "2", label: "Shows" },
+    { value: "150", label: "BPM home base" },
+  ];
+  nachziehen(db, korr);
+  if (db.hero.stats[1].value !== "30")
+    meckern('Kennzahl Shows steht auf "' + db.hero.stats[1].value + '" statt "30"');
+  if (db.hero.stats[0].value !== "2021" || db.hero.stats[2].value !== "150")
+    meckern("Die anderen Kennzahlen wurden mitveraendert");
+
+  const verschoben = JSON.parse(JSON.stringify(template));
+  verschoben.hero.stats = [
+    { value: "2", label: "Shows" },
+    { value: "2021", label: "First set" },
+  ];
+  nachziehen(verschoben, korr);
+  if (verschoben.hero.stats[0].value !== "30")
+    meckern("Kennzahl an anderer Stelle nicht ueber die Aufschrift gefunden");
+
+  // Auch mit der alten Aufschrift, falls die Umbenennung nicht mehr greift.
+  const alt = JSON.parse(JSON.stringify(template));
+  alt.hero.stats = [{ value: "2", label: "Clubs & Festivals" }];
+  nachziehen(alt, korr);
+  if (alt.hero.stats[0].value !== "30")
+    meckern("Kennzahl mit alter Aufschrift nicht gefunden");
+
+  // Eine fremde Kennzahl an derselben Stelle bleibt unberuehrt — kein
+  // Rueckfall auf den Platz in der Liste.
+  const fremd = JSON.parse(JSON.stringify(template));
+  fremd.hero.stats = [
+    { value: "2021", label: "First set" },
+    { value: "9", label: "Eigene Zahl" },
+    { value: "150", label: "BPM home base" },
+  ];
+  nachziehen(fremd, korr);
+  if (fremd.hero.stats[1].value !== "9")
+    meckern("Fremde Kennzahl an Platz 2 wurde ueberschrieben");
 }
 
 {
@@ -263,3 +310,4 @@ console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleic
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
 console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");
 console.log("nachziehen: Kennzahl \"Shows\", Aftersun in Luzern, Instagram aus dem Kopf, Waehrung\n            CHF, eigene Seiten fuer Booking und Shop — jeweils nur auf dem alten Stand.");
+console.log("nachziehen: Die Zahl neben \"Shows\" steht auf 30 — gefunden ueber die Aufschrift\n            (auch die alte), nie ueber den Platz in der Liste.");

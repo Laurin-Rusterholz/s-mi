@@ -61,6 +61,16 @@ an, wenn keine Datei auf die Adresse passt — die Dateien liegen aber da
 (`publish = "."`). Der Quelltext des Generators und der Inhalts-Schnappschuss
 waren damit öffentlich herunterladbar. Beide Regeln haben jetzt `force = true`.
 
+**Zwei Regeln überstimmen die Verwaltung** — beide stehen in
+`content/korrekturen.json` und sind dort einzeln abschaltbar:
+
+* `shop.sichtbar` — sonst gäbe es die Seite `/shop/` nicht und die Adresse
+  liefe auf `404`.
+* `heroShows` — die Zahl neben „Shows“ steht fest auf `30`. In der Datenbank
+  stand zuletzt `2`. Ohne diese Regel wäre der Wert beim nächsten Speichern
+  in der Verwaltung wieder ein anderer, weil `content/site.json` bei jedem
+  Build aus der Datenbank überschrieben wird.
+
 **Folge, die man kennen muss:** Auf `/booking/` und `/shop/` steht im Menü ein
 Link „Home“. Der führt auf `/` und zeigt dort die Wartungsseite — so gewollt,
 aber es ist eine Sackgasse, solange die Startseite zu ist.
@@ -76,6 +86,7 @@ aber es ist eine Sackgasse, solange die Startseite zu ist.
 | 2b | Instagram-Icon aus dem Header | **behoben** | Kopf-Zeichen sind jetzt *opt-in* (`inHeader === true`); zusätzlich zieht `nachziehen()` den alten Zustand einmal nach |
 | 2c | Shows nicht prominent ohne Termine | **behoben** | Der Abschnitt entsteht nur bei einem **kommenden** Termin (vorher: bei irgendeinem) — ohne ihn fällt auch der Menüpunkt weg |
 | 3a | Hero: „Clubs & Festivals“ → „Shows“ | **behoben** | Kennzahl-Aufschrift, inkl. DE/FR |
+| 3c | Hero: Kennzahl nennt 30 Shows | **behoben** | In der Datenbank stand `2` — die Seite zeigte „2+ SHOWS“. `heroShows` in `korrekturen.json` setzt den Wert auf `30`; gefunden wird die Kennzahl über ihre Aufschrift, nie über ihren Platz in der Liste |
 | 3b | Hero: nur „Turning energy into euphoria“, in Blau | **behoben** | `hero.meta` (Genre-Zeile) wird nicht mehr gelesen und aus dem Inhalt geräumt; `.hero-sub .tag` steht in `var(--spark)` = `#2e6bff` |
 | 4 | Experience- und Genres-Abschnitt entfernen | **erfüllt** | Beide waren schon nicht mehr baubar; jetzt sind auch die Eingabemasken aus der Verwaltung raus |
 | 5a | Show „Aftersun, Luzern, 29. August“ | **behoben** | Ort war „Herisau“; Name hatte ein Leerzeichen am Ende |

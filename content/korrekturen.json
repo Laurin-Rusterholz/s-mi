@@ -413,5 +413,28 @@
       "setzen (oder die Zeile loeschen) — der Schalter in der Verwaltung allein",
       "reicht dafuer nicht."
     ]
+  },
+  "heroShows": {
+    "_warum": [
+      "Vorgabe: die Kennzahl im Hero nennt die Gesamtzahl der Shows, und die",
+      "ist 30. In der Datenbank stand zuletzt 2 — die Praesentation zeigte",
+      "darum '2+ SHOWS'.",
+      "",
+      "Warum das hier steht und nicht im Schnappschuss: content/site.json wird",
+      "bei jedem Build aus der Datenbank ueberschrieben. Ein dort geaenderter",
+      "Wert waere beim naechsten Build wieder weg.",
+      "",
+      "Gefunden wird die Kennzahl ueber ihre Aufschrift, nicht ueber ihren Platz",
+      "in der Liste — sonst traefe die Regel eine fremde Kennzahl, sobald jemand",
+      "die Reihenfolge aendert.",
+      "ACHTUNG: Diese Regel setzt den Wert IMMER — wie shop.sichtbar",
+      "ueberstimmt sie damit das Feld in der Verwaltung. Soll die Verwaltung",
+      "die Zahl wieder selbst bestimmen: diesen Block loeschen."
+    ],
+    "label": "Shows",
+    "wert": "30",
+    "auchLabel": [
+      "Clubs & Festivals"
+    ]
   }
 }
