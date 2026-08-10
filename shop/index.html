@@ -147,21 +147,6 @@
           }
         ]
       }
-    },
-    {
-      "@type": "Product",
-      "name": "Beispiel",
-      "image": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
-      "brand": {
-        "@type": "Brand",
-        "name": "Sam Sparking"
-      },
-      "offers": {
-        "@type": "Offer",
-        "price": "35",
-        "priceCurrency": "CHF",
-        "availability": "https://schema.org/InStock"
-      }
     }
   ]
 }
@@ -211,81 +196,8 @@
 
   <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
     <div class="wrap">
-      <p class="shop-note rv">Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.</p>
-      <div class="shop-grid" style="--tile:240px">
-      <article class="product rv">
-          <div class="product-img"><img src="https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&amp;token=5fa53fdc-6095-4f9c-8c66-88563f120179" alt="" loading="lazy" decoding="async" sizes="(max-width:700px) 46vw, 280px"></div>
-          <div class="product-body">
-            <h3>Beispiel</h3>
-            
-            <div class="product-foot">
-              <span class="price">CHF 35.—</span>
-              <a class="btn sm order-jump" href="#order-form" data-product="Beispiel">Kaufen</a>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div class="pay-methods rv">
-        <!-- TODO Kunde: Es fehlt noch der echte Stripe-Zahlungslink. Anlegen im
-             Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
-             Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
-             in Netlify hinterlegen (Site settings → Environment variables).
-             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
-             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
-             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->
-        <span class="mono">Payment</span>
-        <p class="pay-note">The payment link isn&#39;t active yet. Your order is recorded here and you&#39;ll get a confirmation by e-mail — the payment details follow in it.</p>
-      </div>
-
-      <form class="oform rv" id="order-form" data-endpoint="/api/order"
-            data-sending="Sending …" data-invalid="Please check the highlighted fields."
-            data-paying="Opening the payment page …" novalidate>
-        <div class="bform-head">
-          <span class="mono">Order</span>
-          <h3>Where should it go?</h3>
-          <p class="bform-required mono">All fields are required.</p>
-        </div>
-        <div class="bform-grid">
-          <label><span class="lbl">Item <i aria-hidden="true">*</i></span>
-            <select name="product" required>
-              <option value="Beispiel">Beispiel — CHF 35.—</option>
-            </select>
-          </label>
-          <label><span class="lbl">Quantity <i aria-hidden="true">*</i></span>
-            <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
-          </label>
-          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
-          </label>
-          <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
-          </label>
-          <label class="span-2"><span class="lbl">Street and number <i aria-hidden="true">*</i></span>
-            <input name="street" type="text" required maxlength="160" autocomplete="street-address">
-          </label>
-          <label><span class="lbl">Postcode <i aria-hidden="true">*</i></span>
-            <input name="zip" type="text" required maxlength="12" autocomplete="postal-code">
-          </label>
-          <label><span class="lbl">City <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120" autocomplete="address-level2">
-          </label>
-          <label><span class="lbl">Country <i aria-hidden="true">*</i></span>
-            <input name="country" type="text" required maxlength="80" value="Schweiz" autocomplete="country-name">
-          </label>
-          
-          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Leave empty</span>
-            <input name="website" type="text" tabindex="-1" autocomplete="off">
-          </label>
-        </div>
-        <div class="bform-foot">
-          <button class="btn solid big" type="submit">Send order<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">Confirmation by e-mail — the payment link follows in it</span>
-          <p class="bform-msg" role="status" aria-live="polite"
-             data-success="Thanks — your order arrived. You&#39;ll get a confirmation by e-mail shortly." data-error="That didn&#39;t work. Please write to me directly at info@samsparking.ch."></p>
-          
-        </div>
-      </form>
+      <p class="shop-note rv">Merch from Sam Sparking — every piece helps fund the next production.</p>
+      <div class="empty-state rv"><span class="mono">Shop</span><p>The shop opens soon — the first merch is in the works. Follow me on the channels below so you don&#39;t miss the drop.</p></div>
     </div>
   </section>
   </main>

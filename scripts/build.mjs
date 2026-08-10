@@ -522,6 +522,78 @@ export function nachziehen(live, korr) {
     if (weg) getan.push(`${weg} Platzhalter im Shop`);
   }
 
+  /* Platzhalter-Ware ganz aus dem Shop nehmen — Produktentscheidung vom
+     10.08.2026 (siehe entfernteWare._warum in content/korrekturen.json).
+
+     Anders als der Block darueber, der nur einzelne Tippreste-FELDER raeumt,
+     faellt hier der ganze Artikel weg. Anlass: "Beispiel" stand mit CHF 35,
+     totem Produktbild (Firebase antwortet 404) und einem Kauf-Knopf auf der
+     oeffentlichen Seite. Es gibt keine verifizierten Artikeldaten, also darf
+     dort auch nichts zu kaufen sein.
+
+     Gesucht wird ueber den Namen, nicht ueber den Platz in der Liste. Geloescht
+     statt markiert wird hier bewusst: Ware traegt — anders als die Kennzahlen —
+     keine ueber den Platz zugeordnete Uebersetzung.
+
+     ACHTUNG: Diese Regel greift IMMER und ueberstimmt damit die Verwaltung.
+     Echte Ware mit demselben Namen kaeme nie auf die Seite; sobald es sie gibt,
+     gehoert der Name aus der Korrekturdatei heraus. */
+  const wegWare = list(korr.shop?.entfernteWare?.namen).map((n) => str(n).toLowerCase());
+  if (wegWare.length && list(ls.shop?.items).length) {
+    const vorherZahl = list(ls.shop.items).length;
+    ls.shop.items = list(ls.shop.items).filter(
+      (p) => !wegWare.includes(str(p?.name).toLowerCase())
+    );
+    const raus = vorherZahl - ls.shop.items.length;
+    if (raus) {
+      getan.push(
+        `${raus} Platzhalter-Ware entfernt: ${list(korr.shop.entfernteWare.namen).join(", ")}`
+      );
+    }
+  }
+
+  /* Shop-Texte je Sprache. Die Hauptsprache ist Englisch, in den Grundwerten
+     stand aber Deutsch — auf /shop/ (englisch) las man "Merch von Sam
+     Sparking" und "Kaufen", auf /fr/shop/ dasselbe, weil es fuer den Shop
+     keine Uebersetzungen gab.
+
+     Der Grundwert wird nur ersetzt, solange dort genau der bekannte deutsche
+     Text steht (korr.shop.texte.alt) oder nichts. Die Uebersetzungen werden
+     gesetzt, solange in der Verwaltung nichts Eigenes dasteht — wer dort
+     schreibt, behaelt das letzte Wort. */
+  const txt = korr.shop?.texte;
+  if (txt?.master && ls.shop) {
+    let n = 0;
+    for (const [feld, soll] of Object.entries(txt.master)) {
+      if (feld.startsWith("_")) continue;
+      const ist = str(ls.shop[feld]);
+      if (ist === soll) continue;
+      if (!ist || list(txt.alt?.[feld]).map(String).includes(ist)) {
+        ls.shop[feld] = soll;
+        n++;
+      }
+    }
+    for (const lang of ["de", "fr"]) {
+      const q = txt[lang];
+      if (!q) continue;
+      const i18n = live.i18n || (live.i18n = {});
+      const dort = i18n[lang] || (i18n[lang] = {});
+      const abschnitte = dort.sections || (dort.sections = {});
+      const ziel = abschnitte.shop || (abschnitte.shop = {});
+      for (const [feld, soll] of Object.entries(q)) {
+        if (feld.startsWith("_")) continue;
+        const ist = str(ziel[feld]);
+        // Leer, oder noch der Grundwert-Text von vorher: dann setzen.
+        if (ist === soll) continue;
+        if (!ist || list(txt.alt?.[feld]).map(String).includes(ist)) {
+          ziel[feld] = soll;
+          n++;
+        }
+      }
+    }
+    if (n) getan.push(`${n} Shop-Text(e) je Sprache`);
+  }
+
   // Seitenaufteilung: Booking und Shop haben eigene Seiten bekommen. Ersetzt
   // wird nur die unangetastete Einseiter-Aufteilung — sobald in der Verwaltung
   // eine zweite Seite steht, entscheidet sie.

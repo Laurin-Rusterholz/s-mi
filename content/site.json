@@ -238,6 +238,11 @@
           "pastLabel": "Schon gespielt",
           "title": "Sh",
           "titleAccent": "ows."
+        },
+        "shop": {
+          "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
+          "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
+          "buyLabel": "Kaufen"
         }
       },
       "site": {
@@ -584,6 +589,12 @@
           "titleAccent": "takt.",
           "kicker": "Booking & demandes",
           "base": "Saint-Gall, Suisse"
+        },
+        "shop": {
+          "note": "Du merch de Sam Sparking — chaque pièce aide à financer la prochaine production.",
+          "emptyText": "La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.",
+          "buyLabel": "Acheter",
+          "navLabel": "Boutique"
         }
       },
       "ui": {
@@ -1675,20 +1686,13 @@
       "titleAccent": "rences."
     },
     "shop": {
-      "buyLabel": "Kaufen",
+      "buyLabel": "Buy",
       "currency": "CHF",
-      "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
+      "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
       "enabled": true,
-      "items": [
-        {
-          "name": "Beispiel",
-          "price": "35",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
-          "status": "available"
-        }
-      ],
+      "items": [],
       "navLabel": "Shop",
-      "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
+      "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
       "titleAccent": "op."
     },

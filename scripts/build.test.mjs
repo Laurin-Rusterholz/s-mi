@@ -234,13 +234,59 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   const insta = db.sections.contact.socials.find((x) => /instagram/i.test(x.label));
   if (insta.inHeader !== false) meckern("Instagram steht weiter im Kopf");
   if (db.sections.shop.currency !== "CHF") meckern("Waehrung nicht korrigiert: " + db.sections.shop.currency);
-  if (db.sections.shop.items[0].linkUrl) meckern('Tipprest "asd" als Kauf-Link geblieben');
-  if (db.sections.shop.items[0].price !== "35") meckern("Preis der Ware angefasst");
+  /* Die Platzhalter-Ware faellt ganz weg (Produktentscheidung 10.08.2026): es
+     gibt keine verifizierten Artikeldaten, also darf auf /shop/ auch nichts zu
+     kaufen sein. Vorher blieb der Artikel stehen und nur die Tippreste
+     ("as", "asd") wurden geraeumt — mit CHF 35 und Kauf-Knopf auf der Seite. */
+  if (db.sections.shop.items.length !== 0)
+    meckern(
+      "Platzhalter-Ware steht weiter im Shop: " +
+        db.sections.shop.items.map((p) => p.name).join(", ")
+    );
+
+  /* Shop-Texte: die Hauptsprache ist Englisch, in der Verwaltung stand Deutsch.
+     Der Grundwert muss englisch werden, de und fr bekommen ihre eigene
+     Fassung — sonst stand auf /shop/ und /fr/shop/ deutscher Text. */
+  const st = db.sections.shop;
+  if (st.note !== korr.shop.texte.master.note)
+    meckern("Shop-Zeile nicht auf Englisch umgestellt: " + st.note);
+  if (st.emptyText !== korr.shop.texte.master.emptyText)
+    meckern("Leer-Text des Shops nicht auf Englisch umgestellt: " + st.emptyText);
+  if (st.buyLabel !== korr.shop.texte.master.buyLabel)
+    meckern("Kauf-Aufschrift nicht auf Englisch umgestellt: " + st.buyLabel);
+  for (const lang of ["de", "fr"]) {
+    const soll = korr.shop.texte[lang];
+    const ist = db.i18n?.[lang]?.sections?.shop || {};
+    for (const feld of ["note", "emptyText", "buyLabel"]) {
+      if (ist[feld] !== soll[feld])
+        meckern(`Shop-Text ${feld} fehlt in ${lang}: "${ist[feld]}" statt "${soll[feld]}"`);
+    }
+  }
   if (db.pages.length !== 3) meckern("Booking und Shop haben keine eigene Seite bekommen");
   if (db.pages[1].slug !== "booking" || db.pages[2].slug !== "shop")
     meckern("Seitenadressen stimmen nicht: " + db.pages.map((p) => p.slug).join(", "));
   if (db.pages[0].sections.includes("booking"))
     meckern("Booking steht weiter als Abschnitt auf der Startseite");
+}
+
+{
+  /* Die Gegenprobe zur Platzhalter-Regel: echte Ware darf sie nicht treffen,
+     und ein selbst geschriebener Text behaelt das letzte Wort. Ohne diese
+     Probe waere die Regel ein Loeschwerkzeug, das jeden Shop leer raeumt. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.sections.shop.items = [
+    { name: "Beispiel", price: "35" },
+    { name: "Hoodie Euphoric", price: "79", src: "img/hoodie.jpg" },
+  ];
+  db.sections.shop.note = "Our own line, hand-printed in St. Gallen.";
+  nachziehen(db, korr);
+
+  const namen = db.sections.shop.items.map((p) => p.name);
+  if (namen.includes("Beispiel")) meckern("Platzhalter-Ware nicht entfernt: " + namen.join(", "));
+  if (!namen.includes("Hoodie Euphoric"))
+    meckern("echte Ware mitgeloescht — uebrig: " + (namen.join(", ") || "nichts"));
+  if (db.sections.shop.note !== "Our own line, hand-printed in St. Gallen.")
+    meckern("eigener Shop-Text ueberschrieben: " + db.sections.shop.note);
 }
 
 {
