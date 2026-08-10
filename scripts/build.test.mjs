@@ -12,7 +12,14 @@
 import { readFile } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { adoptTexts, collectStrings, localize, nachziehen } from "./build.mjs";
+import {
+  adoptTexts,
+  collectStrings,
+  istStripeAdresse,
+  localize,
+  nachziehen,
+  zahlungBereit,
+} from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const template = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
@@ -420,6 +427,52 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
     meckern("Zweiter Lauf veraendert die Kennzahlen");
 }
 
+{
+  /* Wann darf die Shop-Seite eine Bezahlung ankuendigen?
+     Anlass: die oeffentliche Seite versprach "via Stripe — card, Apple Pay,
+     Google Pay or TWINT" und "Continue to payment", obwohl gar kein
+     Zahlungslink hinterlegt war. Die Pruefung muss Zeichen fuer Zeichen
+     dieselbe sein wie in netlify/functions/order.mjs — waere die Seite
+     grosszuegiger, verspraeche sie, was der Endpunkt danach verweigert. */
+  const gueltig = [
+    "https://buy.stripe.com/abc123",
+    "https://checkout.stripe.com/c/pay/xyz",
+    "https://pay.link.com/abc",
+  ];
+  const ungueltig = [
+    "",
+    "   ",
+    null,
+    undefined,
+    "http://buy.stripe.com/abc", // kein https
+    "https://boese.example/pay", // fremder Host
+    "https://stripe.com.boese.example/pay", // Host nur vorgetaeuscht
+    "https://notstripe.com/abc",
+    "keine adresse",
+  ];
+  for (const u of gueltig)
+    if (!istStripeAdresse(u)) meckern(`Echte Stripe-Adresse abgelehnt: ${u}`);
+  for (const u of ungueltig)
+    if (istStripeAdresse(u))
+      meckern(`Ungueltige Bezahladresse durchgelassen: ${JSON.stringify(u)}`);
+
+  const vorher = process.env.STRIPE_PAYMENT_LINK_URL;
+  delete process.env.STRIPE_PAYMENT_LINK_URL;
+  if (zahlungBereit({})) meckern("Ohne Zahlungslink gilt die Bezahlung faelschlich als bereit");
+  if (zahlungBereit({ stripePaymentLink: "https://boese.example/pay" }))
+    meckern("Ein fremder Host schaltet die Bezahlung frei");
+  if (!zahlungBereit({ stripePaymentLink: "https://buy.stripe.com/abc" }))
+    meckern("Ein echter Zahlungslink im Inhalt schaltet die Bezahlung nicht frei");
+
+  process.env.STRIPE_PAYMENT_LINK_URL = "https://buy.stripe.com/abc";
+  if (!zahlungBereit({})) meckern("STRIPE_PAYMENT_LINK_URL schaltet die Bezahlung nicht frei");
+  process.env.STRIPE_PAYMENT_LINK_URL = "https://boese.example/pay";
+  if (zahlungBereit({}))
+    meckern("Eine falsch gesetzte STRIPE_PAYMENT_LINK_URL schaltet die Bezahlung frei");
+  if (vorher === undefined) delete process.env.STRIPE_PAYMENT_LINK_URL;
+  else process.env.STRIPE_PAYMENT_LINK_URL = vorher;
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
@@ -432,3 +485,4 @@ console.log("nachziehen: Referenzen — jeder bekannte Altstand loest die Ersetz
 console.log("nachziehen: Die Zahl neben \"Shows\" steht auf 30 — gefunden ueber die Aufschrift\n            (auch die alte), nie ueber den Platz in der Liste.");
 console.log("nachziehen: TikTok und Spotify werden genannt, aber ohne geratene Adresse;\n            Instagram bleibt einmalig.");
 console.log("nachziehen: \"First set 2021\" wird stillgelegt statt geloescht — die Kennzahlen\n            behalten ihren Platz, damit die Uebersetzungen nicht verrutschen.");
+console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlungslink —\n           dieselbe Regel wie im Endpunkt; ein fremder Host schaltet nichts frei.");

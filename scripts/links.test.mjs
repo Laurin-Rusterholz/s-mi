@@ -18,6 +18,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { istStripeAdresse } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -241,6 +242,49 @@ for (const [datei, h] of html) {
     if (/qr-?code/i.test(shop)) meckern("shop: QR-Code auf der Seite, obwohl keiner hinterlegt ist");
     for (const m of shop.match(/https?:\/\/[^"'\s<]*stripe[^"'\s<]*/gi) || [])
       meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
+  }
+
+  /* Die Shop-Seite darf keine Bezahlung versprechen, die es nicht gibt.
+     Anlass: auf der oeffentlichen Seite stand "via Stripe — card, Apple Pay,
+     Google Pay or TWINT" und "Continue to payment", obwohl
+     STRIPE_PAYMENT_LINK_URL nirgends hinterlegt war. Geprueft wird gegen
+     denselben Schalter, mit dem gebaut wurde. */
+  const zahlbar = istStripeAdresse(process.env.STRIPE_PAYMENT_LINK_URL);
+  const ZAHLWORTE = ["Stripe", "TWINT", "Apple Pay", "Google Pay"];
+  for (const rel of ["shop/index.html", "de/shop/index.html", "fr/shop/index.html"]) {
+    const h = await seite(rel);
+    if (!h) continue;
+    // Kommentare zaehlen nicht — der Wartungshinweis darf Stripe nennen, er
+    // steht nicht auf der Seite.
+    const sichtbar = h.replace(/<!--[\s\S]*?-->/g, "");
+    const versprochen = ZAHLWORTE.filter((w) => sichtbar.includes(w));
+    if (!zahlbar && versprochen.length)
+      meckern(
+        `${rel}: verspricht ${versprochen.join(", ")}, obwohl kein Zahlungslink hinterlegt ist`
+      );
+    if (zahlbar && !versprochen.length)
+      meckern(`${rel}: Zahlungslink hinterlegt, aber die Seite sagt nichts zur Bezahlung`);
+
+    // Der Knopf darf nur weiterfuehren, wenn es auch weitergeht.
+    const knopf = sichtbar.match(/<button class="btn solid big" type="submit">([^<]*)</);
+    const weiter = /Bezahlung|payment|paiement/i.test(knopf ? knopf[1] : "");
+    if (!zahlbar && weiter)
+      meckern(`${rel}: Knopf "${knopf[1].trim()}" kuendigt eine Bezahlung an, die es nicht gibt`);
+
+    // Und die Bestellung muss trotzdem erfasst werden koennen.
+    if (!/id="order-form"/.test(h)) meckern(`${rel}: kein Bestellformular auf der Seite`);
+  }
+
+  /* Die Weiterleitung im Browser: sie darf erst kommen, wenn die Antwort des
+     Endpunkts wirklich eine Stripe-Adresse enthaelt. Ein blosses "ist da"
+     genuegt nicht — sonst schickt eine falsche Antwort die Kundschaft
+     irgendwohin. */
+  {
+    const js = await readFile(resolve(ROOT, "assets/site.js"), "utf8");
+    if (/if\s*\(\s*out\s*&&\s*out\.paymentUrl\s*\)/.test(js))
+      meckern("site.js leitet allein auf Verdacht weiter — die Adresse wird nicht geprueft");
+    if (!/istStripeAdresse\(\s*out\.paymentUrl\s*\)/.test(js))
+      meckern("site.js prueft die Bezahladresse nicht, bevor es weiterleitet");
   }
 
   // 8) Die Schreibweise — ausser im Hostname, der eine Adresse ist.
