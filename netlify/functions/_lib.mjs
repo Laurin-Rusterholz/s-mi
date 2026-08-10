@@ -93,23 +93,49 @@ export function referenz(prefix) {
  * Anfrage zu verwerfen — die E-Mail ist der Weg, der ankommen muss. Der
  * Fehler wird gemeldet und mitgeschickt.
  */
-export async function inEingang(eintrag) {
+export async function inEingang(eintrag, versuche = 2) {
   const url = INBOX_URL();
   const token = (process.env.INBOX_API_TOKEN || "").trim();
-  try {
-    const res = await fetch(token ? `${url}?auth=${encodeURIComponent(token)}` : url, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(eintrag),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const out = await res.json().catch(() => ({}));
-    return { ok: true, id: out?.name || "" };
-  } catch (err) {
-    console.error("[eingang] nicht gespeichert:", err.message);
-    return { ok: false, fehler: err.message };
+  let letzter = "";
+  for (let n = 1; n <= versuche; n++) {
+    try {
+      const res = await fetch(token ? `${url}?auth=${encodeURIComponent(token)}` : url, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(eintrag),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const out = await res.json().catch(() => ({}));
+      return { ok: true, id: out?.name || "" };
+    } catch (err) {
+      letzter = err.message;
+      console.error(`[eingang] Versuch ${n}/${versuche} fehlgeschlagen:`, letzter);
+      // Kurz warten und ein zweites Mal versuchen: eine einzelne haengende
+      // Verbindung darf keine Anfrage kosten.
+      if (n < versuche) await new Promise((r) => setTimeout(r, 400));
+    }
   }
+  return { ok: false, fehler: letzter };
 }
+
+/**
+ * Zustand der Konfiguration — NUR ja/nein, nie ein Wert. Damit laesst sich
+ * von aussen in Sekunden feststellen, warum ein Formular nicht ankommt,
+ * ohne dass irgendein Schluessel sichtbar wird.
+ *
+ * Aufruf: GET /api/booking
+ */
+export const zustand = () => ({
+  ok: true,
+  dienst: "erreichbar",
+  mailSchluesselGesetzt: !!(process.env.RESEND_API_KEY || "").trim(),
+  mailFromGesetzt: !!(process.env.MAIL_FROM || "").trim(),
+  mailAn: MAIL_TO(),
+  eingangGesetzt: !!(process.env.INBOX_API_URL || "").trim(),
+  hinweis:
+    "Diese Angaben sind bewusst nur ja/nein. Steht mailSchluesselGesetzt auf " +
+    "false, fehlt RESEND_API_KEY in den Netlify-Variablen der Produktion.",
+});
 
 /**
  * E-Mail verschicken. Ueber Resend, weil das eine reine HTTP-Schnittstelle

@@ -13,7 +13,7 @@
  * der E-Mail-Adresse zum direkten Schreiben. Ein "Danke" ohne Zustellung
  * darf es nicht geben.
  */
-import { json, readJson, pruefe, istSpam, referenz, inEingang, sendeMail, zeilen, MAIL_TO } from "./_lib.mjs";
+import { json, readJson, pruefe, istSpam, referenz, inEingang, sendeMail, zeilen, zustand, MAIL_TO } from "./_lib.mjs";
 
 const REGELN = {
   name: { min: 2, max: 120 },
@@ -27,6 +27,10 @@ const REGELN = {
 };
 
 export default async (req) => {
+  // GET beantwortet, ob der Dienst steht und ob die Variablen gesetzt sind —
+  // ja/nein, nie ein Wert. Ohne das bleibt "geht nicht" eine Blackbox.
+  if (req.method === "GET") return json(zustand());
+
   const gelesen = await readJson(req);
   if (gelesen.fehler) return json({ ok: false, fehler: gelesen.fehler }, gelesen.status);
   const body = gelesen.body;
@@ -72,11 +76,36 @@ export default async (req) => {
   ]);
 
   if (!eingang.ok && !mail.ok) {
+    // Der Grund gehoert in die Antwort: ohne ihn ist von aussen nicht zu
+    // unterscheiden, ob der Schluessel fehlt, die Datenbank streikt oder der
+    // Absender bei Resend nicht freigegeben ist. Es sind Fehlertexte, keine
+    // Zugangsdaten.
     console.error("[booking] weder gespeichert noch gemailt", { eingang, mail });
-    return json({ ok: false, fehler: "Zustellung fehlgeschlagen", mailTo: MAIL_TO() }, 502);
+    return json(
+      {
+        ok: false,
+        fehler: "Zustellung fehlgeschlagen",
+        mailTo: MAIL_TO(),
+        grund: { eingang: eingang.fehler || "", mail: mail.grund || "" },
+      },
+      502
+    );
   }
 
   return json({ ok: true, ref, gespeichert: eingang.ok, gemailt: mail.ok });
 };
 
-export const config = { path: "/api/booking" };
+/*
+ * KEIN `export const config = { path: ... }`.
+ *
+ * Deklariert eine Function ihren eigenen Pfad, bedient Netlify sie unter
+ * genau diesem Pfad — die Standardadresse /.netlify/functions/<name> ist
+ * dann nicht mehr belegt. In netlify.toml steht aber eine erzwungene
+ * Umschreibung /api/* -> /.netlify/functions/:splat. Die Anfrage landete
+ * damit auf einer Adresse ohne Handler: 404, und das Formular meldete
+ * "Something went wrong".
+ *
+ * Die Route kommt deshalb ausschliesslich aus netlify.toml. Das ist die
+ * Variante, die unabhaengig von der Function-Generation funktioniert, und
+ * genau die, die scripts/routen.test.mjs prueft.
+ */
