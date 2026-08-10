@@ -181,8 +181,19 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   nachziehen(eigen, korr);
   if (eigen.sections.references.items.length !== 1)
     meckern("Eigene Referenzliste wurde ueberschrieben");
-  if (eigen.sections.contact.socials.length !== 1)
+  const eigeneKanaele = eigen.sections.contact.socials;
+  if (eigeneKanaele.filter((x) => /instagram/i.test(x.label + " " + (x.url || ""))).length !== 1)
     meckern("Instagram doppelt eingetragen, obwohl schon vorhanden");
+  // Die erwarteten Kanaele kommen dazu — aber ausdruecklich OHNE Adresse.
+  // Ein geratener Profil-Link waere schlimmer als ein fehlender.
+  for (const l of korr.kanaele.erwartet) {
+    const treffer = eigeneKanaele.filter((x) => new RegExp(l, "i").test(x.label + " " + (x.url || "")));
+    if (treffer.length !== 1) meckern(`Kanal "${l}" steht ${treffer.length}x statt genau 1x`);
+  }
+  for (const l of ["TikTok", "Spotify"]) {
+    const k = eigeneKanaele.find((x) => x.label === l);
+    if (k && k.url) meckern(`Fuer "${l}" wurde eine Adresse geraten: ${k.url}`);
+  }
   if (eigen.hero.stats[0].value !== "9") meckern("Eigene Kennzahlen ueberschrieben");
   if (eigen.sections.booking.photo.src !== "eigenes.jpg") meckern("Eigenes Booking-Bild ueberschrieben");
 }
@@ -256,17 +267,35 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (oben.join(" | ") !== SOLL.join(" | "))
     meckern("Hervorgehobene Gruppe ist " + oben.join(", ") + " statt " + SOLL.join(", "));
 
-  // Die beiden Ergaenzungen sind da, IVY ist unveraendert geblieben.
+  /* Der Entscheid vom 10.08.2026: "Club Eden SG ersetzt IVY", Picante bleibt,
+     und das Jugendopenair St. Gallen kommt als eigener Eintrag dazu — der
+     Wattwiler bleibt daneben stehen, es sind zwei verschiedene Anlaesse. */
   const alle = korr.referenzen.map((i) => i.name);
-  for (const n of ["Aftersun Festival", "Picante", "IVY"])
+  for (const n of ["Aftersun Festival", "Picante", "Club Eden"])
     if (!alle.includes(n)) meckern(`"${n}" fehlt in der Referenzliste`);
-  // Nicht geraten: solange der Ersatz fuer IVY nicht entschieden ist, darf
-  // weder "Club Eden" noch "Jugendopenair St. Gallen" dastehen.
-  for (const n of ["Club Eden"])
-    if (alle.includes(n)) meckern(`"${n}" wurde geraten — der Entscheid steht aus`);
+  if (alle.includes("IVY")) meckern('"IVY" steht noch da — Club Eden sollte ersetzen');
+
   const jugend = korr.referenzen.filter((i) => i.name === "Jugendopenair");
-  if (jugend.length !== 1 || jugend[0].city !== "Wattwil")
-    meckern("Jugendopenair: es darf nur der bestehende Eintrag Wattwil dastehen");
+  const jugendOrte = jugend.map((i) => i.city).sort();
+  if (jugendOrte.join(" | ") !== "St. Gallen | Wattwil")
+    meckern("Jugendopenair: erwartet St. Gallen und Wattwil, da steht " + (jugendOrte.join(", ") || "nichts"));
+
+  // Keine Dublette: derselbe Name am selben Ort darf nur einmal vorkommen.
+  const paare = korr.referenzen.map((i) => `${i.name} — ${i.city}`);
+  const doppelt = paare.filter((p, idx) => paare.indexOf(p) !== idx);
+  if (doppelt.length) meckern("Referenz doppelt: " + [...new Set(doppelt)].join(", "));
+
+  // Keine erfundene fuenfte Hervorhebung.
+  if (korr.referenzen.filter((i) => i.highlight).length !== 4)
+    meckern("Es sollen genau vier Referenzen hervorgehoben sein");
+
+  // Zu jedem Eintrag gehoert ein uebersetzter Ort — sonst rutschen die
+  // Ortsnamen auf der deutschen und franzoesischen Seite um einen Platz.
+  for (const lang of ["de", "fr"]) {
+    const orte = korr.i18n[lang].referenzen;
+    if (Object.keys(orte).length !== korr.referenzen.length)
+      meckern(`i18n ${lang}: ${Object.keys(orte).length} Orte zu ${korr.referenzen.length} Referenzen`);
+  }
 
   // Der Rest traegt keine Buendel mehr — eine durchgehend alphabetische Liste.
   if (korr.referenzen.some((i) => !i.highlight && i.group))
@@ -350,6 +379,47 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (nur.site.artist !== "Sam Sparking") meckern("Schreibweise braucht die Korrekturdatei — darf sie nicht");
 }
 
+{
+  /* "First set 2021" soll ganz weg — im Hero und in der Faktenzeile von
+     "Ueber mich". Entscheidend ist, WIE: die Kennzahl wird markiert, nicht
+     aus der Liste geloescht. Die Uebersetzungen haengen am Platz in der
+     Liste; wer kuerzt, schiebt jede Uebersetzung dahinter um einen Platz
+     (auf der deutschen Seite stand dann "Erstes Set" ueber der Zahl 30). */
+  const db = JSON.parse(JSON.stringify(template));
+  db.hero.stats = [
+    { label: "First set", value: "2021" },
+    { label: "Shows", value: "30" },
+    { label: "BPM home base", value: "150" },
+  ];
+  db.sections.about.facts = [
+    { label: "First set", value: "2021" },
+    { label: "Clubs & festivals", value: "7+" },
+  ];
+  db.i18n = db.i18n || {};
+  db.i18n.de = db.i18n.de || {};
+  db.i18n.de.hero = { stats: { 0: { label: "Erstes Set" }, 1: { label: "Shows" }, 2: { label: "BPM Zuhause" } } };
+
+  nachziehen(db, korr);
+
+  if (db.hero.stats.length !== 3)
+    meckern("Kennzahl wurde geloescht statt markiert — die Uebersetzungen verrutschen dadurch");
+  if (db.hero.stats[0].entfernt !== true) meckern('Hero-Kennzahl "First set" nicht stillgelegt');
+  if (db.sections.about.facts[0].entfernt !== true)
+    meckern('Faktenzeile "First set" in "Ueber mich" nicht stillgelegt');
+  if (db.hero.stats.some((s) => s.label === "Shows" && s.entfernt))
+    meckern("Es wurde die falsche Kennzahl stillgelegt");
+  // Die Uebersetzung sitzt weiter auf demselben Platz wie ihre Kennzahl.
+  if (db.i18n.de.hero.stats["1"].label !== "Shows")
+    meckern("Uebersetzung der Kennzahlen ist verrutscht");
+
+  // Wiederholbar: ein zweiter Lauf darf nichts mehr melden und nichts kippen.
+  const nochmal = nachziehen(db, korr);
+  if (nochmal.some((m) => /Kennzahl\(en\) entfernt/.test(m)))
+    meckern("Die Stilllegung meldet sich beim zweiten Lauf erneut");
+  if (db.hero.stats.length !== 3 || db.hero.stats[0].entfernt !== true)
+    meckern("Zweiter Lauf veraendert die Kennzahlen");
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
@@ -358,5 +428,7 @@ console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleic
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
 console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");
 console.log("nachziehen: Kennzahl \"Shows\", Aftersun in Luzern, Instagram aus dem Kopf, Waehrung\n            CHF, eigene Seiten fuer Booking und Shop — jeweils nur auf dem alten Stand.");
-console.log("nachziehen: Referenzen — jeder bekannte Altstand loest die Ersetzung aus, auch\n            umsortiert; oben Kugl, Sektor 11, Ultrawild, BBC; IVY unveraendert.");
+console.log("nachziehen: Referenzen — jeder bekannte Altstand loest die Ersetzung aus, auch\n            umsortiert; oben Kugl, Sektor 11, Ultrawild, BBC; Club Eden statt IVY,\n            Jugendopenair in St. Gallen UND Wattwil, keine Dublette.");
 console.log("nachziehen: Die Zahl neben \"Shows\" steht auf 30 — gefunden ueber die Aufschrift\n            (auch die alte), nie ueber den Platz in der Liste.");
+console.log("nachziehen: TikTok und Spotify werden genannt, aber ohne geratene Adresse;\n            Instagram bleibt einmalig.");
+console.log("nachziehen: \"First set 2021\" wird stillgelegt statt geloescht — die Kennzahlen\n            behalten ihren Platz, damit die Uebersetzungen nicht verrutschen.");

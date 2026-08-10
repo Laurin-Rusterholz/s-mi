@@ -15,7 +15,8 @@
     "stats": [
       {
         "label": "First set",
-        "value": "2021"
+        "value": "2021",
+        "entfernt": true
       },
       {
         "label": "Shows",
@@ -192,33 +193,36 @@
               "city": "St. Gallen"
             },
             "7": {
-              "city": "Herisau"
+              "city": "St. Gallen"
             },
             "8": {
-              "city": "Wittenbach"
+              "city": "Herisau"
             },
             "9": {
-              "city": "St. Gallen"
+              "city": "Wittenbach"
             },
             "10": {
-              "city": "Wattwil"
+              "city": "St. Gallen"
             },
             "11": {
-              "city": "St. Gallen"
+              "city": "Wattwil"
             },
             "12": {
               "city": "St. Gallen"
             },
             "13": {
-              "city": "Schaan, FL"
+              "city": "St. Gallen"
             },
             "14": {
-              "city": "Sirnach"
+              "city": "Schaan, FL"
             },
             "15": {
-              "city": "Bazenheid"
+              "city": "Sirnach"
             },
             "16": {
+              "city": "Bazenheid"
+            },
+            "17": {
               "city": "Glarus"
             }
           },
@@ -461,34 +465,37 @@
               "city": "Saint-Gall"
             },
             "7": {
-              "city": "Herisau"
+              "city": "Saint-Gall"
             },
             "8": {
-              "city": "Wittenbach"
+              "city": "Herisau"
             },
             "9": {
-              "city": "Saint-Gall"
+              "city": "Wittenbach"
             },
             "10": {
-              "city": "Wattwil"
+              "city": "Saint-Gall"
             },
             "11": {
-              "city": "Saint-Gall"
+              "city": "Wattwil"
             },
             "12": {
               "city": "Saint-Gall"
             },
             "13": {
-              "city": "Schaan, FL"
+              "city": "Saint-Gall"
             },
             "14": {
-              "city": "Sirnach"
+              "city": "Schaan, FL"
             },
             "15": {
-              "city": "Bazenheid"
+              "city": "Sirnach"
             },
             "16": {
-              "city": "Glaris"
+              "city": "Bazenheid"
+            },
+            "17": {
+              "city": "Glarus"
             }
           }
         },
@@ -1347,7 +1354,8 @@
       "facts": [
         {
           "label": "First set",
-          "value": "2021"
+          "value": "2021",
+          "entfernt": true
         },
         {
           "label": "Clubs & festivals",
@@ -1465,6 +1473,14 @@
         {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
+        },
+        {
+          "label": "TikTok",
+          "inHeader": false
+        },
+        {
+          "label": "Spotify",
+          "inHeader": false
         }
       ],
       "title": "Con",
@@ -1608,6 +1624,10 @@
           "city": "St. Gallen"
         },
         {
+          "name": "Club Eden",
+          "city": "St. Gallen"
+        },
+        {
           "name": "Dorffest Herisau",
           "city": "Herisau"
         },
@@ -1616,7 +1636,7 @@
           "city": "Wittenbach"
         },
         {
-          "name": "IVY",
+          "name": "Jugendopenair",
           "city": "St. Gallen"
         },
         {
@@ -1681,7 +1701,7 @@
           "country": "CH",
           "date": "2026-08-29",
           "inquiryId": "-OynrY4vxLnlzNN0U2G1",
-          "name": "Aftersun ",
+          "name": "Aftersun",
           "status": "booked"
         }
       ],
