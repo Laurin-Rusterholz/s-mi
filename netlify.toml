@@ -2,6 +2,14 @@
   publish = "."
   command = "node scripts/build.mjs"
 
+# Serverseitige Endpunkte: /api/booking, /api/order, /api/stripe-webhook.
+# Sie nehmen die Formulare entgegen, legen sie im Eingang ab und schicken die
+# E-Mail an info@samsparking.ch. Ohne sie waeren die Formulare Attrappen.
+# Die Adressen stehen als `config.path` in den Dateien selbst.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [build.environment]
   NODE_VERSION = "22"
 
@@ -55,21 +63,30 @@
     Cache-Control = "public, max-age=86400"
 
 # ===========================================================================
-# WARTUNG — EINGESCHALTET: die Website ist durch "Coming soon" ersetzt.
+# TEILWARTUNG — die Startseite bleibt "Coming soon", die Unterseiten sind live.
 #
-# WIEDER ONLINE STELLEN: alles ab hier bis zur Schlusslinie auskommentieren
-# (jede Zeile mit "# " davor). Die gebaute Website liegt unveraendert darunter
-# und ist mit dem naechsten Deploy sofort wieder da.
+# Gewollt ist genau das: /booking/ und /shop/ sollen oeffentlich benutzbar sein
+# (Booking-Anfrage stellen, bestellen), waehrend die eigentliche Website unter
+# / noch nicht gezeigt wird. Der ganze Inhalt der Website — About, Shows,
+# Referenzen, Galerie — steht ausschliesslich auf den STARTSEITEN. Es reicht
+# darum, genau diese zu sperren; alles andere darf durch.
 #
-# Netlify nimmt die erste passende Regel, die Sternchen-Regel faengt damit
-# alles ab — auch /de/, /fr/ und die Dateien unter /assets/. Status 503 (nicht
-# 404) sorgt dafuer, dass Suchmaschinen die Seite im Index behalten und
-# wiederkommen.
+# Netlify nimmt die ERSTE passende Regel. Die Reihenfolge unten ist deshalb
+# keine Geschmacksfrage:
 #
-# robots.txt und sitemap.xml stehen bewusst DAVOR und bleiben mit 200
-# erreichbar: eine robots.txt, die laenger 5xx liefert, wertet Google als
-# "alles gesperrt" — die Wartung wuerde dann Sichtbarkeit kosten, statt sie
-# nur zu pausieren.
+#   1. robots.txt und sitemap.xml — muessen mit 200 antworten. Eine robots.txt,
+#      die laenger 5xx liefert, wertet Google als "alles gesperrt".
+#   2. /api/* — die Endpunkte. Der Stripe-Webhook darf nie ausfallen (Stripe
+#      gibt nach einigen Tagen auf, die Zahlung waere dann nirgends vermerkt).
+#   3. Die Startseiten je Sprache — 503 mit "Coming soon".
+#   4. Alles Weitere faellt durch und wird normal ausgeliefert: /booking/,
+#      /shop/, /de/booking/, /fr/booking/, das Impressum, Bilder, CSS.
+#
+# Status 503 (nicht 404) sorgt dafuer, dass Suchmaschinen die Startseite im
+# Index behalten und wiederkommen.
+#
+# GANZ ONLINE STELLEN: die vier Startseiten-Regeln (Punkt 3) auskommentieren.
+# GANZ SCHLIESSEN: dort wieder eine Regel from = "/*" mit force = true setzen.
 [[redirects]]
   from = "/robots.txt"
   to = "/robots.txt"
@@ -80,22 +97,64 @@
   status = 200
 
 [[redirects]]
-  from = "/*"
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+# --- Punkt 3: nur die Startseiten ------------------------------------------
+# Je Sprache eine Regel, dazu die Datei selbst. Ohne die /index.html-Regeln
+# waere die Sperre einen Klick weit zu umgehen.
+[[redirects]]
+  from = "/"
   to = "/coming-soon.html"
   status = 503
   force = true
+[[redirects]]
+  from = "/index.html"
+  to = "/coming-soon.html"
+  status = 503
+  force = true
+[[redirects]]
+  from = "/de/"
+  to = "/coming-soon.html"
+  status = 503
+  force = true
+[[redirects]]
+  from = "/de/index.html"
+  to = "/coming-soon.html"
+  status = 503
+  force = true
+[[redirects]]
+  from = "/fr/"
+  to = "/coming-soon.html"
+  status = 503
+  force = true
+[[redirects]]
+  from = "/fr/index.html"
+  to = "/coming-soon.html"
+  status = 503
+  force = true
+# ---------------------------------------------------------------------------
 
+# Der Wiederkommen-Hinweis gehoert zur Wartungsseite, nicht mehr zur ganzen
+# Website — die Unterseiten sind ja da.
 [[headers]]
-  for = "/*"
+  for = "/coming-soon.html"
   [headers.values]
     Retry-After = "86400"
 # ===========================================================================
 
 # Quelldateien des Generators nicht ausliefern.
+# force = true ist hier noetig und war es immer: ohne das Kennzeichen wendet
+# Netlify eine Weiterleitung nur an, wenn KEINE Datei auf die Adresse passt —
+# und /scripts/build.mjs liegt als Datei da (publish = "."). Die Regel war
+# damit wirkungslos, der Quelltext des Generators oeffentlich herunterladbar.
 [[redirects]]
   from = "/scripts/*"
   to = "/404.html"
   status = 404
+  force = true
 
 # Die Datei hiess frueher "sparkling" (Schreibfehler im Namen) — alte Links
 # auf den richtig geschriebenen Namen weiterleiten.
@@ -104,11 +163,13 @@
   to = "/presskit/sam-sparking-presskit-2026.pdf"
   status = 301
 
-# Der Inhalts-Schnappschuss ist eine Bau-Zutat, keine Seite.
+# Der Inhalts-Schnappschuss ist eine Bau-Zutat, keine Seite. Auch hier
+# force = true, aus demselben Grund wie oben.
 [[redirects]]
   from = "/content/*"
   to = "/404.html"
   status = 404
+  force = true
 
 [[redirects]]
   from = "/index.html"
@@ -130,7 +191,13 @@
   to = "/fr/mentions-legales/"
   status = 301
 
-# Die Website ist ein Einseiter — fruehere Unterseiten-Adressen auf die Anker umlenken.
+# Booking und Shop haben seit August 2026 eigene Seiten (/booking/, /shop/).
+# Die frueheren Regeln "/booking/* → /#booking" duerfen deshalb NICHT mehr
+# dastehen: sie haben genau die Adresse abgefangen, die es jetzt wirklich gibt,
+# und die neue Seite waere nie erreichbar gewesen.
+#
+# Die uebrigen Abschnitte sind weiterhin Anker auf der Startseite — dafuer
+# bleiben die alten Adressen umgelenkt.
 [[redirects]]
   from = "/shows/*"
   to = "/#shows"
@@ -138,10 +205,6 @@
 [[redirects]]
   from = "/gallery/*"
   to = "/#gallery"
-  status = 301
-[[redirects]]
-  from = "/booking/*"
-  to = "/#booking"
   status = 301
 [[redirects]]
   from = "/en/shows/*"
@@ -152,20 +215,12 @@
   to = "/en/#gallery"
   status = 301
 [[redirects]]
-  from = "/en/booking/*"
-  to = "/en/#booking"
-  status = 301
-[[redirects]]
   from = "/fr/shows/*"
   to = "/fr/#shows"
   status = 301
 [[redirects]]
   from = "/fr/gallery/*"
   to = "/fr/#gallery"
-  status = 301
-[[redirects]]
-  from = "/fr/booking/*"
-  to = "/fr/#booking"
   status = 301
 
 # Ohne www und mit www duerfen nicht beide indexiert werden — Netlify leitet

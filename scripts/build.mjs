@@ -321,6 +321,101 @@ export function nachziehen(live, korr) {
     live.hero = { ...live.hero, stats: kopie(korr.heroStats) };
     getan.push("Kennzahlen");
   }
+
+  // Die mittlere Kennzahl hiess "Clubs & Festivals" und zaehlte damit etwas
+  // anderes, als sie zeigte. Sie heisst neu "Shows" — ersetzt wird nur,
+  // solange die drei Aufschriften noch die alten sind.
+  const alteStats = list(korr.alteHeroStats);
+  const stats = list(live.hero?.stats);
+  if (
+    list(korr.heroStats).length &&
+    alteStats.length === stats.length &&
+    stats.every((s, i) => str(s?.label) === alteStats[i])
+  ) {
+    stats.forEach((s, i) => {
+      const neu = korr.heroStats[i];
+      if (neu && str(neu.label)) s.label = neu.label;
+    });
+    getan.push("Kennzahl-Aufschriften");
+  }
+
+  // Die Genre-Zeile im Hero ist weg (siehe renderPage). Der Wert bleibt in der
+  // Datenbank stehen und wird nur nicht mehr gelesen — hier wird er auch aus
+  // dem Schnappschuss geraeumt, damit niemand ihn dort noch pflegt.
+  if (str(live.hero?.meta)) {
+    delete live.hero.meta;
+    for (const lang of ["de", "fr"]) delete live.i18n?.[lang]?.hero?.meta;
+    getan.push("Genre-Zeile");
+  }
+
+  // Aftersun spielt in Luzern, in der Verwaltung stand Herisau.
+  for (const s of list(korr.shows)) {
+    const treffer = list(ls.shows?.items).filter(
+      (i) => list(s.alteNamen).includes(str(i?.name).trim()) && str(i?.city) === str(s.alteStadt)
+    );
+    treffer.forEach((i) => {
+      i.name = str(i.name).trim();
+      i.city = str(s.city);
+      if (str(s.country)) i.country = str(s.country);
+    });
+    if (treffer.length) getan.push(`Show ${str(s.name)} → ${str(s.city)}`);
+  }
+
+  // Kanaele: das Instagram-Zeichen gehoert nicht mehr in den Kopf. Der Kopf
+  // zeigt nur noch, was ausdruecklich inHeader:true traegt — hier wird der
+  // alte Zustand einmal sauber nachgezogen, damit der Schalter in der
+  // Verwaltung auch dann stimmt, wenn ihn nie jemand angefasst hat.
+  let ausDemKopf = 0;
+  list(ls.contact?.socials).forEach((x) => {
+    const passt = list(korr.kanaele?.ausDemKopf).some((l) =>
+      new RegExp(l, "i").test(str(x?.label) + str(x?.url))
+    );
+    // Nur wo noch gar nichts gesetzt ist. Wer den Kanal in der Verwaltung
+    // ausdruecklich in den Kopf geholt hat, behaelt ihn dort.
+    if (passt && x.inHeader === undefined) {
+      x.inHeader = false;
+      ausDemKopf++;
+    }
+  });
+  if (ausDemKopf) getan.push(`${ausDemKopf} Kanal/Kanaele aus dem Kopf`);
+
+  // Waehrung: in der Verwaltung stand "CHF 5" im Feld fuer die Waehrung —
+  // daraus wurde auf der Seite "CHF 5 35.—".
+  if (korr.shop?.alteWaehrung && str(ls.shop?.currency) === korr.shop.alteWaehrung) {
+    ls.shop.currency = str(korr.shop.waehrung, "CHF");
+    getan.push("Waehrung");
+  }
+
+  // Tippreste aus dem ersten Einrichten ("as", "asd") aus der Beispielware
+  // raeumen. Sonst steht beim Einschalten des Shops eine Ware mit der
+  // Beschreibung "as" und einem toten Kauf-Link auf der Seite. Geraeumt wird
+  // nur, was Zeichen fuer Zeichen noch der Tippfehler ist.
+  const ph = korr.shop?.platzhalter;
+  if (ph?.name) {
+    let weg = 0;
+    list(ls.shop?.items).forEach((p) => {
+      if (str(p?.name) !== ph.name) return;
+      for (const [feld, wert] of Object.entries(ph.felder || {})) {
+        if (str(p[feld]) === wert) {
+          delete p[feld];
+          weg++;
+        }
+      }
+    });
+    if (weg) getan.push(`${weg} Platzhalter im Shop`);
+  }
+
+  // Seitenaufteilung: Booking und Shop haben eigene Seiten bekommen. Ersetzt
+  // wird nur die unangetastete Einseiter-Aufteilung — sobald in der Verwaltung
+  // eine zweite Seite steht, entscheidet sie.
+  if (list(korr.seiten).length && list(live.pages).length <= 1) {
+    live.pages = kopie(korr.seiten);
+    for (const lang of ["de", "fr"]) {
+      const q = korr.i18n?.[lang]?.seiten;
+      if (q && live.i18n?.[lang]) live.i18n[lang].pages = kopie(q);
+    }
+    getan.push(`Seiten (${korr.seiten.length})`);
+  }
   if (korr.bookingBild?.src && !ls.booking?.photo?.src) {
     ls.booking = { ...ls.booking, photo: kopie(korr.bookingBild) };
     getan.push("Booking-Bild");
@@ -333,11 +428,27 @@ export function nachziehen(live, korr) {
     const zielS = live.i18n?.[lang]?.sections;
     if (q.referenzen && zielS?.references) zielS.references.items = kopie(q.referenzen);
     if (q.heroStats && live.i18n?.[lang]?.hero) live.i18n[lang].hero.stats = kopie(q.heroStats);
+    if (q.seiten && live.i18n?.[lang]) live.i18n[lang].pages = kopie(q.seiten);
   }
 
-  // Sichtbarkeit, Reihenfolge und Seitenaufbau bleiben unangetastet — darueber
-  // entscheidet allein die Verwaltung. Ein frueherer Versuch, sie hier zu
-  // erzwingen, hat den Schalter fuer den Shop wirkungslos gemacht.
+  /* Sichtbarkeit und Reihenfolge bleiben grundsaetzlich unangetastet — darueber
+     entscheidet die Verwaltung. Ein frueherer Versuch, sie hier zu erzwingen,
+     hat den Schalter fuer den Shop wirkungslos gemacht.
+
+     Eine einzige Ausnahme, und die steht in der Korrekturdatei statt hier im
+     Code: der Shop. Vorgabe vom 10.08.2026 ist, dass /shop/ oeffentlich
+     erreichbar sein muss (200), waehrend die Startseite noch "Coming soon"
+     zeigt. Ohne eingeschalteten Abschnitt gaebe es die Seite nicht — eine
+     Unterseite ohne Abschnitt wird nicht gebaut, /shop/ liefe auf 404.
+
+     Der Preis dafuer ist ehrlich zu benennen: solange `shop.sichtbar` in
+     content/korrekturen.json auf true steht, ist der Shop-Schalter in der
+     Verwaltung wirkungslos. Ausschalten geht ueber die Korrekturdatei. */
+  if (korr.shop?.sichtbar === true && ls.shop && ls.shop.enabled !== true) {
+    ls.shop.enabled = true;
+    getan.push("Shop sichtbar (Vorgabe, siehe korrekturen.json)");
+  }
+
   return getan;
 }
 
@@ -931,27 +1042,77 @@ function renderShows(n, s) {
   </section>`;
 }
 
+/**
+ * Referenzen in zwei Stufen.
+ *
+ * Oben die wichtigsten Adressen — die tragen `highlight` und behalten die
+ * Reihenfolge aus der Verwaltung, denn das ist eine Rangfolge und keine
+ * Sortierung. Darunter alles Weitere: alphabetisch, kleiner gesetzt und nach
+ * `group` gebündelt ("Ostschweiz", "Schweiz", "International"). Eine Liste aus
+ * fünfzehn gleich grossen Zeilen liest niemand; so springt ins Auge, was zählt,
+ * und der Rest bleibt trotzdem vollständig nachlesbar.
+ */
 function renderReferences(n, s) {
   const items = list(s.items).filter((i) => str(i?.name));
-  return `
-  <section class="pad" id="references" aria-labelledby="references-h">
-    <div class="wrap">${sectionHead(n, s, "references")}
-      <ul class="venue-list rv">
-        ${items
+  const lead = items.filter((v) => v.highlight);
+  const rest = items.filter((v) => !v.highlight);
+
+  const linkOf = (v) => {
+    const url = safeUrl(v.url) || anchor("#booking");
+    const ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener"' : "";
+    return { url, ext };
+  };
+
+  const leadList = lead.length
+    ? `<ul class="venue-list rv">
+        ${lead
           .map((v, i) => {
-            const url = safeUrl(v.url) || anchor("#booking");
-            const ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener"' : "";
-            // Die Liste ist nach Wichtigkeit sortiert. Die oben stehenden
-            // Referenzen tragen "highlight" und bekommen die ganze Zeilenbreite
-            // — so ist die Reihenfolge auch optisch eine Rangfolge.
-            return `<li${v.highlight ? ' class="lead"' : ""}><a href="${esc(url)}"${ext}><span class="venue-idx">${num(
+            const { url, ext } = linkOf(v);
+            return `<li class="lead"><a href="${esc(url)}"${ext}><span class="venue-idx">${num(
               i + 1
             )}</span><span class="venue-name">${esc(v.name)}</span><span class="venue-city">${esc(
-              v.city
+              str(v.city)
             )}</span></a></li>`;
           })
           .join("\n        ")}
-      </ul>
+      </ul>`
+    : "";
+
+  // Gruppen in der Reihenfolge ihres ersten Auftretens; Einträge ohne Gruppe
+  // bilden den ersten, namenlosen Block.
+  const gruppen = [];
+  for (const v of rest) {
+    const key = str(v.group);
+    let g = gruppen.find((x) => x.key === key);
+    if (!g) gruppen.push((g = { key, items: [] }));
+    g.items.push(v);
+  }
+  const restList = gruppen
+    .map((g) => {
+      const zeilen = g.items
+        .slice()
+        .sort((a, b) => str(a.name).localeCompare(str(b.name), "de"))
+        .map((v) => {
+          const { url, ext } = linkOf(v);
+          return `<li><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
+            v.name
+          )}</span><span class="venue-city">${esc(str(v.city))}</span></a></li>`;
+        })
+        .join("\n          ");
+      return `<div class="venue-group">
+          ${g.key ? `<span class="mono venue-group-h">${esc(g.key)}</span>` : ""}
+          <ul class="venue-more">
+          ${zeilen}
+          </ul>
+        </div>`;
+    })
+    .join("\n        ");
+
+  return `
+  <section class="pad" id="references" aria-labelledby="references-h">
+    <div class="wrap">${sectionHead(n, s, "references")}
+      ${leadList}
+      ${rest.length ? `<div class="venue-rest rv">\n        ${restList}\n      </div>` : ""}
       ${
         str(s.note)
           ? `<p class="live-note rv">${inline(s.note)} <a class="accent" href="${anchorHref(
@@ -976,20 +1137,16 @@ function afterMovies(s) {
     (m) => str(m?.title) && (safeUrl(m?.src) || safeUrl(m?.embedUrl))
   );
   const head = `<div class="after-head">
-          <span class="mono">${esc(UI.afterMovies)}</span>
           ${str(s.aftermoviesNote) ? `<p>${inline(s.aftermoviesNote)}</p>` : ""}
         </div>`;
+  // Ohne Videos bleibt der Block ganz weg: ein aufklappbarer Kasten, in dem
+  // dann "noch nichts da" steht, ist ein leeres Versprechen. Der Hinweis für
+  // die Pflege steht als Kommentar in der Seite.
   if (!movies.length) {
-    return `<div class="after rv">
-        <!-- TODO Kunde: Aftermovie-Dateien oder YouTube-/Vimeo-Adressen liefern.
-             Eintragen in der Verwaltung unter Galerie → After Movies je Video:
-             Titel, Event, Video (src oder embedUrl) und Vorschaubild (poster).
-             Solange nichts hinterlegt ist, steht hier der Platzhaltertext. -->
-        ${head}
-        <div class="empty-state"><span class="mono">${esc(UI.afterMovies)}</span><p>${esc(
-      str(s.aftermoviesEmpty, UI.afterMoviesEmpty)
-    )}</p></div>
-      </div>`;
+    return `<!-- TODO Kunde: Aftermovie-Dateien oder YouTube-/Vimeo-Adressen liefern.
+           Eintragen in der Verwaltung unter Galerie → After Movies je Video:
+           Titel, Event, Video (src oder embedUrl) und Vorschaubild (poster).
+           Solange nichts hinterlegt ist, erscheint der Block gar nicht. -->`;
   }
   const cards = movies
     .map((m) => {
@@ -1007,12 +1164,21 @@ function afterMovies(s) {
         </article>`;
     })
     .join("\n        ");
-  return `<div class="after rv">
+  // Aufklappbar: die Aftermovies sassen bisher vor der Bilderwand und haben
+  // sie nach unten gedrueckt. Zugeklappt ist die Galerie sofort zu sehen, ein
+  // Klick holt die Videos. <details> braucht dafuer kein Javascript und bleibt
+  // auch ohne es bedienbar.
+  return `<details class="after rv">
+        <summary class="after-sum">
+          <span class="mono">${esc(UI.afterMovies)}</span>
+          <span class="after-count mono">${movies.length}</span>
+          <span class="after-arr" aria-hidden="true">▾</span>
+        </summary>
         ${head}
         <div class="after-grid">
         ${cards}
         </div>
-      </div>`;
+      </details>`;
 }
 
 function renderGallery(n, s) {
@@ -1079,55 +1245,32 @@ function priceTag(price, currency) {
 }
 
 /**
- * Bezahlmöglichkeiten: TWINT und Banküberweisung, dazu — sofern hinterlegt —
- * der QR-Code zum Abscannen. Alles rein statisch; es wird nichts eingezogen,
- * die Kundin überweist selbst und der Versand geht nach Zahlungseingang raus.
+ * Bezahlung. Bis August 2026 stand hier TWINT/Bank samt QR-Code zum
+ * Abscannen — die Kundin überwies selbst, der Versand ging nach Zahlungs-
+ * eingang raus. Das ist keine Bezahlung im Shop, sondern eine Rechnung ohne
+ * Kontrolle: niemand weiss, ob und wann Geld kam, und der QR-Code taugt
+ * ausdrücklich nicht als Ersatz für eine Bezahlseite.
+ *
+ * Bezahlt wird deshalb über Stripe. Der Ablauf steht in AUDIT.md; hier steht
+ * nur, was die Kundin vor dem Absenden wissen muss.
  */
-function payMethods(s) {
-  const twint = str(s.twint);
-  const bank = s.bank || {};
-  const hasBank = str(bank.iban);
-  // Fehlen Nummer und IBAN noch, steht hier bewusst der Platzhalter statt
-  // nichts — sonst faellt beim Abnehmen niemandem auf, dass die Angaben fehlen.
-  const missing = !twint && !hasBank;
-  const qr = safeUrl(s.qr?.src)
-    ? `<figure class="pay-qr">
-            ${picture(s.qr, { widths: [280, 560], sizes: "220px" })}
-            <figcaption class="mono">${esc(str(s.qr.caption, UI.payQrCaption))}</figcaption>
-          </figure>`
-    : `<!-- TODO Kunde: QR-Code fehlt noch. Benötigt wird entweder der TWINT-QR
-             (in der TWINT-App unter "Geld empfangen" → QR speichern) oder der
-             Einzahlungsschein-QR der Bank (QR-Rechnung). Bild in der Verwaltung
-             unter Shop → Bezahlung hochladen; es erscheint dann hier.
-             Offene Frage: TWINT-QR, Bank-QR oder beide? -->
-        <div class="pay-qr pay-qr-missing"><span class="mono">${esc(UI.payQrMissing)}</span></div>`;
-  const details = missing
-    ? `<li><b>TWINT</b><span>${esc(UI.payPending)}</span></li>
-              <li><b>${esc(UI.payBank)}</b><span>${esc(UI.payPending)}</span></li>`
-    : `${twint ? `<li><b>TWINT</b><span>${esc(twint)}</span></li>` : ""}
-              ${hasBank ? `<li><b>${esc(str(bank.label, UI.payBank))}</b><span>${esc(bank.iban)}</span></li>` : ""}
-              ${hasBank && str(bank.holder) ? `<li><b>${esc(UI.payHolder)}</b><span>${esc(bank.holder)}</span></li>` : ""}
-              ${hasBank && str(bank.bank) ? `<li><b>${esc(UI.payBankName)}</b><span>${esc(bank.bank)}</span></li>` : ""}`;
+function payMethods(s, site) {
+  const bereit = !!safeUrl(site.stripePaymentLink) || site.stripeReady === true;
   return `
       <div class="pay-methods rv">${
-        missing
-          ? `
-        <!-- TODO Kunde: Zahlungsangaben fehlen noch. Benoetigt werden die
-             TWINT-Nummer und/oder IBAN samt Empfaenger und Bank. Eintragen in
-             der Verwaltung unter Shop → Bezahlung; sobald etwas hinterlegt ist,
-             ersetzt es diesen Platzhalter und die Auswahl im Bestellformular. -->`
-          : ""
+        bereit
+          ? ""
+          : `
+        <!-- TODO Kunde: Es fehlt noch der echte Stripe-Zahlungslink. Anlegen im
+             Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
+             Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
+             in Netlify hinterlegen (Site settings → Environment variables).
+             Bis dahin nimmt das Formular die Bestellung entgegen und meldet sie
+             per E-Mail, die Bezahlseite oeffnet sich aber noch nicht. Details:
+             AUDIT.md, Abschnitt "Stripe". -->`
       }
-        <div class="pay-cols">
-          <div>
-            <span class="mono">${esc(UI.payTitle)}</span>
-            <ul class="pay-list">
-              ${details}
-            </ul>
-            <p class="pay-note">${esc(UI.payNote)}</p>
-          </div>
-          ${qr}
-        </div>
+        <span class="mono">${esc(UI.payTitle)}</span>
+        <p class="pay-note">${esc(UI.payStripeNote)}</p>
       </div>`;
 }
 
@@ -1137,8 +1280,7 @@ function payMethods(s) {
  * Bestellung landet im selben Eingang wie die Booking-Anfragen (kind:"order").
  */
 function orderForm(s, site, items, cur) {
-  const endpoint = safeUrl(site.shopApi) || safeUrl(site.bookingApi);
-  if (!endpoint || !items.length) return "";
+  if (!items.length) return "";
   const options = items
     .filter((p) => p.status !== "soldout")
     .map((p) => {
@@ -1149,13 +1291,10 @@ function orderForm(s, site, items, cur) {
     })
     .join("\n              ");
   if (!options) return "";
-  const pay = [
-    str(s.twint) ? ["twint", "TWINT"] : null,
-    str(s.bank?.iban) ? ["bank", str(s.bank?.label, UI.payBank)] : null,
-  ].filter(Boolean);
   return `
-      <form class="oform rv" id="order-form" data-endpoint="${esc(endpoint)}"
-            data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}" novalidate>
+      <form class="oform rv" id="order-form" data-endpoint="${esc(ORDER_ENDPOINT)}"
+            data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}"
+            data-paying="${esc(UI.oPaying)}"${formDemoAttr} novalidate>
         <div class="bform-head">
           <span class="mono">${esc(UI.orderTitle)}</span>
           <h3>${esc(UI.orderHeadline)}</h3>
@@ -1190,21 +1329,9 @@ function orderForm(s, site, items, cur) {
               str(s.defaultCountry, "Schweiz")
             )}" autocomplete="country-name">
           </label>
-          ${
-            pay.length
-              ? `<fieldset class="span-2 opay">
-            <legend class="lbl">${esc(UI.oPayment)} <i aria-hidden="true">*</i></legend>
-            ${pay
-              .map(
-                ([v, label], i) =>
-                  `<label class="opay-opt"><input name="payment" type="radio" value="${esc(
-                    v
-                  )}" required${i === 0 ? " checked" : ""}><span>${esc(label)}</span></label>`
-              )
-              .join("\n            ")}
-          </fieldset>`
-              : ""
-          }
+          ${/* Keine Auswahl der Zahlungsart mehr: bezahlt wird über Stripe.
+               Die frühere Auswahl TWINT/Bank stand für "Ich überweise dann
+               mal" — der Shop wusste danach nie, ob das jemand tat. */ ""}
           <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">${esc(UI.fHoneypot)}</span>
             <input name="website" type="text" tabindex="-1" autocomplete="off">
           </label>
@@ -1214,6 +1341,7 @@ function orderForm(s, site, items, cur) {
           <span class="mono reply-note">${esc(UI.oReplyNote)}</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="${esc(UI.oSuccess)}" data-error="${esc(UI.oError)}"></p>
+          ${formDemoNote()}
         </div>
       </form>`;
 }
@@ -1235,7 +1363,7 @@ function kachelbreite(anzahl) {
   return 116;
 }
 
-function renderShop(n, s, contactEmail, site) {
+function renderShop(n, s, site) {
   const items = list(s.items).filter((p) => str(p?.name));
   const cur = str(s.currency, "CHF");
   const buy = str(s.buyLabel, UI.buy);
@@ -1246,25 +1374,19 @@ function renderShop(n, s, contactEmail, site) {
       const sold = p.status === "soldout";
       // Nur echte Adressen zaehlen als Bezahl-Link — Tippreste wie "asd"
       // fallen sonst als toter Kauf-Knopf auf die Website
-      const link = /^https?:\/\//i.test(String(p.linkUrl || "")) ? safeUrl(p.linkUrl) : "";
       const price = priceTag(p.price, cur);
-      const mail = contactEmail
-        ? `mailto:${contactEmail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}` +
-          `&body=${encodeURIComponent(UI.orderMailBody.replace("{product}", [str(p.name), price].filter(Boolean).join(" — ")))}`
-        : "";
-      // Ohne eigenen Bezahl-Link fuehrt der Knopf ins Bestellformular weiter
-      // unten und waehlt das Produkt dort schon aus. Gibt es kein Formular
-      // (kein Endpunkt hinterlegt), bleibt die Bestellung per Mail.
+      // Der Kauf-Knopf fuehrt immer ins Bestellformular und waehlt die Ware
+      // dort schon aus. Kein "Bestellen per E-Mail" mehr: eine Mail traegt
+      // weder Lieferadresse noch Bezahlung, und ohne die beiden kann niemand
+      // etwas verschicken. Ein eigener Bezahl-Link je Artikel entfaellt
+      // ebenfalls — bezahlt wird nach dem Formular ueber Stripe, sonst kaeme
+      // die Bestellung ohne Adresse an.
       const cta = sold
         ? `<span class="mono">${esc(UI.soldOut)}</span>`
-        : link
-        ? `<a class="btn sm" href="${esc(link)}" target="_blank" rel="noopener">${esc(buy)} ↗</a>`
         : hasOrderForm
         ? `<a class="btn sm order-jump" href="#order-form" data-product="${esc(p.name)}">${esc(
             buy
           )}</a>`
-        : mail
-        ? `<a class="btn sm ghost" href="${esc(mail)}">${esc(UI.orderByMail)}</a>`
         : "";
       return `<article class="product rv${sold ? " soldout" : ""}">
           ${p.src ? `<div class="product-img">${picture(p, { sizes: "(max-width:700px) 46vw, 280px", widths: [480, 800] })}</div>` : ""}
@@ -1302,7 +1424,7 @@ function renderShop(n, s, contactEmail, site) {
       <div class="shop-grid" style="--tile:${kachelbreite(items.length)}px">
       ${cards}
       </div>
-${payMethods(s)}
+${payMethods(s, site)}
 ${form}
     </div>
   </section>`;
@@ -1316,7 +1438,10 @@ ${form}
 
 function renderBooking(n, s, site) {
   const f = s.form || {};
-  const formEnabled = f.enabled !== false && !!safeUrl(site.bookingApi);
+  // Das Formular sendet an den eigenen Endpunkt, nicht an eine in der
+  // Verwaltung hinterlegte Datenbank-Adresse. Es haengt daher nur noch am
+  // Schalter in der Verwaltung.
+  const formEnabled = f.enabled !== false;
   // Anfragen ist der wichtigste Weg der Seite. Deshalb steht hier links die
   // Ansage und rechts gleich das Formular — ohne Umweg über einen Knopf.
   return `
@@ -1374,10 +1499,10 @@ function renderBooking(n, s, site) {
       ${
         formEnabled
           ? `
-      <form class="bform rv" id="booking-form" data-endpoint="${href(
-        site.bookingApi
+      <form class="bform rv" id="booking-form" data-endpoint="${esc(
+        BOOKING_ENDPOINT
       )}" data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}"
-            data-captcha="${esc(UI.captchaWrong)}" novalidate>
+            data-captcha="${esc(UI.captchaWrong)}"${formDemoAttr} novalidate>
         <div class="bform-head">
           <span class="mono">${esc(str(f.kicker, "Booking request"))}</span>
           <h3>${esc(str(f.title, "Tell me about your event"))}</h3>
@@ -1433,6 +1558,7 @@ function renderBooking(n, s, site) {
              data-success="${esc(str(f.successText, "Thanks — your request landed."))}"
              data-error="${esc(str(f.errorText, "Something went wrong. Please e-mail instead."))}"></p>
           <p class="bform-fine mono">${esc(UI.formFine)}</p>
+          ${formDemoNote()}
         </div>
       </form>`
           : ""
@@ -1761,8 +1887,6 @@ const UI_DEFAULTS = {
   calShow: "Termin",
   language: "Sprache",
   buy: "Kaufen",
-  orderByMail: "Per Mail bestellen",
-  orderSubject: "Bestellung",
   bookDay: "Diesen Tag anfragen",
   pickDay: "Oder Wunschdatum direkt im Kalender antippen:",
   dayBusy: "Belegt",
@@ -1778,16 +1902,10 @@ const UI_DEFAULTS = {
   showMoreImages: "{n} weitere Bilder",
   showLessImages: "Weniger Bilder",
   afterMovies: "After Movies",
-  afterMoviesEmpty: "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
   allRequired: "Alle Felder sind Pflichtfelder.",
+  onThisPage: "Auf dieser Seite",
   payTitle: "Bezahlen",
-  payBank: "Banküberweisung",
-  payBankName: "Bank",
-  payHolder: "Empfänger",
-  payNote: "Nach dem Absenden kommt eine Bestätigung mit Betrag und Vermerk. Der Versand geht raus, sobald die Zahlung da ist.",
-  payQrCaption: "QR-Code scannen und bezahlen",
-  payQrMissing: "QR-Code folgt",
-  payPending: "folgt",
+  payStripeNote: "Bezahlt wird nach dem Absenden über Stripe — Karte, Apple Pay, Google Pay oder TWINT. Der Versand geht raus, sobald die Zahlung bestätigt ist.",
   orderTitle: "Bestellung",
   orderHeadline: "Wohin darf es gehen?",
   oProduct: "Artikel",
@@ -1796,13 +1914,13 @@ const UI_DEFAULTS = {
   oZip: "PLZ",
   oCity: "Ort",
   oCountry: "Land",
-  oPayment: "Bezahlung",
-  oSubmit: "Bestellung abschicken",
-  oReplyNote: "Bestätigung mit Zahlungsangaben folgt per Mail",
-  oSuccess: "Danke — deine Bestellung ist da. Die Zahlungsangaben kommen gleich per Mail.",
-  oError: "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail.",
+  oSubmit: "Weiter zur Bezahlung",
+  oPaying: "Bezahlseite wird geöffnet …",
+  oReplyNote: "Weiter zu Stripe — die Bestätigung kommt danach per Mail",
+  oSuccess: "Danke — deine Bestellung ist da. Du bekommst gleich eine Bestätigung per Mail.",
+  oError: "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail an info@samsparking.ch.",
+  formDemo: "Vorführ-Fassung: dieses Formular sendet nichts.",
   follow: "Kanäle",
-  orderMailBody: "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
   notFoundCta: "Zur Startseite",
@@ -1996,17 +2114,23 @@ function pagesOf(c) {
       seo: p.seo || {},
     }));
 
-  if (pages.length) {
+  // Eine Unterseite ohne Abschnitt waere eine leere Seite mit einem Menuepunkt,
+  // der ins Nichts fuehrt — genau das passiert, sobald der Shop in der
+  // Verwaltung ausgeschaltet wird. Solche Seiten fallen weg; die Startseite
+  // bleibt immer, auch wenn dort gerade nichts eingeschaltet ist.
+  const bewohnt = pages.filter((p, i) => i === 0 || p.sections.length);
+
+  if (bewohnt.length) {
     // Doppelte Slugs entschärfen, sonst überschreiben sich die Dateien.
     const seen = new Set();
-    pages.forEach((p, i) => {
+    bewohnt.forEach((p, i) => {
       let sl = p.slug;
       while (sl !== "" && seen.has(sl)) sl += "-2";
       if (i > 0 && sl === "") sl = "seite-" + i;
       p.slug = sl;
       seen.add(sl);
     });
-    return pages;
+    return bewohnt;
   }
 
   return [
@@ -2089,8 +2213,30 @@ const BAUBAR = new Set([
   "references",
   "gallery",
   "booking",
+  "shop",
   "contact",
 ]);
+
+/**
+ * Wohin die Formulare senden. Bewusst eigene Adressen dieser Website und
+ * nicht die Datenbank-Adresse aus der Verwaltung: der Browser darf den
+ * Eingang nicht direkt kennen (sonst kann jeder hineinschreiben), und eine
+ * Bestellung oder Anfrage muss serverseitig eine E-Mail ausloesen. Die
+ * Funktionen dahinter stehen in netlify/functions/.
+ */
+const BOOKING_ENDPOINT = "/api/booking";
+const ORDER_ENDPOINT = "/api/order";
+
+/**
+ * Vorführ-Fassung (Beispiel-Sami): dort liegt nur die gebaute Website, ohne
+ * die Funktionen dahinter. Ein Formular, das dann ins Leere sendet, sähe
+ * funktionsfähig aus und wäre es nicht — deshalb sagen die Formulare dort
+ * offen, dass sie nichts verschicken, und senden gar nicht erst.
+ */
+const FORMS_DEMO = process.env.FORMS_DEMO === "1";
+const formDemoAttr = FORMS_DEMO ? ' data-demo="true"' : "";
+const formDemoNote = () =>
+  FORMS_DEMO ? `<p class="bform-demo mono">${esc(UI.formDemo)}</p>` : "";
 
 function renderPage(c, page, pages, lang, langs) {
   const master = langs[0];
@@ -2100,7 +2246,15 @@ function renderPage(c, page, pages, lang, langs) {
   const base = site.domain.replace(/\/+$/, "");
   const sections = c.sections || {};
   const isHome = !page.slug;
-  const hasShows = list(sections.shows?.items).some((item) => str(item?.name));
+  // Shows gehoeren nur dann auf die Seite — und damit ins Menue —, wenn noch
+  // ein Termin aussteht. Steht in der Verwaltung nur Vergangenes, fuehrte der
+  // Menuepunkt bisher auf eine Seite, die nichts als "keine Termine" sagt.
+  // Der Rueckblick ("Already played") bleibt erhalten, sobald wieder ein
+  // kommender Termin dabei ist.
+  const heute = today();
+  const hasShows = list(sections.shows?.items).some(
+    (item) => str(item?.name) && (!isoDate(item.date) || isoDate(item.date) >= heute)
+  );
   const order = list(page.sections).filter(
     (key) =>
       sections[key] &&
@@ -2110,12 +2264,29 @@ function renderPage(c, page, pages, lang, langs) {
   );
   const effectivePage = { ...page, sections: order };
   CTX = { page: effectivePage, pages, hideHead: null, prefix: navPrefix(lang, master) };
-  const hasBooking = order.includes("booking");
-  const hasBookingForm =
-    hasBooking &&
-    sections.booking?.form?.enabled !== false &&
-    !!safeUrl(site.bookingApi);
-  const bookingTarget = hasBooking ? (hasBookingForm ? "#booking-form" : "#booking") : "";
+  // Das Formular haengt nicht mehr an einer in der Verwaltung hinterlegten
+  // Adresse: es sendet immer an den eigenen Endpunkt /api/booking. Abschalten
+  // laesst es sich weiterhin in der Verwaltung (form.enabled).
+  const bookingPage = pages.find((p) => list(p.sections).includes("booking"));
+  const hasBooking = !!bookingPage;
+  const hasBookingForm = hasBooking && sections.booking?.form?.enabled !== false;
+  // Der Knopf zeigt direkt auf das Formular — auch von einer anderen Seite aus.
+  // `anchor()` kennt nur Abschnitts-Schluessel, "#booking-form" ist keiner;
+  // der Weg zur Booking-Seite wird deshalb hier gebaut.
+  const bookingTarget = (() => {
+    if (!hasBooking) return "";
+    const hash = hasBookingForm ? "#booking-form" : "#booking";
+    return bookingPage.slug === page.slug ? hash : `${pagePath(bookingPage.slug)}${hash}`;
+  })();
+
+  // Dasselbe fuer den Shop: er liegt auf einer eigenen Seite, ist aber nur da,
+  // solange er in der Verwaltung eingeschaltet ist und Ware enthaelt.
+  const shopPage = pages.find((p) => list(p.sections).includes("shop"));
+  const shopTarget = !shopPage
+    ? ""
+    : shopPage.slug === page.slug
+    ? "#shop"
+    : `${pagePath(shopPage.slug)}`;
 
   const renderers = {
     about: renderAbout,
@@ -2124,7 +2295,7 @@ function renderPage(c, page, pages, lang, langs) {
     shows: renderShows,
     references: renderReferences,
     gallery: renderGallery,
-    shop: (n, s) => renderShop(n, s, str(sections.contact?.email), site),
+    shop: (n, s) => renderShop(n, s, site),
     booking: (n, s) => renderBooking(n, s, site),
     contact: (n, s) => renderContact(n, s, bookingTarget),
   };
@@ -2143,32 +2314,37 @@ function renderPage(c, page, pages, lang, langs) {
     .join("\n");
 
   const navPages = pages.filter((p) => p.inNav);
-  // Eine einzige Seite: das Menü springt direkt zu den Abschnitten.
-  const nav =
-    navPages.length > 1
-      ? navPages
-          .map(
-            (p) =>
-              `<li><a href="${esc(pagePath(p.slug))}"${
-                p.slug === page.slug ? ' aria-current="page"' : ""
-              }>${esc(p.navLabel)}</a></li>`
-          )
-          .join("\n          ")
-      : order
-          .map((key) => {
-            const cls = key === "booking" ? ' class="nav-cta"' : key === "shop" ? ' class="nav-hot"' : "";
-            return `<li${cls}><a href="#${esc(key)}">${esc(
-              str(sections[key]?.navLabel, str(sections[key]?.title, key))
-            )}</a></li>`;
-          })
-          .join("\n          ");
 
-  // Auf einer Seite mit mehreren Abschnitten zusätzlich Sprungmarken anbieten
-  // — nur im Mehrseiten-Betrieb; als Einseiter springt schon das Hauptmenü.
+  /**
+   * Ein Menü für beides. Booking und Shop liegen seit August 2026 auf eigenen
+   * Seiten (/booking/, /shop/) — trotzdem darf das Menü nicht auf drei
+   * Seitennamen zusammenschrumpfen: die Abschnitte der Startseite müssen
+   * erreichbar bleiben. Deshalb stehen zuerst die anderen Seiten (Booking als
+   * Hauptknopf, danach der Shop) und darunter die Abschnitte der Seite, auf
+   * der man gerade steht.
+   */
+  const pageCls = (slug) =>
+    slug === "booking" ? ' class="nav-cta"' : slug === "shop" ? ' class="nav-hot"' : "";
+  const pageLinks = navPages
+    .filter((p) => p.slug !== page.slug)
+    .map(
+      (p) => `<li${pageCls(p.slug)}><a href="${esc(pagePath(p.slug))}">${esc(p.navLabel)}</a></li>`
+    );
+  const sectionLinks = order.map((key) => {
+    const cls = key === "booking" ? ' class="nav-cta"' : key === "shop" ? ' class="nav-hot"' : "";
+    return `<li${cls}><a href="#${esc(key)}">${esc(
+      str(sections[key]?.navLabel, str(sections[key]?.title, key))
+    )}</a></li>`;
+  });
+  const nav = [...pageLinks, ...sectionLinks].join("\n          ");
+
+  // Auf einer Unterseite mit mehreren Abschnitten zusätzlich Sprungmarken
+  // anbieten. Bei einem einzigen Abschnitt wäre das eine Leiste mit einem
+  // Eintrag — die bleibt weg.
   const subNav =
-    navPages.length > 1 && order.length > 1
+    navPages.length > 1 && order.length > 1 && page.slug
       ? `
-    <nav class="subnav" aria-label="Auf dieser Seite">
+    <nav class="subnav" aria-label="${esc(ui.onThisPage)}">
       <div class="wrap subnav-inner">
         ${order
           .map(
@@ -2186,10 +2362,11 @@ function renderPage(c, page, pages, lang, langs) {
   const footSocials = list(sections.contact?.socials).filter(
     (x) => str(x?.label) && safeUrl(x?.url)
   );
-  // Zusätzlich als reine Zeichen oben im Kopf — jeder Kanal hat sein eigenes
-  // (socialIcon), Instagram sieht also anders aus als Mixcloud. In der
-  // Verwaltung lässt sich das je Kanal abschalten.
-  const headSocials = footSocials.filter((x) => x.inHeader !== false);
+  // Im Kopf steht standardmaessig KEIN Kanal-Zeichen mehr: der Kopf traegt den
+  // Namen und das Menue, mehr nicht — das Instagram-Zeichen sass dort im Weg
+  // und stand doppelt zum Fuss. Wer einen Kanal doch oben will, schaltet ihn
+  // in der Verwaltung je Kanal ausdruecklich ein (inHeader: true).
+  const headSocials = footSocials.filter((x) => x.inHeader === true);
   const headSocialsBlock = headSocials.length
     ? `<div class="head-social">${headSocials
         .map(
@@ -2233,13 +2410,15 @@ function renderPage(c, page, pages, lang, langs) {
   </div>`
       : "";
 
+  // "Book me" im Hero fuehrt auf das Formular — seit Booking eine eigene Seite
+  // hat, also quer auf /booking/#booking-form. bookingTarget rechnet den Weg
+  // schon fertig aus (samt SITE_BASE); nur ein in der Verwaltung abweichend
+  // gesetztes Ziel geht vor und wird hier selbst aufgeloest.
   const configuredHeroCta = str(c.hero?.ctaHref, "#booking");
   const heroCtaHref =
-    configuredHeroCta === "#booking" &&
-    sections.booking?.enabled !== false &&
-    sections.booking?.form?.enabled !== false
-      ? "#booking-form"
-      : configuredHeroCta;
+    configuredHeroCta === "#booking" && bookingTarget
+      ? bookingTarget
+      : anchor(configuredHeroCta);
 
   const hero =
     page.hero === "none"
@@ -2268,18 +2447,24 @@ function renderPage(c, page, pages, lang, langs) {
           : ""
       }${esc(c.hero?.nameMain || site.artist)}</h1>
       <div class="hero-sub">
+        ${/* Unter dem Namen steht genau ein Satz — der Anspruch, in der
+             Akzentfarbe. Die Genre-Zeile ("Euphoric Hardstyle / Melodic
+             Hardstyle") stand bis August 2026 daneben und ist weg: sie
+             wiederholte, was der Sound-Abschnitt ohnehin sagte, und nahm dem
+             Satz die Wirkung. `hero.meta` wird darum nicht mehr gelesen. */ ""}
         ${c.hero?.tagline ? `<span class="tag">${esc(c.hero.tagline)}</span>` : ""}
-        ${c.hero?.meta ? `<span class="mono">${esc(c.hero.meta)}</span>` : ""}
         ${
           c.hero?.ctaLabel
-            ? `<a class="hero-cta" href="${anchorHref(heroCtaHref)}">${esc(
+            ? `<a class="hero-cta" href="${esc(heroCtaHref)}">${esc(
                 c.hero.ctaLabel
               )}<span class="cta-arr" aria-hidden="true">→</span></a>`
             : ""
         }
         ${
-          sections.shop && sections.shop.enabled !== false && order.includes("shop")
-            ? `<a class="hero-cta alt" href="#shop">${esc(str(sections.shop.navLabel, "Shop"))}</a>`
+          shopTarget
+            ? `<a class="hero-cta alt" href="${esc(shopTarget)}">${esc(
+                str(sections.shop?.navLabel, "Shop")
+              )}</a>`
             : ""
         }
       </div>

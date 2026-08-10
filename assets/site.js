@@ -979,17 +979,22 @@
         }
       }
 
-      // Spam-Schutz: Honeypot + minimale Ausfüllzeit
+      // Spam-Schutz. Der Honeypot und die Ausfuellzeit werden MITGESENDET und
+      // erst auf dem Server ausgewertet — frueher hat die Seite hier selbst
+      // entschieden und bei einem schnellen Absenden "Danke!" gemeldet, ohne
+      // etwas zu verschicken. Genau das darf nicht passieren: was "Danke"
+      // sagt, muss auch angekommen sein.
       var hp = form.elements.website;
-      if ((hp && hp.value) || Date.now() - opened < 2500) {
+      data.website = hp ? String(hp.value || "") : "";
+      data.elapsedMs = Date.now() - opened;
+      data.source = location.hostname || "website";
+
+      // Vorfuehr-Fassung ohne Server: offen sagen, dass nichts rausgeht.
+      if (form.getAttribute("data-demo") === "true") {
         form.classList.add("sent");
-        setMsg(msg ? msg.getAttribute("data-success") : "Thanks!", "ok");
+        setMsg(msg ? msg.getAttribute("data-success") : "", "ok");
         return;
       }
-
-      data.createdAt = new Date().toISOString();
-      data.status = "new";
-      data.source = location.hostname || "website";
 
       form.classList.add("busy");
       setMsg(sendingText, "");
@@ -1001,9 +1006,15 @@
       })
         .then(function (res) {
           if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json().catch(function () {
+            return {};
+          });
+        })
+        .then(function () {
           form.classList.remove("busy");
           form.classList.add("sent");
           form.reset();
+          newCaptcha();
           setMsg(msg.getAttribute("data-success"), "ok");
         })
         .catch(function () {
@@ -1022,6 +1033,7 @@
     var oEndpoint = oform.getAttribute("data-endpoint");
     var oSending = oform.getAttribute("data-sending") || "…";
     var oInvalid = oform.getAttribute("data-invalid") || "";
+    var oPaying = oform.getAttribute("data-paying") || oSending;
     var oMsg = oform.querySelector(".bform-msg");
     var oOpened = Date.now();
     var FIELDS = ["product", "quantity", "name", "email", "street", "zip", "city", "country"];
@@ -1041,9 +1053,6 @@
         var f = oform.elements[k];
         data[k] = f ? String(f.value || "").trim() : "";
       });
-      var pay = oform.querySelector('input[name="payment"]:checked');
-      data.payment = pay ? pay.value : "";
-
       var bad = null;
       FIELDS.forEach(function (k) {
         var f = oform.elements[k];
@@ -1054,26 +1063,23 @@
         f.setAttribute("aria-invalid", ok ? "false" : "true");
         if (!ok && !bad) bad = f;
       });
-      if (!bad && oform.querySelector('input[name="payment"]') && !data.payment) {
-        bad = oform.querySelector('input[name="payment"]');
-      }
       if (bad) {
         setOMsg(oInvalid, "err");
         bad.focus();
         return;
       }
 
+      // Wie beim Booking: Honeypot und Ausfuellzeit entscheidet der Server.
       var hp = oform.elements.website;
-      if ((hp && hp.value) || Date.now() - oOpened < 2500) {
+      data.website = hp ? String(hp.value || "") : "";
+      data.elapsedMs = Date.now() - oOpened;
+      data.source = location.hostname || "website";
+
+      if (oform.getAttribute("data-demo") === "true") {
         oform.classList.add("sent");
-        setOMsg(oMsg ? oMsg.getAttribute("data-success") : "Danke!", "ok");
+        setOMsg(oMsg ? oMsg.getAttribute("data-success") : "", "ok");
         return;
       }
-
-      data.kind = "order";
-      data.createdAt = new Date().toISOString();
-      data.status = "new";
-      data.source = location.hostname || "website";
 
       oform.classList.add("busy");
       setOMsg(oSending, "");
@@ -1085,8 +1091,21 @@
       })
         .then(function (res) {
           if (!res.ok) throw new Error("HTTP " + res.status);
+          return res.json().catch(function () {
+            return {};
+          });
+        })
+        .then(function (out) {
           oform.classList.remove("busy");
           oform.classList.add("sent");
+          // Die Bestellung ist aufgenommen und gemeldet. Gibt es eine
+          // Bezahlseite, geht es dort weiter — die Bestellnummer faehrt als
+          // client_reference_id mit, damit der Webhook beides zusammenbringt.
+          if (out && out.paymentUrl) {
+            setOMsg(oPaying, "ok");
+            location.assign(out.paymentUrl);
+            return;
+          }
           oform.reset();
           setOMsg(oMsg.getAttribute("data-success"), "ok");
         })

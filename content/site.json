@@ -10,7 +10,6 @@
       "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&token=d89f8d1b-067a-49e6-a950-0939b27a4b11",
       "type": "video"
     },
-    "meta": "Euphoric Hardstyle / Melodic Hardstyle",
     "nameMain": "Sparking",
     "nameSpaced": "S A M",
     "stats": [
@@ -19,7 +18,7 @@
         "value": "2021"
       },
       {
-        "label": "Clubs & Festivals",
+        "label": "Shows",
         "value": "7+"
       },
       {
@@ -37,14 +36,13 @@
         "media": {
           "alt": "Sam Sparking am Pult, Laser und Crowd vor der Bühne"
         },
-        "meta": "Euphoric Hardstyle / Melodic Hardstyle",
         "tagline": "Aus Energie wird Euphorie.",
         "stats": {
           "0": {
             "label": "Erstes Set"
           },
           "1": {
-            "label": "Clubs & Festivals"
+            "label": "Shows"
           },
           "2": {
             "label": "BPM Zuhause"
@@ -54,6 +52,12 @@
       "pages": {
         "0": {
           "navLabel": "Start"
+        },
+        "1": {
+          "navLabel": "Booking"
+        },
+        "2": {
+          "navLabel": "Shop"
         }
       },
       "sections": {
@@ -167,48 +171,57 @@
         "references": {
           "items": {
             "0": {
-              "city": "Zürich"
+              "city": "St. Gallen"
             },
             "1": {
-              "city": "Wattwil"
+              "city": "Zürich"
             },
             "2": {
               "city": "St. Gallen"
             },
             "3": {
-              "city": "St. Gallen"
+              "city": "Gossau"
             },
             "4": {
               "city": "St. Gallen"
             },
             "5": {
-              "city": "St. Gallen"
+              "city": "Herisau"
             },
             "6": {
               "city": "St. Gallen"
             },
             "7": {
-              "city": "Herisau"
+              "city": "St. Gallen"
             },
             "8": {
               "city": "Herisau"
             },
             "9": {
-              "city": "Sirnach"
-            },
-            "10": {
-              "city": "Glarus"
-            },
-            "11": {
-              "city": "Bazenheid"
-            },
-            "12": {
               "city": "Wittenbach"
             },
+            "10": {
+              "city": "Wattwil"
+            },
+            "11": {
+              "city": "St. Gallen"
+            },
+            "12": {
+              "city": "St. Gallen"
+            },
             "13": {
-              "city": "Gossau"
+              "city": "Sirnach"
             },
             "14": {
+              "city": "Bazenheid"
+            },
+            "15": {
+              "city": "Luzern"
+            },
+            "16": {
+              "city": "Glarus"
+            },
+            "17": {
               "city": "Schaan, FL"
             }
           },
@@ -385,6 +398,12 @@
       "pages": {
         "0": {
           "navLabel": "Accueil"
+        },
+        "1": {
+          "navLabel": "Booking"
+        },
+        "2": {
+          "navLabel": "Boutique"
         }
       },
       "sections": {
@@ -424,49 +443,71 @@
           "noteLinkLabel": "Écris-moi →",
           "items": {
             "0": {
-              "city": "Zurich"
+              "city": "Saint-Gall"
             },
             "1": {
-              "city": "Wattwil"
+              "city": "Zurich"
             },
             "2": {
               "city": "Saint-Gall"
             },
             "3": {
-              "city": "Saint-Gall"
+              "city": "Gossau"
             },
             "4": {
               "city": "Saint-Gall"
             },
             "5": {
-              "city": "Saint-Gall"
+              "city": "Herisau",
+              "group": "Suisse orientale"
             },
             "6": {
-              "city": "Saint-Gall"
+              "city": "Saint-Gall",
+              "group": "Suisse orientale"
             },
             "7": {
-              "city": "Herisau"
+              "city": "Saint-Gall",
+              "group": "Suisse orientale"
             },
             "8": {
-              "city": "Herisau"
+              "city": "Herisau",
+              "group": "Suisse orientale"
             },
             "9": {
-              "city": "Sirnach"
+              "city": "Wittenbach",
+              "group": "Suisse orientale"
             },
             "10": {
-              "city": "Glaris"
+              "city": "Wattwil",
+              "group": "Suisse orientale"
             },
             "11": {
-              "city": "Bazenheid"
+              "city": "Saint-Gall",
+              "group": "Suisse orientale"
             },
             "12": {
-              "city": "Wittenbach"
+              "city": "Saint-Gall",
+              "group": "Suisse orientale"
             },
             "13": {
-              "city": "Gossau"
+              "city": "Sirnach",
+              "group": "Suisse orientale"
             },
             "14": {
-              "city": "Schaan, FL"
+              "city": "Bazenheid",
+              "group": "Suisse orientale"
+            },
+            "15": {
+              "city": "Lucerne",
+              "group": "Suisse"
+            },
+            "16": {
+              "city": "Glaris",
+              "group": "Suisse"
+            },
+            "17": {
+              "city": "Schaan, FL",
+              "group": "International"
             }
           }
         },
@@ -632,7 +673,6 @@
       "hero": {
         "kicker": "DJ & producteur — Saint-Gall, Suisse",
         "tagline": "L'énergie devient euphorie.",
-        "meta": "Euphoric Hardstyle / Melodic Hardstyle",
         "ctaLabel": "Me réserver",
         "media": {
           "alt": "Sam Sparking aux platines, lasers et public devant la scène"
@@ -642,7 +682,7 @@
             "label": "Premier set"
           },
           "1": {
-            "label": "Clubs & Festivals"
+            "label": "Shows"
           },
           "2": {
             "label": "BPM de référence"
@@ -1284,18 +1324,39 @@
       "hero": "full",
       "ticker": true,
       "inNav": true,
+      "enabled": true,
       "sections": [
         "about",
-        "sound",
-        "experience",
-        "booking",
         "shows",
         "references",
         "gallery",
-        "shop",
         "contact"
-      ],
-      "enabled": true
+      ]
+    },
+    {
+      "slug": "booking",
+      "navLabel": "Booking",
+      "title": "Booking",
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "enabled": true,
+      "sections": [
+        "booking",
+        "contact"
+      ]
+    },
+    {
+      "slug": "shop",
+      "navLabel": "Shop",
+      "title": "Shop",
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "enabled": true,
+      "sections": [
+        "shop"
+      ]
     }
   ],
   "schemaVersion": 2,
@@ -1417,7 +1478,8 @@
       "socials": [
         {
           "label": "Instagram",
-          "url": "https://www.instagram.com/sam_sparking/"
+          "url": "https://www.instagram.com/sam_sparking/",
+          "inHeader": false
         },
         {
           "label": "Mixcloud",
@@ -1533,66 +1595,94 @@
       "enabled": true,
       "items": [
         {
-          "city": "Zürich",
+          "name": "Kugl",
+          "city": "St. Gallen",
+          "highlight": true
+        },
+        {
           "name": "Sektor 11",
+          "city": "Zürich",
           "highlight": true
         },
         {
-          "city": "Wattwil",
-          "name": "Jugendopenair",
+          "name": "Ultrawild Festival",
+          "city": "St. Gallen",
           "highlight": true
         },
         {
-          "city": "St. Gallen",
-          "name": "Kugl"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "B9 eventlocation"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "IVY"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "Ultrawild Festival"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "Monoevents"
-        },
-        {
-          "city": "Herisau",
-          "name": "Amadeusbar"
-        },
-        {
-          "city": "Herisau",
-          "name": "Dorffest Herisau"
-        },
-        {
-          "city": "Sirnach",
-          "name": "Turnunterhaltung Sirnach"
-        },
-        {
-          "city": "Glarus",
-          "name": "Xploration Events"
-        },
-        {
-          "city": "Bazenheid",
-          "name": "Winterzauber Bazenheid"
-        },
-        {
-          "city": "Wittenbach",
-          "name": "Firehouse Party Wittenbach"
-        },
-        {
+          "name": "BBC",
           "city": "Gossau",
-          "name": "BBC"
+          "highlight": true
         },
         {
+          "name": "Jugendopenair",
+          "city": "St. Gallen",
+          "highlight": true
+        },
+        {
+          "name": "Amadeusbar",
+          "city": "Herisau",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "B9 eventlocation",
+          "city": "St. Gallen",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Club Eden",
+          "city": "St. Gallen",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Dorffest Herisau",
+          "city": "Herisau",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Firehouse Party Wittenbach",
+          "city": "Wittenbach",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Jugendopenair",
+          "city": "Wattwil",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Monoevents",
+          "city": "St. Gallen",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Picante",
+          "city": "St. Gallen",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Turnunterhaltung Sirnach",
+          "city": "Sirnach",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Winterzauber Bazenheid",
+          "city": "Bazenheid",
+          "group": "Ostschweiz"
+        },
+        {
+          "name": "Aftersun Festival",
+          "city": "Luzern",
+          "group": "Schweiz"
+        },
+        {
+          "name": "Xploration Events",
+          "city": "Glarus",
+          "group": "Schweiz"
+        },
+        {
+          "name": "The Q",
           "city": "Schaan, FL",
-          "name": "The Q"
+          "group": "International"
         }
       ],
       "navLabel": "References",
@@ -1603,15 +1693,12 @@
     },
     "shop": {
       "buyLabel": "Kaufen",
-      "currency": "CHF 5",
+      "currency": "CHF",
       "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
-      "enabled": false,
+      "enabled": true,
       "items": [
         {
-          "alt": "as",
-          "linkUrl": "asd",
           "name": "Beispiel",
-          "note": "as",
           "price": "35",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YYzpKFXkDykqQX%2Fdscf8788.jpg?alt=media&token=5fa53fdc-6095-4f9c-8c66-88563f120179",
           "status": "available"
@@ -1627,11 +1714,11 @@
       "enabled": true,
       "items": [
         {
-          "city": "Herisau",
+          "city": "Luzern",
           "country": "CH",
           "date": "2026-08-29",
           "inquiryId": "-OynrY4vxLnlzNN0U2G1",
-          "name": "Aftersun ",
+          "name": "Aftersun",
           "status": "booked"
         }
       ],
