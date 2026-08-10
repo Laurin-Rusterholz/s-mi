@@ -231,6 +231,27 @@ for (const [datei, h] of html) {
       meckern(`${rel}: Menuepunkt Shows fuehrt ins Leere`);
   }
 
+  // 2b) Der Satz unter den Referenzen ("Dein Club oder Festival als
+  //     Naechstes? Schreib mir →") ist eine Anfrage und muss auf die
+  //     Booking-Seite fuehren, nicht auf #contact. Geprueft wird die
+  //     tatsaechlich gebaute Adresse samt Sprachpraefix und SITE_BASE — genau
+  //     die Stelle, an der der Verweis schon einmal auf dem Anker stehen
+  //     geblieben ist.
+  for (const rel of startseiten) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const note = h.match(/<p class="live-note rv">[\s\S]*?<\/p>/);
+    if (!note) continue;
+    const ziel = note[0].match(/<a class="accent" href="([^"]*)"/);
+    if (!ziel) {
+      meckern(`${rel}: Referenzen-Satz ohne Verweis`);
+      continue;
+    }
+    const erwartet = `${BASE}${rel === "index.html" ? "" : "/" + rel.split("/")[0]}/booking/#booking-form`;
+    if (ziel[1] !== erwartet)
+      meckern(`${rel}: Referenzen-Satz fuehrt auf "${ziel[1]}" statt auf "${erwartet}"`);
+  }
+
   // 5)+6) Kein Rider als Anforderung, keine erfundene Bezahladresse.
   const booking = await seite("booking/index.html");
   if (booking) {

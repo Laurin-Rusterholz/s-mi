@@ -1218,7 +1218,7 @@ function renderShows(n, s) {
  * fünfzehn gleich grossen Zeilen liest niemand; so springt ins Auge, was zählt,
  * und der Rest bleibt trotzdem vollständig nachlesbar.
  */
-function renderReferences(n, s) {
+function renderReferences(n, s, bookingTarget) {
   const items = list(s.items).filter((i) => str(i?.name));
   const lead = items.filter((v) => v.highlight);
   const rest = items.filter((v) => !v.highlight);
@@ -1281,8 +1281,16 @@ function renderReferences(n, s) {
       ${rest.length ? `<div class="venue-rest rv">\n        ${restList}\n      </div>` : ""}
       ${
         str(s.note)
-          ? `<p class="live-note rv">${inline(s.note)} <a class="accent" href="${anchorHref(
-              "#contact"
+          ? `<p class="live-note rv">${inline(s.note)} <a class="accent" href="${esc(
+              /* "Dein Club oder Festival als Nächstes? Schreib mir →" ist eine
+                 Anfrage, kein Kontaktwunsch: der Weg dorthin ist das
+                 Booking-Formular auf der eigenen Booking-Seite, nicht der
+                 Kontakt-Abschnitt. `bookingTarget` rechnet die Adresse fertig
+                 aus — samt Sprachpräfix und SITE_BASE, also /booking/ auf der
+                 Produktivdomain und /site/booking/ in der Vorführ-Fassung.
+                 Fehlt der Booking-Abschnitt ganz, bleibt der Kontakt der
+                 nächstbeste Weg, statt ins Leere zu zeigen. */
+              bookingTarget || anchor("#contact")
             )}">${esc(
               str(s.noteLinkLabel, "Get in touch →")
             )}</a></p>`
@@ -2597,7 +2605,7 @@ function renderPage(c, page, pages, lang, langs) {
     sound: renderSound,
     experience: renderExperience,
     shows: renderShows,
-    references: renderReferences,
+    references: (n, s) => renderReferences(n, s, bookingTarget),
     gallery: renderGallery,
     shop: (n, s) => renderShop(n, s, site),
     booking: (n, s) => renderBooking(n, s, site),
