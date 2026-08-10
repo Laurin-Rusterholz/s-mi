@@ -135,9 +135,9 @@ out = await res.json();
 assert.equal(out.gespeichert, false);
 assert.equal(out.gemailt, true, "die E-Mail traegt die Anfrage allein");
 
-// Nur POST.
+// GET ist die Zustandsabfrage (siehe unten), alles andere ausser POST nicht.
 zurücksetzen();
-res = await booking(new Request("https://samsparking.ch/api/booking", { method: "GET" }));
+res = await booking(new Request("https://samsparking.ch/api/booking", { method: "PUT" }));
 assert.equal(res.status, 405);
 
 /* -------------------------------------------------------------- bestellung */
@@ -279,8 +279,70 @@ res = await webhook(unterschrieben(ereignis("evt_6")));
 assert.equal(res.status, 503, "ohne STRIPE_WEBHOOK_SECRET wird nichts angenommen");
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
 
+/* ------------------------------------------------------------------------
+   Routen der Functions.
+
+   Der Grund fuer diesen Test: Die drei Endpunkte trugen ein
+   `export const config = { path: "/api/..." }`. Deklariert eine Function
+   ihren eigenen Pfad, bedient Netlify sie NUR dort — die Standardadresse
+   /.netlify/functions/<name> bleibt leer. In netlify.toml steht aber eine
+   erzwungene Umschreibung /api/* -> /.netlify/functions/:splat. Jede Anfrage
+   landete damit auf einer Adresse ohne Handler, und das Formular meldete
+   "Something went wrong". Genau diese Kombination darf nie zurueckkommen.
+   ------------------------------------------------------------------------ */
+{
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const { resolve, dirname } = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+  const ORDNER = resolve(dirname(fileURLToPath(import.meta.url)), "../netlify/functions");
+
+  const toml = readFileSync(resolve(ORDNER, "../../netlify.toml"), "utf8");
+  const umschreibung = /from\s*=\s*"\/api\/\*"[\s\S]{0,120}?to\s*=\s*"\/\.netlify\/functions\/:splat"/.test(toml);
+
+  for (const datei of readdirSync(ORDNER).filter((f) => f.endsWith(".mjs") && f !== "_lib.mjs")) {
+    const quelle = readFileSync(resolve(ORDNER, datei), "utf8");
+    const eigenerPfad = /^\s*export\s+const\s+config\s*=/m.test(quelle);
+    assert.ok(
+      !(eigenerPfad && umschreibung),
+      `${datei}: eigener config.path UND die /api/*-Umschreibung — die Anfrage ` +
+        `landet auf einer Adresse ohne Handler (das war der 404 im Booking-Formular).`
+    );
+  }
+}
+
+/* Zustandsabfrage: GET meldet, ob die Variablen gesetzt sind — nie ihren Wert. */
+{
+  zurücksetzen();
+  const res = await booking(new Request("https://samsparking.ch/api/booking"));
+  assert.equal(res.status, 200, "GET muss den Zustand melden statt 405");
+  const z = await res.json();
+  assert.equal(z.mailAn, "info@samsparking.ch");
+  assert.equal(z.mailSchluesselGesetzt, true, "Schluessel ist im Test gesetzt");
+  const alsText = JSON.stringify(z);
+  assert.ok(!alsText.includes(process.env.RESEND_API_KEY), "Der Schluessel darf nie in der Antwort stehen");
+  assert.ok(!alsText.includes("re_"), "Auch kein Bruchstueck des Schluessels");
+  assert.equal(rufe.length, 0, "Eine Zustandsabfrage darf nichts verschicken");
+}
+
+/* Ein einzelner Aussetzer des Eingangs darf keine Anfrage kosten. */
+{
+  zurücksetzen();
+  let n = 0;
+  antwort = (url) => {
+    if (url.includes("inquiries")) {
+      n++;
+      if (n === 1) throw new Error("fetch failed");
+    }
+    return { ok: true, status: 200, json: async () => ({ name: "-Abc" }), text: async () => "" };
+  };
+  const res = await booking(post(BOOKING_OK));
+  assert.equal(res.status, 200, "nach dem zweiten Versuch muss es klappen");
+  assert.equal((await res.json()).gespeichert, true);
+  assert.ok(n >= 2, "der Eingang wird ein zweites Mal versucht");
+}
+
 console.log(`booking:  vollstaendig → Eingang + E-Mail an ${process.env.MAIL_TO}; unvollstaendig → 422;
           Spam still verworfen; Zustellung komplett aus → 502 statt "Danke".
 order:    alle Kundendaten Pflicht; Bezahladresse nur aus einem echten
           Stripe-Link, mit Bestellnummer und vorbelegter E-Mail.
-webhook:  Unterschrift, Alter und Doppelmeldung geprueft; ohne Geheimnis 503.`);
+webhook:  Unterschrift, Alter und Doppelmeldung geprueft; ohne Geheimnis 503.\nrouten:   keine Function deklariert einen eigenen Pfad neben der /api/*-Regel.\nzustand:  GET meldet die Konfiguration als ja/nein, ohne einen Schluessel.`);

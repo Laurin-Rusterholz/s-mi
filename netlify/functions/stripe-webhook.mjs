@@ -180,4 +180,17 @@ export default async (req) => {
   return json({ ok: true, ref, gespeichert: eingang.ok, gemailt: mail.ok });
 };
 
-export const config = { path: "/api/stripe-webhook" };
+/*
+ * KEIN `export const config = { path: ... }`.
+ *
+ * Deklariert eine Function ihren eigenen Pfad, bedient Netlify sie unter
+ * genau diesem Pfad — die Standardadresse /.netlify/functions/<name> ist
+ * dann nicht mehr belegt. In netlify.toml steht aber eine erzwungene
+ * Umschreibung /api/* -> /.netlify/functions/:splat. Die Anfrage landete
+ * damit auf einer Adresse ohne Handler: 404, und das Formular meldete
+ * "Something went wrong".
+ *
+ * Die Route kommt deshalb ausschliesslich aus netlify.toml. Das ist die
+ * Variante, die unabhaengig von der Function-Generation funktioniert, und
+ * genau die, die scripts/routen.test.mjs prueft.
+ */
