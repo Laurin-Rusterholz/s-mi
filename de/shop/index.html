@@ -229,11 +229,11 @@
              Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
              Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
              in Netlify hinterlegen (Site settings → Environment variables).
-             Bis dahin nimmt das Formular die Bestellung entgegen und meldet sie
-             per E-Mail, die Bezahlseite oeffnet sich aber noch nicht. Details:
-             AUDIT.md, Abschnitt "Stripe". -->
+             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
+             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
+             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->
         <span class="mono">Bezahlen</span>
-        <p class="pay-note">Bezahlt wird nach dem Absenden über Stripe — Karte, Apple Pay, Google Pay oder TWINT. Der Versand geht raus, sobald die Zahlung bestätigt ist.</p>
+        <p class="pay-note">Der Zahlungslink ist noch nicht aktiv. Deine Bestellung wird hier erfasst und du bekommst eine Bestätigung per E-Mail — die Angaben zur Bezahlung kommen darin nach.</p>
       </div>
 
       <form class="oform rv" id="order-form" data-endpoint="/api/order"
@@ -277,8 +277,8 @@
           </label>
         </div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">Weiter zur Bezahlung<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">Weiter zu Stripe — die Bestätigung kommt danach per Mail</span>
+          <button class="btn solid big" type="submit">Bestellung senden<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">Bestätigung per Mail — der Zahlungslink folgt darin</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="Danke — deine Bestellung ist da. Du bekommst gleich eine Bestätigung per Mail." data-error="Das hat nicht geklappt. Schreib mir bitte direkt eine Mail an info@samsparking.ch."></p>
           

@@ -231,11 +231,11 @@
              Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
              Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
              in Netlify hinterlegen (Site settings → Environment variables).
-             Bis dahin nimmt das Formular die Bestellung entgegen und meldet sie
-             per E-Mail, die Bezahlseite oeffnet sich aber noch nicht. Details:
-             AUDIT.md, Abschnitt "Stripe". -->
+             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
+             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
+             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->
         <span class="mono">Payment</span>
-        <p class="pay-note">Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.</p>
+        <p class="pay-note">The payment link isn&#39;t active yet. Your order is recorded here and you&#39;ll get a confirmation by e-mail — the payment details follow in it.</p>
       </div>
 
       <form class="oform rv" id="order-form" data-endpoint="/api/order"
@@ -279,8 +279,8 @@
           </label>
         </div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">Continue to payment<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">Continuing to Stripe — the confirmation follows by e-mail</span>
+          <button class="btn solid big" type="submit">Send order<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">Confirmation by e-mail — the payment link follows in it</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="Thanks — your order arrived. You&#39;ll get a confirmation by e-mail shortly." data-error="That didn&#39;t work. Please write to me directly at info@samsparking.ch."></p>
           

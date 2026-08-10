@@ -1044,6 +1044,22 @@
       oMsg.className = "bform-msg" + (cls ? " " + cls : "");
     };
 
+    /* Nur eine echte Stripe-Adresse darf eine Weiterleitung ankuendigen.
+       Dieselbe Regel wie im Endpunkt (netlify/functions/order.mjs) und beim
+       Bauen: nur https, nur stripe.com oder link.com. Ein blosses "ist da"
+       genuegt nicht — kaeme aus der Antwort je etwas anderes, schickte die
+       Zeile darunter die Kundschaft irgendwohin. */
+    var istStripeAdresse = function (roh) {
+      var wert = String(roh == null ? "" : roh).trim();
+      if (!/^https:\/\/[^\s]+$/i.test(wert)) return false;
+      try {
+        var host = new URL(wert).hostname;
+        return /(^|\.)stripe\.com$/i.test(host) || /(^|\.)link\.com$/i.test(host);
+      } catch (e) {
+        return false;
+      }
+    };
+
     oform.addEventListener("submit", function (e) {
       e.preventDefault();
       if (oform.classList.contains("busy")) return;
@@ -1101,11 +1117,14 @@
           // Die Bestellung ist aufgenommen und gemeldet. Gibt es eine
           // Bezahlseite, geht es dort weiter — die Bestellnummer faehrt als
           // client_reference_id mit, damit der Webhook beides zusammenbringt.
-          if (out && out.paymentUrl) {
+          if (out && istStripeAdresse(out.paymentUrl)) {
             setOMsg(oPaying, "ok");
             location.assign(out.paymentUrl);
             return;
           }
+          // Keine (gueltige) Bezahladresse: die Bestellung ist aufgenommen und
+          // gemeldet, mehr wird nicht behauptet. Die Bestaetigung kommt per
+          // Mail — genau das sagt die Erfolgsmeldung.
           oform.reset();
           setOMsg(oMsg.getAttribute("data-success"), "ok");
         })

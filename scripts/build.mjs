@@ -1420,8 +1420,46 @@ function priceTag(price, currency) {
  * Bezahlt wird deshalb über Stripe. Der Ablauf steht in AUDIT.md; hier steht
  * nur, was die Kundin vor dem Absenden wissen muss.
  */
+/**
+ * Ist eine echte Stripe-Adresse hinterlegt?
+ *
+ * Dieselbe Pruefung wie in netlify/functions/order.mjs — und zwar bewusst
+ * Zeichen fuer Zeichen dieselbe Regel: nur https und nur stripe.com oder
+ * link.com. Waere die Seite grosszuegiger als der Endpunkt, verspraeche sie
+ * eine Bezahlung, die der Endpunkt danach verweigert. Ein Tippfehler in der
+ * Umgebungsvariablen faellt damit auf die sichere Seite.
+ */
+export function istStripeAdresse(roh) {
+  const wert = String(roh ?? "").trim();
+  if (!/^https:\/\/[^\s]+$/i.test(wert)) return false;
+  try {
+    const { hostname } = new URL(wert);
+    return /(^|\.)stripe\.com$/i.test(hostname) || /(^|\.)link\.com$/i.test(hostname);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Darf die Seite eine aktive Bezahlung ankuendigen?
+ *
+ * Netlify baut mit `node scripts/build.mjs`; STRIPE_PAYMENT_LINK_URL steht
+ * dort als Umgebungsvariable schon beim Bauen zur Verfuegung. Baut jemand
+ * anders (der stuendliche Abgleich in GitHub Actions, eine Vorschau von Hand),
+ * fehlt sie — dann sagt die Seite, die Bezahlung sei noch nicht aktiv. Das ist
+ * die richtige Richtung: lieber zu wenig versprechen als zu viel.
+ */
+export const zahlungBereit = (site) =>
+  istStripeAdresse(process.env.STRIPE_PAYMENT_LINK_URL) ||
+  istStripeAdresse(site?.stripePaymentLink) ||
+  site?.stripeReady === true;
+
 function payMethods(s, site) {
-  const bereit = !!safeUrl(site.stripePaymentLink) || site.stripeReady === true;
+  // Ohne hinterlegten Zahlungslink darf hier NICHTS von Stripe, TWINT, Apple
+  // Pay oder Google Pay stehen: die Kundin waehlt sonst eine Bezahlart, die es
+  // auf dieser Seite gar nicht gibt. Stattdessen die Wahrheit — die Bestellung
+  // wird erfasst, bezahlt wird spaeter.
+  const bereit = zahlungBereit(site);
   return `
       <div class="pay-methods rv">${
         bereit
@@ -1431,12 +1469,12 @@ function payMethods(s, site) {
              Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
              Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
              in Netlify hinterlegen (Site settings → Environment variables).
-             Bis dahin nimmt das Formular die Bestellung entgegen und meldet sie
-             per E-Mail, die Bezahlseite oeffnet sich aber noch nicht. Details:
-             AUDIT.md, Abschnitt "Stripe". -->`
+             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
+             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
+             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->`
       }
         <span class="mono">${esc(UI.payTitle)}</span>
-        <p class="pay-note">${esc(UI.payStripeNote)}</p>
+        <p class="pay-note">${esc(bereit ? UI.payStripeNote : UI.payPendingNote)}</p>
       </div>`;
 }
 
@@ -1457,6 +1495,9 @@ function orderForm(s, site, items, cur) {
     })
     .join("\n              ");
   if (!options) return "";
+  // Ohne hinterlegten Zahlungslink fuehrt der Knopf nirgendwohin weiter — er
+  // heisst dann "Bestellung senden" und nicht "Weiter zur Bezahlung".
+  const bereit = zahlungBereit(site);
   return `
       <form class="oform rv" id="order-form" data-endpoint="${esc(ORDER_ENDPOINT)}"
             data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}"
@@ -1503,8 +1544,12 @@ function orderForm(s, site, items, cur) {
           </label>
         </div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">${esc(UI.oSubmit)}<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">${esc(UI.oReplyNote)}</span>
+          <button class="btn solid big" type="submit">${esc(
+            bereit ? UI.oSubmit : UI.oSubmitPending
+          )}<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">${esc(
+            bereit ? UI.oReplyNote : UI.oReplyNotePending
+          )}</span>
           <p class="bform-msg" role="status" aria-live="polite"
              data-success="${esc(UI.oSuccess)}" data-error="${esc(UI.oError)}"></p>
           ${formDemoNote()}
@@ -2096,6 +2141,13 @@ const UI_DEFAULTS = {
   oSubmit: "Weiter zur Bezahlung",
   oPaying: "Bezahlseite wird geöffnet …",
   oReplyNote: "Weiter zu Stripe — die Bestätigung kommt danach per Mail",
+  /* Solange kein echter Zahlungslink hinterlegt ist. Diese Texte versprechen
+     ausdruecklich keine Bezahlart — weder Stripe noch TWINT, Apple Pay oder
+     Google Pay. Sie sagen, was wirklich passiert. */
+  payPendingNote:
+    "Der Zahlungslink ist noch nicht aktiv. Deine Bestellung wird hier erfasst und du bekommst eine Bestätigung per E-Mail — die Angaben zur Bezahlung kommen darin nach.",
+  oSubmitPending: "Bestellung senden",
+  oReplyNotePending: "Bestätigung per Mail — der Zahlungslink folgt darin",
   oSuccess: "Danke — deine Bestellung ist da. Du bekommst gleich eine Bestätigung per Mail.",
   oError: "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail an info@samsparking.ch.",
   formDemo: "Vorführ-Fassung: dieses Formular sendet nichts.",
@@ -2160,6 +2212,10 @@ const UI_SPRACHE = {
     oSubmit: "Continue to payment",
     oPaying: "Opening the payment page …",
     oReplyNote: "Continuing to Stripe — the confirmation follows by e-mail",
+    payPendingNote:
+      "The payment link isn't active yet. Your order is recorded here and you'll get a confirmation by e-mail — the payment details follow in it.",
+    oSubmitPending: "Send order",
+    oReplyNotePending: "Confirmation by e-mail — the payment link follows in it",
     oSuccess: "Thanks — your order arrived. You'll get a confirmation by e-mail shortly.",
     oError: "That didn't work. Please write to me directly at info@samsparking.ch.",
     formDemo: "Demo version: this form does not send anything.",
@@ -2182,6 +2238,10 @@ const UI_SPRACHE = {
     oSubmit: "Continuer vers le paiement",
     oPaying: "Ouverture de la page de paiement …",
     oReplyNote: "Direction Stripe — la confirmation suit par e-mail",
+    payPendingNote:
+      "Le lien de paiement n'est pas encore actif. Ta commande est enregistrée ici et tu recevras une confirmation par e-mail — les informations de paiement suivront dedans.",
+    oSubmitPending: "Envoyer la commande",
+    oReplyNotePending: "Confirmation par e-mail — le lien de paiement suivra dedans",
     oSuccess: "Merci — ta commande est arrivée. Tu recevras une confirmation par e-mail.",
     oError: "Cela n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
     formDemo: "Version de démonstration : ce formulaire n'envoie rien.",
