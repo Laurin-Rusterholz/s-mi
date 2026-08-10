@@ -128,6 +128,40 @@ for (const [datei, h] of html) {
   }
 }
 
+/* Die Rangfolge der Referenzen haengt allein an der Schriftgroesse: oben gross,
+   darunter klein. Die erste Fassung setzte den Rest auf 1rem — das sind bei
+   html{font-size:17px} genau 17px, also Fliesstextgroesse, und damit war
+   "klein" nicht zu erkennen. So ein Fehler faellt in keinem HTML-Test auf,
+   deshalb steht die Pruefung hier. */
+{
+  const css = await readFile(resolve(ROOT, "assets/site.css"), "utf8");
+  const groesse = (selektor) => {
+    const m = css.match(
+      new RegExp(selektor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\{[^}]*?font-size:([^;]+);")
+    );
+    if (!m) return null;
+    // Aus clamp(a,b,c) den groessten rem-Wert nehmen — das ist die Obergrenze.
+    const rems = [...m[1].matchAll(/([\d.]+)rem/g)].map((x) => Number(x[1]));
+    return rems.length ? Math.max(...rems) : null;
+  };
+  const rest = groesse(".venue-more .venue-name");
+  const oben = groesse(".venue-list .lead .venue-name");
+  if (rest === null) meckern("Keine Schriftgroesse fuer .venue-more .venue-name gefunden");
+  else if (rest >= 1)
+    meckern(
+      `Die Restliste steht auf ${rest}rem (= ${(rest * 17).toFixed(0)}px bei html:17px) — ` +
+        "das ist Fliesstextgroesse und nicht die verlangte kleine Schrift."
+    );
+  if (oben !== null && rest !== null && oben <= rest)
+    meckern("Die hervorgehobenen Eintraege sind nicht groesser als der Rest");
+  if (rest !== null && oben !== null && !fehler) {
+    console.log(
+      `Referenzen: oben bis ${oben}rem (${(oben * 17).toFixed(0)}px), Rest bis ${rest}rem ` +
+        `(${(rest * 17).toFixed(0)}px) — die Rangfolge ist auch an der Groesse zu sehen.`
+    );
+  }
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
