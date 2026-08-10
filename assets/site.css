@@ -961,6 +961,12 @@ blockquote.lede footer{
 .scard:hover .scard-arrow{transform:translate(3px,-3px);opacity:1;}
 .scard-ico{position:absolute;top:16px;left:18px;width:22px;height:22px;color:#080c16;opacity:.85;}
 .scard-ico svg{width:100%;height:100%;display:block;}
+/* Kanal ohne hinterlegte Adresse: er wird genannt, ist aber kein Link. Er
+   liegt darum flacher, hebt sich beim Zeigen nicht an und traegt keinen
+   Pfeil — sonst sieht er aus wie etwas, das sich anklicken laesst. */
+.scard-soon{background:transparent;border:1px dashed rgba(8,12,22,.28);color:rgba(8,12,22,.62);box-shadow:none;cursor:default;}
+.scard-soon:hover{transform:none;background:transparent;box-shadow:none;}
+.scard-soon .scard-ico{color:rgba(8,12,22,.55);opacity:.6;}
 @media(max-width:900px){
   .contact-grid{grid-template-columns:1fr;}
   .contact-mark{font-size:clamp(5rem,30vw,9rem);}
@@ -1228,6 +1234,13 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 }
 .foot-social a:hover,.foot-social a:focus-visible{color:var(--bone);border-color:var(--spark);}
 .foot-social svg{width:19px;height:19px;display:block;}
+/* Genannt, aber noch ohne Adresse — gestrichelt statt durchgezogen, damit der
+   Unterschied zu einem echten Link auch ohne Zeigegeraet sichtbar ist. */
+.foot-social .foot-soon>span{
+  display:inline-flex;align-items:center;gap:9px;min-height:var(--tap);padding:9px 15px;
+  border:1px dashed var(--line);color:var(--bone-dim);opacity:.72;
+  font-family:var(--font-m);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+}
 .foot{display:flex;flex-wrap:wrap;gap:14px 30px;justify-content:space-between;align-items:baseline;}
 .foot .mono{font-size:.62rem;letter-spacing:.16em;color:var(--bone-dim);}
 .foot a.mono{color:var(--bone-dim);border-bottom:1px solid transparent;transition:color .2s,border-color .2s;}

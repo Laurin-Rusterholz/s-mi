@@ -162,11 +162,113 @@ for (const [datei, h] of html) {
   }
 }
 
+/* Die Kundenwuensche vom 10.08.2026, gemessen an der fertigen Seite — nicht
+   an den Daten. Was hier steht, hat der Kunde ausdruecklich verlangt; geht es
+   verloren, faellt es sonst erst auf der Website auf. */
+{
+  const seite = async (rel) => {
+    const p = resolve(ROOT, rel);
+    return existsSync(p) ? await readFile(p, "utf8") : null;
+  };
+  const startseiten = ["index.html", "de/index.html", "fr/index.html"];
+
+  for (const rel of startseiten) {
+    const h = await seite(rel);
+    if (!h) continue;
+
+    // 1) "First set 2021" ist ueberall weg — im Hero wie in "Ueber mich".
+    for (const wort of ["First set", "Erstes Set", "Premier set"])
+      if (h.includes(wort)) meckern(`${rel}: "${wort}" steht noch auf der Seite`);
+
+    // 3) Referenzen: Club Eden statt IVY, Jugendopenair zweimal mit
+    //    verschiedenen Orten, genau vier hervorgehobene Eintraege.
+    if (h.includes(">IVY<")) meckern(`${rel}: "IVY" steht noch in den Referenzen`);
+    for (const n of ["Club Eden", "Picante"])
+      if (!h.includes(n)) meckern(`${rel}: "${n}" fehlt in den Referenzen`);
+    const jugend = [...h.matchAll(/Jugendopenair<\/span><span class="venue-city">([^<]*)</g)].map(
+      (m) => m[1]
+    );
+    if (new Set(jugend).size !== jugend.length)
+      meckern(`${rel}: Jugendopenair steht doppelt am selben Ort`);
+    const hervor = (h.match(/<li class="lead">/g) || []).length;
+    if (hervor !== 4) meckern(`${rel}: ${hervor} hervorgehobene Referenzen statt 4`);
+
+    // 7) Alle vier Kanaele werden genannt; verlinkt wird nur, wo eine echte
+    //    Adresse hinterlegt ist. Ein geratener Link waere schlimmer als keiner.
+    const fuss = h.match(/<div class="wrap foot-social">[\s\S]*?<\/ul>/);
+    if (!fuss) meckern(`${rel}: kein Kanal-Block im Fuss`);
+    else {
+      for (const k of ["Instagram", "TikTok", "Spotify", "Mixcloud"])
+        if (!fuss[0].includes(`>${k}</span>`)) meckern(`${rel}: Kanal "${k}" fehlt im Fuss`);
+      for (const url of fuss[0].match(/href="([^"]*)"/g) || []) {
+        if (!/^href="https:\/\/(www\.)?(instagram|mixcloud)\.com\//.test(url))
+          meckern(`${rel}: unerwartete Kanal-Adresse im Fuss: ${url}`);
+      }
+      for (const k of ["TikTok", "Spotify"]) {
+        const zeile = fuss[0].match(new RegExp(`<li[^>]*>(?:(?!</li>)[\\s\\S])*?${k}[\\s\\S]*?</li>`));
+        if (zeile && zeile[0].includes("<a ")) meckern(`${rel}: "${k}" ist verlinkt, obwohl keine Adresse hinterlegt ist`);
+      }
+    }
+
+    // 9) Kein Kanal-Zeichen im Kopf; Shows/Booking/Shop fuehren irgendwohin.
+    const kopf = h.match(/<header[\s\S]*?<\/header>/);
+    if (kopf && kopf[0].includes("<svg")) meckern(`${rel}: Zeichen im Kopf — dort gehoert keins hin`);
+    if (kopf && !/href="[^"]*\/booking\/"/.test(kopf[0])) meckern(`${rel}: kein Weg zum Booking im Kopf`);
+    if (kopf && !/href="[^"]*\/shop\/"/.test(kopf[0])) meckern(`${rel}: kein Weg zum Shop im Kopf`);
+  }
+
+  // 2) Shows stehen nur da, wenn ein Termin aussteht — sonst gar nicht.
+  //    Eine Seite mit "keine Termine" ist schlechter als keine Section.
+  for (const rel of startseiten) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const hatSection = h.includes('id="shows"');
+    const hatLeermeldung = h.includes("empty-state");
+    if (hatSection && hatLeermeldung)
+      meckern(`${rel}: Shows-Section steht leer da — ohne Termin gehoert sie ganz weg`);
+    if (!hatSection && /href="#shows"/.test(h))
+      meckern(`${rel}: Menuepunkt Shows fuehrt ins Leere`);
+  }
+
+  // 5)+6) Kein Rider als Anforderung, keine erfundene Bezahladresse.
+  const booking = await seite("booking/index.html");
+  if (booking) {
+    for (const wort of ["Preferred Setup", "Preferred setup", "CDJ", "4× required"])
+      if (booking.includes(wort)) meckern(`booking: "${wort}" steht wieder auf der Seite`);
+  }
+  const shop = await seite("shop/index.html");
+  if (shop) {
+    if (/qr-?code/i.test(shop)) meckern("shop: QR-Code auf der Seite, obwohl keiner hinterlegt ist");
+    for (const m of shop.match(/https?:\/\/[^"'\s<]*stripe[^"'\s<]*/gi) || [])
+      meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
+  }
+
+  // 8) Die Schreibweise — ausser im Hostname, der eine Adresse ist.
+  for (const rel of [...startseiten, "booking/index.html", "shop/index.html"]) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const reste = h.replace(/djsamsparkling/gi, "").match(/sparkling/gi);
+    if (reste) meckern(`${rel}: ${reste.length}x "Sparkling" ausserhalb des Hostnamens`);
+  }
+
+  // Kein deutscher Rueckfall auf der englischen und franzoesischen Seite.
+  const deutsch = ["Wohin darf es gehen", "Weiter zur Bezahlung", "Bezahlt wird nach dem Absenden", "Anzahl", "Strasse und Nummer"];
+  for (const rel of ["index.html", "shop/index.html", "fr/index.html", "fr/shop/index.html"]) {
+    const h = await seite(rel);
+    if (!h) continue;
+    for (const w of deutsch)
+      if (h.includes(w)) meckern(`${rel}: deutscher Text auf einer nicht-deutschen Seite: "${w}"`);
+  }
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
 }
 console.log(
+  `Wuensche: "First set 2021" weg, Club Eden statt IVY, Jugendopenair SG+Wattwil,\n` +
+    `          vier Kanaele genannt und nur echte verlinkt, kein Zeichen im Kopf,\n` +
+    `          kein Rider, keine erfundene Bezahladresse, Schreibweise "Sparking".\n` +
   `Wege: ${dateien.length} gebaute Seiten, alle Menuepunkte und Sprungmarken fuehren irgendwohin.\n` +
     `Formulare: senden nur an /api/booking und /api/order, jedes Feld Pflicht,\n` +
     `           Erfolgs- und Fehlermeldung vorhanden, keine Datenbank-Adresse im Quelltext.`

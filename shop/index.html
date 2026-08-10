@@ -235,24 +235,24 @@
              per E-Mail, die Bezahlseite oeffnet sich aber noch nicht. Details:
              AUDIT.md, Abschnitt "Stripe". -->
         <span class="mono">Payment</span>
-        <p class="pay-note">Bezahlt wird nach dem Absenden über Stripe — Karte, Apple Pay, Google Pay oder TWINT. Der Versand geht raus, sobald die Zahlung bestätigt ist.</p>
+        <p class="pay-note">Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.</p>
       </div>
 
       <form class="oform rv" id="order-form" data-endpoint="/api/order"
             data-sending="Sending …" data-invalid="Please check the highlighted fields."
-            data-paying="Bezahlseite wird geöffnet …" novalidate>
+            data-paying="Opening the payment page …" novalidate>
         <div class="bform-head">
-          <span class="mono">Bestellung</span>
-          <h3>Wohin darf es gehen?</h3>
+          <span class="mono">Order</span>
+          <h3>Where should it go?</h3>
           <p class="bform-required mono">All fields are required.</p>
         </div>
         <div class="bform-grid">
-          <label><span class="lbl">Artikel <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Item <i aria-hidden="true">*</i></span>
             <select name="product" required>
               <option value="Beispiel">Beispiel — CHF 35.—</option>
             </select>
           </label>
-          <label><span class="lbl">Anzahl <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Quantity <i aria-hidden="true">*</i></span>
             <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
           </label>
           <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
@@ -261,16 +261,16 @@
           <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
             <input name="email" type="email" required maxlength="160" autocomplete="email">
           </label>
-          <label class="span-2"><span class="lbl">Strasse und Nummer <i aria-hidden="true">*</i></span>
+          <label class="span-2"><span class="lbl">Street and number <i aria-hidden="true">*</i></span>
             <input name="street" type="text" required maxlength="160" autocomplete="street-address">
           </label>
-          <label><span class="lbl">PLZ <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Postcode <i aria-hidden="true">*</i></span>
             <input name="zip" type="text" required maxlength="12" autocomplete="postal-code">
           </label>
-          <label><span class="lbl">Ort <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">City <i aria-hidden="true">*</i></span>
             <input name="city" type="text" required maxlength="120" autocomplete="address-level2">
           </label>
-          <label><span class="lbl">Land <i aria-hidden="true">*</i></span>
+          <label><span class="lbl">Country <i aria-hidden="true">*</i></span>
             <input name="country" type="text" required maxlength="80" value="Schweiz" autocomplete="country-name">
           </label>
           
@@ -279,10 +279,10 @@
           </label>
         </div>
         <div class="bform-foot">
-          <button class="btn solid big" type="submit">Weiter zur Bezahlung<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">Weiter zu Stripe — die Bestätigung kommt danach per Mail</span>
+          <button class="btn solid big" type="submit">Continue to payment<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">Continuing to Stripe — the confirmation follows by e-mail</span>
           <p class="bform-msg" role="status" aria-live="polite"
-             data-success="Danke — deine Bestellung ist da. Du bekommst gleich eine Bestätigung per Mail." data-error="Das hat nicht geklappt. Schreib mir bitte direkt eine Mail an info@samsparking.ch."></p>
+             data-success="Thanks — your order arrived. You&#39;ll get a confirmation by e-mail shortly." data-error="That didn&#39;t work. Please write to me directly at info@samsparking.ch."></p>
           
         </div>
       </form>
@@ -314,6 +314,8 @@
       <ul>
         <li><a href="https://www.instagram.com/sam_sparking/" target="_blank" rel="noopener me" title="Instagram"><span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="17" cy="7" r="1.2" fill="currentColor"/></svg></span><span>Instagram</span></a></li>
         <li><a href="https://www.mixcloud.com/samsparking/" target="_blank" rel="noopener me" title="Mixcloud"><span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15v-3M6.5 15v-5M9 15V8M11.5 15V6.5M14 15V9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 15h3.5a2.5 2.5 0 0 0 .4-4.97A4 4 0 0 0 14 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Mixcloud</span></a></li>
+        <li class="foot-soon"><span><span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4v9.6a3.6 3.6 0 1 1-3-3.55" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 5.4c.7 1.9 2.3 3.2 4.4 3.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>TikTok</span><span class="mono">follows</span></span></li>
+        <li class="foot-soon"><span><span aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 10.2c2.6-.8 5-.6 7 .5M9 12.8c2-.6 3.9-.4 5.5.5M9.5 15.2c1.5-.4 2.9-.3 4 .3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Spotify</span><span class="mono">follows</span></span></li>
       </ul>
     </div>
     <div class="wrap foot">

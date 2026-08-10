@@ -428,6 +428,19 @@ export function nachziehen(live, korr) {
     getan.push("Genre-Zeile");
   }
 
+  // Namen der Termine ohne Leerzeichen am Rand — in der Verwaltung steht
+  // "Aftersun " mit angehaengtem Leerzeichen, das stand so auch auf der Seite
+  // und im Terminblatt (shows-data). Reine Formsache, darum ohne Bedingung.
+  let getrimmt = 0;
+  list(ls.shows?.items).forEach((i) => {
+    const sauber = str(i?.name).trim();
+    if (sauber && sauber !== i.name) {
+      i.name = sauber;
+      getrimmt++;
+    }
+  });
+  if (getrimmt) getan.push(`${getrimmt} Terminname(n) getrimmt`);
+
   // Aftersun spielt in Luzern, in der Verwaltung stand Herisau.
   for (const s of list(korr.shows)) {
     const treffer = list(ls.shows?.items).filter(
@@ -458,6 +471,30 @@ export function nachziehen(live, korr) {
     }
   });
   if (ausDemKopf) getan.push(`${ausDemKopf} Kanal/Kanaele aus dem Kopf`);
+
+  /* Kanaele, die auf die Seite gehoeren: Instagram, TikTok, Spotify, Mixcloud.
+     Fehlt einer in der Verwaltung ganz, wird er hier OHNE Adresse angelegt —
+     er steht damit im Kontakt und im Fuss, aber unverlinkt und mit "folgt"
+     (siehe renderContact). Eine Adresse wird bewusst nicht geraten: ein
+     falsch geratenes Profil ist schlimmer als ein fehlendes.
+
+     Nur ergaenzen, nie ueberschreiben: sobald in der Verwaltung eine Adresse
+     hinterlegt ist, gewinnt sie und der Kanal wird normal verlinkt. */
+  const erwartet = list(korr.kanaele?.erwartet).map(str).filter(Boolean);
+  if (erwartet.length) {
+    const socials = list(ls.contact?.socials);
+    const kennt = (name) =>
+      socials.some((x) => new RegExp(name, "i").test(str(x?.label) + " " + str(x?.url)));
+    const fehlend = erwartet.filter((name) => !kennt(name));
+    if (fehlend.length) {
+      ls.contact = {
+        ...ls.contact,
+        socials: [...socials, ...fehlend.map((label) => ({ label, inHeader: false }))],
+      };
+      getan.push(`Kanal/Kanaele ohne Adresse: ${fehlend.join(", ")}`);
+    }
+  }
+
 
   // Waehrung: in der Verwaltung stand "CHF 5" im Feld fuer die Waehrung —
   // daraus wurde auf der Seite "CHF 5 35.—".
@@ -527,6 +564,51 @@ export function nachziehen(live, korr) {
   if (korr.shop?.sichtbar === true && ls.shop && ls.shop.enabled !== true) {
     ls.shop.enabled = true;
     getan.push("Shop sichtbar (Vorgabe, siehe korrekturen.json)");
+  }
+
+  /* Kennzahlen, die ganz weg sollen — ausdruecklicher Kundenwunsch vom
+     10.08.2026 fuer "First set 2021".
+
+     Warum hier und nicht im Schnappschuss: content/site.json wird bei jedem
+     Build aus der Datenbank ueberschrieben; dort geloescht waere die Kennzahl
+     beim naechsten Build zurueck.
+
+     Gesucht wird ueber die Aufschrift, nicht ueber den Platz in der Liste —
+     sonst traefe die Regel eine fremde Kennzahl, sobald jemand umsortiert.
+     Getroffen werden die Kennzahlen im Hero (samt Uebersetzung, die ueber den
+     Platz zugeordnet ist) und die Faktenzeile in "Ueber mich".
+
+     ACHTUNG: Diese Regel greift IMMER — wie shop.sichtbar und heroShows
+     ueberstimmt sie damit die Verwaltung. Soll die Kennzahl zurueck: den
+     Eintrag aus `entfernteKennzahlen` in content/korrekturen.json loeschen.
+
+     Sie steht bewusst ganz am Schluss: die Umbenennung und heroShows pruefen
+     die Liste noch in voller Laenge gegen alteHeroStats, und der Abgleich der
+     Uebersetzungen weiter oben schreibt die Kennzahl-Uebersetzung aus der
+     Korrekturdatei neu. Wuerde hier frueher gekuerzt, kaeme sie dort zurueck —
+     und die Uebersetzung saesse um einen Platz verschoben auf der Seite. */
+  const wegLabels = list(korr.entfernteKennzahlen?.labels).map((l) => str(l).toLowerCase());
+  if (wegLabels.length) {
+    const trifft = (e) => wegLabels.includes(str(e?.label).toLowerCase());
+    let weg = 0;
+    // Markieren statt loeschen: die Uebersetzungen haengen am PLATZ in der
+    // Liste (i18n.de.hero.stats["1"] gehoert zu hero.stats[1]). Wer hier
+    // kuerzt, verschiebt jede Uebersetzung dahinter um einen Platz — auf der
+    // deutschen Seite stand danach "Erstes Set" ueber der Zahl 30. Die
+    // Markierung laesst die Plaetze, wo sie sind; weggelassen wird erst beim
+    // Rendern (heroStats/renderAbout). Das bleibt ausserdem wiederholbar:
+    // beim naechsten Build steht dieselbe Liste da und wird gleich markiert.
+    for (const eintrag of [...list(live.hero?.stats), ...list(ls.about?.facts)]) {
+      if (trifft(eintrag) && eintrag.entfernt !== true) {
+        eintrag.entfernt = true;
+        weg++;
+      }
+    }
+    if (weg) {
+      getan.push(
+        `${weg} Kennzahl(en) entfernt: ${list(korr.entfernteKennzahlen.labels).join(", ")}`
+      );
+    }
   }
 
   return getan;
@@ -860,7 +942,10 @@ function heroMedia(hero, site) {
  * daneben statt sie im Browser noch einmal aus dem Text zu raten.
  */
 function heroStats(hero) {
-  const items = list(hero?.stats).filter((s) => str(s?.value));
+  // `entfernt` setzt die Korrekturdatei (entfernteKennzahlen). Die Kennzahl
+  // bleibt an ihrem Platz stehen, damit die Uebersetzungen nicht verrutschen
+  // — gezeigt wird sie nicht mehr.
+  const items = list(hero?.stats).filter((s) => str(s?.value) && s?.entfernt !== true);
   if (!items.length) return "";
   const rows = items
     .map((s) => {
@@ -883,7 +968,8 @@ function heroStats(hero) {
 }
 
 function renderAbout(n, s) {
-  const facts = list(s.facts).filter((f) => str(f?.value));
+  // `entfernt`: siehe heroStats — von der Korrekturdatei stillgelegt.
+  const facts = list(s.facts).filter((f) => str(f?.value) && f?.entfernt !== true);
   const paragraphs = list(s.paragraphs).filter((p) => str(p));
   const firstParagraph = paragraphs[0];
   const moreParagraphs = paragraphs.slice(1);
@@ -1736,7 +1822,7 @@ function renderContact(n, s, bookingTarget) {
           ${meta}
         </div>
         ${
-          socials.length
+          socials.length || pending.length
             ? `<div class="contact-side">
           <span class="mono side-label">${esc(UI.follow)}</span>
           <div class="social-cards">
@@ -1750,6 +1836,19 @@ function renderContact(n, s, bookingTarget) {
             ${handle ? `<span class="mono">${esc(handle)}</span>` : ""}
           </a>`;
             })
+            .join("\n          ")}
+          ${pending
+            /* Kanal ohne Adresse: er wird genannt, aber nicht verlinkt. Ein
+               geratener Link fuehrt auf ein fremdes Profil — lieber ehrlich
+               "folgt" als ein falsches Ziel. Kein <a>, damit hier nichts
+               anklickbar ist, was nirgendwo hinfuehrt. */
+            .map(
+              (x) => `<span class="scard scard-soon">
+            <span class="scard-ico" aria-hidden="true">${socialIcon(x.label, "")}</span>
+            <span class="scard-name">${esc(x.label)}</span>
+            <span class="mono">${esc(UI.channelSoon)}</span>
+          </span>`
+            )
             .join("\n          ")}
           </div>
         </div>`
@@ -2030,7 +2129,72 @@ const UI_DEFAULTS = {
   captchaWrong: "Die Rechnung stimmt noch nicht.",
   formFine:
     "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet.",
+  channelSoon: "folgt",
 };
+
+/**
+ * UI_DEFAULTS ist deutsch. Es ist der Rückfall für alles, was die Verwaltung
+ * (noch) nicht mitliefert — und damit fiel auf der englischen und der
+ * französischen Seite deutscher Text heraus: auf /shop/ standen mitten im
+ * englischen Text "Wohin darf es gehen?" und "Weiter zur Bezahlung".
+ *
+ * Diese Tabelle trägt den Rückfall je Sprache nach. Sie enthält bewusst nur
+ * Oberflächentexte — Inhalte kommen weiter aus der Verwaltung, und was dort
+ * steht, gewinnt auch hier (siehe renderPage: c.ui wird zuletzt gemischt).
+ */
+const UI_SPRACHE = {
+  en: {
+    buy: "Buy",
+    soldOut: "Sold out",
+    onThisPage: "On this page",
+    payStripeNote:
+      "Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.",
+    orderTitle: "Order",
+    orderHeadline: "Where should it go?",
+    oProduct: "Item",
+    oQuantity: "Quantity",
+    oStreet: "Street and number",
+    oZip: "Postcode",
+    oCity: "City",
+    oCountry: "Country",
+    oSubmit: "Continue to payment",
+    oPaying: "Opening the payment page …",
+    oReplyNote: "Continuing to Stripe — the confirmation follows by e-mail",
+    oSuccess: "Thanks — your order arrived. You'll get a confirmation by e-mail shortly.",
+    oError: "That didn't work. Please write to me directly at info@samsparking.ch.",
+    formDemo: "Demo version: this form does not send anything.",
+    channelSoon: "follows",
+  },
+  fr: {
+    buy: "Acheter",
+    soldOut: "Épuisé",
+    onThisPage: "Sur cette page",
+    payStripeNote:
+      "Le paiement se fait après l'envoi, via Stripe — carte, Apple Pay, Google Pay ou TWINT. L'expédition part dès que le paiement est confirmé.",
+    orderTitle: "Commande",
+    orderHeadline: "Où faut-il l'envoyer ?",
+    oProduct: "Article",
+    oQuantity: "Quantité",
+    oStreet: "Rue et numéro",
+    oZip: "NPA",
+    oCity: "Localité",
+    oCountry: "Pays",
+    oSubmit: "Continuer vers le paiement",
+    oPaying: "Ouverture de la page de paiement …",
+    oReplyNote: "Direction Stripe — la confirmation suit par e-mail",
+    oSuccess: "Merci — ta commande est arrivée. Tu recevras une confirmation par e-mail.",
+    oError: "Cela n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
+    formDemo: "Version de démonstration : ce formulaire n'envoie rien.",
+    channelSoon: "à venir",
+  },
+};
+
+/** Oberflächentexte einer Sprache: deutscher Grundstock, Sprachtabelle, Verwaltung. */
+const uiFuer = (c, lang) => ({
+  ...UI_DEFAULTS,
+  ...(UI_SPRACHE[lang] || {}),
+  ...(c?.ui || {}),
+});
 
 /* Die gerade gültigen Oberflächentexte — von renderPage je Sprache gesetzt. */
 let UI = { ...UI_DEFAULTS };
@@ -2320,7 +2484,7 @@ const formDemoNote = () =>
 
 function renderPage(c, page, pages, lang, langs) {
   const master = langs[0];
-  UI = { ...UI_DEFAULTS, ...(c.ui || {}) };
+  UI = uiFuer(c, lang);
   const ui = UI;
   const site = c.site;
   const base = site.domain.replace(/\/+$/, "");
@@ -2442,6 +2606,9 @@ function renderPage(c, page, pages, lang, langs) {
   const footSocials = list(sections.contact?.socials).filter(
     (x) => str(x?.label) && safeUrl(x?.url)
   );
+  // Kanaele, die es geben soll, zu denen aber noch keine Adresse hinterlegt
+  // ist. Sie werden genannt und NICHT verlinkt (siehe renderContact).
+  const footPending = pendingSocials(sections.contact);
   // Im Kopf steht standardmaessig KEIN Kanal-Zeichen mehr: der Kopf traegt den
   // Namen und das Menue, mehr nicht — das Instagram-Zeichen sass dort im Weg
   // und stand doppelt zum Fuss. Wer einen Kanal doch oben will, schaltet ihn
@@ -2730,7 +2897,7 @@ ${
   </aside>
 
   <footer>${
-    footSocials.length
+    footSocials.length || footPending.length
       ? `
     <div class="wrap foot-social">
       <span class="mono">${esc(ui.follow)}</span>
@@ -2743,6 +2910,17 @@ ${
               )}"><span aria-hidden="true">${socialIcon(x.label, x.url)}</span><span>${esc(
                 x.label
               )}</span></a></li>`
+          )
+          .join("\n        ")}
+        ${footPending
+          .map(
+            (x) =>
+              `<li class="foot-soon"><span><span aria-hidden="true">${socialIcon(
+                x.label,
+                ""
+              )}</span><span>${esc(x.label)}</span><span class="mono">${esc(
+                ui.channelSoon
+              )}</span></span></li>`
           )
           .join("\n        ")}
       </ul>
@@ -2954,7 +3132,7 @@ function render404(c, langs) {
   const site = c.site;
   const ink = color(site.themeColor, "#05070e");
   const accent = color(site.accentColor, "#2e6bff");
-  const ui = { ...UI_DEFAULTS, ...(c.ui || {}) };
+  const ui = uiFuer(c, langs[0]);
   return `<!DOCTYPE html>
 <html lang="${esc(langs[0] || "de")}">
 <head>

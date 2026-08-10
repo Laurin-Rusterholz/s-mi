@@ -58,6 +58,25 @@
       "Aftersun Festival",
       "Xploration Events",
       "The Q"
+    ],
+    [
+      "Kugl",
+      "Sektor 11",
+      "Ultrawild Festival",
+      "BBC",
+      "Aftersun Festival",
+      "Amadeusbar",
+      "B9 eventlocation",
+      "Dorffest Herisau",
+      "Firehouse Party Wittenbach",
+      "IVY",
+      "Jugendopenair",
+      "Monoevents",
+      "Picante",
+      "The Q",
+      "Turnunterhaltung Sirnach",
+      "Winterzauber Bazenheid",
+      "Xploration Events"
     ]
   ],
   "referenzen": [
@@ -94,6 +113,10 @@
       "city": "St. Gallen"
     },
     {
+      "name": "Club Eden",
+      "city": "St. Gallen"
+    },
+    {
       "name": "Dorffest Herisau",
       "city": "Herisau"
     },
@@ -102,7 +125,7 @@
       "city": "Wittenbach"
     },
     {
-      "name": "IVY",
+      "name": "Jugendopenair",
       "city": "St. Gallen"
     },
     {
@@ -182,33 +205,36 @@
           "city": "St. Gallen"
         },
         "7": {
-          "city": "Herisau"
+          "city": "St. Gallen"
         },
         "8": {
-          "city": "Wittenbach"
+          "city": "Herisau"
         },
         "9": {
-          "city": "St. Gallen"
+          "city": "Wittenbach"
         },
         "10": {
-          "city": "Wattwil"
+          "city": "St. Gallen"
         },
         "11": {
-          "city": "St. Gallen"
+          "city": "Wattwil"
         },
         "12": {
           "city": "St. Gallen"
         },
         "13": {
-          "city": "Schaan, FL"
+          "city": "St. Gallen"
         },
         "14": {
-          "city": "Sirnach"
+          "city": "Schaan, FL"
         },
         "15": {
-          "city": "Bazenheid"
+          "city": "Sirnach"
         },
         "16": {
+          "city": "Bazenheid"
+        },
+        "17": {
           "city": "Glarus"
         }
       },
@@ -259,34 +285,37 @@
           "city": "Saint-Gall"
         },
         "7": {
-          "city": "Herisau"
+          "city": "Saint-Gall"
         },
         "8": {
-          "city": "Wittenbach"
+          "city": "Herisau"
         },
         "9": {
-          "city": "Saint-Gall"
+          "city": "Wittenbach"
         },
         "10": {
-          "city": "Wattwil"
+          "city": "Saint-Gall"
         },
         "11": {
-          "city": "Saint-Gall"
+          "city": "Wattwil"
         },
         "12": {
           "city": "Saint-Gall"
         },
         "13": {
-          "city": "Schaan, FL"
+          "city": "Saint-Gall"
         },
         "14": {
-          "city": "Sirnach"
+          "city": "Schaan, FL"
         },
         "15": {
-          "city": "Bazenheid"
+          "city": "Sirnach"
         },
         "16": {
-          "city": "Glaris"
+          "city": "Bazenheid"
+        },
+        "17": {
+          "city": "Glarus"
         }
       },
       "heroStats": {
@@ -446,5 +475,23 @@
     "",
     "Die Schutzwirkung bleibt: Eine Liste, die zu KEINEM dieser Staende passt,",
     "hat jemand selbst gepflegt und wird nicht angefasst."
-  ]
+  ],
+  "entfernteKennzahlen": {
+    "_warum": [
+      "Ausdruecklicher Kundenwunsch vom 10.08.2026: der Bereich \"First set 2021\"",
+      "soll ganz verschwinden. Er stand doppelt auf der Startseite — als Kennzahl",
+      "im Hero und als erste Zeile der Faktenliste in \"Ueber mich\".",
+      "",
+      "Getroffen wird ueber die Aufschrift, nicht ueber den Platz in der Liste.",
+      "Die englische Aufschrift reicht: die Korrektur laeuft auf dem Master-Stand,",
+      "die Uebersetzungen haengen am Platz und werden mitgekuerzt.",
+      "",
+      "ACHTUNG: Diese Regel ueberstimmt die Verwaltung dauerhaft. Soll die",
+      "Kennzahl zurueck, gehoert dieser Block geloescht — ein Eintrag in der",
+      "Verwaltung allein reicht nicht."
+    ],
+    "labels": [
+      "First set"
+    ]
+  }
 }
