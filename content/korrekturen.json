@@ -13,21 +13,52 @@
     "behaelt das letzte Wort."
   ],
   "alteReferenzen": [
-    "Sektor 11",
-    "Jugendopenair",
-    "Kugl",
-    "B9 eventlocation",
-    "IVY",
-    "Ultrawild Festival",
-    "Monoevents",
-    "Amadeusbar",
-    "Dorffest Herisau",
-    "Turnunterhaltung Sirnach",
-    "Xploration Events",
-    "Winterzauber Bazenheid",
-    "Firehouse Party Wittenbach",
-    "BBC",
-    "The Q"
+    [
+      "Kugl",
+      "Sektor 11",
+      "The Q",
+      "IVY",
+      "BBC",
+      "B9",
+      "Ultrawild Festival"
+    ],
+    [
+      "Sektor 11",
+      "Jugendopenair",
+      "Kugl",
+      "B9 eventlocation",
+      "IVY",
+      "Ultrawild Festival",
+      "Monoevents",
+      "Amadeusbar",
+      "Dorffest Herisau",
+      "Turnunterhaltung Sirnach",
+      "Xploration Events",
+      "Winterzauber Bazenheid",
+      "Firehouse Party Wittenbach",
+      "BBC",
+      "The Q"
+    ],
+    [
+      "Kugl",
+      "Sektor 11",
+      "Ultrawild Festival",
+      "BBC",
+      "Jugendopenair",
+      "Amadeusbar",
+      "B9 eventlocation",
+      "Club Eden",
+      "Dorffest Herisau",
+      "Firehouse Party Wittenbach",
+      "Jugendopenair",
+      "Monoevents",
+      "Picante",
+      "Turnunterhaltung Sirnach",
+      "Winterzauber Bazenheid",
+      "Aftersun Festival",
+      "Xploration Events",
+      "The Q"
+    ]
   ],
   "referenzen": [
     {
@@ -51,74 +82,56 @@
       "highlight": true
     },
     {
-      "name": "Jugendopenair",
-      "city": "St. Gallen",
-      "highlight": true
+      "name": "Aftersun Festival",
+      "city": "Luzern"
     },
     {
       "name": "Amadeusbar",
-      "city": "Herisau",
-      "group": "Ostschweiz"
+      "city": "Herisau"
     },
     {
       "name": "B9 eventlocation",
-      "city": "St. Gallen",
-      "group": "Ostschweiz"
-    },
-    {
-      "name": "Club Eden",
-      "city": "St. Gallen",
-      "group": "Ostschweiz"
+      "city": "St. Gallen"
     },
     {
       "name": "Dorffest Herisau",
-      "city": "Herisau",
-      "group": "Ostschweiz"
+      "city": "Herisau"
     },
     {
       "name": "Firehouse Party Wittenbach",
-      "city": "Wittenbach",
-      "group": "Ostschweiz"
+      "city": "Wittenbach"
+    },
+    {
+      "name": "IVY",
+      "city": "St. Gallen"
     },
     {
       "name": "Jugendopenair",
-      "city": "Wattwil",
-      "group": "Ostschweiz"
+      "city": "Wattwil"
     },
     {
       "name": "Monoevents",
-      "city": "St. Gallen",
-      "group": "Ostschweiz"
+      "city": "St. Gallen"
     },
     {
       "name": "Picante",
-      "city": "St. Gallen",
-      "group": "Ostschweiz"
-    },
-    {
-      "name": "Turnunterhaltung Sirnach",
-      "city": "Sirnach",
-      "group": "Ostschweiz"
-    },
-    {
-      "name": "Winterzauber Bazenheid",
-      "city": "Bazenheid",
-      "group": "Ostschweiz"
-    },
-    {
-      "name": "Aftersun Festival",
-      "city": "Luzern",
-      "group": "Schweiz"
-    },
-    {
-      "name": "Xploration Events",
-      "city": "Glarus",
-      "group": "Schweiz"
+      "city": "St. Gallen"
     },
     {
       "name": "The Q",
-      "city": "Schaan, FL",
-      "group": "International"
+      "city": "Schaan, FL"
+    },
+    {
+      "name": "Turnunterhaltung Sirnach",
+      "city": "Sirnach"
+    },
+    {
+      "name": "Winterzauber Bazenheid",
+      "city": "Bazenheid"
+    },
+    {
+      "name": "Xploration Events",
+      "city": "Glarus"
     }
   ],
   "instagram": {
@@ -160,7 +173,7 @@
           "city": "Gossau"
         },
         "4": {
-          "city": "St. Gallen"
+          "city": "Luzern"
         },
         "5": {
           "city": "Herisau"
@@ -169,13 +182,13 @@
           "city": "St. Gallen"
         },
         "7": {
-          "city": "St. Gallen"
-        },
-        "8": {
           "city": "Herisau"
         },
-        "9": {
+        "8": {
           "city": "Wittenbach"
+        },
+        "9": {
+          "city": "St. Gallen"
         },
         "10": {
           "city": "Wattwil"
@@ -187,19 +200,16 @@
           "city": "St. Gallen"
         },
         "13": {
-          "city": "Sirnach"
+          "city": "Schaan, FL"
         },
         "14": {
-          "city": "Bazenheid"
+          "city": "Sirnach"
         },
         "15": {
-          "city": "Luzern"
+          "city": "Bazenheid"
         },
         "16": {
           "city": "Glarus"
-        },
-        "17": {
-          "city": "Schaan, FL"
         }
       },
       "heroStats": {
@@ -240,59 +250,43 @@
           "city": "Gossau"
         },
         "4": {
-          "city": "Saint-Gall"
+          "city": "Lucerne"
         },
         "5": {
-          "city": "Herisau",
-          "group": "Suisse orientale"
+          "city": "Herisau"
         },
         "6": {
-          "city": "Saint-Gall",
-          "group": "Suisse orientale"
+          "city": "Saint-Gall"
         },
         "7": {
-          "city": "Saint-Gall",
-          "group": "Suisse orientale"
+          "city": "Herisau"
         },
         "8": {
-          "city": "Herisau",
-          "group": "Suisse orientale"
+          "city": "Wittenbach"
         },
         "9": {
-          "city": "Wittenbach",
-          "group": "Suisse orientale"
+          "city": "Saint-Gall"
         },
         "10": {
-          "city": "Wattwil",
-          "group": "Suisse orientale"
+          "city": "Wattwil"
         },
         "11": {
-          "city": "Saint-Gall",
-          "group": "Suisse orientale"
+          "city": "Saint-Gall"
         },
         "12": {
-          "city": "Saint-Gall",
-          "group": "Suisse orientale"
+          "city": "Saint-Gall"
         },
         "13": {
-          "city": "Sirnach",
-          "group": "Suisse orientale"
+          "city": "Schaan, FL"
         },
         "14": {
-          "city": "Bazenheid",
-          "group": "Suisse orientale"
+          "city": "Sirnach"
         },
         "15": {
-          "city": "Lucerne",
-          "group": "Suisse"
+          "city": "Bazenheid"
         },
         "16": {
-          "city": "Glaris",
-          "group": "Suisse"
-        },
-        "17": {
-          "city": "Schaan, FL",
-          "group": "International"
+          "city": "Glaris"
         }
       },
       "heroStats": {
@@ -436,5 +430,21 @@
     "auchLabel": [
       "Clubs & Festivals"
     ]
-  }
+  },
+  "_alteReferenzenWarum": [
+    "Der Massstab, gegen den die Ersetzung prueft — MEHRERE bekannte Altstaende.",
+    "",
+    "Warum mehrere: In der Datenbank steht die 7er-Liste (Kugl, Sektor 11, The Q,",
+    "IVY, BBC, B9, Ultrawild Festival). Stand hier nur EIN Massstab und der war",
+    "ein anderer, traf der Abgleich nie zu und die Ersetzung lief still ins",
+    "Leere — die Website zeigte weiter die alte Liste. Genau das ist am",
+    "10.08.2026 passiert.",
+    "",
+    "Verglichen wird ohne Ruecksicht auf die Reihenfolge: die Verwaltung",
+    "sortiert die Liste beim Speichern um, eine Reihenfolge-treue Pruefung",
+    "waere schon dadurch hinfaellig.",
+    "",
+    "Die Schutzwirkung bleibt: Eine Liste, die zu KEINEM dieser Staende passt,",
+    "hat jemand selbst gepflegt und wird nicht angefasst."
+  ]
 }

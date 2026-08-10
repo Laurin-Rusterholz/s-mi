@@ -146,7 +146,7 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   db.hero.nameMain = "Sparkling";
   db.site.domain = "https://djsamsparkling.netlify.app";
   db.sections.about.paragraphs = ["Der Name **Sparkling** ist kein Zufall."];
-  db.sections.references.items = korr.alteReferenzen.map((n) => ({ name: n, city: "?" }));
+  db.sections.references.items = korr.alteReferenzen[0].map((n) => ({ name: n, city: "?" }));
   db.sections.contact.socials = [{ label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" }];
   db.sections.shop.enabled = true;
   db.hero.stats = [];
@@ -223,6 +223,54 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
     meckern("Seitenadressen stimmen nicht: " + db.pages.map((p) => p.slug).join(", "));
   if (db.pages[0].sections.includes("booking"))
     meckern("Booking steht weiter als Abschnitt auf der Startseite");
+}
+
+{
+  /* Der Abgleich der Referenzliste. Hier ist die Ersetzung am 10.08.2026 still
+     ins Leere gelaufen: in der Datenbank stand ein anderer Altstand als der
+     eine, gegen den geprueft wurde — die Website zeigte weiter B9, BBC, IVY,
+     Kugl, Sektor 11, The Q, Ultrawild Festival. */
+  const namen = (c) => c.sections.references.items.map((i) => i.name);
+
+  // Jeder hinterlegte Altstand muss die Ersetzung ausloesen.
+  korr.alteReferenzen.forEach((stand, nr) => {
+    const db = JSON.parse(JSON.stringify(template));
+    db.sections.references.items = stand.map((n) => ({ name: n, city: "?" }));
+    nachziehen(db, korr);
+    if (namen(db).length !== korr.referenzen.length)
+      meckern(`Altstand ${nr} (${stand.length} Eintraege) loest die Ersetzung nicht aus`);
+  });
+
+  // Auch in anderer Reihenfolge — die Verwaltung sortiert beim Speichern um.
+  const gedreht = JSON.parse(JSON.stringify(template));
+  gedreht.sections.references.items = [...korr.alteReferenzen[0]]
+    .sort()
+    .map((n) => ({ name: n, city: "?" }));
+  nachziehen(gedreht, korr);
+  if (namen(gedreht).length !== korr.referenzen.length)
+    meckern("Umsortierter Altstand loest die Ersetzung nicht aus");
+
+  // Die vier ausdruecklich genannten Events stehen oben, in dieser Reihenfolge.
+  const oben = korr.referenzen.filter((i) => i.highlight).map((i) => i.name);
+  const SOLL = ["Kugl", "Sektor 11", "Ultrawild Festival", "BBC"];
+  if (oben.join(" | ") !== SOLL.join(" | "))
+    meckern("Hervorgehobene Gruppe ist " + oben.join(", ") + " statt " + SOLL.join(", "));
+
+  // Die beiden Ergaenzungen sind da, IVY ist unveraendert geblieben.
+  const alle = korr.referenzen.map((i) => i.name);
+  for (const n of ["Aftersun Festival", "Picante", "IVY"])
+    if (!alle.includes(n)) meckern(`"${n}" fehlt in der Referenzliste`);
+  // Nicht geraten: solange der Ersatz fuer IVY nicht entschieden ist, darf
+  // weder "Club Eden" noch "Jugendopenair St. Gallen" dastehen.
+  for (const n of ["Club Eden"])
+    if (alle.includes(n)) meckern(`"${n}" wurde geraten — der Entscheid steht aus`);
+  const jugend = korr.referenzen.filter((i) => i.name === "Jugendopenair");
+  if (jugend.length !== 1 || jugend[0].city !== "Wattwil")
+    meckern("Jugendopenair: es darf nur der bestehende Eintrag Wattwil dastehen");
+
+  // Der Rest traegt keine Buendel mehr — eine durchgehend alphabetische Liste.
+  if (korr.referenzen.some((i) => !i.highlight && i.group))
+    meckern("Der Rest soll ohne Buendel-Ueberschriften alphabetisch stehen");
 }
 
 {
@@ -310,4 +358,5 @@ console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleic
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
 console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");
 console.log("nachziehen: Kennzahl \"Shows\", Aftersun in Luzern, Instagram aus dem Kopf, Waehrung\n            CHF, eigene Seiten fuer Booking und Shop — jeweils nur auf dem alten Stand.");
+console.log("nachziehen: Referenzen — jeder bekannte Altstand loest die Ersetzung aus, auch\n            umsortiert; oben Kugl, Sektor 11, Ultrawild, BBC; IVY unveraendert.");
 console.log("nachziehen: Die Zahl neben \"Shows\" steht auf 30 — gefunden ueber die Aufschrift\n            (auch die alte), nie ueber den Platz in der Liste.");

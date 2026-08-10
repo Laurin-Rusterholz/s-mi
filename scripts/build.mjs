@@ -265,11 +265,45 @@ const LOCAL_KORREKTUREN = resolve(ROOT, "content/korrekturen.json");
 /** Wird in loadContent() gefuellt; leer heisst: keine Korrekturen hinterlegt. */
 let KORREKTUREN = null;
 
-const gleicheNamen = (items, namen) =>
-  Array.isArray(items) &&
-  Array.isArray(namen) &&
-  items.length === namen.length &&
-  items.every((i, n) => str(i?.name) === namen[n]);
+/**
+ * Passt die Liste aus der Verwaltung zu einem der bekannten Altstaende?
+ *
+ * Zwei Dinge, die vorher falsch waren und die Ersetzung still ins Leere
+ * laufen liessen:
+ *
+ *   EIN Massstab reichte nicht. In der Datenbank stand eine andere alte
+ *   Liste als die, gegen die hier verglichen wurde — der Abgleich traf nie
+ *   zu, die Website zeigte weiter die alte Liste, und nichts hat gemeldet,
+ *   dass die Regel gar nicht greift. `namen` darf deshalb auch eine Liste
+ *   von Listen sein: passt EINER der Staende, wird ersetzt.
+ *
+ *   Die REIHENFOLGE darf nicht zaehlen. Die Verwaltung sortiert die Liste
+ *   beim Speichern um; ein Vergleich Platz fuer Platz waere schon dadurch
+ *   hinfaellig. Verglichen wird darum, welche Namen vorkommen und wie oft.
+ *
+ * Die Schutzwirkung bleibt: eine Liste, die zu keinem bekannten Stand passt,
+ * hat jemand selbst gepflegt und wird nicht angefasst.
+ */
+const alsZaehlung = (namen) => {
+  const m = new Map();
+  for (const n of namen) m.set(n, (m.get(n) || 0) + 1);
+  return m;
+};
+
+const gleicheZaehlung = (a, b) => {
+  if (a.size !== b.size) return false;
+  for (const [n, z] of a) if (b.get(n) !== z) return false;
+  return true;
+};
+
+const gleicheNamen = (items, namen) => {
+  if (!Array.isArray(items) || !Array.isArray(namen) || !namen.length) return false;
+  const staende = Array.isArray(namen[0]) ? namen : [namen];
+  const haben = alsZaehlung(list(items).map((i) => str(i?.name)));
+  return staende.some(
+    (stand) => Array.isArray(stand) && gleicheZaehlung(alsZaehlung(stand.map(str)), haben)
+  );
+};
 
 /**
  * Korrigiert den Stand aus der Verwaltung. Gibt zurueck, was angefasst wurde —
@@ -291,10 +325,28 @@ export function nachziehen(live, korr) {
 
   // --- nur solange die Stelle noch unangetastet ist ------------------------
 
-  // Referenzen: nur ersetzen, solange exakt die alte Liste dasteht.
-  if (list(korr.referenzen).length && gleicheNamen(ls.references?.items, korr.alteReferenzen)) {
-    ls.references = { ...ls.references, items: kopie(korr.referenzen) };
-    getan.push(`Referenzliste (${korr.referenzen.length})`);
+  // Referenzen: nur ersetzen, solange einer der bekannten Altstaende dasteht.
+  if (list(korr.referenzen).length) {
+    const soll = alsZaehlung(list(korr.referenzen).map((i) => str(i?.name)));
+    const ist = alsZaehlung(list(ls.references?.items).map((i) => str(i?.name)));
+    if (gleicheNamen(ls.references?.items, korr.alteReferenzen)) {
+      ls.references = { ...ls.references, items: kopie(korr.referenzen) };
+      getan.push(`Referenzliste (${korr.referenzen.length})`);
+    } else if (!gleicheZaehlung(soll, ist)) {
+      /* Weder ein bekannter Altstand noch die gewuenschte Liste. Das ist der
+         Fall, in dem die Regel wirkungslos bleibt — und genau der ist am
+         10.08.2026 monatelang niemandem aufgefallen, weil er still war.
+         Jetzt steht er im Bau-Protokoll. Entweder hat jemand die Liste in der
+         Verwaltung selbst gepflegt (dann ist alles richtig so), oder in
+         content/korrekturen.json fehlt dieser Stand unter alteReferenzen. */
+      console.warn(
+        `[build] Referenzen NICHT ersetzt: die Liste in der Verwaltung (${ist.size} Eintraege) ` +
+          `passt zu keinem Stand unter alteReferenzen.\n` +
+          `        dort: ${[...ist.keys()].join(", ") || "(leer)"}\n` +
+          `        Ist das kein selbst gepflegter Stand, gehoert er in ` +
+          `content/korrekturen.json unter alteReferenzen.`
+      );
+    }
   }
 
   // Orte nachtragen, wo in der Verwaltung noch das blosse Kantonskuerzel steht.
