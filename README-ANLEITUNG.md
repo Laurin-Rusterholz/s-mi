@@ -177,6 +177,47 @@ gleicher Dateiname, Datei ersetzen:
 
 Tipp: vorher auf max. ~2000 px Breite verkleinern, JPG Qualität ~80.
 
+## Was dem Shop bis zum Start fehlt
+
+Stand 10.08.2026 ist `/shop/` **absichtlich leer**. Die Seite antwortet mit 200
+und sagt „The shop opens soon" — es steht keine Ware darauf, und darum gibt es
+dort auch kein Bestellformular und keine Bezahl-Angaben.
+
+Warum: die einzige Ware in der Verwaltung war der Platzhalter **„Beispiel"** aus
+dem ersten Einrichten — CHF 35, ohne Beschreibung, mit einem Produktbild, dessen
+Firebase-Adresse mit **404** antwortete (auf der Seite ein leerer Rahmen). Ein
+Kauf-Knopf stand trotzdem daneben. Verifizierte Artikeldaten gibt es nicht, und
+erfunden wird hier nichts — deshalb nimmt der Generator diese Ware heraus
+(`shop.entfernteWare` in `content/korrekturen.json`).
+
+Für einen echten Start fehlen genau diese Angaben — **alle** aus einer
+verlässlichen Quelle, nicht geschätzt:
+
+| Was | Wo eintragen | Warum es nicht geraten werden kann |
+|---|---|---|
+| **Artikelname** je Ware | Verwaltung → *Shop* → Ware | „Beispiel" ist ein Tipprest, kein Produkt |
+| **Verkaufspreis** in CHF | dito, Feld *Preis* | CHF 35 stammt vom Platzhalter |
+| **Produktbild**, das wirklich lädt | Verwaltung → *Medien*, dann in der Ware auswählen | die bisherige Adresse ist tot (404); ein Bühnenfoto ist kein Merch-Bild |
+| **Beschreibung** (eine Zeile) | dito, Feld *Kurze Zeile darunter* | stand nur „as" drin |
+| **Grössen / Varianten**, falls Textil | dito | es gibt keine Angabe, ob es Grössen gibt |
+| **Lagerbestand / Status** (`available` oder `soldout`) | dito | sonst lässt sich Ausverkauftes nicht zeigen |
+| **Versandkosten und Liefergebiet** | Verwaltung → *Shop* → Versandzeile | aktuell steht „Gratis Versand — nur innerhalb der Schweiz" nur als Text |
+| **`STRIPE_PAYMENT_LINK_URL`** | Netlify → *Environment variables* | siehe unten |
+
+**Bezahlung.** `STRIPE_PAYMENT_LINK_URL` ist **nicht gesetzt**. Solange das so
+ist, verspricht die Seite bewusst keine Bezahlung: kein „via Stripe", kein
+TWINT/Apple Pay/Google Pay, und der Absende-Knopf kündigt keine Weiterleitung
+an. Der Endpunkt `/api/order` nimmt eine Bestellung trotzdem an, legt sie im
+Eingang ab und schickt die E-Mail — er gibt nur keine Bezahladresse zurück.
+Sobald ein echter Zahlungslink hinterlegt ist (`https://`, Host `stripe.com`
+oder `link.com` — alles andere lehnen Endpunkt *und* Browser ab), schaltet sich
+der Bezahl-Zweig von selbst frei. Ein Link wird hier nicht erfunden und der
+Stripe-Account nicht angefasst.
+
+Erst wenn Name, Preis, ein ladendes Bild und der Zahlungslink stehen, gehört
+`"Beispiel"` aus `shop.entfernteWare` heraus — sonst räumt der nächste Build die
+Ware wieder weg.
+
 ## Presskit
 
 PDF unter `presskit/sam-sparking-presskit-2026.pdf` ablegen — oder in der

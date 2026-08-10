@@ -231,6 +231,27 @@ for (const [datei, h] of html) {
       meckern(`${rel}: Menuepunkt Shows fuehrt ins Leere`);
   }
 
+  // 2b) Der Satz unter den Referenzen ("Dein Club oder Festival als
+  //     Naechstes? Schreib mir →") ist eine Anfrage und muss auf die
+  //     Booking-Seite fuehren, nicht auf #contact. Geprueft wird die
+  //     tatsaechlich gebaute Adresse samt Sprachpraefix und SITE_BASE — genau
+  //     die Stelle, an der der Verweis schon einmal auf dem Anker stehen
+  //     geblieben ist.
+  for (const rel of startseiten) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const note = h.match(/<p class="live-note rv">[\s\S]*?<\/p>/);
+    if (!note) continue;
+    const ziel = note[0].match(/<a class="accent" href="([^"]*)"/);
+    if (!ziel) {
+      meckern(`${rel}: Referenzen-Satz ohne Verweis`);
+      continue;
+    }
+    const erwartet = `${BASE}${rel === "index.html" ? "" : "/" + rel.split("/")[0]}/booking/#booking-form`;
+    if (ziel[1] !== erwartet)
+      meckern(`${rel}: Referenzen-Satz fuehrt auf "${ziel[1]}" statt auf "${erwartet}"`);
+  }
+
   // 5)+6) Kein Rider als Anforderung, keine erfundene Bezahladresse.
   const booking = await seite("booking/index.html");
   if (booking) {
@@ -242,6 +263,40 @@ for (const [datei, h] of html) {
     if (/qr-?code/i.test(shop)) meckern("shop: QR-Code auf der Seite, obwohl keiner hinterlegt ist");
     for (const m of shop.match(/https?:\/\/[^"'\s<]*stripe[^"'\s<]*/gi) || [])
       meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
+  }
+
+  /* Der Shop spricht auf jeder Route seine eigene Sprache.
+
+     Anlass (Sichttest 10.08.2026): auf der englischen /shop/ stand "Merch von
+     Sam Sparking" und "Kaufen", auf /fr/shop/ dasselbe Deutsch — in der
+     Verwaltung war der Grundwert deutsch getippt, und Uebersetzungen gab es
+     fuer den Shop gar keine. Geprueft wird nur der sichtbare Abschnitt: der
+     Quelltext traegt Schema-Daten und Kommentare in anderen Sprachen, die
+     niemand liest.
+
+     Erkannt wird an Woertern, die es nur in einer Sprache gibt. Eigennamen
+     ("Merch", "Shop", "Sam Sparking") taugen dafuer nicht. */
+  const NUR_DEUTSCH = ["jedes Teil", "Kaufen", "ist bald offen", "verpasst du", "Kanälen"];
+  const NUR_FRANZOESISCH = ["chaque pièce", "Acheter", "bientôt", "ci-dessous"];
+  const NUR_ENGLISCH = ["every piece", "opens soon", "the works", "so you don't miss"];
+  const SPRACHPROBE = {
+    "shop/index.html": { erlaubt: NUR_ENGLISCH, verboten: [...NUR_DEUTSCH, ...NUR_FRANZOESISCH] },
+    "de/shop/index.html": { erlaubt: NUR_DEUTSCH, verboten: [...NUR_ENGLISCH, ...NUR_FRANZOESISCH] },
+    "fr/shop/index.html": { erlaubt: NUR_FRANZOESISCH, verboten: [...NUR_ENGLISCH, ...NUR_DEUTSCH] },
+  };
+  for (const [rel, probe] of Object.entries(SPRACHPROBE)) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const abschnitt = h.match(/<section class="pad shop-sec"[\s\S]*?<\/section>/);
+    if (!abschnitt) {
+      meckern(`${rel}: kein Shop-Abschnitt auf der Seite`);
+      continue;
+    }
+    const sichtbar = abschnitt[0].replace(/<!--[\s\S]*?-->/g, "").replace(/<[^>]+>/g, " ");
+    const fremd = probe.verboten.filter((w) => sichtbar.includes(w));
+    if (fremd.length) meckern(`${rel}: fremdsprachiger Shop-Text: ${fremd.join(", ")}`);
+    if (!probe.erlaubt.some((w) => sichtbar.includes(w)))
+      meckern(`${rel}: kein Shop-Text in der Sprache der Route`);
   }
 
   /* Die Shop-Seite darf keine Bezahlung versprechen, die es nicht gibt.
@@ -271,8 +326,20 @@ for (const [datei, h] of html) {
     if (!zahlbar && weiter)
       meckern(`${rel}: Knopf "${knopf[1].trim()}" kuendigt eine Bezahlung an, die es nicht gibt`);
 
-    // Und die Bestellung muss trotzdem erfasst werden koennen.
-    if (!/id="order-form"/.test(h)) meckern(`${rel}: kein Bestellformular auf der Seite`);
+    /* Bestellformular: genau dann, wenn es auch etwas zu bestellen gibt.
+       Seit der Produktentscheidung vom 10.08.2026 steht keine Ware im Shop —
+       die Platzhalter-Ware "Beispiel" ist entfernt, weil es keine
+       verifizierten Artikeldaten gibt. Ein Formular ohne Ware waere eine
+       Bestellung ins Leere; steht wieder Ware da, muss das Formular zurueck.
+       Erkannt wird die Ware am Kachel-Bauteil, nicht am Inhalt. */
+    const hatWare = /<article class="product/.test(h);
+    const hatFormular = /id="order-form"/.test(h);
+    if (hatWare && !hatFormular) meckern(`${rel}: Ware ohne Bestellformular`);
+    if (!hatWare && hatFormular)
+      meckern(`${rel}: Bestellformular ohne Ware — bestellen liesse sich nichts`);
+    // Und ohne Ware muss die Seite sagen, warum sie leer ist.
+    if (!hatWare && !/class="empty-state/.test(h))
+      meckern(`${rel}: leerer Shop ohne Hinweis, dass noch keine Ware da ist`);
   }
 
   /* Die Weiterleitung im Browser: sie darf erst kommen, wenn die Antwort des
