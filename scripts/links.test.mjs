@@ -312,8 +312,18 @@ for (const [datei, h] of html) {
   const shop = await seite("shop/index.html");
   if (shop) {
     if (/qr-?code/i.test(shop)) meckern("shop: QR-Code auf der Seite, obwohl keiner hinterlegt ist");
+    /* Stripe-Adressen: erlaubt ist genau, was am Artikel in der Verwaltung
+       steht — ein Payment Link je Preis. Alles andere waere geraten. Frueher
+       stand hier "gar keine Stripe-Adresse"; seit der Kunde Payment Links
+       pflegt, gehoeren sie auf die Seite. */
+    const erlaubteKassen = new Set(
+      (INHALT.sections?.shop?.items || [])
+        .map((p) => String(p?.paymentLink || "").trim())
+        .filter(Boolean)
+    );
     for (const m of shop.match(/https?:\/\/[^"'\s<]*stripe[^"'\s<]*/gi) || [])
-      meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
+      if (!erlaubteKassen.has(m))
+        meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
   }
 
   /* Die Bilderwand: gleichmaessiges Raster, 6 Fotos zu Beginn, Videos als
