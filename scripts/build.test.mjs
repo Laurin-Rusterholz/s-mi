@@ -644,21 +644,25 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
      Verwaltung, und der Kunde hat es dort wiedergefunden. Jetzt wird es bei
      JEDEM Build geraeumt, ohne Marke: das Feld gibt es im Modell nicht mehr,
      ein Wert aus einem alten Stand waere ein Rest. */
+  /* Der Name des Fotografen steht bewusst nirgends mehr im Repo — auch nicht
+     als Probewert. Geprueft wird die Struktur: das Feld selbst darf nicht
+     ueberleben, egal was darin stand. */
+  const PROBE = "Beispiel Fotostudio";
   const db = JSON.parse(JSON.stringify(template));
-  db.site.photoCredit = "Sarto Photography";
+  db.site.photoCredit = PROBE;
   db.sections.gallery.items = [
-    { src: "a.jpg", alt: "A", credit: "Sarto Photography" },
+    { src: "a.jpg", alt: "A", credit: PROBE },
     { src: "b.jpg", alt: "B" },
   ];
-  db.sections.about.photo = { src: "p.jpg", alt: "P", credit: "Photo — Sarto Photography" };
-  db.sections.booking.photo = { src: "q.jpg", alt: "Q", credit: "Sarto Photography" };
+  db.sections.about.photo = { src: "p.jpg", alt: "P", credit: "Photo — " + PROBE };
+  db.sections.booking.photo = { src: "q.jpg", alt: "Q", credit: PROBE };
   db.i18n = db.i18n || {};
   db.i18n.de = db.i18n.de || {};
-  db.i18n.de.site = { photoCredit: "Sarto Photography" };
+  db.i18n.de.site = { photoCredit: PROBE };
   nachziehen(db, korr);
 
   const roh = JSON.stringify(db);
-  if (roh.includes("Sarto")) meckern("Der Fotograf steht noch im Inhalt");
+  if (roh.includes(PROBE)) meckern("Der Fotocredit steht noch im Inhalt");
   if (roh.includes("photoCredit")) meckern("photoCredit steht noch im Inhalt");
   if (roh.includes('"credit"')) meckern("ein credit-Feld steht noch im Inhalt");
   // Die Bilder bleiben — geloescht wird nur diese eine Angabe.
@@ -673,10 +677,20 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   /* Und im veroeffentlichten Stand steht er auch nicht mehr — samt der Probe,
      dass dabei nichts anderes verloren gegangen ist. */
   const roh = JSON.stringify(template);
-  for (const wort of ["Sarto", "photoCredit", '"credit"'])
+  for (const wort of ["photoCredit", '"credit"'])
     if (roh.includes(wort)) meckern(`"${wort}" steht wieder im Inhalt`);
-  if ((template.sections.gallery.items || []).length !== 47)
-    meckern(`${(template.sections.gallery.items || []).length} Medien statt 47`);
+  /* Und auch die Korrekturdatei und der Fingerabdruck-Stand duerfen ihn nicht
+     zurueckbringen — dort stand er zuletzt noch. */
+  for (const [name, datei] of [["korrekturen.json", korr]])
+    if (JSON.stringify(datei).includes('"credit"'))
+      meckern(`${name} traegt wieder ein credit-Feld`);
+  /* Die Bilderwand ist vollzaehlig: 47 Eintraege, davon 44 mit Adresse (drei
+     leere Plaetze aus der Verwaltung). Geloescht wurde nur die Angabe zum
+     Fotografen AM Eintrag — keine Datei, keine Adresse, kein Eintrag. */
+  const medien = template.sections.gallery.items || [];
+  if (medien.length !== 47) meckern(`${medien.length} Galerie-Eintraege statt 47`);
+  if (medien.filter((i) => i && i.src).length !== 44)
+    meckern(`${medien.filter((i) => i && i.src).length} Medien-Adressen statt 44`);
   if (!(template.sections.shop.items || []).some((p) => p.paymentLink))
     meckern("der Bezahl-Link am Artikel ist verloren gegangen");
   if ((template.sections.references.items || []).length !== 25) meckern("die Referenzen sind nicht mehr 25");

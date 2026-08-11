@@ -883,7 +883,13 @@ export function nachziehen(live, korr) {
       creditRaeumen(tabelle.sections);
     }
   }
-  if (creditsWeg) getan.push(`${creditsWeg} Fotocredit(s) geloescht`);
+  /* Ohne Meldung — auch nicht im Bau-Protokoll. Hier stand bis zum 11.08.2026
+     eine Zeile wie "81 Fotocredit(s) geloescht"; sie war ueber die Verwaltung
+     sichtbar und damit selbst wieder eine Fotografen-Angabe auf dem Bildschirm.
+     Der Auftrag lautet "ueberall entfernen", also auch die Meldung darueber.
+     Belegt ist das Loeschen durch die Tests (scripts/build.test.mjs), nicht
+     durch einen Hinweis, den jemand lesen muss. */
+  void creditsWeg;
 
   /* ---------------------------------------------------------------------
      ERGAENZEN, NIE ERSETZEN.

@@ -621,17 +621,30 @@ for (const [datei, h] of html) {
     }
   }
 
-  /* Kein sichtbarer Fotocredit mehr (11.08.2026) — weder an der Galerie noch
-     im Fuss, am Booking-Bild oder in den strukturierten Daten. Das Feld bleibt
-     im Inhalt stehen, es wird nur nicht mehr angezeigt. */
+  /* Der Fotograf ist GELOESCHT, nicht versteckt (11.08.2026). Geprueft wird
+     beides: dass die Angabe im Inhalt gar nicht mehr vorkommt, und dass keine
+     Seite sie zeigt — an der Galerie, im Fuss, am Booking-Bild oder in den
+     strukturierten Daten. */
   {
-    const credit = String(INHALT.site?.photoCredit || "").trim();
+    const inhaltRoh = JSON.stringify(INHALT);
+    if (inhaltRoh.includes("photoCredit")) meckern("content/site.json traegt wieder photoCredit");
+    if (inhaltRoh.includes('"credit"')) meckern("content/site.json traegt wieder ein credit-Feld");
     for (const [datei, h] of html) {
-      if (credit && h.includes(credit)) meckern(`${datei}: der Fotocredit "${credit}" steht wieder da`);
       if (/creditText/.test(h)) meckern(`${datei}: Fotocredit in den strukturierten Daten`);
+      if (/photoCredit/.test(h)) meckern(`${datei}: photoCredit steht im Quelltext`);
       const gal = h.match(/<div class="gal"[\s\S]*?<\/div>\s*<\/div>/);
       if (gal && /<figcaption/.test(gal[0])) meckern(`${datei}: Beschriftung an den Galerie-Kacheln`);
     }
+    /* Und die Bilderwand ist dabei vollzaehlig geblieben: 47 Eintraege, davon
+       44 mit Adresse (drei sind leere Plaetze aus der Verwaltung). Geloescht
+       wurde nur die Angabe zum Fotografen AM Eintrag, nie der Eintrag — und
+       schon gar nicht eine Datei oder ihre Adresse. Dass in manchen Dateinamen
+       historisch "sarto" steckt, aendert daran nichts: Adressen werden nicht
+       angefasst. */
+    const medien = INHALT.sections?.gallery?.items || [];
+    if (medien.length !== 47) meckern(`${medien.length} Galerie-Eintraege statt 47`);
+    const mitAdresse = medien.filter((i) => i && i.src).length;
+    if (mitAdresse !== 44) meckern(`${mitAdresse} Medien-Adressen statt 44`);
   }
 
   /* Die Telefonnummer ist von der Website genommen. Das Feld im
