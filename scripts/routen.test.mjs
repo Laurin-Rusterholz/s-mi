@@ -96,13 +96,14 @@ if (!regeln.length) {
 
 /* Die Vorgabe, Adresse fuer Adresse. */
 const ERWARTET = [
-  // Die Startseiten bleiben zu — in jeder Sprache und auch als Datei.
-  ["/", 503, "/coming-soon.html"],
-  ["/index.html", 503, "/coming-soon.html"],
-  ["/de/", 503, "/coming-soon.html"],
-  ["/de/index.html", 503, "/coming-soon.html"],
-  ["/fr/", 503, "/coming-soon.html"],
-  ["/fr/index.html", 503, "/coming-soon.html"],
+  /* Die Startseiten sind seit dem Launch offen — in jeder Sprache und auch als
+     Datei. Bis dahin standen hier 503-Regeln auf coming-soon.html. */
+  ["/", 200, "/index.html"],
+  ["/index.html", 200, "/index.html"],
+  ["/de/", 200, "/de/index.html"],
+  ["/de/index.html", 200, "/de/index.html"],
+  ["/fr/", 200, "/fr/index.html"],
+  ["/fr/index.html", 200, "/fr/index.html"],
 
   // Die Unterseiten sind offen.
   ["/booking/", 200, "/booking/index.html"],
@@ -111,9 +112,7 @@ const ERWARTET = [
   ["/shop/", 200, "/shop/index.html"],
   ["/de/shop/", 200, "/de/shop/index.html"],
   ["/fr/shop/", 200, "/fr/shop/index.html"],
-  /* Die Video-Seite muss oeffentlich sein. Genau darum ist sie eine eigene
-     Seite und kein Abschnitt der Startseite: die Startseite bleibt "Coming
-     soon" (503), ein Abschnitt dort waere nicht erreichbar. */
+  // Die Video-Seite ist oeffentlich erreichbar.
   ["/videos/", 200, "/videos/index.html"],
   ["/de/videos/", 200, "/de/videos/index.html"],
   ["/fr/videos/", 200, "/fr/videos/index.html"],
@@ -148,21 +147,31 @@ for (const [pfad, status, ziel] of ERWARTET) {
   }
 }
 
-/* Die eigentliche Sorge: Der Inhalt der Startseite darf nirgends
-   durchscheinen. Alles, was mit 200 erreichbar ist, wird darauf geprueft. */
-const HEIKEL = ["/", "/index.html", "/de/", "/de/index.html", "/fr/", "/fr/index.html"];
-for (const pfad of HEIKEL) {
+/* Seit dem Launch die umgekehrte Sorge: KEINE Adresse darf noch in der
+   Wartungsregel haengen. Ein uebersehener Rest waere eine Seite, die weiter
+   "Coming soon" zeigt, waehrend alles andere live ist. */
+const STARTSEITEN = ["/", "/index.html", "/de/", "/de/index.html", "/fr/", "/fr/index.html"];
+for (const pfad of [...STARTSEITEN, "/booking/", "/shop/", "/videos/", "/api/booking"]) {
   const a = antwort(regeln, pfad);
-  if (a.status === 200) meckern(`${pfad} ist offen erreichbar — die Website liegt damit frei`);
-  if (a.ziel !== "/coming-soon.html") meckern(`${pfad} liefert ${a.ziel} statt der Wartungsseite`);
+  if (a.ziel === "/coming-soon.html") meckern(`${pfad} landet noch in der Wartungsregel`);
+  if (a.status === 503) meckern(`${pfad} antwortet weiter mit 503`);
 }
 
-/* Und umgekehrt: was offen sein soll, darf nicht versehentlich in der
-   Wartungsregel haengen. */
-for (const pfad of ["/booking/", "/shop/", "/videos/", "/api/booking"]) {
+/* Die Startseiten muessen ihren eigenen Inhalt liefern — nicht den einer
+   anderen Sprache und nicht die Wartungsseite. */
+for (const [pfad, datei] of [
+  ["/", "/index.html"],
+  ["/de/", "/de/index.html"],
+  ["/fr/", "/fr/index.html"],
+]) {
   const a = antwort(regeln, pfad);
-  if (a.ziel === "/coming-soon.html") meckern(`${pfad} landet in der Wartungsregel`);
+  if (a.ziel !== datei) meckern(`${pfad} liefert ${a.ziel} statt ${datei}`);
 }
+
+/* Keine 503-Regel mehr in der ganzen Datei. */
+const nochGesperrt = regeln.filter((r) => Number(r.status) === 503);
+if (nochGesperrt.length)
+  meckern(`${nochGesperrt.length} Regel(n) antworten noch mit 503: ${nochGesperrt.map((r) => r.from).join(", ")}`);
 
 /* Eine Regel from = "/*" mit force wuerde alles davon zunichtemachen —
    sie darf nicht (wieder) dastehen. */
@@ -177,8 +186,8 @@ if (fehler) {
 }
 console.log(
   `Routen: ${ERWARTET.length} Adressen gegen netlify.toml geprueft.\n` +
-    `  zu (503 → coming-soon.html):  /, /de/, /fr/ samt index.html\n` +
-    `  offen (200):                  /booking/, /shop/, /videos/ in allen drei Sprachen,\n` +
+    `  offen (200):                  /, /de/, /fr/ samt index.html — die Website ist live,\n` +
+    `                                /booking/, /shop/, /videos/ in allen drei Sprachen,\n` +
     `                                /api/booking, /api/order, /api/stripe-webhook,\n` +
     `                                Impressum, CSS/JS, Presskit, robots, sitemap\n` +
     `  gesperrt (404):               /scripts/*, /content/*\n` +

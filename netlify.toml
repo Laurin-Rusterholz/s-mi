@@ -63,13 +63,11 @@
     Cache-Control = "public, max-age=86400"
 
 # ===========================================================================
-# TEILWARTUNG — die Startseite bleibt "Coming soon", die Unterseiten sind live.
+# LIVE — die ganze Website ist oeffentlich.
 #
-# Gewollt ist genau das: /booking/ und /shop/ sollen oeffentlich benutzbar sein
-# (Booking-Anfrage stellen, bestellen), waehrend die eigentliche Website unter
-# / noch nicht gezeigt wird. Der ganze Inhalt der Website — About, Shows,
-# Referenzen, Galerie — steht ausschliesslich auf den STARTSEITEN. Es reicht
-# darum, genau diese zu sperren; alles andere darf durch.
+# Bis zum Launch war das eine Teilwartung: /booking/ und /shop/ waren offen,
+# die Startseiten je Sprache lieferten "Coming soon" mit 503. Diese Sperre ist
+# aufgehoben; / , /de/ und /fr/ zeigen ihren echten Inhalt mit 200.
 #
 # Netlify nimmt die ERSTE passende Regel. Die Reihenfolge unten ist deshalb
 # keine Geschmacksfrage:
@@ -78,15 +76,12 @@
 #      die laenger 5xx liefert, wertet Google als "alles gesperrt".
 #   2. /api/* — die Endpunkte. Der Stripe-Webhook darf nie ausfallen (Stripe
 #      gibt nach einigen Tagen auf, die Zahlung waere dann nirgends vermerkt).
-#   3. Die Startseiten je Sprache — 503 mit "Coming soon".
-#   4. Alles Weitere faellt durch und wird normal ausgeliefert: /booking/,
-#      /shop/, /de/booking/, /fr/booking/, das Impressum, Bilder, CSS.
+#   3. Alles Weitere faellt durch und wird normal ausgeliefert: die Startseiten,
+#      /booking/, /shop/, /videos/, das Impressum, Bilder, CSS.
 #
-# Status 503 (nicht 404) sorgt dafuer, dass Suchmaschinen die Startseite im
-# Index behalten und wiederkommen.
-#
-# GANZ ONLINE STELLEN: die vier Startseiten-Regeln (Punkt 3) auskommentieren.
-# GANZ SCHLIESSEN: dort wieder eine Regel from = "/*" mit force = true setzen.
+# WIEDER SCHLIESSEN: unter Punkt 3 die sechs Startseiten-Regeln zuruecksetzen
+# (Vorlage steht dort im Kommentar). Status 503 statt 404 sorgt dafuer, dass
+# Suchmaschinen die Startseite im Index behalten und wiederkommen.
 [[redirects]]
   from = "/robots.txt"
   to = "/robots.txt"
@@ -102,47 +97,23 @@
   status = 200
   force = true
 
-# --- Punkt 3: nur die Startseiten ------------------------------------------
-# Je Sprache eine Regel, dazu die Datei selbst. Ohne die /index.html-Regeln
-# waere die Sperre einen Klick weit zu umgehen.
-[[redirects]]
-  from = "/"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
-[[redirects]]
-  from = "/index.html"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
-[[redirects]]
-  from = "/de/"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
-[[redirects]]
-  from = "/de/index.html"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
-[[redirects]]
-  from = "/fr/"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
-[[redirects]]
-  from = "/fr/index.html"
-  to = "/coming-soon.html"
-  status = 503
-  force = true
+# --- Punkt 3: die Startseiten-Sperre ist AUFGEHOBEN (Launch) ---------------
+# Bis zum Launch standen hier sechs Regeln, die /, /index.html, /de/,
+# /de/index.html, /fr/ und /fr/index.html mit 503 auf coming-soon.html
+# umgeleitet haben. Sie sind entfernt: die Website ist vollstaendig oeffentlich,
+# die Startseiten liefern ihren echten Inhalt mit 200.
+#
+# WIEDER SCHLIESSEN: hier je Sprache eine Regel setzen —
+#   [[redirects]]
+#     from = "/"            (und "/index.html", "/de/", "/de/index.html",
+#     to = "/coming-soon.html"   "/fr/", "/fr/index.html")
+#     status = 503
+#     force = true
+# Die Datei coming-soon.html bleibt dafuer im Repo und wird weiter gebaut.
 # ---------------------------------------------------------------------------
 
-# Der Wiederkommen-Hinweis gehoert zur Wartungsseite, nicht mehr zur ganzen
-# Website — die Unterseiten sind ja da.
-[[headers]]
-  for = "/coming-soon.html"
-  [headers.values]
-    Retry-After = "86400"
+# Retry-After gab es hier fuer coming-soon.html, solange die Startseiten mit 503
+# gesperrt waren. Ohne Sperre ist der Hinweis gegenstandslos und darum weg.
 # ===========================================================================
 
 # Quelldateien des Generators nicht ausliefern.
