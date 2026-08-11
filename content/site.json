@@ -15,8 +15,7 @@
     "stats": [
       {
         "label": "First set",
-        "value": "2021",
-        "entfernt": true
+        "value": "2021"
       },
       {
         "label": "Shows",
@@ -55,9 +54,12 @@
           "navLabel": "Start"
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Videos"
         },
         "2": {
+          "navLabel": "Booking"
+        },
+        "3": {
           "navLabel": "Shop"
         }
       },
@@ -243,6 +245,13 @@
           "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
           "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
           "buyLabel": "Kaufen"
+        },
+        "videos": {
+          "navLabel": "Videos",
+          "title": "Vid",
+          "titleAccent": "eos.",
+          "note": "Rückblicke und Mitschnitte — die Shows zum Nachschauen.",
+          "emptyText": "Noch kein Video hinterlegt — die Rückblicke der nächsten Shows kommen hierher."
         }
       },
       "site": {
@@ -406,9 +415,12 @@
           "navLabel": "Accueil"
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Vidéos"
         },
         "2": {
+          "navLabel": "Booking"
+        },
+        "3": {
           "navLabel": "Boutique"
         }
       },
@@ -595,6 +607,13 @@
           "emptyText": "La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.",
           "buyLabel": "Acheter",
           "navLabel": "Boutique"
+        },
+        "videos": {
+          "navLabel": "Vidéos",
+          "title": "Vid",
+          "titleAccent": "éos.",
+          "note": "Retours et enregistrements — les shows à revoir.",
+          "emptyText": "Pas encore de vidéo — les retours des prochains shows arrivent ici."
         }
       },
       "ui": {
@@ -1333,6 +1352,18 @@
       ]
     },
     {
+      "slug": "videos",
+      "navLabel": "Videos",
+      "title": "Videos",
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "enabled": true,
+      "sections": [
+        "videos"
+      ]
+    },
+    {
       "slug": "booking",
       "navLabel": "Booking",
       "title": "Booking",
@@ -1362,21 +1393,7 @@
   "sections": {
     "about": {
       "enabled": true,
-      "facts": [
-        {
-          "label": "First set",
-          "value": "2021",
-          "entfernt": true
-        },
-        {
-          "label": "Clubs & festivals",
-          "value": "7+"
-        },
-        {
-          "label": "BPM home base",
-          "value": "150"
-        }
-      ],
+      "facts": [],
       "lede": "I'm Sam Sparking, 19, a DJ and producer from St. Gallen. My story started long before I first stood behind a DJ setup.",
       "navLabel": "About",
       "paragraphs": [
@@ -1487,11 +1504,13 @@
         },
         {
           "label": "TikTok",
-          "inHeader": false
+          "inHeader": false,
+          "url": "https://www.tiktok.com/@sam_sparking"
         },
         {
           "label": "Spotify",
-          "inHeader": false
+          "inHeader": false,
+          "url": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S"
         }
       ],
       "title": "Con",
@@ -1592,7 +1611,7 @@
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6aLMV74xN0D0QobQ%2Fsektor-11-tim.mp4?alt=media&token=8e6d6360-95bf-4814-a486-b6bcb2850aa7"
         }
       ],
-      "mobileLimit": "4",
+      "mobileLimit": 6,
       "navLabel": "Gallery",
       "title": "Gal",
       "titleAccent": "lery.",
@@ -1740,6 +1759,20 @@
       "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
       "title": "Gen",
       "titleAccent": "res."
+    },
+    "videos": {
+      "items": [
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6aLMV74xN0D0QobQ%2Fsektor-11-tim.mp4?alt=media&token=8e6d6360-95bf-4814-a486-b6bcb2850aa7",
+          "alt": "Sam Sparking performing at Sektor 11."
+        }
+      ],
+      "navLabel": "Videos",
+      "title": "Vid",
+      "titleAccent": "eos.",
+      "enabled": true,
+      "note": "Aftermovies and set recordings — the shows to watch back.",
+      "emptyText": "No video yet — the recaps of the next shows land here."
     }
   },
   "site": {

@@ -369,7 +369,7 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
    Der Rand bleibt dunkel — bei Videos im Hochformat sonst der uebliche
    Balken-Effekt; ein weicher Verlauf faengt die Kante ab. */
 .hero-bg .fit-full{object-fit:contain;background:var(--ink);}
-.gal-video.fit-full video{object-fit:contain;background:var(--ink);aspect-ratio:16/9;height:auto;}
+.gal-video.fit-full video{object-fit:contain;background:var(--ink);}
 
 /* ---------- HERO (Unterseiten) ---------- */
 .hero-compact{
@@ -978,14 +978,23 @@ blockquote.lede footer{
 }
 
 /* ---------- GALLERY ---------- */
-.gal{columns:3 300px;column-gap:14px;}
-.gal{column-gap:20px;}
+/* Zwei Spalten, gleichmaessiges Raster — auf dem Rechner und auf dem Handy.
+   Vorher lief hier ein Masonry aus CSS-columns (`columns:3 300px`): die Bilder
+   waren unterschiedlich hoch, die Spaltenzahl sprang mit der Fensterbreite, und
+   jedes vierte Bild bekam zusaetzlichen Abstand. Das wirkte unkontrolliert.
+
+   Ein festes Seitenverhaeltnis je Kachel macht die Reihen gleich hoch; die
+   Startansicht ist damit genau 2 x 3 = 6 Fotos. Erst auf sehr schmalen Geraeten
+   (unter 380px) wird daraus eine Spalte — zwei waeren dort briefmarkengross. */
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start;}
 .gal figure{
-  margin:0 0 20px;break-inside:avoid;position:relative;overflow:hidden;
+  margin:0;position:relative;overflow:hidden;aspect-ratio:4/3;
   box-shadow:0 30px 60px -32px rgba(0,0,0,.95);
 }
-/* Nicht jedes Bild gleich: jedes vierte bekommt mehr Luft darunter */
-.gal figure:nth-child(4n){margin-bottom:44px;}
+.gal figure img,.gal-btn,.gal figure video{width:100%;height:100%;display:block;object-fit:cover;}
+/* "Ganzes Video zeigen" (fit-full) darf nicht beschnitten werden — dann steht es
+   mit Rand in der Kachel, statt an den Seiten abgeschnitten zu werden. */
+.gal figure.fit-full video{object-fit:contain;background:var(--ink);}
 .gal-btn{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in;position:relative;}
 .gal img{transition:transform .5s ease,opacity .45s ease;}
 .gal img.ld{opacity:1;}
@@ -997,7 +1006,8 @@ blockquote.lede footer{
 .gal figure:hover figcaption,.gal-btn:focus-visible figcaption{opacity:1;}
 
 .gal-video{position:relative;background:transparent;}
-.gal-video video{width:100%;height:auto;display:block;}
+/* Hoehe kommt aus der Kachel (aspect-ratio), nicht aus dem Video. */
+.gal-video video{width:100%;height:100%;display:block;}
 /* Video-Kacheln zeigen ihr Vorschaubild und laufen erst, wenn der Zeiger
    darauf liegt (Handy: sobald sie im Bild sind). Das Zeichen verschwindet,
    sobald abgespielt wird. */
@@ -1027,14 +1037,20 @@ blockquote.lede footer{
 .gal-more{display:inline-flex;margin-top:22px;}
 
 /* ---------- AFTER MOVIES ---------- */
-.after{margin-bottom:clamp(34px,5vw,58px);}
-.after-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 20px;margin-bottom:18px;}
-.after-head p{color:var(--bone-dim);font-size:.92rem;margin:0;}
-.after-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;}
-.after-card{background:var(--card);border:1px solid var(--line);padding:14px;}
-.after-media{position:relative;aspect-ratio:16/9;background:var(--ink);overflow:hidden;}
-.after-media video,.after-media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;object-fit:cover;}
-.after-card h3{font-size:1.15rem;margin:14px 0 4px;font-variation-settings:'wdth' 112,'wght' 680;}
+/* Video-Seite (/videos/). Die Videos standen bis August 2026 zwischen den
+   Fotos; sie haben jetzt ihre eigene Seite. Ein Raster, das sich von selbst
+   umbricht: eine Spalte auf dem Handy, mehr sobald Platz ist. */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px;}
+.video-card{background:var(--card);border:1px solid var(--line);padding:14px;}
+.video-media{position:relative;aspect-ratio:16/9;background:var(--ink);overflow:hidden;}
+.video-media video,.video-media iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;object-fit:cover;}
+/* Rueckfalltext im <video>: sichtbar nur, wenn der Browser das Format nicht
+   kann. Er darf nicht wie ein Bildausschnitt beschnitten werden. */
+.video-media video p{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  margin:0;padding:16px;text-align:center;color:var(--bone-dim);font-size:.9rem;}
+.video-card h3{font-size:1.15rem;margin:14px 0 4px;font-variation-settings:'wdth' 112,'wght' 680;}
+.video-card .mono{color:var(--bone-dim);font-size:.72rem;}
+.video-card figcaption{color:var(--dim,var(--bone-dim));font-size:.66rem;margin-top:6px;}
 
 /* lightbox */
 .lb{
@@ -1391,17 +1407,10 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .genre-list li{font-size:1.15rem;padding:16px;}
   .avail li{font-size:1.05rem;}
 
-  .gal{
-    columns:auto;display:flex;gap:10px;margin-inline:-16px;padding-inline:16px;
-    overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;
-    scrollbar-width:none;overscroll-behavior-inline:contain;
-  }
-  .gal::-webkit-scrollbar{display:none;}
-  .gal figure,.gal figure:nth-child(4n){
-    flex:0 0 84vw;margin:0;scroll-snap-align:center;
-    scroll-snap-stop:always;aspect-ratio:4/5;background:var(--ink-2);
-  }
-  .gal-btn,.gal-btn img,.gal-video video{height:100%;object-fit:cover;}
+  /* Seitliches Wischen gab es hier bis August 2026 (ein Karussell mit 84vw
+     breiten Kacheln). Der Kunde will auch auf dem Handy das gleichmaessige
+     Zwei-Spalten-Raster — es steht weiter unten und galt schon vorher, dieser
+     Block widersprach ihm nur. */
   .gal figcaption{opacity:1;}          /* ohne Hover sonst nie sichtbar */
 
   /* Kein seitliches Wischen: die Ware steht als kleines Raster untereinander,
@@ -1618,11 +1627,11 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     columns:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
     gap:8px;margin:0;padding:0;overflow:visible;touch-action:auto;
   }
-  .gal figure,.gal figure:nth-child(4n){
+  .gal figure{
     width:100%;margin:0;aspect-ratio:4/5;box-shadow:none;
   }
-  .gal-btn,.gal-btn img,.gal-video video{height:100%;object-fit:cover;}
-  .after-grid{grid-template-columns:1fr;gap:12px;}
+  .gal-btn,.gal-btn img{height:100%;object-fit:cover;}
+  .video-grid{grid-template-columns:1fr;gap:12px;}
   .gal figcaption{
     left:7px;right:7px;bottom:6px;font-size:.45rem;line-height:1.35;
     letter-spacing:.08em;opacity:1;
@@ -1814,22 +1823,11 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
   .venue-more .venue-city{font-size:.48rem;}
 }
 
-/* ---------- AFTER MOVIES: aufklappbar ---------- */
-/* Zugeklappt ist die Bilderwand sofort zu sehen; die Videos holt ein Klick.
-   <details> braucht dafuer kein Javascript. */
-.after{margin-bottom:clamp(34px,5vw,58px);border:1px solid var(--line);background:var(--card);}
-.after-sum{
-  display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;
-  padding:14px 16px;color:var(--bone);
+
+/* Sehr schmale Geraete (unter 380px): zwei Spalten waeren dort briefmarkengross,
+   deshalb eine. Steht bewusst ganz am Schluss — die 700px-Bloecke weiter oben
+   setzen zwei Spalten, und bei gleicher Spezifitaet gewinnt die letzte Regel. */
+@media(max-width:379px){
+  .gal{grid-template-columns:1fr;gap:12px;}
+  .gal figure{aspect-ratio:4/3;}
 }
-.after-sum::-webkit-details-marker{display:none;}
-.after-sum:hover{background:rgba(255,255,255,.03);}
-.after-sum:focus-visible{outline:2px solid var(--spark);outline-offset:-2px;}
-.after-count{
-  margin-left:auto;color:var(--warm);border:1px solid var(--line);
-  padding:1px 8px;font-size:.62rem;
-}
-.after-arr{transition:transform .2s;color:var(--bone-dim);}
-.after[open] .after-arr{transform:rotate(180deg);}
-.after .after-head,.after .after-grid{padding:0 16px;}
-.after .after-grid{padding-bottom:16px;}

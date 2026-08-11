@@ -111,6 +111,12 @@ const ERWARTET = [
   ["/shop/", 200, "/shop/index.html"],
   ["/de/shop/", 200, "/de/shop/index.html"],
   ["/fr/shop/", 200, "/fr/shop/index.html"],
+  /* Die Video-Seite muss oeffentlich sein. Genau darum ist sie eine eigene
+     Seite und kein Abschnitt der Startseite: die Startseite bleibt "Coming
+     soon" (503), ein Abschnitt dort waere nicht erreichbar. */
+  ["/videos/", 200, "/videos/index.html"],
+  ["/de/videos/", 200, "/de/videos/index.html"],
+  ["/fr/videos/", 200, "/fr/videos/index.html"],
 
   // Die Endpunkte.
   ["/api/booking", 200, "/.netlify/functions/booking"],
@@ -153,7 +159,7 @@ for (const pfad of HEIKEL) {
 
 /* Und umgekehrt: was offen sein soll, darf nicht versehentlich in der
    Wartungsregel haengen. */
-for (const pfad of ["/booking/", "/shop/", "/api/booking"]) {
+for (const pfad of ["/booking/", "/shop/", "/videos/", "/api/booking"]) {
   const a = antwort(regeln, pfad);
   if (a.ziel === "/coming-soon.html") meckern(`${pfad} landet in der Wartungsregel`);
 }
@@ -172,7 +178,7 @@ if (fehler) {
 console.log(
   `Routen: ${ERWARTET.length} Adressen gegen netlify.toml geprueft.\n` +
     `  zu (503 → coming-soon.html):  /, /de/, /fr/ samt index.html\n` +
-    `  offen (200):                  /booking/, /shop/ in allen drei Sprachen,\n` +
+    `  offen (200):                  /booking/, /shop/, /videos/ in allen drei Sprachen,\n` +
     `                                /api/booking, /api/order, /api/stripe-webhook,\n` +
     `                                Impressum, CSS/JS, Presskit, robots, sitemap\n` +
     `  gesperrt (404):               /scripts/*, /content/*\n` +

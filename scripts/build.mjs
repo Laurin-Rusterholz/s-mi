@@ -53,7 +53,7 @@ const inline = (v) =>
     .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_m, label, url) => {
       const u = safeUrl(url.replace(/&amp;/g, "&"));
       if (!u) return label;
-      const ext = /^https?:/i.test(u) ? ' target="_blank" rel="noopener"' : "";
+      const ext = /^https?:/i.test(u) ? ' target="_blank" rel="noopener noreferrer"' : "";
       return `<a href="${esc(u)}"${ext}>${label}</a>`;
     })
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
@@ -310,6 +310,10 @@ const gleicheNamen = (items, namen) => {
  * fuer das Build-Protokoll, damit nachvollziehbar bleibt, warum sich etwas
  * geaendert hat.
  */
+/** Leere Felder weglassen — der Schnappschuss soll keine leeren Zeilen tragen. */
+const nurGefuellt = (o) =>
+  Object.fromEntries(Object.entries(o).filter(([, v]) => v !== "" && v !== undefined && v !== null));
+
 export function nachziehen(live, korr) {
   const getan = [];
   if (!live || typeof live !== "object") return getan;
@@ -495,6 +499,34 @@ export function nachziehen(live, korr) {
     }
   }
 
+  /* Adressen, die der Kunde nachgeliefert hat (10.08.2026): TikTok und Spotify.
+     Bis dahin standen sie bewusst unverlinkt auf der Seite — geraten wurde
+     nichts. Gesetzt wird nur, wo keine Adresse steht; eine in der Verwaltung
+     hinterlegte gewinnt. */
+  const adressen = Object.entries(korr.kanaele?.adressen || {}).filter(([k]) => !k.startsWith("_"));
+  if (adressen.length) {
+    let gesetzt = 0;
+    for (const x of list(ls.contact?.socials)) {
+      if (safeUrl(x?.url)) continue;
+      const treffer = adressen.find(([name]) => new RegExp(name, "i").test(str(x?.label)));
+      if (treffer) {
+        x.url = treffer[1];
+        gesetzt++;
+      }
+    }
+    if (gesetzt) getan.push(`${gesetzt} Kanal-Adresse(n) nachgetragen`);
+  }
+
+  /* Wie viele Fotos die Bilderwand zuerst zeigt: 6 (zwei Spalten, drei Reihen).
+     Kundenwunsch vom 10.08.2026 — in der Verwaltung stand 4. Greift immer. */
+  if (Number(korr.galerie?.startAnzahl) > 0 && ls.gallery) {
+    const soll = Number(korr.galerie.startAnzahl);
+    if (Number(ls.gallery.mobileLimit) !== soll) {
+      ls.gallery.mobileLimit = soll;
+      getan.push(`Galerie zeigt zuerst ${soll} Fotos`);
+    }
+  }
+
 
   // Waehrung: in der Verwaltung stand "CHF 5" im Feld fuer die Waehrung —
   // daraus wurde auf der Seite "CHF 5 35.—".
@@ -594,6 +626,96 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Shop-Text(e) je Sprache`);
   }
 
+  /* Videos raus aus der Bilderwand, hinein in den eigenen Abschnitt.
+     Kundenwunsch vom 10.08.2026 (siehe videos._warum in korrekturen.json).
+
+     Zwei Quellen: Videos, die als Bild in sections.gallery.items stehen, und
+     die Eintraege aus sections.gallery.aftermovies. Beide landen in
+     sections.videos.items — und zwar genau einmal: erkannt wird an der Adresse,
+     ein zweiter Durchlauf findet nichts mehr.
+
+     Die Uebersetzungen der Bilderliste haengen am PLATZ (i18n.de.sections
+     .gallery.items["3"] gehoert zu items[3]). Beim Kuerzen der Liste wird die
+     Tabelle deshalb neu durchnummeriert — sonst rutschte jede Bildunterschrift
+     hinter dem Video um einen Platz nach vorn. */
+  if (korr.videos?.ausGalerie) {
+    const vid = korr.videos;
+    const ziel = ls.videos || (ls.videos = {});
+    if (!Array.isArray(ziel.items)) ziel.items = [];
+
+    // Texte setzen, solange nichts Eigenes dasteht.
+    let texte = 0;
+    for (const [feld, wert] of Object.entries(vid.abschnitt || {})) {
+      if (feld.startsWith("_")) continue;
+      if (ziel[feld] === undefined || ziel[feld] === "") {
+        ziel[feld] = wert;
+        texte++;
+      }
+    }
+    for (const lang of ["de", "fr"]) {
+      const q = vid.i18n?.[lang];
+      if (!q) continue;
+      const i18n = live.i18n || (live.i18n = {});
+      const dort = i18n[lang] || (i18n[lang] = {});
+      const abschnitte = dort.sections || (dort.sections = {});
+      const zt = abschnitte.videos || (abschnitte.videos = {});
+      for (const [feld, wert] of Object.entries(q)) {
+        if (zt[feld] === undefined || zt[feld] === "") {
+          zt[feld] = wert;
+          texte++;
+        }
+      }
+    }
+
+    const schon = new Set(
+      list(ziel.items).map((m) => str(m?.src) || str(m?.embedUrl)).filter(Boolean)
+    );
+    let geholt = 0;
+
+    // (a) Videos, die als Bild in der Galerie stehen.
+    /* KOPIEREN, nicht verschieben: die Videos bleiben in der Bilderwand stehen
+       (Vorgabe vom 10.08.2026 — Fotos und Videos zusammen) und sind zusaetzlich
+       auf /videos/ zu sehen. Erkannt wird an der Adresse, ein zweiter Durchlauf
+       legt deshalb nichts doppelt an. Die Bilderliste wird nicht angefasst,
+       also verrutscht auch keine Uebersetzung. */
+    for (const it of list(ls.gallery?.items)) {
+      if (!safeUrl(it?.src) || !isVideoUrl(it.src)) continue;
+      const key = str(it.src);
+      if (schon.has(key)) continue;
+      schon.add(key);
+      ziel.items.push(nurGefuellt({
+        title: str(it.title),
+        event: str(it.event),
+        src: it.src,
+        poster: str(it.poster),
+        alt: str(it.alt),
+        credit: str(it.credit),
+      }));
+      geholt++;
+    }
+
+    // (b) Die bisherigen Aftermovies.
+    for (const m of list(ls.gallery?.aftermovies)) {
+      const key = str(m?.src) || str(m?.embedUrl);
+      if (!key || schon.has(key)) continue;
+      schon.add(key);
+      ziel.items.push(nurGefuellt({
+        title: str(m.title),
+        event: str(m.event),
+        src: str(m.src),
+        embedUrl: str(m.embedUrl),
+        poster: str(m.poster),
+        alt: str(m.alt),
+        credit: str(m.credit),
+      }));
+      geholt++;
+    }
+    if (list(ls.gallery?.aftermovies).length) ls.gallery.aftermovies = [];
+
+    if (geholt) getan.push(`${geholt} Video(s) auch auf die Video-Seite uebernommen`);
+    else if (texte) getan.push("Video-Abschnitt angelegt");
+  }
+
   // Seitenaufteilung: Booking und Shop haben eigene Seiten bekommen. Ersetzt
   // wird nur die unangetastete Einseiter-Aufteilung — sobald in der Verwaltung
   // eine zweite Seite steht, entscheidet sie.
@@ -605,6 +727,41 @@ export function nachziehen(live, korr) {
     }
     getan.push(`Seiten (${korr.seiten.length})`);
   }
+
+  /* Eine in der Korrekturdatei vorgesehene Seite fehlt ganz — dann anlegen,
+     an derselben Stelle wie dort. Anlass: die Video-Seite kam am 10.08.2026
+     dazu, der Stand hatte aber schon drei Seiten. Die Regel darueber ersetzt
+     nur den unangetasteten Einseiter und haette hier nicht gegriffen: der
+     Video-Abschnitt haette auf keiner Seite gestanden und waere trotz allem
+     nicht gebaut worden.
+
+     Ergaenzt wird nur, was noch NIRGENDS steht — wer eine Seite in der
+     Verwaltung loescht oder ihre Abschnitte anders verteilt, behaelt das
+     letzte Wort. Die Stelle zaehlt: die Seiten-Uebersetzungen haengen am
+     Platz in der Liste. */
+  if (list(korr.seiten).length && list(live.pages).length > 1) {
+    const fehlend = korr.seiten.filter(
+      (soll) => !list(live.pages).some((p) => str(p.slug) === str(soll.slug))
+    );
+    /* GENAU EINE fehlende Seite heisst: alle anderen beschlossenen Seiten sind
+       da, es ist also eine dazugekommene. Fehlen mehrere, ist das eine eigene
+       Aufteilung aus der Verwaltung — die bleibt unangetastet, auch wenn dann
+       ein Abschnitt nirgends steht. Ohne diese Bedingung baute die Regel einer
+       selbst gebauten Seitenstruktur die beschlossenen Seiten wieder ein. */
+    if (fehlend.length === 1) {
+      const soll = fehlend[0];
+      const abschnitte = list(soll.sections);
+      const versorgt =
+        abschnitte.length &&
+        abschnitte.every((k) => list(live.pages).some((p) => list(p.sections).includes(k)));
+      if (!versorgt) {
+        const platz = korr.seiten.findIndex((s) => str(s.slug) === str(soll.slug));
+        live.pages.splice(Math.min(platz < 0 ? live.pages.length : platz, live.pages.length), 0, kopie(soll));
+        getan.push(`Seite /${str(soll.slug)}/ angelegt`);
+      }
+    }
+  }
+
   if (korr.bookingBild?.src && !ls.booking?.photo?.src) {
     ls.booking = { ...ls.booking, photo: kopie(korr.bookingBild) };
     getan.push("Booking-Bild");
@@ -617,6 +774,16 @@ export function nachziehen(live, korr) {
     const zielS = live.i18n?.[lang]?.sections;
     if (q.referenzen && zielS?.references) zielS.references.items = kopie(q.referenzen);
     if (q.heroStats && live.i18n?.[lang]?.hero) live.i18n[lang].hero.stats = kopie(q.heroStats);
+    /* Die Faktenzeile in "Ueber mich" stand auf /de/ und /fr/ englisch da
+       ("Clubs & festivals", "BPM home base"), waehrend die gleichen Kennzahlen
+       im Hero uebersetzt waren — fuer die Fakten gab es einfach keine
+       Uebersetzung. Wie beim Hero haengt sie am PLATZ in der Liste, deshalb
+       tragen die Eintraege dieselben Nummern; die stillgelegte Kennzahl behaelt
+       ihren Platz, damit nichts verrutscht. */
+    if (q.aboutFacts) {
+      const ziel = zielS || (live.i18n[lang].sections = {});
+      ziel.about = { ...ziel.about, facts: kopie(q.aboutFacts) };
+    }
     if (q.seiten && live.i18n?.[lang]) live.i18n[lang].pages = kopie(q.seiten);
   }
 
@@ -659,28 +826,40 @@ export function nachziehen(live, korr) {
      Uebersetzungen weiter oben schreibt die Kennzahl-Uebersetzung aus der
      Korrekturdatei neu. Wuerde hier frueher gekuerzt, kaeme sie dort zurueck —
      und die Uebersetzung saesse um einen Platz verschoben auf der Seite. */
-  const wegLabels = list(korr.entfernteKennzahlen?.labels).map((l) => str(l).toLowerCase());
-  if (wegLabels.length) {
-    const trifft = (e) => wegLabels.includes(str(e?.label).toLowerCase());
-    let weg = 0;
-    // Markieren statt loeschen: die Uebersetzungen haengen am PLATZ in der
-    // Liste (i18n.de.hero.stats["1"] gehoert zu hero.stats[1]). Wer hier
-    // kuerzt, verschiebt jede Uebersetzung dahinter um einen Platz — auf der
-    // deutschen Seite stand danach "Erstes Set" ueber der Zahl 30. Die
-    // Markierung laesst die Plaetze, wo sie sind; weggelassen wird erst beim
-    // Rendern (heroStats/renderAbout). Das bleibt ausserdem wiederholbar:
-    // beim naechsten Build steht dieselbe Liste da und wird gleich markiert.
-    for (const eintrag of [...list(live.hero?.stats), ...list(ls.about?.facts)]) {
-      if (trifft(eintrag) && eintrag.entfernt !== true) {
-        eintrag.entfernt = true;
-        weg++;
+  /* Die Kennzahl "First set 2021" war vom 10.08.2026 bis zur Rueckmeldung des
+     Kunden am selben Tag stillgelegt (Regel `entfernteKennzahlen`). Der Kunde
+     will die Jahreszahl im Hero wieder sehen — die Regel ist damit weg, und
+     hier werden die Markierungen aus alten Staenden aufgeraeumt. Ohne das
+     bliebe die Kennzahl im eingecheckten Schnappschuss weiter versteckt, denn
+     dort steht `entfernt: true` schon geschrieben. */
+  let entstillt = 0;
+  for (const eintrag of [...list(live.hero?.stats), ...list(ls.about?.facts)]) {
+    if (eintrag && eintrag.entfernt !== undefined) {
+      delete eintrag.entfernt;
+      entstillt++;
+    }
+  }
+  if (entstillt) getan.push(`${entstillt} stillgelegte Kennzahl(en) wieder sichtbar`);
+
+  /* Die Faktenzeile unten in "Ueber mich" faellt ganz weg — Kundenwunsch vom
+     10.08.2026 (siehe aboutFakten._warum in korrekturen.json). Hier wird die
+     Liste geleert; der Generator laesst bei leerer Liste das ganze <dl> aus,
+     also bleibt keine Flaeche und keine Trennlinie stehen.
+
+     Die Uebersetzungen haengen am Platz in der Liste und werden mit geleert —
+     sonst blieben Eintraege stehen, die auf nichts mehr zeigen.
+
+     NICHT die Kennzahlen im Hero: die bleiben, samt "2021 / First set". */
+  if (korr.aboutFakten?.leeren === true && list(ls.about?.facts).length) {
+    const weg = ls.about.facts.length;
+    ls.about.facts = [];
+    for (const wurzel of ["i18n", "i18nHash"]) {
+      for (const lang of Object.keys(live[wurzel] || {})) {
+        const dort = live[wurzel]?.[lang]?.sections?.about;
+        if (dort && dort.facts !== undefined) delete dort.facts;
       }
     }
-    if (weg) {
-      getan.push(
-        `${weg} Kennzahl(en) entfernt: ${list(korr.entfernteKennzahlen.labels).join(", ")}`
-      );
-    }
+    getan.push(`${weg} Fakt(en) aus "Ueber mich" entfernt`);
   }
 
   return getan;
@@ -1124,7 +1303,7 @@ function renderSound(n, s) {
             }
             ${
               safeUrl(m.linkUrl)
-                ? `<a class="btn" href="${href(m.linkUrl)}" target="_blank" rel="noopener">${esc(
+                ? `<a class="btn" href="${href(m.linkUrl)}" target="_blank" rel="noopener noreferrer">${esc(
                     str(m.linkLabel, "Listen")
                   )}</a>`
                 : ""
@@ -1236,7 +1415,7 @@ function showRow(sh, idx) {
             safeUrl(sh.ticketUrl) && !soldOut && !booked
               ? `<a class="btn btn-sm" href="${href(
                   sh.ticketUrl
-                )}" target="_blank" rel="noopener">${esc(label)}</a>`
+                )}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`
               : `<span class="mono">${esc(soldOut || booked ? label : "")}</span>`
           }</span>
         </li>`;
@@ -1297,7 +1476,7 @@ function renderReferences(n, s, bookingTarget) {
 
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
-    const ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener"' : "";
+    const ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener noreferrer"' : "";
     return { url, ext };
   };
 
@@ -1373,63 +1552,84 @@ function renderReferences(n, s, bookingTarget) {
 }
 
 /**
- * After Movies — die Rückblick-Videos zu gespielten Events. Anders als die
- * stummen Schleifen in der Bilderwand werden sie bewusst angeschaut: mit
- * Bedienelementen, Ton und Vorschaubild, nichts startet von allein.
- * Fremdvideos (YouTube/Vimeo) kommen über embedUrl, eigene Dateien über src.
+ * Videos — Aftermovies und Mitschnitte, auf ihrer eigenen Seite.
+ *
+ * WARUM EIGENE SEITE UND NICHT IN DER BILDERWAND: Videos standen bis August
+ * 2026 als stumme Schleifen zwischen den Fotos (und die Aftermovies in einem
+ * Klappkasten darüber). Das mischte zwei verschiedene Dinge — ein Foto sieht
+ * man an, ein Video schaut man — und zog beim Aufruf der Startseite Megabyte,
+ * die niemand angefordert hatte. Sie liegen deshalb auf /videos/.
+ *
+ * Dass es eine eigene SEITE sein muss und kein Abschnitt der Startseite, hat
+ * einen zweiten Grund: die Startseite antwortet weiter mit "Coming soon" (503).
+ * Ein Abschnitt dort wäre öffentlich nicht erreichbar — eine eigene Seite ist
+ * es, genau wie /booking/ und /shop/.
+ *
+ * Angeschaut wird bewusst: mit Bedienelementen, Ton und Vorschaubild, nichts
+ * startet von allein, `preload="none"` lädt erst auf Klick. Fremdvideos
+ * (YouTube/Vimeo) kommen über embedUrl, eigene Dateien über src.
  */
-function afterMovies(s) {
-  const movies = list(s.aftermovies).filter(
-    (m) => str(m?.title) && (safeUrl(m?.src) || safeUrl(m?.embedUrl))
-  );
-  const head = `<div class="after-head">
-          ${str(s.aftermoviesNote) ? `<p>${inline(s.aftermoviesNote)}</p>` : ""}
-        </div>`;
-  // Ohne Videos bleibt der Block ganz weg: ein aufklappbarer Kasten, in dem
-  // dann "noch nichts da" steht, ist ein leeres Versprechen. Der Hinweis für
-  // die Pflege steht als Kommentar in der Seite.
-  if (!movies.length) {
-    return `<!-- TODO Kunde: Aftermovie-Dateien oder YouTube-/Vimeo-Adressen liefern.
-           Eintragen in der Verwaltung unter Galerie → After Movies je Video:
-           Titel, Event, Video (src oder embedUrl) und Vorschaubild (poster).
-           Solange nichts hinterlegt ist, erscheint der Block gar nicht. -->`;
-  }
+function renderVideos(n, s) {
+  const movies = list(s.items).filter((m) => safeUrl(m?.src) || safeUrl(m?.embedUrl));
+
   const cards = movies
     .map((m) => {
+      const titel = str(m.title);
       const media = safeUrl(m.embedUrl)
-        ? `<iframe src="${href(m.embedUrl)}" title="${esc(m.title)}" loading="lazy"
+        ? `<iframe src="${href(m.embedUrl)}" title="${esc(titel || str(s.navLabel, "Video"))}" loading="lazy"
               allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen"
               referrerpolicy="strict-origin-when-cross-origin" allowfullscreen frameborder="0"></iframe>`
-        : `<video src="${href(m.src)}" controls playsinline preload="none"${
+        : /* Kann der Browser das Format nicht, bleibt der Text im <video> als
+             Rückfall stehen — samt Adresse, damit die Datei trotzdem erreichbar
+             ist. Ohne ihn sähe man einen schwarzen Kasten. */
+          /* Mit Vorschaubild reicht `none` — dann laedt gar nichts, bis geklickt
+             wird. Ohne Vorschaubild waere das ein schwarzer Kasten; `metadata`
+             holt nur den Kopf der Datei und zeigt das erste Bild. Erfunden wird
+             kein Poster. */
+          `<video src="${href(m.src)}" controls playsinline preload="${
+            safeUrl(m.poster) ? "none" : "metadata"
+          }"${
             safeUrl(m.poster) ? ` poster="${esc(cdnUrl(m.poster, 800))}"` : ""
-          }></video>`;
-      return `<article class="after-card">
-          <div class="after-media">${media}</div>
-          <h3>${esc(m.title)}</h3>
+          }${m.alt ? ` aria-label="${esc(m.alt)}"` : ""}>
+            <p>${esc(UI.videoUnsupported)} <a href="${href(m.src)}">${esc(UI.videoOpen)}</a></p>
+          </video>`;
+      return `<article class="video-card rv">
+          <div class="video-media">${media}</div>
+          ${titel ? `<h3>${esc(titel)}</h3>` : ""}
           ${str(m.event) ? `<span class="mono">${esc(m.event)}</span>` : ""}
+          ${str(m.credit) ? `<figcaption class="mono">${esc(m.credit)}</figcaption>` : ""}
         </article>`;
     })
     .join("\n        ");
-  // Aufklappbar: die Aftermovies sassen bisher vor der Bilderwand und haben
-  // sie nach unten gedrueckt. Zugeklappt ist die Galerie sofort zu sehen, ein
-  // Klick holt die Videos. <details> braucht dafuer kein Javascript und bleibt
-  // auch ohne es bedienbar.
-  return `<details class="after rv">
-        <summary class="after-sum">
-          <span class="mono">${esc(UI.afterMovies)}</span>
-          <span class="after-count mono">${movies.length}</span>
-          <span class="after-arr" aria-hidden="true">▾</span>
-        </summary>
-        ${head}
-        <div class="after-grid">
+
+  /* Ohne Video steht hier ein ehrlicher Satz statt eines leeren Rasters. Die
+     Seite bleibt trotzdem gebaut: sie ist im Menü verlinkt und muss mit 200
+     antworten, sonst zeigte der Menüpunkt ins Leere. */
+  const rumpf = movies.length
+    ? `<div class="video-grid">
         ${cards}
-        </div>
-      </details>`;
+      </div>`
+    : `<div class="empty-state rv"><span class="mono">${esc(
+        str(s.navLabel, "Videos")
+      )}</span><p>${esc(str(s.emptyText, UI.videosEmpty))}</p></div>`;
+
+  return `
+  <section class="pad" id="videos" aria-labelledby="videos-h">
+    <div class="wrap">${sectionHead(n, s, "videos")}
+      ${str(s.note) ? `<p class="lede rv">${inline(s.note)}</p>` : ""}
+      ${rumpf}
+    </div>
+  </section>`;
 }
 
 function renderGallery(n, s) {
+  /* Fotos UND Videos — Vorgabe vom 10.08.2026. Ein Video steht als eigene
+     Kachel mit Vorschaubild und Play-Zeichen dazwischen; die Seite /videos/
+     bleibt zusaetzlich bestehen und ist nicht die einzige Ablage.
+     Bilder werden dadurch nicht verdraengt: die Reihenfolge kommt aus der
+     Verwaltung, ein Video nimmt keinem Foto den Platz weg. */
   const items = list(s.items).filter((i) => safeUrl(i?.src));
-  // Bilder zählen für die Lightbox-Beschriftung; Videos laufen dort nicht mit.
+  // Fuer die Lightbox-Beschriftung zaehlen nur Bilder — Videos laufen dort nicht.
   const photos = items.filter((i) => !isVideoUrl(i.src));
   // Wie viele Bilder ohne Zutun zu sehen sind — auf allen Bildschirmbreiten
   // gleich, damit die Zahl im Knopf ("6 weitere Bilder") überall stimmt.
@@ -1440,10 +1640,12 @@ function renderGallery(n, s) {
     const extra = i >= limit ? ' data-extra="true"' : "";
     if (isVideoUrl(g.src)) {
       const gf = fitAttrs(g);
-      // Die Kachel zeigt zunächst nur das Vorschaubild; abgespielt wird erst,
-      // wenn der Zeiger darauf liegt (auf dem Handy: sobald sie im Bild ist).
-      // Darum kein autoplay und nur `metadata` vorladen — sonst zieht eine
-      // Galerie voller Videos beim Seitenaufruf zig Megabyte.
+      /* Die Kachel zeigt zunaechst nur das Vorschaubild; abgespielt wird erst,
+         wenn der Zeiger darauf liegt (auf dem Handy: sobald sie im Bild ist).
+         Darum kein autoplay und nur `metadata` vorladen — sonst zieht eine
+         Galerie voller Videos beim Seitenaufruf zig Megabyte.
+         Das Play-Zeichen macht sichtbar, dass hier ein Video steht und kein
+         Foto. */
       return `<figure class="gal-video${gf.cls}"${extra}>
           <video src="${href(g.src)}" muted loop playsinline preload="metadata"${
         g.poster ? ` poster="${href(cdnUrl(g.poster, 800))}"` : ""
@@ -1466,7 +1668,6 @@ function renderGallery(n, s) {
   return `
   <section class="pad" id="gallery" aria-labelledby="gallery-h">
     <div class="wrap">${sectionHead(n, s, "gallery")}
-      ${afterMovies(s)}
       <div class="gal rv" id="gal">
         ${items.map(cell).join("\n        ")}
       </div>
@@ -1509,6 +1710,31 @@ function priceTag(price, currency) {
  * eine Bezahlung, die der Endpunkt danach verweigert. Ein Tippfehler in der
  * Umgebungsvariablen faellt damit auf die sichere Seite.
  */
+/**
+ * Ein Stripe **Payment Link** je Artikel — die Adresse, die im Stripe-Dashboard
+ * unter "Payment links" entsteht. Sie sieht immer gleich aus:
+ * `https://buy.stripe.com/...`
+ *
+ * Bewusst enger als `istStripeAdresse`: dort sind alle Adressen unter
+ * stripe.com und link.com erlaubt (Weiterleitungen des Endpunkts). Hier geht es
+ * um einen Knopf, der Geld kostet — und der darf nur auf die Kasse zeigen, die
+ * Stripe fuer genau diesen Artikel ausgestellt hat. Ein Dashboard-Link
+ * (dashboard.stripe.com) oder eine Rechnung waere hier falsch.
+ *
+ * Ein Geheimnis steckt hier nie drin: ein Payment Link ist eine oeffentliche
+ * Adresse, die man auch auf ein Plakat drucken koennte. API-Schluessel gehoeren
+ * NICHT hierher und werden vom Generator auch nirgends gelesen.
+ */
+export function istPaymentLink(roh) {
+  const wert = String(roh ?? "").trim();
+  if (!/^https:\/\/[^\s]+$/i.test(wert)) return false;
+  try {
+    return new URL(wert).hostname.toLowerCase() === "buy.stripe.com";
+  } catch {
+    return false;
+  }
+}
+
 export function istStripeAdresse(roh) {
   const wert = String(roh ?? "").trim();
   if (!/^https:\/\/[^\s]+$/i.test(wert)) return false;
@@ -1672,8 +1898,21 @@ function renderShop(n, s, site) {
       // etwas verschicken. Ein eigener Bezahl-Link je Artikel entfaellt
       // ebenfalls — bezahlt wird nach dem Formular ueber Stripe, sonst kaeme
       // die Bestellung ohne Adresse an.
+      /* Der Kauf-Knopf fuehrt auf die Kasse DIESES Artikels, wenn dafuer ein
+         Stripe Payment Link hinterlegt ist. Damit stimmen Preis und Ware
+         garantiert zusammen: Stripe kennt beides aus dem Link.
+
+         Kein Rueckfall auf einen globalen Link: der gehoert zu einem anderen
+         Preis und wuerde den falschen Betrag abrechnen. Fehlt der Link, geht es
+         wie bisher ins Bestellformular — die Bestellung wird erfasst, bezahlt
+         wird spaeter. Eine ungueltige Adresse (Tippfehler, Dashboard-Link)
+         zaehlt wie keine. */
+      const kasse = istPaymentLink(p.paymentLink) ? str(p.paymentLink).trim() : "";
       const cta = sold
         ? `<span class="mono">${esc(UI.soldOut)}</span>`
+        : kasse
+        ? `<a class="btn sm buy-now" href="${esc(kasse)}" target="_blank" rel="noopener noreferrer"
+            data-product="${esc(p.name)}">${esc(buy)}</a>`
         : hasOrderForm
         ? `<a class="btn sm order-jump" href="#order-form" data-product="${esc(p.name)}">${esc(
             buy
@@ -1954,7 +2193,7 @@ function renderContact(n, s, bookingTarget) {
           ${socials
             .map((x) => {
               const handle = str(x.handle, handleOf(x.url));
-              return `<a class="scard" href="${href(x.url)}" target="_blank" rel="noopener me">
+              return `<a class="scard" href="${href(x.url)}" target="_blank" rel="noopener noreferrer me">
             <span class="scard-ico" aria-hidden="true">${socialIcon(x.label, x.url)}</span>
             <span class="scard-arrow" aria-hidden="true">↗</span>
             <span class="scard-name">${esc(x.label)}</span>
@@ -2205,7 +2444,11 @@ const UI_DEFAULTS = {
   lessStory: "Weniger anzeigen",
   showMoreImages: "{n} weitere Bilder",
   showLessImages: "Weniger Bilder",
-  afterMovies: "After Movies",
+  // Eigene Video-Seite: die Videos stehen seit August 2026 nicht mehr zwischen
+  // den Fotos, sondern auf /videos/.
+  videosEmpty: "Noch kein Video hinterlegt — die Rückblicke der nächsten Shows kommen hierher.",
+  videoUnsupported: "Dein Browser kann dieses Video nicht abspielen.",
+  videoOpen: "Video herunterladen oder direkt öffnen",
   allRequired: "Alle Felder sind Pflichtfelder.",
   onThisPage: "Auf dieser Seite",
   payTitle: "Bezahlen",
@@ -2279,6 +2522,9 @@ const UI_SPRACHE = {
     buy: "Buy",
     soldOut: "Sold out",
     onThisPage: "On this page",
+    videosEmpty: "No video yet — the recaps of the next shows land here.",
+    videoUnsupported: "Your browser can't play this video.",
+    videoOpen: "Download or open the video directly",
     payStripeNote:
       "Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.",
     orderTitle: "Order",
@@ -2305,6 +2551,9 @@ const UI_SPRACHE = {
     buy: "Acheter",
     soldOut: "Épuisé",
     onThisPage: "Sur cette page",
+    videosEmpty: "Pas encore de vidéo — les retours des prochains shows arrivent ici.",
+    videoUnsupported: "Ton navigateur ne peut pas lire cette vidéo.",
+    videoOpen: "Télécharger ou ouvrir la vidéo directement",
     payStripeNote:
       "Le paiement se fait après l'envoi, via Stripe — carte, Apple Pay, Google Pay ou TWINT. L'expédition part dès que le paiement est confirmé.",
     orderTitle: "Commande",
@@ -2596,6 +2845,9 @@ const BAUBAR = new Set([
   "shows",
   "references",
   "gallery",
+  // Videos liegen auf ihrer eigenen Seite (/videos/) — nicht mehr zwischen den
+  // Fotos. Steht der Schluessel hier nicht, waere die Seite nicht baubar.
+  "videos",
   "booking",
   "shop",
   "contact",
@@ -2679,6 +2931,7 @@ function renderPage(c, page, pages, lang, langs) {
     shows: renderShows,
     references: (n, s) => renderReferences(n, s, bookingTarget),
     gallery: renderGallery,
+    videos: renderVideos,
     shop: (n, s) => renderShop(n, s, site),
     booking: (n, s) => renderBooking(n, s, site),
     contact: (n, s) => renderContact(n, s, bookingTarget),
@@ -2758,7 +3011,7 @@ function renderPage(c, page, pages, lang, langs) {
     ? `<div class="head-social">${headSocials
         .map(
           (x) =>
-            `<a href="${href(x.url)}" target="_blank" rel="noopener me" aria-label="${esc(
+            `<a href="${href(x.url)}" target="_blank" rel="noopener noreferrer me" aria-label="${esc(
               x.label
             )}" title="${esc(x.label)}">${socialIcon(x.label, x.url)}</a>`
         )
@@ -3045,7 +3298,7 @@ ${
         ${footSocials
           .map(
             (x) =>
-              `<li><a href="${href(x.url)}" target="_blank" rel="noopener me" title="${esc(
+              `<li><a href="${href(x.url)}" target="_blank" rel="noopener noreferrer me" title="${esc(
                 x.label
               )}"><span aria-hidden="true">${socialIcon(x.label, x.url)}</span><span>${esc(
                 x.label

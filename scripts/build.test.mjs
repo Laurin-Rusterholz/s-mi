@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url";
 import {
   adoptTexts,
   collectStrings,
+  istPaymentLink,
   istStripeAdresse,
   localize,
   nachziehen,
@@ -197,9 +198,14 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
     const treffer = eigeneKanaele.filter((x) => new RegExp(l, "i").test(x.label + " " + (x.url || "")));
     if (treffer.length !== 1) meckern(`Kanal "${l}" steht ${treffer.length}x statt genau 1x`);
   }
+  /* TikTok und Spotify hat der Kunde am 10.08.2026 nachgeliefert. Bis dahin
+     standen sie bewusst ohne Adresse da. Jetzt muss genau die gelieferte
+     Adresse stehen — und keine andere; geraten wird weiterhin nichts. */
   for (const l of ["TikTok", "Spotify"]) {
     const k = eigeneKanaele.find((x) => x.label === l);
-    if (k && k.url) meckern(`Fuer "${l}" wurde eine Adresse geraten: ${k.url}`);
+    const soll = korr.kanaele.adressen[l];
+    if (!k) meckern(`Kanal "${l}" fehlt`);
+    else if (k.url !== soll) meckern(`"${l}" zeigt auf "${k.url}" statt auf "${soll}"`);
   }
   if (eigen.hero.stats[0].value !== "9") meckern("Eigene Kennzahlen ueberschrieben");
   if (eigen.sections.booking.photo.src !== "eigenes.jpg") meckern("Eigenes Booking-Bild ueberschrieben");
@@ -262,8 +268,12 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
         meckern(`Shop-Text ${feld} fehlt in ${lang}: "${ist[feld]}" statt "${soll[feld]}"`);
     }
   }
-  if (db.pages.length !== 3) meckern("Booking und Shop haben keine eigene Seite bekommen");
-  if (db.pages[1].slug !== "booking" || db.pages[2].slug !== "shop")
+  /* Vier Seiten: Startseite, Videos, Booking, Shop. Die Video-Seite kam am
+     10.08.2026 dazu — Videos duerfen nicht mehr zwischen den Fotos stehen, und
+     ein Abschnitt der Startseite waere oeffentlich nicht erreichbar (die
+     Startseite bleibt "Coming soon"). */
+  const sollSeiten = korr.seiten.map((p) => p.slug);
+  if (db.pages.map((p) => p.slug).join("|") !== sollSeiten.join("|"))
     meckern("Seitenadressen stimmen nicht: " + db.pages.map((p) => p.slug).join(", "));
   if (db.pages[0].sections.includes("booking"))
     meckern("Booking steht weiter als Abschnitt auf der Startseite");
@@ -433,44 +443,56 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* "First set 2021" soll ganz weg — im Hero und in der Faktenzeile von
-     "Ueber mich". Entscheidend ist, WIE: die Kennzahl wird markiert, nicht
-     aus der Liste geloescht. Die Uebersetzungen haengen am Platz in der
-     Liste; wer kuerzt, schiebt jede Uebersetzung dahinter um einen Platz
-     (auf der deutschen Seite stand dann "Erstes Set" ueber der Zahl 30). */
+  /* Die Jahreszahl im Hero: "First set 2021".
+ 
+     Sie war am 10.08.2026 kurz stillgelegt (Regel `entfernteKennzahlen`). Der
+     Kunde hat das am selben Tag zurueckgenommen — die Zahl muss im Hero stehen,
+     in allen drei Sprachen. Die Regel ist weg; hier wird geprueft, dass auch
+     ein alter Stand mit `entfernt: true` wieder sichtbar wird.
+
+     Die Faktenzeile unten in "Ueber mich" faellt dagegen GANZ weg (Regel
+     `aboutFakten`) — das ist nicht dasselbe und darf die Kennzahlen im Hero
+     nicht mitnehmen. */
   const db = JSON.parse(JSON.stringify(template));
   db.hero.stats = [
-    { label: "First set", value: "2021" },
+    { label: "First set", value: "2021", entfernt: true },   // Altlast
     { label: "Shows", value: "30" },
     { label: "BPM home base", value: "150" },
   ];
   db.sections.about.facts = [
-    { label: "First set", value: "2021" },
+    { label: "First set", value: "2021", entfernt: true },
     { label: "Clubs & festivals", value: "7+" },
   ];
   db.i18n = db.i18n || {};
   db.i18n.de = db.i18n.de || {};
   db.i18n.de.hero = { stats: { 0: { label: "Erstes Set" }, 1: { label: "Shows" }, 2: { label: "BPM Zuhause" } } };
+  db.i18n.de.sections = db.i18n.de.sections || {};
+  db.i18n.de.sections.about = { facts: { 0: { label: "Erstes Set" }, 1: { label: "Clubs & Festivals" } } };
 
   nachziehen(db, korr);
 
-  if (db.hero.stats.length !== 3)
-    meckern("Kennzahl wurde geloescht statt markiert — die Uebersetzungen verrutschen dadurch");
-  if (db.hero.stats[0].entfernt !== true) meckern('Hero-Kennzahl "First set" nicht stillgelegt');
-  if (db.sections.about.facts[0].entfernt !== true)
-    meckern('Faktenzeile "First set" in "Ueber mich" nicht stillgelegt');
-  if (db.hero.stats.some((s) => s.label === "Shows" && s.entfernt))
-    meckern("Es wurde die falsche Kennzahl stillgelegt");
+  // Hero: drei Kennzahlen, keine mehr stillgelegt.
+  if (db.hero.stats.length !== 3) meckern("Hero-Kennzahlen: " + db.hero.stats.length + " statt 3");
+  if (db.hero.stats.some((x) => x.entfernt !== undefined))
+    meckern("Im Hero ist noch eine Kennzahl stillgelegt");
+  const jahr = db.hero.stats.find((x) => x.label === "First set");
+  if (!jahr || jahr.value !== "2021") meckern('"First set 2021" fehlt im Hero');
   // Die Uebersetzung sitzt weiter auf demselben Platz wie ihre Kennzahl.
-  if (db.i18n.de.hero.stats["1"].label !== "Shows")
+  if (db.i18n.de.hero.stats["0"].label !== "Erstes Set" || db.i18n.de.hero.stats["1"].label !== "Shows")
     meckern("Uebersetzung der Kennzahlen ist verrutscht");
+
+  // "Ueber mich": Faktenzeile ganz weg, samt Uebersetzung.
+  if (db.sections.about.facts.length !== 0)
+    meckern("Faktenzeile in \"Ueber mich\" nicht geleert: " + JSON.stringify(db.sections.about.facts));
+  if (db.i18n.de.sections.about.facts !== undefined)
+    meckern("Uebersetzung der Faktenzeile steht noch da und zeigt auf nichts");
 
   // Wiederholbar: ein zweiter Lauf darf nichts mehr melden und nichts kippen.
   const nochmal = nachziehen(db, korr);
-  if (nochmal.some((m) => /Kennzahl\(en\) entfernt/.test(m)))
-    meckern("Die Stilllegung meldet sich beim zweiten Lauf erneut");
-  if (db.hero.stats.length !== 3 || db.hero.stats[0].entfernt !== true)
-    meckern("Zweiter Lauf veraendert die Kennzahlen");
+  if (nochmal.some((m) => /wieder sichtbar|aus "Ueber mich" entfernt/.test(m)))
+    meckern("Die Regel meldet sich beim zweiten Lauf erneut: " + nochmal.join(", "));
+  if (db.hero.stats.length !== 3 || db.sections.about.facts.length !== 0)
+    meckern("Zweiter Lauf veraendert den Stand");
 }
 
 {
@@ -532,3 +554,65 @@ console.log("nachziehen: Die Zahl neben \"Shows\" steht auf 30 — gefunden uebe
 console.log("nachziehen: TikTok und Spotify werden genannt, aber ohne geratene Adresse;\n            Instagram bleibt einmalig.");
 console.log("nachziehen: \"First set 2021\" wird stillgelegt statt geloescht — die Kennzahlen\n            behalten ihren Platz, damit die Uebersetzungen nicht verrutschen.");
 console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlungslink —\n           dieselbe Regel wie im Endpunkt; ein fremder Host schaltet nichts frei.");
+
+{
+  /* Stripe Payment Links je Artikel.
+
+     Vorgabe vom 10.08.2026: der Kunde soll einen Preis in Stripe anlegen, daraus
+     einen Payment Link erzeugen und ihn beim Artikel einsetzen — ohne
+     API-Schluessel und ohne Umgebungsvariable je Artikel. Der Kauf-Knopf muss
+     dann auf GENAU diesen Link zeigen.
+
+     Geprueft wird die Pruefregel selbst: sie entscheidet, ob ein Knopf mit Geld
+     hinter einer Adresse erscheint. Zu grosszuegig waere hier teuer. */
+  const gueltig = [
+    "https://buy.stripe.com/test_abc123",
+    "https://buy.stripe.com/aEU00k1Zi9WZ2Xe4gh",
+    "https://buy.stripe.com/x?prefilled_email=a%40b.ch",
+  ];
+  for (const u of gueltig)
+    if (!istPaymentLink(u)) meckern(`gueltiger Payment Link nicht erkannt: ${u}`);
+
+  const ungueltig = [
+    ["", "leer"],
+    ["   ", "nur Leerzeichen"],
+    ["http://buy.stripe.com/x", "http statt https"],
+    ["https://dashboard.stripe.com/payments", "Dashboard, keine Kasse"],
+    ["https://stripe.com/de-ch", "Startseite von Stripe"],
+    ["https://link.com/x", "Link.com ist kein Payment Link"],
+    ["https://buy.stripe.com.boese.example/x", "fremde Domain mit buy.stripe.com davor"],
+    ["https://boese.example/buy.stripe.com", "fremde Domain, Pfad getarnt"],
+    ["buy.stripe.com/x", "ohne Schema"],
+    ["javascript:alert(1)", "Skript-Adresse"],
+    [null, "null"],
+    [undefined, "undefined"],
+  ];
+  for (const [u, warum] of ungueltig)
+    if (istPaymentLink(u)) meckern(`ungueltige Adresse durchgelassen (${warum}): ${u}`);
+
+  /* Zwei Artikel, zwei verschiedene Kassen — plus einer ohne und einer mit
+     Tippfehler. Genau die vier Faelle aus der Vorgabe. */
+  const laden = {
+    items: [
+      { name: "Hoodie", price: "79", paymentLink: "https://buy.stripe.com/test_hoodie" },
+      { name: "Shirt", price: "39", paymentLink: "https://buy.stripe.com/test_shirt" },
+      { name: "Cap", price: "25" },
+      { name: "Poster", price: "15", paymentLink: "https://dashboard.stripe.com/nope" },
+    ],
+  };
+  const kassen = laden.items.map((p) => (istPaymentLink(p.paymentLink) ? p.paymentLink : ""));
+  if (kassen[0] === kassen[1]) meckern("zwei Artikel teilen dieselbe Kasse");
+  if (!kassen[0] || !kassen[1]) meckern("gueltige Payment Links kommen nicht an");
+  if (kassen[2]) meckern("Artikel ohne Link bekommt eine Kasse");
+  if (kassen[3]) meckern("Artikel mit Dashboard-Adresse bekommt eine Kasse");
+
+  /* Kein Rueckfall auf einen globalen Link: der gehoert zu einem anderen Preis
+     und wuerde den falschen Betrag abrechnen. */
+  const vorher = process.env.STRIPE_PAYMENT_LINK_URL;
+  process.env.STRIPE_PAYMENT_LINK_URL = "https://buy.stripe.com/global_anderer_preis";
+  const kassenMitGlobal = laden.items.map((p) => (istPaymentLink(p.paymentLink) ? p.paymentLink : ""));
+  if (kassenMitGlobal[2] || kassenMitGlobal[3])
+    meckern("ein globaler Zahlungslink springt fuer einen Artikel ein — falscher Preis");
+  if (vorher === undefined) delete process.env.STRIPE_PAYMENT_LINK_URL;
+  else process.env.STRIPE_PAYMENT_LINK_URL = vorher;
+}

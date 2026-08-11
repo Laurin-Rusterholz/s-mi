@@ -254,9 +254,12 @@
           "navLabel": "Start"
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Videos"
         },
         "2": {
+          "navLabel": "Booking"
+        },
+        "3": {
           "navLabel": "Shop"
         }
       }
@@ -334,9 +337,12 @@
           "navLabel": "Accueil"
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Vidéos"
         },
         "2": {
+          "navLabel": "Booking"
+        },
+        "3": {
           "navLabel": "Boutique"
         }
       }
@@ -367,7 +373,19 @@
       "TikTok",
       "Spotify",
       "Mixcloud"
-    ]
+    ],
+    "adressen": {
+      "_warum": [
+        "Vom Kunden am 10.08.2026 nachgeliefert. Bis dahin standen TikTok und",
+        "Spotify bewusst unverlinkt auf der Seite ('folgt') — geraten wurde nichts.",
+        "Jetzt sind die echten Profile bekannt und werden gesetzt.",
+        "",
+        "Nur wo noch keine Adresse steht: sobald in der Verwaltung eine hinterlegt",
+        "ist, gewinnt sie."
+      ],
+      "TikTok": "https://www.tiktok.com/@sam_sparking",
+      "Spotify": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S"
+    }
   },
   "seiten": [
     {
@@ -384,6 +402,18 @@
         "references",
         "gallery",
         "contact"
+      ]
+    },
+    {
+      "slug": "videos",
+      "navLabel": "Videos",
+      "title": "Videos",
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "enabled": true,
+      "sections": [
+        "videos"
       ]
     },
     {
@@ -412,6 +442,53 @@
       ]
     }
   ],
+  "videos": {
+    "_warum": [
+      "Kundenwunsch vom 10.08.2026: Videos duerfen nicht mehr zwischen den Fotos",
+      "in der Bilderwand stehen. Ein Foto sieht man an, ein Video schaut man —",
+      "gemischt zog die Startseite ausserdem Megabyte, die niemand angefordert",
+      "hatte.",
+      "",
+      "Sie bekommen eine EIGENE SEITE (/videos/), keinen Abschnitt der",
+      "Startseite: die Startseite antwortet weiter mit 'Coming soon' (503), ein",
+      "Abschnitt dort waere oeffentlich nicht erreichbar. Als eigene Seite ist er",
+      "es, genau wie /booking/ und /shop/.",
+      "",
+      "ausGalerie raeumt die bisherigen Videos aus sections.gallery.items und die",
+      "Eintraege aus sections.gallery.aftermovies in sections.videos.items um —",
+      "einmalig und wiederholbar: was schon umgezogen ist, wird nicht doppelt",
+      "angelegt. Die Uebersetzungen der Bilderliste haengen am Platz und werden",
+      "beim Kuerzen mitgezogen.",
+      "",
+      "Die Texte werden nur gesetzt, solange in der Verwaltung nichts Eigenes",
+      "dasteht."
+    ],
+    "ausGalerie": true,
+    "abschnitt": {
+      "navLabel": "Videos",
+      "title": "Vid",
+      "titleAccent": "eos.",
+      "enabled": true,
+      "note": "Aftermovies and set recordings — the shows to watch back.",
+      "emptyText": "No video yet — the recaps of the next shows land here."
+    },
+    "i18n": {
+      "de": {
+        "navLabel": "Videos",
+        "title": "Vid",
+        "titleAccent": "eos.",
+        "note": "Rückblicke und Mitschnitte — die Shows zum Nachschauen.",
+        "emptyText": "Noch kein Video hinterlegt — die Rückblicke der nächsten Shows kommen hierher."
+      },
+      "fr": {
+        "navLabel": "Vidéos",
+        "title": "Vid",
+        "titleAccent": "éos.",
+        "note": "Retours et enregistrements — les shows à revoir.",
+        "emptyText": "Pas encore de vidéo — les retours des prochains shows arrivent ici."
+      }
+    }
+  },
   "shop": {
     "alteWaehrung": "CHF 5",
     "waehrung": "CHF",
@@ -449,7 +526,9 @@
         "sie wieder weg. Was dafuer fehlt, steht in README-ANLEITUNG.md unter",
         "'Was dem Shop bis zum Start fehlt'."
       ],
-      "namen": ["Beispiel"]
+      "namen": [
+        "Beispiel"
+      ]
     },
     "texte": {
       "_warum": [
@@ -474,11 +553,15 @@
         "buyLabel": "Buy"
       },
       "alt": {
-        "note": ["Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen."],
+        "note": [
+          "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen."
+        ],
         "emptyText": [
           "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht."
         ],
-        "buyLabel": ["Kaufen"]
+        "buyLabel": [
+          "Kaufen"
+        ]
       },
       "de": {
         "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
@@ -551,22 +634,37 @@
     "Die Schutzwirkung bleibt: Eine Liste, die zu KEINEM dieser Staende passt,",
     "hat jemand selbst gepflegt und wird nicht angefasst."
   ],
-  "entfernteKennzahlen": {
+  "aboutFakten": {
     "_warum": [
-      "Ausdruecklicher Kundenwunsch vom 10.08.2026: der Bereich \"First set 2021\"",
-      "soll ganz verschwinden. Er stand doppelt auf der Startseite — als Kennzahl",
-      "im Hero und als erste Zeile der Faktenliste in \"Ueber mich\".",
+      "Kundenwunsch vom 10.08.2026: die beiden Fakten unten im About-Bereich",
+      "('7+ Clubs & Festivals', '150 BPM Home Base') sollen ganz weg. Der Bereich",
+      "soll danach geschlossen wirken — der Generator laesst die Liste bei leeren",
+      "Fakten komplett aus (kein leeres <dl>, keine Trennlinie, kein Platzhalter).",
       "",
-      "Getroffen wird ueber die Aufschrift, nicht ueber den Platz in der Liste.",
-      "Die englische Aufschrift reicht: die Korrektur laeuft auf dem Master-Stand,",
-      "die Uebersetzungen haengen am Platz und werden mitgekuerzt.",
+      "NICHT zu verwechseln mit den Kennzahlen im Hero: die bleiben, samt der",
+      "wiederhergestellten '2021 / First set'.",
       "",
-      "ACHTUNG: Diese Regel ueberstimmt die Verwaltung dauerhaft. Soll die",
-      "Kennzahl zurueck, gehoert dieser Block geloescht — ein Eintrag in der",
-      "Verwaltung allein reicht nicht."
+      "Warum hier und nicht im Schnappschuss: content/site.json wird bei jedem",
+      "Build aus der Datenbank ueberschrieben — dort geloescht waeren die Fakten",
+      "beim naechsten Build zurueck.",
+      "",
+      "ACHTUNG: Diese Regel greift IMMER und ueberstimmt die Verwaltung. Sollen",
+      "Fakten zurueck, gehoert dieser Block geloescht."
     ],
-    "labels": [
-      "First set"
-    ]
+    "leeren": true
+  },
+  "galerie": {
+    "_warum": [
+      "Kundenwunsch vom 10.08.2026: die Bilderwand startet mit genau 6 Fotos —",
+      "zwei Spalten, drei Reihen. In der Verwaltung stand 4, was im",
+      "Zwei-Spalten-Raster zwei Reihen ergab.",
+      "",
+      "'Mehr anzeigen' zeigt danach ALLE restlichen Fotos auf einmal (nicht Reihe",
+      "um Reihe) und wechselt auf 'Weniger anzeigen', das wieder auf die ersten",
+      "sechs zurueckklappt. Das steckt in assets/site.js und assets/site.css.",
+      "",
+      "ACHTUNG: Diese Regel greift IMMER und ueberstimmt die Verwaltung."
+    ],
+    "startAnzahl": 6
   }
 }
