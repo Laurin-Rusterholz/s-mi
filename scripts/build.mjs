@@ -840,6 +840,51 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Impressum-Angabe(n)`);
   }
 
+  /* Der Fotograf ist ueberall weg (11.08.2026, letzte Fassung).
+
+     Erst wurde er nur nicht mehr angezeigt — das Feld stand aber weiter in der
+     Verwaltung und in den Daten, und der Kunde hat es dort wiedergefunden. Der
+     Auftrag lautet "entferne ueberall den Fotografen", also wird er auch
+     geloescht: `site.photoCredit` und jedes `credit` an einem Bild.
+
+     Das laeuft bei JEDEM Build und haengt an keiner Marke — anders als die
+     Ergaenzungen weiter unten. Der Grund: das Feld gibt es im Modell nicht
+     mehr. Ein Wert, der aus einem alten Stand der Datenbank nachkommt, waere
+     kein Kundenwunsch, sondern ein Rest.
+
+     Die Bilder selbst bleiben unangetastet: geloescht wird nur diese eine
+     Angabe am Eintrag, nicht der Eintrag. */
+  let creditsWeg = 0;
+  if (live.site && live.site.photoCredit !== undefined) {
+    delete live.site.photoCredit;
+    creditsWeg++;
+  }
+  const creditRaeumen = (knoten) => {
+    if (Array.isArray(knoten)) return knoten.forEach(creditRaeumen);
+    if (!knoten || typeof knoten !== "object") return;
+    if (knoten.credit !== undefined) {
+      delete knoten.credit;
+      creditsWeg++;
+    }
+    for (const wert of Object.values(knoten)) creditRaeumen(wert);
+  };
+  creditRaeumen(live.sections);
+  /* Auch die Uebersetzungen und ihre Pruefsummen tragen die Angabe noch — dort
+     unter `site.photoCredit` und als `credit` an den Bildern. */
+  for (const wurzel of ["i18n", "i18nHash"]) {
+    const tabellen = live[wurzel];
+    if (!tabellen || typeof tabellen !== "object") continue;
+    for (const tabelle of Object.values(tabellen)) {
+      if (!tabelle || typeof tabelle !== "object") continue;
+      if (tabelle.site && tabelle.site.photoCredit !== undefined) {
+        delete tabelle.site.photoCredit;
+        creditsWeg++;
+      }
+      creditRaeumen(tabelle.sections);
+    }
+  }
+  if (creditsWeg) getan.push(`${creditsWeg} Fotocredit(s) geloescht`);
+
   /* ---------------------------------------------------------------------
      ERGAENZEN, NIE ERSETZEN.
 
@@ -2237,8 +2282,9 @@ function renderBooking(n, s, site) {
             ? `<figure class="booking-photo rv">
           ${picture(s.photo, { sizes: "(max-width:900px) 92vw, 42vw", widths: [600, 1000] })}
           ${
-            /* Fotocredit: siehe unten — sichtbare Credits sind seit dem
-               11.08.2026 ueberall weg. */
+            /* Hier stand der Fotocredit des Booking-Bildes. Er ist ueberall
+               weg — nicht nur unsichtbar, sondern aus den Daten geloescht
+               (siehe nachziehen). */
             ""
           }
         </figure>`
@@ -2634,7 +2680,6 @@ const UI_DEFAULTS = {
   nextImage: "Nächstes Bild",
   openImage: "Bild {n} von {total} gross öffnen",
   rights: "Alle Rechte vorbehalten",
-  photography: "Fotografie",
   phone: "Telefon",
   base: "Standort",
   tickets: "Tickets",
