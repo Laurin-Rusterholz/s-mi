@@ -254,12 +254,9 @@
           "navLabel": "Start"
         },
         "1": {
-          "navLabel": "Videos"
-        },
-        "2": {
           "navLabel": "Booking"
         },
-        "3": {
+        "2": {
           "navLabel": "Shop"
         }
       }
@@ -337,15 +334,18 @@
           "navLabel": "Accueil"
         },
         "1": {
-          "navLabel": "Vidéos"
-        },
-        "2": {
           "navLabel": "Booking"
         },
-        "3": {
+        "2": {
           "navLabel": "Boutique"
         }
-      }
+      },
+      "kontaktNavLabel": "Contact",
+      "_kontaktWarum": [
+        "Im Menue stand auf /fr/ 'Kontakt' — deutsch. Die franzoesische",
+        "Uebersetzung des Abschnitts hatte den deutschen Wert geerbt.",
+        "Gesetzt wird nur, solange dort genau 'Kontakt' steht."
+      ]
     }
   },
   "alteHeroStats": [
@@ -405,18 +405,6 @@
       ]
     },
     {
-      "slug": "videos",
-      "navLabel": "Videos",
-      "title": "Videos",
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
-      "enabled": true,
-      "sections": [
-        "videos"
-      ]
-    },
-    {
       "slug": "booking",
       "navLabel": "Booking",
       "title": "Booking",
@@ -442,94 +430,35 @@
       ]
     }
   ],
-  "videos": {
-    "_warum": [
-      "Kundenwunsch vom 10.08.2026: Videos duerfen nicht mehr zwischen den Fotos",
-      "in der Bilderwand stehen. Ein Foto sieht man an, ein Video schaut man —",
-      "gemischt zog die Startseite ausserdem Megabyte, die niemand angefordert",
-      "hatte.",
-      "",
-      "Sie bekommen eine EIGENE SEITE (/videos/), keinen Abschnitt der",
-      "Startseite: die Startseite antwortet weiter mit 'Coming soon' (503), ein",
-      "Abschnitt dort waere oeffentlich nicht erreichbar. Als eigene Seite ist er",
-      "es, genau wie /booking/ und /shop/.",
-      "",
-      "ausGalerie raeumt die bisherigen Videos aus sections.gallery.items und die",
-      "Eintraege aus sections.gallery.aftermovies in sections.videos.items um —",
-      "einmalig und wiederholbar: was schon umgezogen ist, wird nicht doppelt",
-      "angelegt. Die Uebersetzungen der Bilderliste haengen am Platz und werden",
-      "beim Kuerzen mitgezogen.",
-      "",
-      "Die Texte werden nur gesetzt, solange in der Verwaltung nichts Eigenes",
-      "dasteht."
-    ],
-    "ausGalerie": true,
-    "abschnitt": {
-      "navLabel": "Videos",
-      "title": "Vid",
-      "titleAccent": "eos.",
-      "enabled": true,
-      "note": "Aftermovies and set recordings — the shows to watch back.",
-      "emptyText": "No video yet — the recaps of the next shows land here."
-    },
-    "i18n": {
-      "de": {
-        "navLabel": "Videos",
-        "title": "Vid",
-        "titleAccent": "eos.",
-        "note": "Rückblicke und Mitschnitte — die Shows zum Nachschauen.",
-        "emptyText": "Noch kein Video hinterlegt — die Rückblicke der nächsten Shows kommen hierher."
-      },
-      "fr": {
-        "navLabel": "Vidéos",
-        "title": "Vid",
-        "titleAccent": "éos.",
-        "note": "Retours et enregistrements — les shows à revoir.",
-        "emptyText": "Pas encore de vidéo — les retours des prochains shows arrivent ici."
-      }
-    }
-  },
   "shop": {
     "alteWaehrung": "CHF 5",
     "waehrung": "CHF",
-    "platzhalter": {
-      "_hinweis": "Tippreste aus dem ersten Einrichten. Sie werden nur geraeumt, solange exakt diese Werte dastehen — sobald jemand echte Ware eintraegt, bleibt sie unangetastet.",
-      "name": "Beispiel",
-      "felder": {
-        "note": "as",
-        "alt": "as",
-        "linkUrl": "asd"
+    "_warumVerloreneWare": [
+      "Der Kunde hatte einen Artikel veroeffentlicht: 'Beispiel', CHF 35,",
+      "verfuegbar. Eine fruehere Korrektur hier loeschte ihn allein wegen des",
+      "Namens; die Verwaltung schrieb den bereinigten Stand danach zurueck in",
+      "die Datenbank. Seither steht dort keine Ware mehr und /shop/ zeigt in",
+      "allen drei Sprachen nur 'The shop opens soon'.",
+      "",
+      "'verloreneWare' holt genau diesen einen Artikel zurueck — aber nur,",
+      "solange die Warenliste in der Verwaltung komplett leer ist. Legt der",
+      "Kunde dort Ware an, greift die Regel nicht mehr und kann geloescht",
+      "werden.",
+      "",
+      "Ohne Bild mit Absicht: die damalige Bilddatei ist im Speicher weg",
+      "(HTTP 404) und war das gemeldete kaputte Bild. Ein Ersatz wird nicht",
+      "erfunden — das Bild gehoert in der Verwaltung an den Artikel.",
+      "",
+      "Ohne paymentLink mit Absicht: es gibt keinen Stripe Payment Link fuer",
+      "diesen Artikel. Der Kauf-Knopf fuehrt darum ins Bestellformular."
+    ],
+    "verloreneWare": [
+      {
+        "name": "Beispiel",
+        "price": "35",
+        "status": "available"
       }
-    },
-    "entfernteWare": {
-      "_warum": [
-        "Produktentscheidung vom 10.08.2026: es gibt keine verifizierten Artikel-,",
-        "Preis- oder Produktbilddaten. 'Beispiel' ist der bestaetigte Platzhalter",
-        "aus dem ersten Einrichten und stand mit CHF 35 und einem Kauf-Knopf auf",
-        "der oeffentlichen Shop-Seite — eine Bestellung fuer einen Artikel, den es",
-        "nicht gibt.",
-        "",
-        "Dazu war das Produktbild tot: die hinterlegte Firebase-Adresse",
-        "(-OyU22YYzpKFXkDykqQX/dscf8788.jpg) antwortet mit 404, das Bild kam als",
-        "leerer Rahmen auf die Seite (naturalWidth 0). Ein Ersatzbild wird NICHT",
-        "eingesetzt — es gibt keins, und ein Buehnenfoto als Merch-Bild waere",
-        "erfunden.",
-        "",
-        "Ohne Ware zeigt der Shop den Leer-Text ('The shop opens soon …'). Das ist",
-        "die Wahrheit und kostet die Seite nichts: der Abschnitt bleibt ueber",
-        "shop.sichtbar eingeschaltet, /shop/ antwortet weiter mit 200, und ohne",
-        "Ware baut der Generator auch kein Bestellformular und keine",
-        "Bezahl-Angaben.",
-        "",
-        "ACHTUNG: Diese Regel greift IMMER und ueberstimmt die Verwaltung. Sobald",
-        "es echte Ware gibt, gehoert der Name hier heraus — sonst raeumt der Build",
-        "sie wieder weg. Was dafuer fehlt, steht in README-ANLEITUNG.md unter",
-        "'Was dem Shop bis zum Start fehlt'."
-      ],
-      "namen": [
-        "Beispiel"
-      ]
-    },
+    ],
     "texte": {
       "_warum": [
         "Die Hauptsprache der Website ist Englisch (site.lang = 'en'); die",
@@ -582,17 +511,23 @@
         "buyLabel": "Acheter"
       }
     },
-    "sichtbar": true,
-    "_sichtbarWarum": [
-      "Ausdrueckliche Vorgabe vom 10.08.2026: /shop/ muss oeffentlich mit 200",
-      "antworten, waehrend die Startseite noch 'Coming soon' zeigt. Ohne",
-      "eingeschalteten Abschnitt gaebe es die Seite gar nicht — pagesOf() laesst",
-      "eine Unterseite ohne Abschnitt weg, und /shop/ wuerde 404 liefern.",
+    "_warumKeineWareRegeln": [
+      "Bis zum 11.08.2026 standen hier drei Regeln, die den Shop von aussen",
+      "gesteuert haben. Alle drei sind weg — die Verwaltung entscheidet:",
       "",
-      "ACHTUNG, das ist die einzige Regel, die einen Schalter der Verwaltung",
-      "ueberstimmt. Soll der Shop wieder verschwinden: hier \"sichtbar\" auf false",
-      "setzen (oder die Zeile loeschen) — der Schalter in der Verwaltung allein",
-      "reicht dafuer nicht."
+      "  platzhalter     raeumte Felder eines Artikels, der 'Beispiel' hiess",
+      "  entfernteWare   loeschte einen Artikel allein wegen seines Namens",
+      "  sichtbar        erzwang den Shop-Abschnitt und machte den Schalter in der",
+      "                  Verwaltung wirkungslos",
+      "",
+      "Warum weg: ein veroeffentlichter Artikel muss im Shop stehen, auch wenn er",
+      "'Beispiel' heisst — der Name ist kein Grund, etwas zu verstecken. Und",
+      "'Auf Website anzeigen' in der Verwaltung muss wirken; eine Regel, die den",
+      "Schalter ueberstimmt, macht ihn zur Attrappe.",
+      "",
+      "FOLGE: Ist der Shop-Abschnitt in der Verwaltung ausgeschaltet, gibt es",
+      "/shop/ nicht mehr (404 statt 200). Das ist gewollt — der Schalter",
+      "entscheidet."
     ]
   },
   "heroShows": {

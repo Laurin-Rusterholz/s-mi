@@ -112,10 +112,6 @@ const ERWARTET = [
   ["/shop/", 200, "/shop/index.html"],
   ["/de/shop/", 200, "/de/shop/index.html"],
   ["/fr/shop/", 200, "/fr/shop/index.html"],
-  // Die Video-Seite ist oeffentlich erreichbar.
-  ["/videos/", 200, "/videos/index.html"],
-  ["/de/videos/", 200, "/de/videos/index.html"],
-  ["/fr/videos/", 200, "/fr/videos/index.html"],
 
   // Die Endpunkte.
   ["/api/booking", 200, "/.netlify/functions/booking"],
@@ -151,7 +147,7 @@ for (const [pfad, status, ziel] of ERWARTET) {
    Wartungsregel haengen. Ein uebersehener Rest waere eine Seite, die weiter
    "Coming soon" zeigt, waehrend alles andere live ist. */
 const STARTSEITEN = ["/", "/index.html", "/de/", "/de/index.html", "/fr/", "/fr/index.html"];
-for (const pfad of [...STARTSEITEN, "/booking/", "/shop/", "/videos/", "/api/booking"]) {
+for (const pfad of [...STARTSEITEN, "/booking/", "/shop/", "/api/booking"]) {
   const a = antwort(regeln, pfad);
   if (a.ziel === "/coming-soon.html") meckern(`${pfad} landet noch in der Wartungsregel`);
   if (a.status === 503) meckern(`${pfad} antwortet weiter mit 503`);
@@ -166,6 +162,12 @@ for (const [pfad, datei] of [
 ]) {
   const a = antwort(regeln, pfad);
   if (a.ziel !== datei) meckern(`${pfad} liefert ${a.ziel} statt ${datei}`);
+}
+
+/* Die Video-Seite ist zurueckgenommen — es darf keine Route dorthin geben. */
+for (const pfad of ["/videos/", "/de/videos/", "/fr/videos/"]) {
+  const a = antwort(regeln, pfad);
+  if (a.status === 200) meckern(`${pfad} ist wieder erreichbar — die Video-Seite sollte weg sein`);
 }
 
 /* Keine 503-Regel mehr in der ganzen Datei. */
@@ -187,7 +189,7 @@ if (fehler) {
 console.log(
   `Routen: ${ERWARTET.length} Adressen gegen netlify.toml geprueft.\n` +
     `  offen (200):                  /, /de/, /fr/ samt index.html — die Website ist live,\n` +
-    `                                /booking/, /shop/, /videos/ in allen drei Sprachen,\n` +
+    `                                /booking/ und /shop/ in allen drei Sprachen,\n` +
     `                                /api/booking, /api/order, /api/stripe-webhook,\n` +
     `                                Impressum, CSS/JS, Presskit, robots, sitemap\n` +
     `  gesperrt (404):               /scripts/*, /content/*\n` +

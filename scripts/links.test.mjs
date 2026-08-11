@@ -301,17 +301,11 @@ for (const [datei, h] of html) {
       meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
   }
 
-  /* Videos gehoeren nicht zwischen die Fotos (Kundenwunsch 10.08.2026).
-
-     Geprueft wird beides: dass in der Bilderwand kein Video steckt UND dass
-     das vorhandene Video genau einmal auf der Website steht — auf /videos/.
-     Eine Dopplung faellt damit auf, auch wenn beide Stellen fuer sich richtig
-     aussehen. */
+  /* Die Bilderwand: gleichmaessiges Raster, 6 Fotos zu Beginn, Videos als
+     eigene Kachel mit Play-Zeichen. Die eigene Video-SEITE ist zurueckgenommen
+     (11.08.2026) — es darf keine Datei und kein Verweis dorthin mehr geben. */
   {
-    const VIDEO_SEITEN = ["videos/index.html", "de/videos/index.html", "fr/videos/index.html"];
-    const GALERIE_SEITEN = ["index.html", "de/index.html", "fr/index.html"];
-
-    for (const rel of GALERIE_SEITEN) {
+    for (const rel of startseiten) {
       const h = await seite(rel);
       if (!h) continue;
       const gal = h.match(/<div class="gal rv" id="gal">[\s\S]*?\n      <\/div>/);
@@ -319,69 +313,86 @@ for (const [datei, h] of html) {
         meckern(`${rel}: keine Bilderwand gefunden`);
         continue;
       }
-      /* Videos DUERFEN in der Bilderwand stehen (Vorgabe 10.08.2026) — aber
-         sichtbar als Video: eigene Kachel, Play-Zeichen, abspielbar, und nichts
-         startet beim Seitenaufruf von allein. */
-      for (const kachel of gal[0].match(/<figure class="gal-video[\s\S]*?<\/figure>/g) || []) {
-        if (!/<span class="gal-play"/.test(kachel))
-          meckern(`${rel}: Video-Kachel ohne Play-Zeichen — sieht aus wie ein Foto`);
-        const v = kachel.match(/<video[^>]*>/);
-        if (!v) meckern(`${rel}: Video-Kachel ohne <video>`);
-        else {
-          if (/autoplay/.test(v[0])) meckern(`${rel}: Video in der Bilderwand startet von allein`);
-          if (!/preload="metadata"/.test(v[0]))
-            meckern(`${rel}: Video in der Bilderwand laedt mehr als noetig vor`);
-          if (!/playsinline/.test(v[0])) meckern(`${rel}: Video ohne playsinline (iOS)`);
-        }
-      }
-      // Ein <video> in der Bilderwand ohne die Video-Kachel drumherum waere
-      // ein Video, das wie ein Foto aussieht.
-      const videosImGrid = (gal[0].match(/<video/g) || []).length;
-      const videoKacheln = (gal[0].match(/<figure class="gal-video/g) || []).length;
-      if (videosImGrid !== videoKacheln)
-        meckern(`${rel}: ${videosImGrid} Videos, aber ${videoKacheln} Video-Kacheln`);
-
-      /* Startansicht: genau 6 Fotos (zwei Spalten, drei Reihen). Der Rest
-         steckt hinter EINEM Klick — "Mehr anzeigen" haengt nicht Reihe um
-         Reihe an, sondern zeigt alles Uebrige auf einmal. */
       const kacheln = [...gal[0].matchAll(/<figure([^>]*)>/g)].map((m) => m[1]);
       const sofort = kacheln.filter((a) => !a.includes("data-extra")).length;
       if (sofort !== 6) meckern(`${rel}: Bilderwand zeigt zuerst ${sofort} Fotos statt 6`);
       const spaeter = kacheln.length - sofort;
       const knopf = h.match(/<button class="gal-more[^>]*data-more="([^"]*)"[^>]*data-less="([^"]*)"/);
       if (spaeter && !knopf) meckern(`${rel}: ${spaeter} weitere Fotos, aber kein Knopf dafuer`);
-      if (knopf) {
-        if (!/\d/.test(knopf[1])) meckern(`${rel}: der Knopf sagt nicht, wie viele Fotos noch kommen`);
-        if (!knopf[2].trim()) meckern(`${rel}: kein Text zum Wieder-Zuklappen`);
+      if (knopf && !knopf[2].trim()) meckern(`${rel}: kein Text zum Wieder-Zuklappen`);
+
+      // Videos in der Bilderwand: als Video erkennbar, nichts startet allein.
+      for (const kachel of gal[0].match(/<figure class="gal-video[\s\S]*?<\/figure>/g) || []) {
+        if (!/<span class="gal-play"/.test(kachel))
+          meckern(`${rel}: Video-Kachel ohne Play-Zeichen — sieht aus wie ein Foto`);
+        const v = kachel.match(/<video[^>]*>/);
+        if (v && /autoplay/.test(v[0])) meckern(`${rel}: Video in der Bilderwand startet von allein`);
+        if (v && !/playsinline/.test(v[0])) meckern(`${rel}: Video ohne playsinline (iOS)`);
       }
+      const videosImGrid = (gal[0].match(/<video/g) || []).length;
+      const videoKacheln = (gal[0].match(/<figure class="gal-video/g) || []).length;
+      if (videosImGrid !== videoKacheln)
+        meckern(`${rel}: ${videosImGrid} Videos, aber ${videoKacheln} Video-Kacheln`);
     }
 
-    /* /videos/ ist die zusaetzliche Seite, nicht die einzige Ablage: dasselbe
-       Video darf auch in der Bilderwand stehen. Geprueft wird deshalb nur, dass
-       die Seite es zeigt — nicht, dass es sonst nirgends vorkommt. */
-    for (const rel of VIDEO_SEITEN) {
+    // Keine Spur der zurueckgenommenen Video-Seite.
+    for (const [datei, h] of html) {
+      if (/href="[^"]*\/videos\/"/.test(h)) meckern(`${datei}: Verweis auf die entfernte Seite /videos/`);
+    }
+    for (const d of dateien) {
+      if (/(^|\/)videos\//.test(d)) meckern(`${d}: die Video-Seite ist noch gebaut`);
+    }
+    const sitemap = await seite("sitemap.xml");
+    if (sitemap && /\/videos\//.test(sitemap)) meckern("sitemap.xml nennt noch /videos/");
+  }
+
+  /* Der Kopf ist auf JEDER Seite derselbe — gleiche Eintraege, gleiche
+     Reihenfolge, gleiche Beschriftung. Vorher zeigte die Startseite ihre
+     Abschnitte und der Shop nur "#shop"; die eigene Seite fehlte jeweils.
+     Verglichen wird je Sprache, denn die Beschriftungen sind uebersetzt. */
+  for (const [sprache, seitenSatz] of Object.entries({
+    en: ["index.html", "booking/index.html", "shop/index.html"],
+    de: ["de/index.html", "de/booking/index.html", "de/shop/index.html"],
+    fr: ["fr/index.html", "fr/booking/index.html", "fr/shop/index.html"],
+  })) {
+    const koepfe = [];
+    for (const rel of seitenSatz) {
       const h = await seite(rel);
-      if (!h) {
-        meckern(`${rel}: Video-Seite fehlt`);
+      if (!h) continue;
+      const kopf = h.match(/<header[\s\S]*?<\/header>/);
+      if (!kopf) {
+        meckern(`${rel}: kein Kopf`);
         continue;
       }
-      const hatVideo = /<video|<iframe/.test(h);
-      const hatLeer = /class="empty-state/.test(h);
-      if (!hatVideo && !hatLeer)
-        meckern(`${rel}: weder ein Video noch ein Hinweis, dass noch keins da ist`);
-      if (hatVideo) {
-        // Angeschaut, nicht von allein: Bedienelemente, kein autoplay.
-        const v = h.match(/<video[^>]*>/);
-        if (v && !/controls/.test(v[0])) meckern(`${rel}: Video ohne Bedienelemente`);
-        if (v && /autoplay/.test(v[0])) meckern(`${rel}: Video startet von allein`);
-        // Rueckfall, wenn der Browser das Format nicht kann.
-        if (!/Dein Browser kann|Your browser can|Ton navigateur ne peut/.test(h))
-          meckern(`${rel}: kein Rueckfalltext, wenn das Video nicht abspielbar ist`);
-      }
+      /* Die Beschriftungen zaehlen, nicht die Adressen: auf der Startseite
+         zeigen die Sprungmarken auf "#about", von einer Unterseite quer auf
+         "/#about". Das ist derselbe Menuepunkt. `aria-current` steht nur am
+         eigenen Eintrag und wird deshalb herausgerechnet. */
+      const eintraege = [...kopf[0].matchAll(/<li([^>]*)><a [^>]*>([^<]*)<\/a><\/li>/g)].map(
+        (m) => `${m[1].trim()}|${m[2].trim()}`
+      );
+      koepfe.push([rel, eintraege.join(" · ")]);
+    }
+    const [erste, ...rest] = koepfe;
+    for (const [rel, liste] of rest) {
+      if (liste !== erste[1])
+        meckern(
+          `${rel}: anderer Kopf als ${erste[0]}\n         dort: ${erste[1]}\n         hier: ${liste}`
+        );
+    }
+    // Und die Sprungmarken der Startseite muessen von der Unterseite aus
+    // wirklich dorthin zeigen.
+    const unterseite = await seite(seitenSatz[2]);
+    if (unterseite) {
+      const kopf = unterseite.match(/<header[\s\S]*?<\/header>/)[0];
+      const quer = [...kopf.matchAll(/href="([^"]*#[a-z]+)"/g)].map((m) => m[1]);
+      for (const u of quer)
+        if (u.startsWith("#"))
+          meckern(`${seitenSatz[2]}: Sprungmarke "${u}" zeigt auf die eigene Seite statt auf die Startseite`);
     }
   }
 
-  /* Kauf-Knoepfe im Shop: jeder fuehrt auf die Kasse SEINES Artikels.
+  /* Kauf-Knoepfe im Shop: jeder fuehrt auf die Kasse SEINES Artikels.  /* Kauf-Knoepfe im Shop: jeder fuehrt auf die Kasse SEINES Artikels.
 
      Ein Stripe Payment Link gehoert zu genau einem Preis. Zeigte ein Knopf auf
      den Link eines anderen Artikels (oder auf einen globalen), waere der
@@ -448,6 +459,20 @@ for (const [datei, h] of html) {
      STRIPE_PAYMENT_LINK_URL nirgends hinterlegt war. Geprueft wird gegen
      denselben Schalter, mit dem gebaut wurde. */
   const zahlbar = istStripeAdresse(process.env.STRIPE_PAYMENT_LINK_URL);
+  /* Was laut Inhalt im Shop steht — dagegen wird die gebaute Seite geprueft.
+     Der Inhalt ist der Stand NACH den Korrekturen: build.mjs schreibt ihn
+     zurueck, also steht hier genau die Ware, die die Seite zeigen muss. */
+  const inhalt = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  const htmlEsc = (s) =>
+    String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  const wareImInhalt = (inhalt.sections?.shop?.items || [])
+    .filter((p) => p && String(p.name || "").trim())
+    .map((p) => htmlEsc(String(p.name).trim()));
   const ZAHLWORTE = ["Stripe", "TWINT", "Apple Pay", "Google Pay"];
   for (const rel of ["shop/index.html", "de/shop/index.html", "fr/shop/index.html"]) {
     const h = await seite(rel);
@@ -471,10 +496,9 @@ for (const [datei, h] of html) {
 
     /* Bestellformular: genau dann, wenn es auch etwas zu bestellen gibt.
        Seit der Produktentscheidung vom 10.08.2026 steht keine Ware im Shop —
-       die Platzhalter-Ware "Beispiel" ist entfernt, weil es keine
-       verifizierten Artikeldaten gibt. Ein Formular ohne Ware waere eine
-       Bestellung ins Leere; steht wieder Ware da, muss das Formular zurueck.
-       Erkannt wird die Ware am Kachel-Bauteil, nicht am Inhalt. */
+       Ein Formular ohne Ware waere eine Bestellung ins Leere; steht Ware da,
+       muss das Formular her. Erkannt wird die Ware am Kachel-Bauteil, nicht
+       am Inhalt. */
     const hatWare = /<article class="product/.test(h);
     const hatFormular = /id="order-form"/.test(h);
     if (hatWare && !hatFormular) meckern(`${rel}: Ware ohne Bestellformular`);
@@ -483,6 +507,23 @@ for (const [datei, h] of html) {
     // Und ohne Ware muss die Seite sagen, warum sie leer ist.
     if (!hatWare && !/class="empty-state/.test(h))
       meckern(`${rel}: leerer Shop ohne Hinweis, dass noch keine Ware da ist`);
+
+    /* Der Leer-Text nur dann, wenn es wirklich nichts zu kaufen gibt.
+
+       Anlass (Kundenmeldung 11.08.2026): auf /shop/ stand in allen drei
+       Sprachen "The shop opens soon", obwohl ein Artikel veroeffentlicht war —
+       eine Regel im Generator hatte ihn wegen seines Namens entfernt. Der
+       Vergleich laeuft gegen den Inhalt, mit dem gebaut wurde: steht dort
+       Ware, muss sie auf der Seite stehen, und umgekehrt. */
+    if (wareImInhalt.length && !hatWare)
+      meckern(
+        `${rel}: Leer-Text, obwohl ${wareImInhalt.length} Artikel veroeffentlicht ` +
+          `sind (${wareImInhalt.join(", ")})`
+      );
+    if (!wareImInhalt.length && hatWare)
+      meckern(`${rel}: Ware auf der Seite, die im Inhalt nicht steht`);
+    for (const name of wareImInhalt)
+      if (!h.includes(`<h3>${name}</h3>`)) meckern(`${rel}: Artikel "${name}" fehlt auf der Seite`);
   }
 
   /* Die Weiterleitung im Browser: sie darf erst kommen, wenn die Antwort des

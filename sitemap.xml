@@ -140,15 +140,6 @@
     </image:image>
   </url>
   <url>
-    <loc>https://djsamsparkling.netlify.app/videos/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/videos/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/videos/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/videos/"/>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://djsamsparkling.netlify.app/booking/</loc>
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
@@ -306,15 +297,6 @@
     </image:image>
   </url>
   <url>
-    <loc>https://djsamsparkling.netlify.app/de/videos/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/videos/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/videos/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/videos/"/>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://djsamsparkling.netlify.app/de/booking/</loc>
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
@@ -470,15 +452,6 @@
     <image:image>
       <image:loc>https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YJsZVJw7wFoyJ-%2Fsartophotography-dsc4231-web.jpg?alt=media&amp;token=ca6805b3-23a4-4a94-8124-d7c54fb54f59</image:loc>
     </image:image>
-  </url>
-  <url>
-    <loc>https://djsamsparkling.netlify.app/fr/videos/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/videos/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/videos/"/>
-      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/videos/"/>
-    <lastmod>2026-08-11</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/fr/booking/</loc>
