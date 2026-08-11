@@ -151,6 +151,10 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 {
   // Der Stand, wie er nach jenem Speichern in der Datenbank stand
   const db = JSON.parse(JSON.stringify(template));
+  /* Die Marken weg: die Vorlage traegt sie inzwischen, weil die Verwaltung den
+     Nachtrag selbst gespeichert hat. Geprueft wird hier aber der Zustand DAVOR
+     — ein Stand, in dem noch etwas fehlt. */
+  delete db.migrationen;
   db.contentRevision = 4;                       // Altlast, darf nichts mehr bewirken
   db.site.artist = "Sam Sparkling";
   db.site.logoText = "Sam Sparkling";
@@ -210,6 +214,7 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 {
   // Der Kunde hat die Referenzen selbst bearbeitet — dann nichts anfassen.
   const eigen = JSON.parse(JSON.stringify(template));
+  delete eigen.migrationen;
   eigen.sections.references.items = [{ name: "Nur ein Club", city: "Chur" }];
   eigen.sections.contact.socials = [{ label: "Instagram", url: "https://instagram.com/anders" }];
   eigen.hero.stats = [{ value: "9", label: "Eigene Zahl" }];
@@ -243,6 +248,7 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
      Instagram aus dem Kopf, Waehrung und die neue Seitenaufteilung. Alle
      greifen nur, solange die Stelle in der Verwaltung unangetastet ist. */
   const db = JSON.parse(JSON.stringify(template));
+  delete db.migrationen;
   db.hero.stats = korr.alteHeroStats.map((label) => ({ value: "1", label }));
   db.hero.meta = "Euphoric Hardstyle / Melodic Hardstyle";
   db.sections.shows.items = [{ name: "Aftersun ", city: "Herisau", date: "2026-08-29" }];
@@ -703,6 +709,7 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   /* Die Telefonnummer ist von der Website genommen (11.08.2026). Geraeumt wird
      nur die eine bekannte Nummer — eine neue in der Verwaltung bleibt stehen. */
   const db = JSON.parse(JSON.stringify(template));
+  delete db.migrationen; // der Zustand VOR dem Nachtrag
   db.sections.contact.phone = "+41 77 509 11 71";
   nachziehen(db, korr);
   if (db.sections.contact.phone) meckern("Telefonnummer nicht geraeumt: " + db.sections.contact.phone);

@@ -1050,6 +1050,16 @@ export function nachziehen(live, korr) {
       n++;
     }
     if (n) getan.push(`${n} Release-Angabe(n)`);
+
+    /* Ein Sonderfall: der Text stand schon in der Datenbank, als der Kunde ihn
+       auf "Meine neue Website" geaendert haben wollte. Ersetzt wird deshalb
+       genau der eine bekannte Wortlaut — schreibt jemand in der Verwaltung
+       etwas anderes, passt die Regel nicht mehr und laesst den Text stehen. */
+    const alterText = str(korr.release.alterText);
+    if (alterText && str(ziel.text) === alterText && str(korr.release.text)) {
+      ziel.text = str(korr.release.text);
+      getan.push("Release-Text");
+    }
   }
 
   if (korr.bookingBild?.src && !ls.booking?.photo?.src) {
