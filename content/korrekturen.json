@@ -12,6 +12,24 @@
     "ist (siehe nachziehen() in scripts/build.mjs). Wer dort etwas aendert,",
     "behaelt das letzte Wort."
   ],
+  "_nurWasFehlt": [
+    "ERGAENZEN, NIE ERSETZEN — Stand 11.08.2026.",
+    "",
+    "Die Regeln in diesem Abschnitt fuellen ausschliesslich Luecken im Stand aus",
+    "der Datenbank. Sie ueberschreiben nichts, sortieren nichts um und loeschen",
+    "nichts. Ohne sie muesste jemand die Verwaltung oeffnen und einmal speichern,",
+    "damit die Website vollstaendig ist — genau das soll nicht noetig sein.",
+    "",
+    "Der Unterschied zu den Regeln, die im August entfernt wurden: jene ERSETZTEN",
+    "(die Referenzliste wurde ausgetauscht, geloeschte Ware kam zurueck, geleerte",
+    "Texte wurden neu geschrieben). Hier wird nur eingesetzt, wo nichts steht.",
+    "",
+    "Und sie halten sich selbst an: sobald die Verwaltung den Stand einmal",
+    "gespeichert hat, traegt der Inhalt unter 'migrationen' eine Marke. Ist sie",
+    "gesetzt, laeuft die zugehoerige Regel nie wieder — ab dann laesst sich alles",
+    "loeschen und bleibt geloescht. Die Verwaltung setzt die Marken von selbst,",
+    "ohne Zutun (verwaltung/public/js/nachtragen.js)."
+  ],
   "heroStats": [
     {
       "value": "2021",
@@ -301,5 +319,260 @@
     "Der Shop haengt jetzt ausschliesslich an der Verwaltung. Der Artikel steht",
     "als echte Ware in der Datenbank; die Verwaltung traegt ihn beim Laden",
     "einmalig nach, wenn er fehlt (ware-nachtragen.js), und merkt sich das."
-  ]
+  ],
+  "referenzenNachtragen": {
+    "_warum": [
+      "Die verbindliche Liste des Kunden (25). In der Datenbank stehen davon",
+      "sieben. Ergaenzt wird, was fehlt — erkannt an Name UND Ort, unabhaengig von",
+      "Gross/Klein und Bindestrichen. Bestehende Eintraege bleiben, wie sie sind:",
+      "Schreibweise, Reihenfolge und 'Gross zeigen' werden nie angefasst.",
+      "Nachgetragene Eintraege sind nie gross.",
+      "",
+      "Angehaengt wird hinten, in der Reihenfolge dieser Liste.",
+      "Marke: migrationen.referenzen",
+      "",
+      "Schreibweise 'B9': so steht der Eintrag in der Datenbank. Mit 'B9",
+      "eventlocation' daneben staende er zweimal da."
+    ],
+    "eintraege": [
+      {
+        "name": "Kugl",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Sektor 11",
+        "city": "Zürich"
+      },
+      {
+        "name": "BBC",
+        "city": "Gossau"
+      },
+      {
+        "name": "Ultrawild Festival",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "The Q",
+        "city": "Schaan, FL"
+      },
+      {
+        "name": "IVY",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "B9",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Maiaiaiparty",
+        "city": "Appenzell Ausserrhoden"
+      },
+      {
+        "name": "Amadeusbar",
+        "city": "Herisau"
+      },
+      {
+        "name": "Fasnacht Oberegg",
+        "city": "Appenzell Innerrhoden"
+      },
+      {
+        "name": "Party Weekend Sirnach",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Kantonales Musik fest",
+        "city": "Appenzell Ausserrhoden"
+      },
+      {
+        "name": "Jugendopenair",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Monoevents",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Jublasurium",
+        "city": "Aargau"
+      },
+      {
+        "name": "Dorffest Herisau",
+        "city": "Herisau"
+      },
+      {
+        "name": "Turnunterhaltung Sirnach",
+        "city": "Sirnach"
+      },
+      {
+        "name": "Xploration Events",
+        "city": "Glarus"
+      },
+      {
+        "name": "Winterzauber Bazenheid",
+        "city": "Bazenheid"
+      },
+      {
+        "name": "Firehouse Party Wittenbach",
+        "city": "Wittenbach"
+      },
+      {
+        "name": "Cyberspace party",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Talhof",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Volleyballturnier Malters",
+        "city": "Luzern"
+      },
+      {
+        "name": "Metzertor",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Abschlussball Wittenbach",
+        "city": "St. Gallen"
+      }
+    ],
+    "zuerst": [
+      {
+        "name": "Kugl",
+        "city": "St. Gallen"
+      },
+      {
+        "name": "Sektor 11",
+        "city": "Zürich"
+      },
+      {
+        "name": "BBC",
+        "city": "Gossau"
+      },
+      {
+        "name": "Ultrawild Festival",
+        "city": "St. Gallen"
+      }
+    ],
+    "_warumZuerst": [
+      "Diese vier standen bis zum 11.08.2026 gross ueber den anderen und waren",
+      "damit die ersten vier, die man sah. Seit alle Referenzen gleich aussehen,",
+      "entscheidet allein die Reihenfolge — deshalb ruecken sie EINMALIG nach vorne,",
+      "damit sich am Bild nichts aendert. Verschoben wird nur ihre Position;",
+      "Schreibweise, Ort und alles andere bleiben unangetastet, und die Reihenfolge",
+      "der uebrigen Eintraege untereinander bleibt ebenfalls.",
+      "",
+      "Laeuft nur, solange migrationen.referenzen nicht gesetzt ist. Danach",
+      "entscheidet die Verwaltung allein — auch ueber diese vier."
+    ]
+  },
+  "kanaeleNachtragen": {
+    "_warum": [
+      "Die vier Kanaele des Kuenstlers mit ihren echten Adressen. In der Datenbank",
+      "steht nur Mixcloud. Ergaenzt wird, was fehlt — erkannt am Namen ODER am",
+      "Hostnamen der Adresse, damit 'Insta' und 'Instagram' nicht doppelt",
+      "erscheinen. Eine vorhandene Adresse wird nie ueberschrieben.",
+      "Eingefuegt wird an der Stelle dieser Liste, damit die Reihenfolge auf der",
+      "Website stimmt.",
+      "Marke: migrationen.kanaele"
+    ],
+    "eintraege": [
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/sam_sparking/",
+        "inHeader": false
+      },
+      {
+        "label": "Mixcloud",
+        "url": "https://www.mixcloud.com/samsparking/"
+      },
+      {
+        "label": "TikTok",
+        "url": "https://www.tiktok.com/@sam_sparking",
+        "inHeader": false
+      },
+      {
+        "label": "Spotify",
+        "url": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S",
+        "inHeader": false
+      }
+    ]
+  },
+  "shopEinladung": {
+    "_warum": [
+      "Die helle Flaeche oben im Shop und der Informationsstreifen darunter. In der",
+      "Datenbank gibt es die Felder noch nicht. Gesetzt wird nur, was leer ist —",
+      "was der Kunde eintraegt, gewinnt sofort.",
+      "",
+      "Die Warenliste wird hier NICHT angefasst. Der echte Artikel aus der",
+      "Verwaltung bleibt unberuehrt, samt Preis, Bild und Bezahl-Link.",
+      "",
+      "Die Starttexte versprechen nichts: kein Stripe, kein TWINT, keine",
+      "Lieferfrist, kein 'gratis Versand'.",
+      "Marke: migrationen.shopInfo"
+    ],
+    "felder": {
+      "kicker": "MERCH",
+      "headline": "Sam Sparking Shop",
+      "intro": "Small runs, made to be worn at the show. What you see here is what exists — when a piece is gone, it is gone.",
+      "ctaLabel": "Browse the drop"
+    },
+    "info": [
+      {
+        "icon": "zahlung",
+        "title": "Payment",
+        "text": "How to pay is shown on the item itself. If no payment link is set, the order comes in through the form and is confirmed personally."
+      },
+      {
+        "icon": "versand",
+        "title": "Shipping",
+        "text": "Shipping is agreed personally after the order. Nothing is sent before that is settled."
+      },
+      {
+        "icon": "fragen",
+        "title": "Questions",
+        "text": "Size, colour, availability — write to info@samsparking.ch."
+      }
+    ],
+    "i18n": {
+      "de": {
+        "headline": "Sam Sparking Shop",
+        "intro": "Kleine Auflagen, gemacht fürs Konzert. Was hier steht, gibt es — ist ein Stück weg, ist es weg.",
+        "ctaLabel": "Zum Katalog",
+        "info": [
+          {
+            "title": "Zahlung",
+            "text": "Wie bezahlt wird, steht am Artikel. Ist kein Zahlungslink hinterlegt, kommt die Bestellung über das Formular und wird persönlich bestätigt."
+          },
+          {
+            "title": "Versand",
+            "text": "Der Versand wird nach der Bestellung persönlich abgesprochen. Vorher geht nichts raus."
+          },
+          {
+            "title": "Fragen",
+            "text": "Grösse, Farbe, Verfügbarkeit — schreib an info@samsparking.ch."
+          }
+        ]
+      },
+      "fr": {
+        "headline": "Sam Sparking Shop",
+        "intro": "Petites séries, faites pour la scène. Ce qui est ici existe — une pièce partie ne revient pas.",
+        "ctaLabel": "Voir le catalogue",
+        "info": [
+          {
+            "title": "Paiement",
+            "text": "Le mode de paiement est indiqué sur l'article. Sans lien de paiement, la commande passe par le formulaire et est confirmée personnellement."
+          },
+          {
+            "title": "Expédition",
+            "text": "L'expédition est convenue personnellement après la commande. Rien ne part avant."
+          },
+          {
+            "title": "Questions",
+            "text": "Taille, couleur, disponibilité — écris à info@samsparking.ch."
+          }
+        ]
+      }
+    }
+  }
 }
