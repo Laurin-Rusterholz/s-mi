@@ -1077,6 +1077,10 @@
       }
     }
   },
+  "imprint": {
+    "email": "info@samsparking.ch",
+    "location": "Herisau, Schweiz"
+  },
   "layout": [
     "about",
     "sound",
@@ -1088,6 +1092,13 @@
     "shop",
     "contact"
   ],
+  "migrationen": {
+    "kanaele": true,
+    "referenzen": true,
+    "shopInfo": true,
+    "telefon": true,
+    "ware": true
+  },
   "pages": [
     {
       "slug": "",
@@ -1131,6 +1142,16 @@
       ]
     }
   ],
+  "release": {
+    "date": "2026-08-12",
+    "enabled": true,
+    "headline": "Sam Sparking",
+    "kicker": "Release",
+    "text": "Meine neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben.",
+    "time": "18:00",
+    "zone": "Europe/Zurich",
+    "alterText": "Die neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben."
+  },
   "schemaVersion": 2,
   "sections": {
     "about": {
@@ -1231,30 +1252,30 @@
       "enabled": true,
       "kicker": "Booking & enquiries",
       "navLabel": "Contact",
-      "phone": "",
       "socials": [
         {
+          "inHeader": false,
           "label": "Instagram",
-          "url": "https://www.instagram.com/sam_sparking/",
-          "inHeader": false
+          "url": "https://www.instagram.com/sam_sparking/"
         },
         {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
         },
         {
+          "inHeader": false,
           "label": "TikTok",
-          "url": "https://www.tiktok.com/@sam_sparking",
-          "inHeader": false
+          "url": "https://www.tiktok.com/@sam_sparking"
         },
         {
+          "inHeader": false,
           "label": "Spotify",
-          "url": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S",
-          "inHeader": false
+          "url": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S"
         }
       ],
       "title": "Con",
-      "titleAccent": "tact."
+      "titleAccent": "tact.",
+      "phone": ""
     },
     "experience": {
       "embedLabel": "Aftermovie",
@@ -1355,8 +1376,8 @@
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOr%2Fsartophotography-dsc4647-web.jpg?alt=media&token=14c31001-34f0-4239-aab7-c87ff2ef61e0"
         },
-        {},
-        {},
+        null,
+        null,
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOs%2Fsartophotography-dsc4686-web.jpg?alt=media&token=92440c7d-219e-40b1-b6d0-75343a959fd0"
         },
@@ -1408,7 +1429,7 @@
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taHwUiXKTu1nP7_%2Fsartophotography-dsc4070-web.jpg?alt=media&token=00690437-4cce-448a-bd73-55cc047bc1d0"
         },
-        {},
+        null,
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QgFRY1xsAZIvQz%2Fultrawild-tim.mp4?alt=media&token=3bb8019f-33a4-42b3-afc4-6ee068a9c53d"
         },
@@ -1461,14 +1482,6 @@
           "name": "Sektor 11"
         },
         {
-          "city": "Gossau",
-          "name": "BBC"
-        },
-        {
-          "city": "St. Gallen",
-          "name": "Ultrawild Festival"
-        },
-        {
           "city": "Schaan, FL",
           "name": "The Q"
         },
@@ -1477,80 +1490,88 @@
           "name": "IVY"
         },
         {
+          "city": "Gossau",
+          "name": "BBC"
+        },
+        {
           "city": "St. Gallen",
           "name": "B9"
         },
         {
-          "name": "Maiaiaiparty",
-          "city": "Appenzell Ausserrhoden"
+          "city": "St. Gallen",
+          "name": "Ultrawild Festival"
         },
         {
-          "name": "Amadeusbar",
-          "city": "Herisau"
+          "city": "Appenzell Ausserrhoden",
+          "name": "Maiaiaiparty"
         },
         {
-          "name": "Fasnacht Oberegg",
-          "city": "Appenzell Innerrhoden"
+          "city": "Herisau",
+          "name": "Amadeusbar"
         },
         {
-          "name": "Party Weekend Sirnach",
-          "city": "St. Gallen"
+          "city": "Appenzell Innerrhoden",
+          "name": "Fasnacht Oberegg"
         },
         {
-          "name": "Kantonales Musik fest",
-          "city": "Appenzell Ausserrhoden"
+          "city": "St. Gallen",
+          "name": "Party Weekend Sirnach"
         },
         {
-          "name": "Jugendopenair",
-          "city": "St. Gallen"
+          "city": "Appenzell Ausserrhoden",
+          "name": "Kantonales Musik fest"
         },
         {
-          "name": "Monoevents",
-          "city": "St. Gallen"
+          "city": "St. Gallen",
+          "name": "Jugendopenair"
         },
         {
-          "name": "Jublasurium",
-          "city": "Aargau"
+          "city": "St. Gallen",
+          "name": "Monoevents"
         },
         {
-          "name": "Dorffest Herisau",
-          "city": "Herisau"
+          "city": "Aargau",
+          "name": "Jublasurium"
         },
         {
-          "name": "Turnunterhaltung Sirnach",
-          "city": "Sirnach"
+          "city": "Herisau",
+          "name": "Dorffest Herisau"
         },
         {
-          "name": "Xploration Events",
-          "city": "Glarus"
+          "city": "Sirnach",
+          "name": "Turnunterhaltung Sirnach"
         },
         {
-          "name": "Winterzauber Bazenheid",
-          "city": "Bazenheid"
+          "city": "Glarus",
+          "name": "Xploration Events"
         },
         {
-          "name": "Firehouse Party Wittenbach",
-          "city": "Wittenbach"
+          "city": "Bazenheid",
+          "name": "Winterzauber Bazenheid"
         },
         {
-          "name": "Cyberspace party",
-          "city": "St. Gallen"
+          "city": "Wittenbach",
+          "name": "Firehouse Party Wittenbach"
         },
         {
-          "name": "Talhof",
-          "city": "St. Gallen"
+          "city": "St. Gallen",
+          "name": "Cyberspace party"
         },
         {
-          "name": "Volleyballturnier Malters",
-          "city": "Luzern"
+          "city": "St. Gallen",
+          "name": "Talhof"
         },
         {
-          "name": "Metzertor",
-          "city": "St. Gallen"
+          "city": "Luzern",
+          "name": "Volleyballturnier Malters"
         },
         {
-          "name": "Abschlussball Wittenbach",
-          "city": "St. Gallen"
+          "city": "St. Gallen",
+          "name": "Metzertor"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Abschlussball Wittenbach"
         }
       ],
       "moreLabel": "Also played at",
@@ -1562,8 +1583,29 @@
     },
     "shop": {
       "buyLabel": "Buy",
+      "ctaLabel": "Browse the drop",
       "currency": "CHF ",
+      "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
       "enabled": true,
+      "headline": "Sam Sparking Shop",
+      "info": [
+        {
+          "icon": "zahlung",
+          "text": "How to pay is shown on the item itself. If no payment link is set, the order comes in through the form and is confirmed personally.",
+          "title": "Payment"
+        },
+        {
+          "icon": "versand",
+          "text": "Shipping is agreed personally after the order. Nothing is sent before that is settled.",
+          "title": "Shipping"
+        },
+        {
+          "icon": "fragen",
+          "text": "Size, colour, availability — write to info@samsparking.ch.",
+          "title": "Questions"
+        }
+      ],
+      "intro": "Small runs, made to be worn at the show. What you see here is what exists — when a piece is gone, it is gone.",
       "items": [
         {
           "alt": "Die originale Sam Sparking Gig-Cap! Mit klassischer Passform, flachem Schirm und vollem Steifleinen ausgestattet. Logo gestickt - Universelle Grösse (verstellbar) Gratis Versand innerhalb der Schweiz!",
@@ -1574,32 +1616,11 @@
           "status": "available"
         }
       ],
+      "kicker": "MERCH",
       "navLabel": "Shop",
       "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
-      "titleAccent": "op.",
-      "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
-      "kicker": "MERCH",
-      "headline": "Sam Sparking Shop",
-      "intro": "Small runs, made to be worn at the show. What you see here is what exists — when a piece is gone, it is gone.",
-      "ctaLabel": "Browse the drop",
-      "info": [
-        {
-          "icon": "zahlung",
-          "title": "Payment",
-          "text": "How to pay is shown on the item itself. If no payment link is set, the order comes in through the form and is confirmed personally."
-        },
-        {
-          "icon": "versand",
-          "title": "Shipping",
-          "text": "Shipping is agreed personally after the order. Nothing is sent before that is settled."
-        },
-        {
-          "icon": "fragen",
-          "title": "Questions",
-          "text": "Size, colour, availability — write to info@samsparking.ch."
-        }
-      ]
+      "titleAccent": "op."
     },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -1790,19 +1811,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-11T20:41:08.014Z",
-  "updatedBy": "Verwaltung",
-  "imprint": {
-    "email": "info@samsparking.ch",
-    "location": "Herisau, Schweiz"
-  },
-  "release": {
-    "enabled": true,
-    "date": "2026-08-12",
-    "time": "18:00",
-    "zone": "Europe/Zurich",
-    "kicker": "Release",
-    "headline": "Sam Sparking",
-    "text": "Meine neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben."
-  }
+  "updatedAt": "2026-08-11T21:40:47.343Z",
+  "updatedBy": "Verwaltung"
 }

@@ -269,7 +269,12 @@
       "",
       "Umgeschaltet wird im Browser: der Zeitpunkt steht als Zahl in der",
       "Seite, assets/site.js zaehlt herunter und nimmt den Vorhang bei null",
-      "weg. Kein neuer Deploy noetig."
+      "weg. Kein neuer Deploy noetig.",
+      "",
+      "'alterText': in der Datenbank steht noch der Satz mit 'Die neue",
+      "Website'. Genau dieser eine bekannte Wortlaut wird durch 'Meine neue",
+      "Website' ersetzt — Kundenwunsch. Schreibt der Kunde in der Verwaltung",
+      "etwas anderes, passt die Regel nicht mehr und laesst den Text stehen."
     ],
     "enabled": true,
     "date": "2026-08-12",
@@ -277,7 +282,8 @@
     "zone": "Europe/Zurich",
     "kicker": "Release",
     "headline": "Sam Sparking",
-    "text": "Meine neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben."
+    "text": "Meine neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben.",
+    "alterText": "Die neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben."
   },
   "_wasHierNichtMehrSteht": [
     "Entfernt am 11.08.2026, weil die Verwaltung entscheidet:",
