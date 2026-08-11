@@ -154,7 +154,10 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   db.hero.nameMain = "Sparkling";
   db.site.domain = "https://djsamsparkling.netlify.app";
   db.sections.about.paragraphs = ["Der Name **Sparkling** ist kein Zufall."];
-  db.sections.references.items = korr.alteReferenzen[0].map((n) => ({ name: n, city: "?" }));
+  db.sections.references.items = [
+    { name: "Kugl", city: "St. Gallen", highlight: true },
+    { name: "IVY", city: "St. Gallen" },
+  ];
   db.sections.contact.socials = [{ label: "Mixcloud", url: "https://www.mixcloud.com/samsparking/" }];
   db.sections.shop.enabled = true;
   db.hero.stats = [];
@@ -168,9 +171,16 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (reste !== 0) meckern(`${reste}x "Sparkling" nach dem Nachziehen uebrig`);
   if (!hosts) meckern("Hostname djsamsparkling mitkorrigiert — Canonical und Sitemap zeigen ins Leere");
   if (db.site.artist !== "Sam Sparking") meckern("Kuenstlername nicht korrigiert: " + db.site.artist);
-  if (db.sections.references.items.length !== korr.referenzen.length)
-    meckern("Referenzliste nicht ersetzt: " + db.sections.references.items.length);
-  if (!db.sections.contact.socials.some((x) => /instagram/i.test(x.label))) meckern("Instagram fehlt");
+  /* Referenzen und Kanaele bleiben unangetastet — die Verwaltung entscheidet.
+     Bis zum 11.08.2026 stand hier das Gegenteil: die Referenzliste MUSSTE
+     ersetzt werden und Instagram MUSSTE dazukommen. Genau daher fehlte
+     "IVY — St. Gallen" auf der Website und die Verwaltung zeigte nur Mixcloud,
+     wo die Seite vier Kanaele fuehrte. */
+  const refNamen = db.sections.references.items.map((r) => r.name).join(" | ");
+  if (refNamen !== "Kugl | IVY") meckern("Referenzliste angefasst: " + refNamen);
+  if (db.sections.references.items[0].highlight !== true) meckern('"Gross zeigen" verloren');
+  const kanalNamen = db.sections.contact.socials.map((x) => x.label).join(" | ");
+  if (kanalNamen !== "Mixcloud") meckern("Kanaele angefasst: " + kanalNamen);
   if (!db.hero.stats.length) meckern("Kennzahlen fehlen");
   if (!db.sections.booking.photo.src) meckern("Booking-Bild fehlt");
   if (db.sections.shop.enabled !== true)
@@ -189,24 +199,16 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   nachziehen(eigen, korr);
   if (eigen.sections.references.items.length !== 1)
     meckern("Eigene Referenzliste wurde ueberschrieben");
+  /* Kein Kanal kommt dazu und keiner verschwindet. Bis zum 11.08.2026 legte
+     der Generator hier fehlende Kanaele an und trug Adressen nach — deshalb
+     stand auf der Website etwas anderes als in der Verwaltung. Nachgetragen
+     wird jetzt in der Verwaltung selbst, wo es bearbeitbar ist und
+     mitgespeichert wird. */
   const eigeneKanaele = eigen.sections.contact.socials;
-  if (eigeneKanaele.filter((x) => /instagram/i.test(x.label + " " + (x.url || ""))).length !== 1)
-    meckern("Instagram doppelt eingetragen, obwohl schon vorhanden");
-  // Die erwarteten Kanaele kommen dazu — aber ausdruecklich OHNE Adresse.
-  // Ein geratener Profil-Link waere schlimmer als ein fehlender.
-  for (const l of korr.kanaele.erwartet) {
-    const treffer = eigeneKanaele.filter((x) => new RegExp(l, "i").test(x.label + " " + (x.url || "")));
-    if (treffer.length !== 1) meckern(`Kanal "${l}" steht ${treffer.length}x statt genau 1x`);
-  }
-  /* TikTok und Spotify hat der Kunde am 10.08.2026 nachgeliefert. Bis dahin
-     standen sie bewusst ohne Adresse da. Jetzt muss genau die gelieferte
-     Adresse stehen — und keine andere; geraten wird weiterhin nichts. */
-  for (const l of ["TikTok", "Spotify"]) {
-    const k = eigeneKanaele.find((x) => x.label === l);
-    const soll = korr.kanaele.adressen[l];
-    if (!k) meckern(`Kanal "${l}" fehlt`);
-    else if (k.url !== soll) meckern(`"${l}" zeigt auf "${k.url}" statt auf "${soll}"`);
-  }
+  if (eigeneKanaele.map((x) => x.label).join(" | ") !== "Instagram")
+    meckern("Kanalliste angefasst: " + eigeneKanaele.map((x) => x.label).join(", "));
+  if (eigeneKanaele[0].url !== "https://instagram.com/anders")
+    meckern("eigene Kanal-Adresse ueberschrieben: " + eigeneKanaele[0].url);
   if (eigen.hero.stats[0].value !== "9") meckern("Eigene Kennzahlen ueberschrieben");
   if (eigen.sections.booking.photo.src !== "eigenes.jpg") meckern("Eigenes Booking-Bild ueberschrieben");
 }
@@ -237,8 +239,13 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (db.sections.shows.items[0].city !== "Luzern")
     meckern("Aftersun steht weiter in " + db.sections.shows.items[0].city);
   if (db.sections.shows.items[0].name !== "Aftersun") meckern("Leerzeichen im Show-Namen geblieben");
+  /* Der Schalter "Zeichen oben im Kopfbereich zeigen" gehoert der Verwaltung.
+     Bis zum 11.08.2026 setzte hier eine Regel `inHeader:false` fuer Instagram,
+     wo nichts gesetzt war — jetzt bleibt der Wert, wie er ist. */
   const insta = db.sections.contact.socials.find((x) => /instagram/i.test(x.label));
-  if (insta.inHeader !== false) meckern("Instagram steht weiter im Kopf");
+  if ("inHeader" in insta) meckern("Der Kopf-Schalter wurde von aussen gesetzt: " + insta.inHeader);
+  if (db.sections.contact.socials.length !== 2)
+    meckern("Kanalliste angefasst: " + db.sections.contact.socials.map((x) => x.label).join(", "));
   if (db.sections.shop.currency !== "CHF") meckern("Waehrung nicht korrigiert: " + db.sections.shop.currency);
   /* Ware wird NICHT mehr wegen ihres Namens entfernt (11.08.2026). Was in der
      Verwaltung veroeffentlicht ist, steht im Shop — auch ein Artikel, der
@@ -344,69 +351,107 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* Der Abgleich der Referenzliste. Hier ist die Ersetzung am 10.08.2026 still
-     ins Leere gelaufen: in der Datenbank stand ein anderer Altstand als der
-     eine, gegen den geprueft wurde — die Website zeigte weiter B9, BBC, IVY,
-     Kugl, Sektor 11, The Q, Ultrawild Festival. */
-  const namen = (c) => c.sections.references.items.map((i) => i.name);
+  /* Referenzen gehen unveraendert durch — Reihenfolge, "Gross zeigen" und
+     Sichtbarkeit gehoeren der Verwaltung.
 
-  // Jeder hinterlegte Altstand muss die Ersetzung ausloesen.
-  korr.alteReferenzen.forEach((stand, nr) => {
+     Vorgeschichte: hier stand bis zum 11.08.2026 der Abgleich gegen bekannte
+     Altstaende (`korr.alteReferenzen`), der die Liste der Verwaltung gegen eine
+     im Repo gepflegte Fassung tauschte. Genau deshalb fehlte "IVY —
+     St. Gallen" auf der Website: die Ersatzliste kannte stattdessen "Club Eden
+     — St. Gallen". Die Regel ist weg, und das wird hier festgehalten. */
+  const namen = (c) => c.sections.references.items.map((i) => `${i.name} — ${i.city}`);
+
+  // Die Liste, die der Kunde in der Verwaltung fuehrt.
+  const listen = [
+    [
+      { name: "Kugl", city: "St. Gallen", highlight: true },
+      { name: "Sektor 11", city: "Zürich", highlight: true },
+      { name: "The Q", city: "Schaan, FL" },
+      { name: "IVY", city: "St. Gallen" },
+      { name: "BBC", city: "Gossau", highlight: true },
+      { name: "B9", city: "St. Gallen" },
+      { name: "Ultrawild Festival", city: "St. Gallen", highlight: true },
+    ],
+    // Umsortiert, mit anderer Hervorhebung — auch das bleibt so stehen.
+    [
+      { name: "IVY", city: "St. Gallen", highlight: true },
+      { name: "Kugl", city: "St. Gallen" },
+    ],
+    // Eine einzige Referenz, und eine leere Liste.
+    [{ name: "Nur ein Club", city: "Chur" }],
+    [],
+  ];
+  for (const liste of listen) {
     const db = JSON.parse(JSON.stringify(template));
-    db.sections.references.items = stand.map((n) => ({ name: n, city: "?" }));
+    db.sections.references.items = JSON.parse(JSON.stringify(liste));
     nachziehen(db, korr);
-    if (namen(db).length !== korr.referenzen.length)
-      meckern(`Altstand ${nr} (${stand.length} Eintraege) loest die Ersetzung nicht aus`);
-  });
-
-  // Auch in anderer Reihenfolge — die Verwaltung sortiert beim Speichern um.
-  const gedreht = JSON.parse(JSON.stringify(template));
-  gedreht.sections.references.items = [...korr.alteReferenzen[0]]
-    .sort()
-    .map((n) => ({ name: n, city: "?" }));
-  nachziehen(gedreht, korr);
-  if (namen(gedreht).length !== korr.referenzen.length)
-    meckern("Umsortierter Altstand loest die Ersetzung nicht aus");
-
-  // Die vier ausdruecklich genannten Events stehen oben, in dieser Reihenfolge.
-  const oben = korr.referenzen.filter((i) => i.highlight).map((i) => i.name);
-  const SOLL = ["Kugl", "Sektor 11", "Ultrawild Festival", "BBC"];
-  if (oben.join(" | ") !== SOLL.join(" | "))
-    meckern("Hervorgehobene Gruppe ist " + oben.join(", ") + " statt " + SOLL.join(", "));
-
-  /* Der Entscheid vom 10.08.2026: "Club Eden SG ersetzt IVY", Picante bleibt,
-     und das Jugendopenair St. Gallen kommt als eigener Eintrag dazu — der
-     Wattwiler bleibt daneben stehen, es sind zwei verschiedene Anlaesse. */
-  const alle = korr.referenzen.map((i) => i.name);
-  for (const n of ["Aftersun Festival", "Picante", "Club Eden"])
-    if (!alle.includes(n)) meckern(`"${n}" fehlt in der Referenzliste`);
-  if (alle.includes("IVY")) meckern('"IVY" steht noch da — Club Eden sollte ersetzen');
-
-  const jugend = korr.referenzen.filter((i) => i.name === "Jugendopenair");
-  const jugendOrte = jugend.map((i) => i.city).sort();
-  if (jugendOrte.join(" | ") !== "St. Gallen | Wattwil")
-    meckern("Jugendopenair: erwartet St. Gallen und Wattwil, da steht " + (jugendOrte.join(", ") || "nichts"));
-
-  // Keine Dublette: derselbe Name am selben Ort darf nur einmal vorkommen.
-  const paare = korr.referenzen.map((i) => `${i.name} — ${i.city}`);
-  const doppelt = paare.filter((p, idx) => paare.indexOf(p) !== idx);
-  if (doppelt.length) meckern("Referenz doppelt: " + [...new Set(doppelt)].join(", "));
-
-  // Keine erfundene fuenfte Hervorhebung.
-  if (korr.referenzen.filter((i) => i.highlight).length !== 4)
-    meckern("Es sollen genau vier Referenzen hervorgehoben sein");
-
-  // Zu jedem Eintrag gehoert ein uebersetzter Ort — sonst rutschen die
-  // Ortsnamen auf der deutschen und franzoesischen Seite um einen Platz.
-  for (const lang of ["de", "fr"]) {
-    const orte = korr.i18n[lang].referenzen;
-    if (Object.keys(orte).length !== korr.referenzen.length)
-      meckern(`i18n ${lang}: ${Object.keys(orte).length} Orte zu ${korr.referenzen.length} Referenzen`);
+    const soll = liste.map((i) => `${i.name} — ${i.city}`);
+    if (namen(db).join(" | ") !== soll.join(" | "))
+      meckern(`Referenzliste veraendert: "${namen(db).join(" | ")}" statt "${soll.join(" | ")}"`);
+    const grossSoll = liste.filter((i) => i.highlight === true).map((i) => i.name);
+    const grossIst = db.sections.references.items.filter((i) => i.highlight === true).map((i) => i.name);
+    if (grossIst.join(" | ") !== grossSoll.join(" | "))
+      meckern(`"Gross zeigen" veraendert: "${grossIst.join(" | ")}" statt "${grossSoll.join(" | ")}"`);
   }
 
-  // Der Rest traegt keine Buendel mehr — eine durchgehend alphabetische Liste.
-  if (korr.referenzen.some((i) => !i.highlight && i.group))
-    meckern("Der Rest soll ohne Buendel-Ueberschriften alphabetisch stehen");
+  // Der Schalter des Abschnitts bleibt der Verwaltung ueberlassen.
+  for (const an of [true, false]) {
+    const db = JSON.parse(JSON.stringify(template));
+    db.sections.references.enabled = an;
+    nachziehen(db, korr);
+    if (db.sections.references.enabled !== an)
+      meckern(`Sichtbarkeit der Referenzen umgestellt: ${db.sections.references.enabled} statt ${an}`);
+  }
+
+  /* Und in content/korrekturen.json darf keine Ersatzliste zurueckkommen —
+     weder fuer die Referenzen noch fuer die Orte je Sprache noch fuer die
+     Kanaele. Sonst waere der Fehler beim naechsten Mal still wieder da. */
+  for (const feld of ["referenzen", "alteReferenzen", "kanaele", "instagram"])
+    if (korr[feld] !== undefined)
+      meckern(`korrekturen.json traegt wieder "${feld}" — die Verwaltung entscheidet`);
+  for (const lang of ["de", "fr"])
+    if (korr.i18n?.[lang]?.referenzen !== undefined)
+      meckern(`korrekturen.json traegt wieder i18n.${lang}.referenzen (Orte nach Platz)`);
+}
+
+{
+  /* Ortsuebersetzungen nach Platz gibt es auch im Inhalt nicht mehr. Sie
+     wanderten beim Umsortieren in der Verwaltung zum falschen Club: Platz 2
+     war "Ultrawild Festival — St. Gallen", nach dem Umsortieren "The Q —
+     Schaan, FL" — und die Uebersetzung machte daraus wieder St. Gallen. */
+  for (const root of ["i18n", "i18nHash"])
+    for (const lang of Object.keys(template[root] || {})) {
+      const ref = template[root][lang]?.sections?.references;
+      if (ref && ref.items !== undefined)
+        meckern(`${root}.${lang}.sections.references.items steht wieder im Inhalt`);
+    }
+}
+
+{
+  /* Das Impressum: die Angaben kommen aus content/korrekturen.json, weil der
+     Inhalt bei jedem Build aus der Datenbank neu geschrieben wird. Gesetzt
+     wird nur, was fehlt. */
+  const leer = JSON.parse(JSON.stringify(template));
+  delete leer.imprint;
+  nachziehen(leer, korr);
+  if (leer.imprint?.email !== "info@samsparking.ch")
+    meckern("Impressum: E-Mail fehlt oder ist falsch: " + leer.imprint?.email);
+  if (leer.imprint?.location !== "Herisau, Schweiz")
+    meckern("Impressum: Standort fehlt oder ist falsch: " + leer.imprint?.location);
+  /* Keine Strassenadresse und keine erfundenen Pflichtangaben. Geprueft werden
+     nur die Angaben selbst — die _warum-Notiz darf erklaeren, was fehlt. */
+  const alsText = JSON.stringify(
+    Object.fromEntries(Object.entries(korr.impressum || {}).filter(([f]) => !f.startsWith("_")))
+  );
+  for (const wort of ["strasse", "straße", "Postfach", "UID", "CHE-", "MwSt", "Handelsregister"])
+    if (new RegExp(wort, "i").test(alsText)) meckern(`Impressum traegt "${wort}" — nicht bekannt, nicht erfunden`);
+
+  // Was in der Verwaltung steht, gewinnt.
+  const eigen = JSON.parse(JSON.stringify(template));
+  eigen.imprint = { email: "hallo@example.ch", location: "Chur, Schweiz" };
+  nachziehen(eigen, korr);
+  if (eigen.imprint.email !== "hallo@example.ch" || eigen.imprint.location !== "Chur, Schweiz")
+    meckern("Eigene Impressum-Angaben ueberschrieben: " + JSON.stringify(eigen.imprint));
 }
 
 {

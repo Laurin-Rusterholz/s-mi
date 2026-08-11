@@ -171,62 +171,6 @@
           "aftermoviesNote": "Rückblick auf die letzten Shows."
         },
         "references": {
-          "items": {
-            "0": {
-              "city": "St. Gallen"
-            },
-            "1": {
-              "city": "Zürich"
-            },
-            "2": {
-              "city": "St. Gallen"
-            },
-            "3": {
-              "city": "Gossau"
-            },
-            "4": {
-              "city": "Luzern"
-            },
-            "5": {
-              "city": "Herisau"
-            },
-            "6": {
-              "city": "St. Gallen"
-            },
-            "7": {
-              "city": "St. Gallen"
-            },
-            "8": {
-              "city": "Herisau"
-            },
-            "9": {
-              "city": "Wittenbach"
-            },
-            "10": {
-              "city": "St. Gallen"
-            },
-            "11": {
-              "city": "Wattwil"
-            },
-            "12": {
-              "city": "St. Gallen"
-            },
-            "13": {
-              "city": "St. Gallen"
-            },
-            "14": {
-              "city": "Schaan, FL"
-            },
-            "15": {
-              "city": "Sirnach"
-            },
-            "16": {
-              "city": "Bazenheid"
-            },
-            "17": {
-              "city": "Glarus"
-            }
-          },
           "navLabel": "Referenzen",
           "note": "Dein Club oder Festival als Nächstes?",
           "noteLinkLabel": "Schreib mir →",
@@ -447,63 +391,7 @@
           "title": "Réfé",
           "titleAccent": "rences.",
           "note": "Ton club ou ton festival ensuite ?",
-          "noteLinkLabel": "Écris-moi →",
-          "items": {
-            "0": {
-              "city": "Saint-Gall"
-            },
-            "1": {
-              "city": "Zurich"
-            },
-            "2": {
-              "city": "Saint-Gall"
-            },
-            "3": {
-              "city": "Gossau"
-            },
-            "4": {
-              "city": "Lucerne"
-            },
-            "5": {
-              "city": "Herisau"
-            },
-            "6": {
-              "city": "Saint-Gall"
-            },
-            "7": {
-              "city": "Saint-Gall"
-            },
-            "8": {
-              "city": "Herisau"
-            },
-            "9": {
-              "city": "Wittenbach"
-            },
-            "10": {
-              "city": "Saint-Gall"
-            },
-            "11": {
-              "city": "Wattwil"
-            },
-            "12": {
-              "city": "Saint-Gall"
-            },
-            "13": {
-              "city": "Saint-Gall"
-            },
-            "14": {
-              "city": "Schaan, FL"
-            },
-            "15": {
-              "city": "Sirnach"
-            },
-            "16": {
-              "city": "Bazenheid"
-            },
-            "17": {
-              "city": "Glarus"
-            }
-          }
+          "noteLinkLabel": "Écris-moi →"
         },
         "gallery": {
           "navLabel": "Galerie",
@@ -827,53 +715,6 @@
           "aftermoviesNote": "766693dd"
         },
         "references": {
-          "items": {
-            "0": {
-              "city": "dc81153d"
-            },
-            "1": {
-              "city": "4724fab3"
-            },
-            "2": {
-              "city": "0fcf8f7b"
-            },
-            "3": {
-              "city": "0fcf8f7b"
-            },
-            "4": {
-              "city": "0fcf8f7b"
-            },
-            "5": {
-              "city": "0fcf8f7b"
-            },
-            "6": {
-              "city": "0fcf8f7b"
-            },
-            "7": {
-              "city": "2a8d0bbe"
-            },
-            "8": {
-              "city": "2a8d0bbe"
-            },
-            "9": {
-              "city": "b288f8df"
-            },
-            "10": {
-              "city": "08dfc821"
-            },
-            "11": {
-              "city": "0aebc3d7"
-            },
-            "12": {
-              "city": "6f8ae078"
-            },
-            "13": {
-              "city": "fbd73a2f"
-            },
-            "14": {
-              "city": "3e5d36c9"
-            }
-          },
           "navLabel": "dc0b6beb",
           "note": "4ff8935f",
           "noteLinkLabel": "0d549953",
@@ -1079,54 +920,7 @@
           "title": "4e18ba45",
           "titleAccent": "1f0cb59f",
           "note": "4ff8935f",
-          "noteLinkLabel": "0d549953",
-          "items": {
-            "0": {
-              "city": "dc81153d"
-            },
-            "1": {
-              "city": "4724fab3"
-            },
-            "2": {
-              "city": "0fcf8f7b"
-            },
-            "3": {
-              "city": "0fcf8f7b"
-            },
-            "4": {
-              "city": "0fcf8f7b"
-            },
-            "5": {
-              "city": "0fcf8f7b"
-            },
-            "6": {
-              "city": "0fcf8f7b"
-            },
-            "7": {
-              "city": "2a8d0bbe"
-            },
-            "8": {
-              "city": "2a8d0bbe"
-            },
-            "9": {
-              "city": "b288f8df"
-            },
-            "10": {
-              "city": "08dfc821"
-            },
-            "11": {
-              "city": "0aebc3d7"
-            },
-            "12": {
-              "city": "6f8ae078"
-            },
-            "13": {
-              "city": "fbd73a2f"
-            },
-            "14": {
-              "city": "3e5d36c9"
-            }
-          }
+          "noteLinkLabel": "0d549953"
         },
         "gallery": {
           "navLabel": "d7b54cdd",
@@ -1738,9 +1532,12 @@
           "highlight": true
         },
         {
-          "name": "Ultrawild Festival",
-          "city": "St. Gallen",
-          "highlight": true
+          "name": "The Q",
+          "city": "Schaan, FL"
+        },
+        {
+          "name": "IVY",
+          "city": "St. Gallen"
         },
         {
           "name": "BBC",
@@ -1748,60 +1545,13 @@
           "highlight": true
         },
         {
-          "name": "Aftersun Festival",
-          "city": "Luzern"
-        },
-        {
-          "name": "Amadeusbar",
-          "city": "Herisau"
-        },
-        {
-          "name": "B9 eventlocation",
+          "name": "B9",
           "city": "St. Gallen"
         },
         {
-          "name": "Club Eden",
-          "city": "St. Gallen"
-        },
-        {
-          "name": "Dorffest Herisau",
-          "city": "Herisau"
-        },
-        {
-          "name": "Firehouse Party Wittenbach",
-          "city": "Wittenbach"
-        },
-        {
-          "name": "Jugendopenair",
-          "city": "St. Gallen"
-        },
-        {
-          "name": "Jugendopenair",
-          "city": "Wattwil"
-        },
-        {
-          "name": "Monoevents",
-          "city": "St. Gallen"
-        },
-        {
-          "name": "Picante",
-          "city": "St. Gallen"
-        },
-        {
-          "name": "The Q",
-          "city": "Schaan, FL"
-        },
-        {
-          "name": "Turnunterhaltung Sirnach",
-          "city": "Sirnach"
-        },
-        {
-          "name": "Winterzauber Bazenheid",
-          "city": "Bazenheid"
-        },
-        {
-          "name": "Xploration Events",
-          "city": "Glarus"
+          "name": "Ultrawild Festival",
+          "city": "St. Gallen",
+          "highlight": true
         }
       ],
       "moreLabel": "Also played at",
@@ -2019,5 +1769,9 @@
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
   "updatedAt": "2026-08-11T19:23:32.277Z",
-  "updatedBy": "Verwaltung"
+  "updatedBy": "Verwaltung",
+  "imprint": {
+    "email": "info@samsparking.ch",
+    "location": "Herisau, Schweiz"
+  }
 }

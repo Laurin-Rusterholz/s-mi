@@ -329,48 +329,20 @@ export function nachziehen(live, korr) {
 
   // --- nur solange die Stelle noch unangetastet ist ------------------------
 
-  // Referenzen: nur ersetzen, solange einer der bekannten Altstaende dasteht.
-  if (list(korr.referenzen).length) {
-    const soll = alsZaehlung(list(korr.referenzen).map((i) => str(i?.name)));
-    const ist = alsZaehlung(list(ls.references?.items).map((i) => str(i?.name)));
-    if (gleicheNamen(ls.references?.items, korr.alteReferenzen)) {
-      ls.references = { ...ls.references, items: kopie(korr.referenzen) };
-      getan.push(`Referenzliste (${korr.referenzen.length})`);
-    } else if (!gleicheZaehlung(soll, ist)) {
-      /* Weder ein bekannter Altstand noch die gewuenschte Liste. Das ist der
-         Fall, in dem die Regel wirkungslos bleibt — und genau der ist am
-         10.08.2026 monatelang niemandem aufgefallen, weil er still war.
-         Jetzt steht er im Bau-Protokoll. Entweder hat jemand die Liste in der
-         Verwaltung selbst gepflegt (dann ist alles richtig so), oder in
-         content/korrekturen.json fehlt dieser Stand unter alteReferenzen. */
-      console.warn(
-        `[build] Referenzen NICHT ersetzt: die Liste in der Verwaltung (${ist.size} Eintraege) ` +
-          `passt zu keinem Stand unter alteReferenzen.\n` +
-          `        dort: ${[...ist.keys()].join(", ") || "(leer)"}\n` +
-          `        Ist das kein selbst gepflegter Stand, gehoert er in ` +
-          `content/korrekturen.json unter alteReferenzen.`
-      );
-    }
-  }
+  /* Referenzen: hier stand bis zum 11.08.2026 eine Ersetzung. Sie tauschte die
+     Liste aus der Verwaltung gegen eine im Repo gepflegte Fassung, solange die
+     Verwaltung einen der bekannten Altstaende trug (`alteReferenzen`).
 
-  // Orte nachtragen, wo in der Verwaltung noch das blosse Kantonskuerzel steht.
-  const nachName = new Map(list(korr.referenzen).map((i) => [str(i.name), str(i.city)]));
-  let orte = 0;
-  list(ls.references?.items).forEach((i) => {
-    const ort = nachName.get(str(i?.name));
-    if (ort && /^[A-Z]{2}$/.test(str(i.city)) && ort !== str(i.city)) {
-      i.city = ort;
-      orte++;
-    }
-  });
-  if (orte) getan.push(`${orte} Ort(e)`);
+     Das ist der Grund, warum "IVY — St. Gallen" auf der Website fehlte,
+     obwohl der Eintrag in der Verwaltung stand: die Ersetzungsliste kannte
+     stattdessen "Club Eden — St. Gallen". Wer in der Verwaltung eine Referenz
+     anlegt, umbenennt, verschiebt oder gross stellt, muss das auf der Website
+     sehen. Deshalb ist die Regel weg — samt der Nachtrag-Regel fuer Orte und
+     der positionsgebundenen Ortsuebersetzung (siehe korr.i18n).
 
-  // Instagram: nur ergaenzen, wenn ueberhaupt kein Instagram hinterlegt ist.
-  const istInsta = (x) => /instagram/i.test(str(x?.url) + str(x?.label));
-  if (korr.instagram && !list(ls.contact?.socials).some(istInsta)) {
-    ls.contact = { ...ls.contact, socials: [kopie(korr.instagram), ...list(ls.contact?.socials)] };
-    getan.push("Instagram");
-  }
+     Referenzen kommen jetzt unveraendert aus der Verwaltung: Reihenfolge,
+     "Gross zeigen" und der Schalter des Abschnitts. Kein Rueckfall, keine
+     Demo-Liste. */
 
   // Kennzahlen und Booking-Bild: nur, wenn dort noch nichts steht.
   if (list(korr.heroStats).length && !list(live.hero?.stats).length) {
@@ -458,64 +430,27 @@ export function nachziehen(live, korr) {
     if (treffer.length) getan.push(`Show ${str(s.name)} → ${str(s.city)}`);
   }
 
-  // Kanaele: das Instagram-Zeichen gehoert nicht mehr in den Kopf. Der Kopf
-  // zeigt nur noch, was ausdruecklich inHeader:true traegt — hier wird der
-  // alte Zustand einmal sauber nachgezogen, damit der Schalter in der
-  // Verwaltung auch dann stimmt, wenn ihn nie jemand angefasst hat.
-  let ausDemKopf = 0;
-  list(ls.contact?.socials).forEach((x) => {
-    const passt = list(korr.kanaele?.ausDemKopf).some((l) =>
-      new RegExp(l, "i").test(str(x?.label) + str(x?.url))
-    );
-    // Nur wo noch gar nichts gesetzt ist. Wer den Kanal in der Verwaltung
-    // ausdruecklich in den Kopf geholt hat, behaelt ihn dort.
-    if (passt && x.inHeader === undefined) {
-      x.inHeader = false;
-      ausDemKopf++;
-    }
-  });
-  if (ausDemKopf) getan.push(`${ausDemKopf} Kanal/Kanaele aus dem Kopf`);
+  /* Kanaele: hier standen bis zum 11.08.2026 drei Regeln, die den Stand aus
+     der Verwaltung ergaenzt haben — und genau daher kam der Unterschied, den
+     der Kunde gemeldet hat. In der Verwaltung stand links nur Mixcloud, auf
+     der Website und in der Vorschau standen vier Kanaele.
 
-  /* Kanaele, die auf die Seite gehoeren: Instagram, TikTok, Spotify, Mixcloud.
-     Fehlt einer in der Verwaltung ganz, wird er hier OHNE Adresse angelegt —
-     er steht damit im Kontakt und im Fuss, aber unverlinkt und mit "folgt"
-     (siehe renderContact). Eine Adresse wird bewusst nicht geraten: ein
-     falsch geratenes Profil ist schlimmer als ein fehlendes.
+       ausDemKopf   setzte `inHeader:false` fuer Instagram, wo nichts gesetzt war
+       erwartet     legte fehlende Kanaele (Instagram, TikTok, Spotify,
+                    Mixcloud) OHNE Adresse an
+       adressen     trug die nachgelieferten Adressen von TikTok und Spotify ein
 
-     Nur ergaenzen, nie ueberschreiben: sobald in der Verwaltung eine Adresse
-     hinterlegt ist, gewinnt sie und der Kanal wird normal verlinkt. */
-  const erwartet = list(korr.kanaele?.erwartet).map(str).filter(Boolean);
-  if (erwartet.length) {
-    const socials = list(ls.contact?.socials);
-    const kennt = (name) =>
-      socials.some((x) => new RegExp(name, "i").test(str(x?.label) + " " + str(x?.url)));
-    const fehlend = erwartet.filter((name) => !kennt(name));
-    if (fehlend.length) {
-      ls.contact = {
-        ...ls.contact,
-        socials: [...socials, ...fehlend.map((label) => ({ label, inHeader: false }))],
-      };
-      getan.push(`Kanal/Kanaele ohne Adresse: ${fehlend.join(", ")}`);
-    }
-  }
+     Alle drei sind weg. Die Kanaele stehen jetzt genau so auf der Website, wie
+     sie in der Verwaltung gespeichert sind — mit Adresse, mit Handle, mit dem
+     Schalter fuer das Zeichen im Kopf. Verloren geht dabei nichts: die
+     Verwaltung traegt die vier Kanaele beim Laden selbst nach, wenn sie in den
+     gespeicherten Daten fehlen, und sagt es mit einem Hinweis zum Speichern
+     (siehe verwaltung/public/js/kanaele-nachtragen.js). Nach einmal Speichern
+     sind Verwaltung, Vorschau und Website auf demselben Stand.
 
-  /* Adressen, die der Kunde nachgeliefert hat (10.08.2026): TikTok und Spotify.
-     Bis dahin standen sie bewusst unverlinkt auf der Seite — geraten wurde
-     nichts. Gesetzt wird nur, wo keine Adresse steht; eine in der Verwaltung
-     hinterlegte gewinnt. */
-  const adressen = Object.entries(korr.kanaele?.adressen || {}).filter(([k]) => !k.startsWith("_"));
-  if (adressen.length) {
-    let gesetzt = 0;
-    for (const x of list(ls.contact?.socials)) {
-      if (safeUrl(x?.url)) continue;
-      const treffer = adressen.find(([name]) => new RegExp(name, "i").test(str(x?.label)));
-      if (treffer) {
-        x.url = treffer[1];
-        gesetzt++;
-      }
-    }
-    if (gesetzt) getan.push(`${gesetzt} Kanal-Adresse(n) nachgetragen`);
-  }
+     Auch die vierte Regel ist weg: `korr.instagram` legte Instagram an, wenn
+     gar keines hinterlegt war. Fuer die Website gilt jetzt ohne Ausnahme —
+     was in der Verwaltung steht, steht auf der Seite, und nur das. */
 
   /* Wie viele Fotos die Bilderwand zuerst zeigt: 6 (zwei Spalten, drei Reihen).
      Kundenwunsch vom 10.08.2026 — in der Verwaltung stand 4. Greift immer. */
@@ -666,6 +601,22 @@ export function nachziehen(live, korr) {
         getan.push(`Seite /${str(soll.slug)}/ angelegt`);
       }
     }
+  }
+
+  /* Impressum: die Angaben stehen in content/korrekturen.json, weil
+     content/site.json bei jedem Build aus der Datenbank neu geschrieben wird.
+     Gesetzt wird nur, was fehlt — was in der Verwaltung eingetragen ist,
+     gewinnt. */
+  const impressum = Object.entries(korr.impressum || {}).filter(([f]) => !f.startsWith("_"));
+  if (impressum.length) {
+    const ziel = live.imprint || (live.imprint = {});
+    let n = 0;
+    for (const [feld, wert] of impressum) {
+      if (str(ziel[feld])) continue;
+      ziel[feld] = wert;
+      n++;
+    }
+    if (n) getan.push(`${n} Impressum-Angabe(n)`);
   }
 
   if (korr.bookingBild?.src && !ls.booking?.photo?.src) {
@@ -1365,17 +1316,32 @@ function renderShows(n, s) {
 /**
  * Referenzen in zwei Stufen.
  *
- * Oben die wichtigsten Adressen — die tragen `highlight` und behalten die
- * Reihenfolge aus der Verwaltung, denn das ist eine Rangfolge und keine
- * Sortierung. Darunter alles Weitere: alphabetisch, kleiner gesetzt und nach
- * `group` gebündelt ("Ostschweiz", "Schweiz", "International"). Eine Liste aus
+ * Oben die wichtigsten Adressen — die tragen `highlight` („Gross zeigen“ in der
+ * Verwaltung), höchstens vier davon. Darunter alles Weitere, kleiner gesetzt
+ * und nach `group` gebündelt, falls Gruppen gepflegt sind. Eine Liste aus
  * fünfzehn gleich grossen Zeilen liest niemand; so springt ins Auge, was zählt,
  * und der Rest bleibt trotzdem vollständig nachlesbar.
+ *
+ * Beide Stufen behalten die Reihenfolge aus der Verwaltung. Das ist eine
+ * Rangfolge, keine Sortierung — und die Verwaltung sagt es dem Kunden auch so
+ * zu, samt ↑ ↓ zum Verschieben.
  */
+/** So viele Referenzen stehen gross — genau die Zahl, die die Verwaltung zulaesst. */
+const REFERENZEN_GROSS = 4;
+
 function renderReferences(n, s, bookingTarget) {
   const items = list(s.items).filter((i) => str(i?.name));
-  const lead = items.filter((v) => v.highlight);
-  const rest = items.filter((v) => !v.highlight);
+  /* Gross zeigen: in der Reihenfolge der Verwaltung, hoechstens vier. Die
+     Verwaltung laesst kein fuenftes zu; kaeme ueber die Datenbank doch eines
+     herein, steht es unten mit den anderen statt die Zeile zu sprengen. */
+  const gross = items.filter((v) => v.highlight === true);
+  const lead = gross.slice(0, REFERENZEN_GROSS);
+  const zuViel = new Set(gross.slice(REFERENZEN_GROSS));
+  /* Und der Rest ebenfalls in der Reihenfolge der Verwaltung. Bis zum
+     11.08.2026 wurde hier alphabetisch sortiert — die Verwaltung versprach
+     aber "Die Reihenfolge hier ist auch die Reihenfolge auf der Website", und
+     mit ↑ ↓ liess sich nichts bewegen. */
+  const rest = items.filter((v) => v.highlight !== true || zuViel.has(v));
 
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
@@ -1410,8 +1376,6 @@ function renderReferences(n, s, bookingTarget) {
   const restList = gruppen
     .map((g) => {
       const zeilen = g.items
-        .slice()
-        .sort((a, b) => str(a.name).localeCompare(str(b.name), "de"))
         .map((v) => {
           const { url, ext } = linkOf(v);
           return `<li><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
@@ -2449,8 +2413,11 @@ const looksTechnical = (v) =>
  * Genau so trug der Mixcloud-Link auf /de/ und /fr/ die Aufschrift "Instagram"
  * (dieselbe Falle wie "Luzern" auf "Sektor 11", siehe adoptTexts).
  */
+/* `imprint.*` ebenfalls: beim Standort uebersetzt renderImpressum nur das
+   Landeswort. Eine zweite Uebersetzung von Hand wuerde daneben stehen. Muss mit
+   der Verwaltung uebereinstimmen (verwaltung/public/js/i18n.js). */
 const NO_TRANSLATE_PATH =
-  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\./;
+  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\.|^imprint\./;
 
 /** Alle übersetzbaren Textstellen als [pfad, text]. */
 export function collectStrings(node, prefix = "", out = []) {
@@ -3176,8 +3143,11 @@ ${
       <span class="mono">© <span id="yr">${today().slice(0, 4)}</span> ${esc(
     site.artist
   )} — ${esc(ui.rights)}</span>
+      <a class="mono" href="${esc(navPrefix(lang, master) + "/" + IMPRESSUM_SLUG + "/")}">${esc(
+    (IMPRESSUM_TEXT[lang] || IMPRESSUM_TEXT.de).titel
+  )}</a>
       <a class="mono" href="${esc(navPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
-    LEGAL_LABEL[lang] || LEGAL_LABEL.de
+    LEGAL_FUSS[lang] || LEGAL_FUSS.de
   )}</a>
       ${site.claim ? `<span class="claim">${esc(site.claim)}</span>` : ""}
       ${
@@ -3197,6 +3167,12 @@ ${showsData}
 /* ------------------------------------------------------- rechtliches */
 
 const LEGAL_LABEL = { de: "Impressum & Datenschutz", en: "Legal & privacy", fr: "Mentions légales" };
+/* Im Fuss steht seit dem 11.08.2026 zusaetzlich das Impressum als eigene Seite.
+   Stand dort daneben weiter "Impressum & Datenschutz", las man auf /de/ zweimal
+   "Impressum" und wusste nicht, welcher Link welcher ist. Die Datenschutz-Seite
+   heisst im Fuss deshalb nur noch nach ihrem zweiten Teil; die Seite selbst
+   behaelt Titel und Inhalt unveraendert. */
+const LEGAL_FUSS = { de: "Datenschutz", en: "Privacy", fr: "Protection des données" };
 const LEGAL_SLUG = { de: "rechtliches", en: "legal", fr: "mentions-legales" };
 
 const LEGAL_TEXT = {
@@ -3249,6 +3225,108 @@ const LEGAL_TEXT = {
     ],
   },
 };
+
+/* ------------------------------------------------------------- Impressum */
+
+/* Die Adresse ist in jeder Sprache dieselbe: /impressum/, /de/impressum/,
+   /fr/impressum/. "Impressum" ist im schweizerischen Sprachgebrauch auch auf
+   englisch- und franzoesischsprachigen Seiten der gelaeufige Begriff, und eine
+   Adresse, die ueberall gleich heisst, laesst sich weitergeben. */
+const IMPRESSUM_SLUG = "impressum";
+
+/* Nur die Aufschriften stehen hier — die Angaben selbst (E-Mail, Standort)
+   kommen aus dem Inhalt und sind in der Verwaltung bearbeitbar. Bewusst
+   knapp: keine Strassenadresse, keine Handelsregister- oder
+   Mehrwertsteuernummer. Was nicht bekannt ist, steht nicht da. */
+const IMPRESSUM_TEXT = {
+  de: { titel: "Impressum", email: "E-Mail", standort: "Standort", zurueck: "zurück zur Website" },
+  en: { titel: "Impressum", email: "E-mail", standort: "Location", zurueck: "back to the website" },
+  fr: { titel: "Impressum", email: "E-mail", standort: "Lieu", zurueck: "retour au site" },
+};
+
+/* Der Standort steht EINMAL im Inhalt ("Herisau, Schweiz") — sonst liefen die
+   Sprachen auseinander, sobald der Kunde ihn in der Verwaltung aendert. Nur
+   das Landeswort wird uebersetzt, und nur wenn es am Ende genau so dasteht.
+   Der Ort selbst bleibt unangetastet: Herisau heisst in jeder Sprache Herisau. */
+const LAENDER = {
+  Schweiz: { en: "Switzerland", fr: "Suisse" },
+  Switzerland: { de: "Schweiz", fr: "Suisse" },
+  Suisse: { de: "Schweiz", en: "Switzerland" },
+};
+const standortInSprache = (wert, lang) => {
+  const text = str(wert).trim();
+  for (const [wort, sprachen] of Object.entries(LAENDER)) {
+    if (!text.endsWith(wort)) continue;
+    const ersatz = sprachen[lang];
+    return ersatz ? text.slice(0, -wort.length) + ersatz : text;
+  }
+  return text;
+};
+
+/** Impressum — eine schlichte, kurze Seite je Sprache. */
+function renderImpressum(c, lang, langs) {
+  const site = c.site;
+  const master = langs[0];
+  const t = IMPRESSUM_TEXT[lang] || IMPRESSUM_TEXT.de;
+  const imp = c.imprint || {};
+  const contact = c.sections?.contact || {};
+  // Die E-Mail kommt aus dem Impressum, sonst aus dem Kontakt-Abschnitt: zwei
+  // Stellen mit derselben Angabe sollen nicht auseinanderlaufen.
+  const email = str(imp.email) || str(contact.email, "info@samsparking.ch");
+  const standort = standortInSprache(imp.location, lang);
+  const artist = esc(site.artist);
+  const ink = color(site.themeColor, "#05070e");
+  const accent = color(site.accentColor, "#2e6bff");
+  const prefix = navPrefix(lang, master);
+  const zeile = (label, wert) =>
+    wert ? `<p><span class="mono">${esc(label)}</span> ${wert}</p>` : "";
+  return `<!DOCTYPE html>
+<html lang="${esc(lang)}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>${esc(t.titel)} — ${artist}</title>
+  <meta name="description" content="${esc(t.titel)} — ${artist}">
+  <link rel="canonical" href="${esc(
+    site.domain.replace(/\/+$/, "") + langPrefix(lang, master) + "/" + IMPRESSUM_SLUG + "/"
+  )}">
+  <link rel="stylesheet" href="${BASE}/assets/site.css">
+  <style>:root{--ink:${ink};--spark:${accent};}
+    .legal{max-width:720px;margin:0 auto;padding:clamp(90px,14vh,140px) 22px 80px;}
+    .legal h1{font-size:clamp(1.6rem,5vw,2.6rem);margin-bottom:34px;}
+    .legal p{color:var(--bone-dim);margin-bottom:12px;}
+    .legal p .mono{display:block;color:var(--bone);}
+    .legal a{color:var(--spark);}
+    .legal .langs{border:0;padding:0;margin:22px 0 0;}
+  </style>
+</head>
+<body>
+  <main class="legal">
+    <a class="mono" href="${esc(prefix || "/")}">← ${artist} — ${esc(t.zurueck)}</a>
+    ${
+      langs.length > 1
+        ? `<nav class="langs" aria-label="${esc(LANG_NAMES[lang] || "Sprache")}">${langs
+            .map(
+              (l) =>
+                `<a href="${esc(navPrefix(l, master) + "/" + IMPRESSUM_SLUG + "/")}" lang="${esc(
+                  l
+                )}"${l === lang ? ' aria-current="true"' : ""}>${esc(LANG_NAMES[l] || l)}</a>`
+            )
+            .join("")}</nav>`
+        : ""
+    }
+    <h1>${esc(t.titel)}</h1>
+    <p><strong>${artist}</strong></p>
+    ${zeile(t.email, `<a href="mailto:${esc(email)}">${esc(email)}</a>`)}
+    ${zeile(t.standort, esc(standort))}
+    <p><a href="${esc(navPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
+    LEGAL_LABEL[lang] || LEGAL_LABEL.de
+  )}</a></p>
+  </main>
+</body>
+</html>
+`;
+}
 
 /** Impressum & Datenschutz — eine schlichte Seite je Sprache. */
 function renderLegal(c, lang, langs) {
@@ -3347,6 +3425,27 @@ ${alts}
     <priority>${!p.slug && lang === master ? "1.0" : "0.8"}</priority>${images ? "\n" + images : ""}
   </url>`);
     }
+  }
+  /* Das Impressum gehoert in die Sitemap. Es steht nicht in `pages` (es ist
+     keine Seite mit Abschnitten, sondern eine feste kurze Seite), muss aber
+     auffindbar sein — anders als "Impressum & Datenschutz", das auf noindex
+     steht. */
+  for (const lang of langs) {
+    const alts = langs
+      .map(
+        (l) =>
+          `      <xhtml:link rel="alternate" hreflang="${esc(l)}" href="${esc(
+            base + langPrefix(l, master) + "/" + IMPRESSUM_SLUG + "/"
+          )}"/>`
+      )
+      .join("\n");
+    rows.push(`  <url>
+    <loc>${esc(base + langPrefix(lang, master) + "/" + IMPRESSUM_SLUG + "/")}</loc>
+${alts}
+    <lastmod>${today()}</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>`);
   }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
@@ -3466,6 +3565,16 @@ async function main() {
     written.push(rel);
   }
   console.log("[build] Rechtliches je Sprache");
+
+  // Impressum je Sprache — kurz, und in jeder Sprache unter /impressum/
+  for (const lang of langs) {
+    const rel = (langPrefix(lang, master) + "/" + IMPRESSUM_SLUG + "/index.html").replace(/^\//, "");
+    const file = resolve(ROOT, rel);
+    await mkdir(dirname(file), { recursive: true });
+    await writeFile(file, renderImpressum(content, lang, langs));
+    written.push(rel);
+  }
+  console.log("[build] Impressum je Sprache");
 
   await writeFile(resolve(ROOT, "sitemap.xml"), renderSitemap(content, pages, langs));
   await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));

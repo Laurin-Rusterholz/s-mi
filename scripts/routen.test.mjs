@@ -123,6 +123,10 @@ const ERWARTET = [
   ["/assets/site.js", 200, "/assets/site.js"],
   ["/legal/", 200, "/legal/index.html"],
   ["/de/rechtliches/", 200, "/de/rechtliches/index.html"],
+  // Das Impressum: in jeder Sprache unter derselben Adresse.
+  ["/impressum/", 200, "/impressum/index.html"],
+  ["/de/impressum/", 200, "/de/impressum/index.html"],
+  ["/fr/impressum/", 200, "/fr/impressum/index.html"],
   ["/presskit/sam-sparking-presskit-2026.pdf", 200, "/presskit/sam-sparking-presskit-2026.pdf"],
 
   // Suchmaschinen.

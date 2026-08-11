@@ -471,4 +471,31 @@
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/impressum/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/impressum/"/>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/de/impressum/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/impressum/"/>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/fr/impressum/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/impressum/"/>
+    <lastmod>2026-08-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

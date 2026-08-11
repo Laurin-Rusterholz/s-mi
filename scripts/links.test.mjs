@@ -64,6 +64,12 @@ const adresse = (d) => "/" + d.replace(/(^|\/)index\.html$/, "$1").replace(/\/$/
 const adressen = new Set(dateien.map(adresse));
 const idsVon = (h) => new Set([...h.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));
 const ids = new Map([...html].map(([d, h]) => [d, idsVon(h)]));
+
+/* Der Inhalt, mit dem gebaut wurde — der Stand NACH den Korrekturen, denn
+   build.mjs schreibt ihn zurueck. Referenzen, Kanaele und Ware werden dagegen
+   geprueft statt gegen eine Liste im Test: sonst schreibt der Test der
+   Verwaltung vor, was dort stehen darf. */
+const INHALT = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
 const dateiFuer = (pfad) =>
   dateien.find((d) => adresse(d) === pfad || adresse(d) === pfad + "/");
 
@@ -173,6 +179,9 @@ for (const [datei, h] of html) {
   };
   const startseiten = ["index.html", "de/index.html", "fr/index.html"];
 
+  const refImInhalt = (INHALT.sections?.references?.items || []).filter((r) => r && r.name);
+  const kanaeleImInhalt = (INHALT.sections?.contact?.socials || []).filter((x) => x && x.label);
+
   for (const rel of startseiten) {
     const h = await seite(rel);
     if (!h) continue;
@@ -200,50 +209,84 @@ for (const [datei, h] of html) {
         if (about[0].includes(wort)) meckern(`${rel}: Fakt "${wort}" steht wieder in "Ueber mich"`);
     }
 
-    // 3) Referenzen: Club Eden statt IVY, Jugendopenair zweimal mit
-    //    verschiedenen Orten, genau vier hervorgehobene Eintraege.
-    if (h.includes(">IVY<")) meckern(`${rel}: "IVY" steht noch in den Referenzen`);
-    for (const n of ["Club Eden", "Picante"])
-      if (!h.includes(n)) meckern(`${rel}: "${n}" fehlt in den Referenzen`);
-    const jugend = [...h.matchAll(/Jugendopenair<\/span><span class="venue-city">([^<]*)</g)].map(
-      (m) => m[1]
-    );
-    if (new Set(jugend).size !== jugend.length)
-      meckern(`${rel}: Jugendopenair steht doppelt am selben Ort`);
-    const hervor = (h.match(/<li class="lead">/g) || []).length;
-    if (hervor !== 4) meckern(`${rel}: ${hervor} hervorgehobene Referenzen statt 4`);
+    /* 3) Referenzen: genau die Liste der Verwaltung, in ihrer Reihenfolge.
 
-    // 7) Alle vier Kanaele werden genannt; verlinkt wird nur, wo eine echte
-    //    Adresse hinterlegt ist. Ein geratener Link waere schlimmer als keiner.
+       Hier stand bis zum 11.08.2026 das Gegenteil — "IVY darf nicht
+       vorkommen, Club Eden und Picante muessen". Das war die im Repo
+       gepflegte Ersatzliste, und sie war der Grund, warum "IVY — St. Gallen"
+       aus der Verwaltung auf der Website fehlte. Geprueft wird jetzt gegen
+       den Inhalt, mit dem gebaut wurde: gross zuerst (hoechstens vier), dann
+       der Rest, beide in der Reihenfolge der Verwaltung. */
+    const sollGross = refImInhalt.filter((r) => r.highlight === true).slice(0, 4);
+    const sollRest = refImInhalt.filter((r) => !sollGross.includes(r));
+    /* Nur im Referenz-Abschnitt suchen: der Kopf hat auch <li><a>-Zeilen, und
+       eine gierige Suche holte sich sonst den ersten Namen von dort. */
+    const refBlock = (h.match(/<section class="pad" id="references"[\s\S]*?<\/section>/) || [""])[0];
+    const gelesen = (regex) =>
+      [...refBlock.matchAll(regex)].map((m) => `${m[1]} — ${m[2]}`);
+    const istGross = gelesen(
+      /<li class="lead"><a[^>]*>[\s\S]*?venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
+    );
+    const istRest = gelesen(
+      /<li><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
+    );
+    const alsText = (r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, "");
+    const vergleich = (name, soll, ist) => {
+      const a = soll.map(alsText).join(" | ");
+      const b = ist.map((x) => x.replace(/ — $/, "")).join(" | ");
+      if (a !== b) meckern(`${rel}: ${name} weichen ab\n           Verwaltung: ${a}\n           Seite:      ${b}`);
+    };
+    vergleich("die grossen Referenzen", sollGross, istGross);
+    vergleich("die kleinen Referenzen", sollRest, istRest);
+    if (istGross.length > 4) meckern(`${rel}: ${istGross.length} grosse Referenzen — mehr als vier`);
+    // Und die Gegenprobe zur Ursache: der Eintrag der Verwaltung ist wirklich da.
+    if (refImInhalt.some((r) => r.name === "IVY") && !/venue-name">IVY</.test(h))
+      meckern(`${rel}: "IVY" steht in der Verwaltung, aber nicht auf der Seite`);
+
+    /* 7) Die Kanaele stehen genau so auf der Seite, wie sie im Inhalt stehen —
+       in derselben Reihenfolge, mit derselben Adresse. Hier stand bis zum
+       11.08.2026 eine feste Liste von vier Kanaelen im Test; der Generator
+       legte fehlende selbst an, damit sie erfuellt war. Genau daher kam der
+       Unterschied: in der Verwaltung stand nur Mixcloud, auf der Seite vier.
+       Verlinkt wird nur, wo eine Adresse hinterlegt ist — geraten wird nichts. */
     const fuss = h.match(/<div class="wrap foot-social">[\s\S]*?<\/ul>/);
     if (!fuss) meckern(`${rel}: kein Kanal-Block im Fuss`);
     else {
-      for (const k of ["Instagram", "TikTok", "Spotify", "Mixcloud"])
-        if (!fuss[0].includes(`>${k}</span>`)) meckern(`${rel}: Kanal "${k}" fehlt im Fuss`);
-      /* Erlaubt sind genau die vier Kanaele des Kuenstlers. TikTok und Spotify
-         hat der Kunde am 10.08.2026 nachgeliefert — bis dahin standen sie
-         bewusst unverlinkt da. Geraten wird weiterhin nichts: jede andere
-         Adresse faellt hier auf. */
-      for (const url of fuss[0].match(/href="([^"]*)"/g) || []) {
-        if (!/^href="https:\/\/((www\.)?(instagram|mixcloud|tiktok)\.com|open\.spotify\.com)\//.test(url))
-          meckern(`${rel}: unerwartete Kanal-Adresse im Fuss: ${url}`);
+      // Der Name steht im letzten <span> der Zeile — davor steht das Zeichen.
+      const istKanaele = [...fuss[0].matchAll(/<li[^>]*>[\s\S]*?<span>([^<]*)<\/span>/g)].map((m) => m[1]);
+      const sollKanaele = kanaeleImInhalt.map((x) => String(x.label));
+      if (istKanaele.join(" | ") !== sollKanaele.join(" | "))
+        meckern(
+          `${rel}: Kanaele weichen ab\n           Verwaltung: ${sollKanaele.join(" | ")}` +
+            `\n           Seite:      ${istKanaele.join(" | ")}`
+        );
+      /* Kein geratener Link: jede Adresse auf der Seite muss im Inhalt stehen. */
+      const erlaubt = new Set(kanaeleImInhalt.map((x) => String(x.url || "")).filter(Boolean));
+      for (const treffer of fuss[0].match(/href="([^"]*)"/g) || []) {
+        const url = treffer.slice(6, -1);
+        if (!erlaubt.has(url))
+          meckern(`${rel}: Kanal-Adresse im Fuss, die nicht im Inhalt steht: ${url}`);
       }
-      const SOLL = {
-        TikTok: "https://www.tiktok.com/@sam_sparking",
-        Spotify: "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S",
-      };
-      for (const [k, adresse] of Object.entries(SOLL)) {
-        const zeile = fuss[0].match(new RegExp(`<li[^>]*>(?:(?!</li>)[\\s\\S])*?${k}[\\s\\S]*?</li>`));
+      for (const kanal of kanaeleImInhalt) {
+        const name = String(kanal.label);
+        const zeile = fuss[0].match(
+          new RegExp(`<li[^>]*>(?:(?!</li>)[\\s\\S])*?${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?</li>`)
+        );
         if (!zeile) {
-          meckern(`${rel}: Kanal "${k}" fehlt im Fuss`);
+          meckern(`${rel}: Kanal "${name}" fehlt im Fuss`);
           continue;
         }
-        if (!zeile[0].includes(`href="${adresse}"`))
-          meckern(`${rel}: "${k}" zeigt nicht auf ${adresse}`);
+        const url = String(kanal.url || "");
+        if (!url) {
+          // Ohne Adresse bleibt der Kanal unverlinkt stehen statt ins Leere zu zeigen.
+          if (/<a /.test(zeile[0])) meckern(`${rel}: "${name}" ist verlinkt, obwohl keine Adresse hinterlegt ist`);
+          continue;
+        }
+        if (!zeile[0].includes(`href="${url}"`)) meckern(`${rel}: "${name}" zeigt nicht auf ${url}`);
         // Fremdes Fenster, aber ohne Zugriff auf dieses und ohne Referrer.
         if (!/rel="[^"]*noopener[^"]*"/.test(zeile[0]) || !/rel="[^"]*noreferrer[^"]*"/.test(zeile[0]))
-          meckern(`${rel}: "${k}" ohne rel="noopener noreferrer"`);
-        if (!/target="_blank"/.test(zeile[0])) meckern(`${rel}: "${k}" oeffnet nicht in neuem Fenster`);
+          meckern(`${rel}: "${name}" ohne rel="noopener noreferrer"`);
+        if (!/target="_blank"/.test(zeile[0])) meckern(`${rel}: "${name}" oeffnet nicht in neuem Fenster`);
       }
     }
 
@@ -459,10 +502,6 @@ for (const [datei, h] of html) {
      STRIPE_PAYMENT_LINK_URL nirgends hinterlegt war. Geprueft wird gegen
      denselben Schalter, mit dem gebaut wurde. */
   const zahlbar = istStripeAdresse(process.env.STRIPE_PAYMENT_LINK_URL);
-  /* Was laut Inhalt im Shop steht — dagegen wird die gebaute Seite geprueft.
-     Der Inhalt ist der Stand NACH den Korrekturen: build.mjs schreibt ihn
-     zurueck, also steht hier genau die Ware, die die Seite zeigen muss. */
-  const inhalt = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
   const htmlEsc = (s) =>
     String(s)
       .replace(/&/g, "&amp;")
@@ -470,7 +509,7 @@ for (const [datei, h] of html) {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
-  const wareImInhalt = (inhalt.sections?.shop?.items || [])
+  const wareImInhalt = (INHALT.sections?.shop?.items || [])
     .filter((p) => p && String(p.name || "").trim())
     .map((p) => htmlEsc(String(p.name).trim()));
   const ZAHLWORTE = ["Stripe", "TWINT", "Apple Pay", "Google Pay"];
@@ -536,6 +575,47 @@ for (const [datei, h] of html) {
       meckern("site.js leitet allein auf Verdacht weiter — die Adresse wird nicht geprueft");
     if (!/istStripeAdresse\(\s*out\.paymentUrl\s*\)/.test(js))
       meckern("site.js prueft die Bezahladresse nicht, bevor es weiterleitet");
+  }
+
+  /* Das Impressum: eigene Seite je Sprache, im Fuss jeder Seite verlinkt, und
+     bewusst knapp. Kundenwunsch vom 11.08.2026. */
+  {
+    const impressumSeiten = ["impressum/index.html", "de/impressum/index.html", "fr/impressum/index.html"];
+    const email = String(INHALT.imprint?.email || INHALT.sections?.contact?.email || "");
+    for (const rel of impressumSeiten) {
+      const h = await seite(rel);
+      if (!h) {
+        meckern(`${rel}: die Seite wurde nicht gebaut`);
+        continue;
+      }
+      if (!/<h1>Impressum<\/h1>/.test(h)) meckern(`${rel}: keine Ueberschrift "Impressum"`);
+      if (email && !h.includes(`mailto:${email}`)) meckern(`${rel}: die E-Mail ${email} fehlt`);
+      // Der Ort steht da — das Landeswort in der Sprache der Seite.
+      if (!/Herisau/.test(h)) meckern(`${rel}: der Standort fehlt`);
+      /* Bewusst knapp: keine Strassenadresse, keine Handelsregister- oder
+         Mehrwertsteuernummer, keine erfundene Telefonnummer. Was nicht bekannt
+         ist, steht nicht da. */
+      for (const wort of ["Handelsregister", "CHE-", "MwSt", "UID", "Postfach", "strasse ", "Strasse "])
+        if (h.includes(wort)) meckern(`${rel}: "${wort}" steht auf der Seite — nicht bekannt`);
+      if (/\b\+41\s?\d/.test(h)) meckern(`${rel}: eine Telefonnummer steht im Impressum`);
+      // Und die Sprachen zeigen aufeinander.
+      for (const ziel of ["/impressum/", "/de/impressum/", "/fr/impressum/"])
+        if (!h.includes(`href="${BASE}${ziel}"`)) meckern(`${rel}: kein Weg nach ${ziel}`);
+    }
+    // Sichtbarer Weg dorthin: im Fuss jeder gebauten Seite.
+    for (const [datei, h] of html) {
+      if (datei.startsWith("impressum/") || /\/impressum\//.test(datei)) continue;
+      if (/rechtliches|mentions-legales|^legal\//.test(datei) || /\/(rechtliches|mentions-legales)\//.test(datei)) continue;
+      if (datei === "404.html" || datei === "coming-soon.html") continue;
+      const fuss = h.match(/<div class="wrap foot">[\s\S]*?<\/div>/);
+      if (!fuss) continue;
+      if (!/>Impressum</.test(fuss[0])) meckern(`${datei}: kein Impressum-Link im Fuss`);
+    }
+    // In der Sitemap steht es auch — anders als "Impressum & Datenschutz".
+    const sitemap = await seite("sitemap.xml");
+    if (sitemap)
+      for (const ziel of ["/impressum/", "/de/impressum/", "/fr/impressum/"])
+        if (!sitemap.includes(ziel)) meckern(`sitemap.xml: ${ziel} fehlt`);
   }
 
   // 8) Die Schreibweise — ausser im Hostname, der eine Adresse ist.

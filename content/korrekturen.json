@@ -12,155 +12,6 @@
     "ist (siehe nachziehen() in scripts/build.mjs). Wer dort etwas aendert,",
     "behaelt das letzte Wort."
   ],
-  "alteReferenzen": [
-    [
-      "Kugl",
-      "Sektor 11",
-      "The Q",
-      "IVY",
-      "BBC",
-      "B9",
-      "Ultrawild Festival"
-    ],
-    [
-      "Sektor 11",
-      "Jugendopenair",
-      "Kugl",
-      "B9 eventlocation",
-      "IVY",
-      "Ultrawild Festival",
-      "Monoevents",
-      "Amadeusbar",
-      "Dorffest Herisau",
-      "Turnunterhaltung Sirnach",
-      "Xploration Events",
-      "Winterzauber Bazenheid",
-      "Firehouse Party Wittenbach",
-      "BBC",
-      "The Q"
-    ],
-    [
-      "Kugl",
-      "Sektor 11",
-      "Ultrawild Festival",
-      "BBC",
-      "Jugendopenair",
-      "Amadeusbar",
-      "B9 eventlocation",
-      "Club Eden",
-      "Dorffest Herisau",
-      "Firehouse Party Wittenbach",
-      "Jugendopenair",
-      "Monoevents",
-      "Picante",
-      "Turnunterhaltung Sirnach",
-      "Winterzauber Bazenheid",
-      "Aftersun Festival",
-      "Xploration Events",
-      "The Q"
-    ],
-    [
-      "Kugl",
-      "Sektor 11",
-      "Ultrawild Festival",
-      "BBC",
-      "Aftersun Festival",
-      "Amadeusbar",
-      "B9 eventlocation",
-      "Dorffest Herisau",
-      "Firehouse Party Wittenbach",
-      "IVY",
-      "Jugendopenair",
-      "Monoevents",
-      "Picante",
-      "The Q",
-      "Turnunterhaltung Sirnach",
-      "Winterzauber Bazenheid",
-      "Xploration Events"
-    ]
-  ],
-  "referenzen": [
-    {
-      "name": "Kugl",
-      "city": "St. Gallen",
-      "highlight": true
-    },
-    {
-      "name": "Sektor 11",
-      "city": "Zürich",
-      "highlight": true
-    },
-    {
-      "name": "Ultrawild Festival",
-      "city": "St. Gallen",
-      "highlight": true
-    },
-    {
-      "name": "BBC",
-      "city": "Gossau",
-      "highlight": true
-    },
-    {
-      "name": "Aftersun Festival",
-      "city": "Luzern"
-    },
-    {
-      "name": "Amadeusbar",
-      "city": "Herisau"
-    },
-    {
-      "name": "B9 eventlocation",
-      "city": "St. Gallen"
-    },
-    {
-      "name": "Club Eden",
-      "city": "St. Gallen"
-    },
-    {
-      "name": "Dorffest Herisau",
-      "city": "Herisau"
-    },
-    {
-      "name": "Firehouse Party Wittenbach",
-      "city": "Wittenbach"
-    },
-    {
-      "name": "Jugendopenair",
-      "city": "St. Gallen"
-    },
-    {
-      "name": "Jugendopenair",
-      "city": "Wattwil"
-    },
-    {
-      "name": "Monoevents",
-      "city": "St. Gallen"
-    },
-    {
-      "name": "Picante",
-      "city": "St. Gallen"
-    },
-    {
-      "name": "The Q",
-      "city": "Schaan, FL"
-    },
-    {
-      "name": "Turnunterhaltung Sirnach",
-      "city": "Sirnach"
-    },
-    {
-      "name": "Winterzauber Bazenheid",
-      "city": "Bazenheid"
-    },
-    {
-      "name": "Xploration Events",
-      "city": "Glarus"
-    }
-  ],
-  "instagram": {
-    "label": "Instagram",
-    "url": "https://www.instagram.com/sam_sparking/"
-  },
   "heroStats": [
     {
       "value": "2021",
@@ -182,62 +33,6 @@
   },
   "i18n": {
     "de": {
-      "referenzen": {
-        "0": {
-          "city": "St. Gallen"
-        },
-        "1": {
-          "city": "Zürich"
-        },
-        "2": {
-          "city": "St. Gallen"
-        },
-        "3": {
-          "city": "Gossau"
-        },
-        "4": {
-          "city": "Luzern"
-        },
-        "5": {
-          "city": "Herisau"
-        },
-        "6": {
-          "city": "St. Gallen"
-        },
-        "7": {
-          "city": "St. Gallen"
-        },
-        "8": {
-          "city": "Herisau"
-        },
-        "9": {
-          "city": "Wittenbach"
-        },
-        "10": {
-          "city": "St. Gallen"
-        },
-        "11": {
-          "city": "Wattwil"
-        },
-        "12": {
-          "city": "St. Gallen"
-        },
-        "13": {
-          "city": "St. Gallen"
-        },
-        "14": {
-          "city": "Schaan, FL"
-        },
-        "15": {
-          "city": "Sirnach"
-        },
-        "16": {
-          "city": "Bazenheid"
-        },
-        "17": {
-          "city": "Glarus"
-        }
-      },
       "heroStats": {
         "0": {
           "label": "Erstes Set"
@@ -262,62 +57,6 @@
       }
     },
     "fr": {
-      "referenzen": {
-        "0": {
-          "city": "Saint-Gall"
-        },
-        "1": {
-          "city": "Zurich"
-        },
-        "2": {
-          "city": "Saint-Gall"
-        },
-        "3": {
-          "city": "Gossau"
-        },
-        "4": {
-          "city": "Lucerne"
-        },
-        "5": {
-          "city": "Herisau"
-        },
-        "6": {
-          "city": "Saint-Gall"
-        },
-        "7": {
-          "city": "Saint-Gall"
-        },
-        "8": {
-          "city": "Herisau"
-        },
-        "9": {
-          "city": "Wittenbach"
-        },
-        "10": {
-          "city": "Saint-Gall"
-        },
-        "11": {
-          "city": "Wattwil"
-        },
-        "12": {
-          "city": "Saint-Gall"
-        },
-        "13": {
-          "city": "Saint-Gall"
-        },
-        "14": {
-          "city": "Schaan, FL"
-        },
-        "15": {
-          "city": "Sirnach"
-        },
-        "16": {
-          "city": "Bazenheid"
-        },
-        "17": {
-          "city": "Glarus"
-        }
-      },
       "heroStats": {
         "0": {
           "label": "Premier set"
@@ -364,29 +103,6 @@
       "country": "CH"
     }
   ],
-  "kanaele": {
-    "ausDemKopf": [
-      "Instagram"
-    ],
-    "erwartet": [
-      "Instagram",
-      "TikTok",
-      "Spotify",
-      "Mixcloud"
-    ],
-    "adressen": {
-      "_warum": [
-        "Vom Kunden am 10.08.2026 nachgeliefert. Bis dahin standen TikTok und",
-        "Spotify bewusst unverlinkt auf der Seite ('folgt') — geraten wurde nichts.",
-        "Jetzt sind die echten Profile bekannt und werden gesetzt.",
-        "",
-        "Nur wo noch keine Adresse steht: sobald in der Verwaltung eine hinterlegt",
-        "ist, gewinnt sie."
-      ],
-      "TikTok": "https://www.tiktok.com/@sam_sparking",
-      "Spotify": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S"
-    }
-  },
   "seiten": [
     {
       "slug": "",
@@ -553,22 +269,6 @@
       "Clubs & Festivals"
     ]
   },
-  "_alteReferenzenWarum": [
-    "Der Massstab, gegen den die Ersetzung prueft — MEHRERE bekannte Altstaende.",
-    "",
-    "Warum mehrere: In der Datenbank steht die 7er-Liste (Kugl, Sektor 11, The Q,",
-    "IVY, BBC, B9, Ultrawild Festival). Stand hier nur EIN Massstab und der war",
-    "ein anderer, traf der Abgleich nie zu und die Ersetzung lief still ins",
-    "Leere — die Website zeigte weiter die alte Liste. Genau das ist am",
-    "10.08.2026 passiert.",
-    "",
-    "Verglichen wird ohne Ruecksicht auf die Reihenfolge: die Verwaltung",
-    "sortiert die Liste beim Speichern um, eine Reihenfolge-treue Pruefung",
-    "waere schon dadurch hinfaellig.",
-    "",
-    "Die Schutzwirkung bleibt: Eine Liste, die zu KEINEM dieser Staende passt,",
-    "hat jemand selbst gepflegt und wird nicht angefasst."
-  ],
   "aboutFakten": {
     "_warum": [
       "Kundenwunsch vom 10.08.2026: die beiden Fakten unten im About-Bereich",
@@ -601,5 +301,45 @@
       "ACHTUNG: Diese Regel greift IMMER und ueberstimmt die Verwaltung."
     ],
     "startAnzahl": 6
-  }
+  },
+  "impressum": {
+    "_warum": [
+      "Die Angaben des Impressums, vom Kunden am 11.08.2026 genannt. Sie",
+      "stehen hier, weil content/site.json bei jedem Build aus der",
+      "Datenbank neu geschrieben wird: waeren sie nur dort, waeren sie",
+      "beim naechsten Build der Verwaltung weg.",
+      "",
+      "Gesetzt wird nur, was fehlt. Sobald der Kunde in der Verwaltung",
+      "unter 'Impressum' etwas eintraegt, gewinnt sein Wert.",
+      "",
+      "Bewusst knapp: keine Strassenadresse, keine Handelsregister- oder",
+      "Mehrwertsteuernummer, keine Telefonnummer. Was nicht bekannt ist,",
+      "steht nicht da."
+    ],
+    "email": "info@samsparking.ch",
+    "location": "Herisau, Schweiz"
+  },
+  "_wasHierNichtMehrSteht": [
+    "Entfernt am 11.08.2026, weil die Verwaltung entscheidet:",
+    "",
+    "  referenzen / alteReferenzen   tauschten die Referenzliste der Verwaltung",
+    "                                gegen eine im Repo gepflegte Fassung. Genau",
+    "                                daher fehlte 'IVY — St. Gallen' auf der",
+    "                                Website: die Ersatzliste kannte stattdessen",
+    "                                'Club Eden — St. Gallen'.",
+    "  i18n.de/fr.referenzen         uebersetzten die Orte ueber den PLATZ in der",
+    "                                Liste. Beim Umsortieren in der Verwaltung",
+    "                                wanderte damit der Ort zum falschen Club.",
+    "                                Orte stehen jetzt in jeder Sprache so da,",
+    "                                wie sie in der Verwaltung stehen.",
+    "  kanaele.erwartet              legte fehlende Kanaele ohne Adresse an",
+    "  kanaele.adressen              trug Adressen fuer TikTok und Spotify ein",
+    "  kanaele.ausDemKopf            setzte inHeader:false fuer Instagram",
+    "  instagram                     legte Instagram an, wenn keines dastand",
+    "",
+    "Die vier Kanal-Regeln waren der Grund, warum die Verwaltung links nur",
+    "Mixcloud zeigte, Vorschau und Website aber vier Kanaele. Nachgetragen wird",
+    "jetzt in der Verwaltung selbst (kanaele-nachtragen.js) — dort sind die",
+    "Kanaele bearbeitbar und werden mitgespeichert."
+  ]
 }
