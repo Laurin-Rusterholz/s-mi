@@ -177,46 +177,78 @@ gleicher Dateiname, Datei ersetzen:
 
 Tipp: vorher auf max. ~2000 px Breite verkleinern, JPG Qualität ~80.
 
-## Was dem Shop bis zum Start fehlt
+## Shop: Produkt anlegen und verkaufen
 
-Stand 10.08.2026 ist `/shop/` **absichtlich leer**. Die Seite antwortet mit 200
-und sagt „The shop opens soon" — es steht keine Ware darauf, und darum gibt es
-dort auch kein Bestellformular und keine Bezahl-Angaben.
+Stand 10.08.2026 ist `/shop/` **leer** — es gibt keine verifizierten
+Artikeldaten. Die Seite antwortet trotzdem mit 200 und sagt „The shop opens
+soon". Ohne Ware baut der Generator von selbst kein Bestellformular und keine
+Bezahl-Angaben; es kann also niemand etwas bestellen, das es nicht gibt.
 
-Warum: die einzige Ware in der Verwaltung war der Platzhalter **„Beispiel"** aus
-dem ersten Einrichten — CHF 35, ohne Beschreibung, mit einem Produktbild, dessen
-Firebase-Adresse mit **404** antwortete (auf der Seite ein leerer Rahmen). Ein
-Kauf-Knopf stand trotzdem daneben. Verifizierte Artikeldaten gibt es nicht, und
-erfunden wird hier nichts — deshalb nimmt der Generator diese Ware heraus
-(`shop.entfernteWare` in `content/korrekturen.json`).
+### Der ganze Weg — drei Schritte, kein API-Schlüssel
 
-Für einen echten Start fehlen genau diese Angaben — **alle** aus einer
-verlässlichen Quelle, nicht geschätzt:
+1. **In Stripe** einen Preis anlegen und daraus einen **Payment Link** erzeugen
+   (Stripe-Dashboard → *Produktkatalog* → Produkt/Preis → *Payment Link*). Die
+   Adresse sieht so aus: `https://buy.stripe.com/…`
+2. **In der Verwaltung** unter *Shop* → *Ware* den Artikel anlegen — Name,
+   Preis, Bild, Beschreibung — und die Adresse aus Schritt 1 in das Feld
+   **„Stripe Payment Link"** einsetzen.
+3. **Speichern und publizieren.** Der Kauf-Knopf dieses Artikels führt danach
+   direkt auf genau diese Kasse.
 
-| Was | Wo eintragen | Warum es nicht geraten werden kann |
+**Warum am Artikel und nicht global:** ein Payment Link gehört in Stripe zu
+genau *einem* Preis. Ein gemeinsamer Link für alle Artikel würde bei jedem
+Artikel denselben Betrag abrechnen. Deshalb hat jeder Artikel sein eigenes Feld —
+und es gibt **keinen** Rückfall auf einen globalen Link: fehlt der Link bei einem
+Artikel, bekommt er keinen Kauf-Knopf, statt versehentlich den falschen Preis zu
+kassieren.
+
+**Was geprüft wird:** nur `https://buy.stripe.com/…` wird übernommen. Eine
+Dashboard-Adresse, `http://`, eine fremde Domain oder ein Tippfehler zählen wie
+kein Link — der Knopf erscheint dann einfach nicht. Ein Payment Link ist eine
+öffentliche Adresse; **ein API-Schlüssel wird nie gebraucht** und gehört auch
+nicht in die Verwaltung.
+
+### Was ohne Payment Link passiert
+
+Der Artikel steht mit Bild und Preis da, aber ohne Kauf-Knopf. Ist ein
+Bestellformular da (das entsteht, sobald Ware im Shop steht), wird die Bestellung
+erfasst und per E-Mail gemeldet — bezahlt wird dann auf Absprache. Die Seite
+verspricht in diesem Fall ausdrücklich **keine** Bezahlung: kein „via Stripe",
+kein TWINT/Apple Pay/Google Pay.
+
+### Umgebungsvariablen in Netlify
+
+Alle unter **Site configuration → Environment variables** der Netlify-Site, die
+`s-mi` ausliefert. Keine davon gehört ins Repo — Netlify ist der einzige Ort.
+
+| Variable | Wofür | Fehlt sie, dann … |
 |---|---|---|
-| **Artikelname** je Ware | Verwaltung → *Shop* → Ware | „Beispiel" ist ein Tipprest, kein Produkt |
-| **Verkaufspreis** in CHF | dito, Feld *Preis* | CHF 35 stammt vom Platzhalter |
-| **Produktbild**, das wirklich lädt | Verwaltung → *Medien*, dann in der Ware auswählen | die bisherige Adresse ist tot (404); ein Bühnenfoto ist kein Merch-Bild |
-| **Beschreibung** (eine Zeile) | dito, Feld *Kurze Zeile darunter* | stand nur „as" drin |
-| **Grössen / Varianten**, falls Textil | dito | es gibt keine Angabe, ob es Grössen gibt |
-| **Lagerbestand / Status** (`available` oder `soldout`) | dito | sonst lässt sich Ausverkauftes nicht zeigen |
-| **Versandkosten und Liefergebiet** | Verwaltung → *Shop* → Versandzeile | aktuell steht „Gratis Versand — nur innerhalb der Schweiz" nur als Text |
-| **`STRIPE_PAYMENT_LINK_URL`** | Netlify → *Environment variables* | siehe unten |
+| `RESEND_API_KEY` | E-Mail-Versand (Resend) für Booking- und Bestell-Meldungen | es wird **keine E-Mail** verschickt; die Anfrage wird nur im Eingang abgelegt |
+| `MAIL_TO` | Empfänger der Meldungen | Rückfall auf `info@samsparking.ch` |
+| `MAIL_FROM` | Absender, muss eine in Resend verifizierte Domain sein | Rückfall auf die Resend-Testadresse — landet leicht im Spam |
+| `INBOX_API_URL` | Ablage der Anfragen (Realtime Database) | die Anfrage wird nicht gespeichert; kommt weder E-Mail noch Ablage zustande, antwortet der Endpunkt mit 502 statt „Danke" |
+| `INBOX_API_TOKEN` | Schreibrecht für die Ablage, falls die Regeln eines verlangen | nur nötig, wenn die Datenbankregeln es fordern |
+| `STRIPE_WEBHOOK_SECRET` | Prüft die Zahlungsbestätigung von Stripe (`/api/stripe-webhook`) | der Endpunkt lehnt jede Meldung mit 503 ab — ohne Geheimnis ist keine Unterschrift prüfbar |
+| `STRIPE_PAYMENT_LINK_URL` | **optional, veraltet.** Globaler Zahlungslink für den Formular-Weg | nichts fehlt: die Kasse hängt am Artikel (siehe oben). Bleibt leer, solange nicht bewusst ein globaler Link gewollt ist |
 
-**Bezahlung.** `STRIPE_PAYMENT_LINK_URL` ist **nicht gesetzt**. Solange das so
-ist, verspricht die Seite bewusst keine Bezahlung: kein „via Stripe", kein
-TWINT/Apple Pay/Google Pay, und der Absende-Knopf kündigt keine Weiterleitung
-an. Der Endpunkt `/api/order` nimmt eine Bestellung trotzdem an, legt sie im
-Eingang ab und schickt die E-Mail — er gibt nur keine Bezahladresse zurück.
-Sobald ein echter Zahlungslink hinterlegt ist (`https://`, Host `stripe.com`
-oder `link.com` — alles andere lehnen Endpunkt *und* Browser ab), schaltet sich
-der Bezahl-Zweig von selbst frei. Ein Link wird hier nicht erfunden und der
-Stripe-Account nicht angefasst.
+Ob etwas gesetzt ist, sagt ein `GET` auf `/api/booking` als reines ja/nein —
+**ohne** je einen Schlüssel auszugeben.
 
-Erst wenn Name, Preis, ein ladendes Bild und der Zahlungslink stehen, gehört
-`"Beispiel"` aus `shop.entfernteWare` heraus — sonst räumt der nächste Build die
-Ware wieder weg.
+### Was noch fehlt, wenn Ware dazukommt
+
+| Was | Wo eintragen |
+|---|---|
+| **Artikelname**, **Preis** in CHF | Verwaltung → *Shop* → Ware |
+| **Produktbild**, das wirklich lädt | Verwaltung → *Medien*, dann in der Ware auswählen |
+| **Beschreibung** (eine Zeile) | dito, Feld *Kurze Zeile darunter* |
+| **Grössen / Varianten**, falls Textil | dito (eigener Artikel je Grösse, solange es kein Varianten-Feld gibt) |
+| **Status** `available` / `soldout` | dito |
+| **Versandkosten und Liefergebiet** | Verwaltung → *Shop* → Versandzeile |
+| **Stripe Payment Link** je Artikel | dito, Feld *Stripe Payment Link* |
+
+Der Platzhalter `"Beispiel"` wird vom Generator entfernt
+(`shop.entfernteWare` in `content/korrekturen.json`). Sobald es echte Ware gibt,
+gehört der Name dort heraus — sonst räumt der nächste Build sie wieder weg.
 
 ## Presskit
 

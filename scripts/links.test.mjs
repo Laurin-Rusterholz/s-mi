@@ -177,9 +177,28 @@ for (const [datei, h] of html) {
     const h = await seite(rel);
     if (!h) continue;
 
-    // 1) "First set 2021" ist ueberall weg — im Hero wie in "Ueber mich".
-    for (const wort of ["First set", "Erstes Set", "Premier set"])
-      if (h.includes(wort)) meckern(`${rel}: "${wort}" steht noch auf der Seite`);
+    /* 1) Die Jahreszahl im Hero MUSS da sein. Sie war am 10.08.2026 kurz
+          stillgelegt; der Kunde hat das am selben Tag zurueckgenommen. Geprueft
+          wird die Aufschrift in der Sprache der Route zusammen mit "2021" —
+          eine leere Kennzahlen-Leiste faellt damit auf. */
+    const kennzahl = { "index.html": "First set", "de/index.html": "Erstes Set", "fr/index.html": "Premier set" }[rel];
+    const leiste = h.match(/<div class="hero-stats">[\s\S]*?<\/div>\s*<\/div>/);
+    if (!leiste) meckern(`${rel}: keine Kennzahlen-Leiste im Hero`);
+    else {
+      if (!leiste[0].includes(kennzahl))
+        meckern(`${rel}: Kennzahl "${kennzahl}" fehlt im Hero`);
+      if (!leiste[0].includes(">2021<")) meckern(`${rel}: die Jahreszahl 2021 fehlt im Hero`);
+    }
+    /* Die Faktenzeile unten in "Ueber mich" ist dagegen GANZ weg — kein <dl>,
+       keine Trennlinie, kein Platzhalter (Kundenwunsch 10.08.2026). Geprueft
+       wird nur der About-Abschnitt: "BPM home base" steht auch als Kennzahl im
+       Hero, und dort gehoert sie hin. */
+    if (/<dl class="facts/.test(h)) meckern(`${rel}: Faktenzeile in "Ueber mich" steht wieder da`);
+    const about = h.match(/<section[^>]*id="about"[\s\S]*?<\/section>/);
+    if (about) {
+      for (const wort of ["Clubs &amp; festivals", "Clubs &amp; Festivals", "BPM home base", "BPM Zuhause", "BPM de référence"])
+        if (about[0].includes(wort)) meckern(`${rel}: Fakt "${wort}" steht wieder in "Ueber mich"`);
+    }
 
     // 3) Referenzen: Club Eden statt IVY, Jugendopenair zweimal mit
     //    verschiedenen Orten, genau vier hervorgehobene Eintraege.
@@ -201,13 +220,30 @@ for (const [datei, h] of html) {
     else {
       for (const k of ["Instagram", "TikTok", "Spotify", "Mixcloud"])
         if (!fuss[0].includes(`>${k}</span>`)) meckern(`${rel}: Kanal "${k}" fehlt im Fuss`);
+      /* Erlaubt sind genau die vier Kanaele des Kuenstlers. TikTok und Spotify
+         hat der Kunde am 10.08.2026 nachgeliefert — bis dahin standen sie
+         bewusst unverlinkt da. Geraten wird weiterhin nichts: jede andere
+         Adresse faellt hier auf. */
       for (const url of fuss[0].match(/href="([^"]*)"/g) || []) {
-        if (!/^href="https:\/\/(www\.)?(instagram|mixcloud)\.com\//.test(url))
+        if (!/^href="https:\/\/((www\.)?(instagram|mixcloud|tiktok)\.com|open\.spotify\.com)\//.test(url))
           meckern(`${rel}: unerwartete Kanal-Adresse im Fuss: ${url}`);
       }
-      for (const k of ["TikTok", "Spotify"]) {
+      const SOLL = {
+        TikTok: "https://www.tiktok.com/@sam_sparking",
+        Spotify: "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S",
+      };
+      for (const [k, adresse] of Object.entries(SOLL)) {
         const zeile = fuss[0].match(new RegExp(`<li[^>]*>(?:(?!</li>)[\\s\\S])*?${k}[\\s\\S]*?</li>`));
-        if (zeile && zeile[0].includes("<a ")) meckern(`${rel}: "${k}" ist verlinkt, obwohl keine Adresse hinterlegt ist`);
+        if (!zeile) {
+          meckern(`${rel}: Kanal "${k}" fehlt im Fuss`);
+          continue;
+        }
+        if (!zeile[0].includes(`href="${adresse}"`))
+          meckern(`${rel}: "${k}" zeigt nicht auf ${adresse}`);
+        // Fremdes Fenster, aber ohne Zugriff auf dieses und ohne Referrer.
+        if (!/rel="[^"]*noopener[^"]*"/.test(zeile[0]) || !/rel="[^"]*noreferrer[^"]*"/.test(zeile[0]))
+          meckern(`${rel}: "${k}" ohne rel="noopener noreferrer"`);
+        if (!/target="_blank"/.test(zeile[0])) meckern(`${rel}: "${k}" oeffnet nicht in neuem Fenster`);
       }
     }
 
@@ -263,6 +299,113 @@ for (const [datei, h] of html) {
     if (/qr-?code/i.test(shop)) meckern("shop: QR-Code auf der Seite, obwohl keiner hinterlegt ist");
     for (const m of shop.match(/https?:\/\/[^"'\s<]*stripe[^"'\s<]*/gi) || [])
       meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
+  }
+
+  /* Videos gehoeren nicht zwischen die Fotos (Kundenwunsch 10.08.2026).
+
+     Geprueft wird beides: dass in der Bilderwand kein Video steckt UND dass
+     das vorhandene Video genau einmal auf der Website steht — auf /videos/.
+     Eine Dopplung faellt damit auf, auch wenn beide Stellen fuer sich richtig
+     aussehen. */
+  {
+    const VIDEO_SEITEN = ["videos/index.html", "de/videos/index.html", "fr/videos/index.html"];
+    const GALERIE_SEITEN = ["index.html", "de/index.html", "fr/index.html"];
+
+    for (const rel of GALERIE_SEITEN) {
+      const h = await seite(rel);
+      if (!h) continue;
+      const gal = h.match(/<div class="gal rv" id="gal">[\s\S]*?\n      <\/div>/);
+      if (!gal) {
+        meckern(`${rel}: keine Bilderwand gefunden`);
+        continue;
+      }
+      /* Videos DUERFEN in der Bilderwand stehen (Vorgabe 10.08.2026) — aber
+         sichtbar als Video: eigene Kachel, Play-Zeichen, abspielbar, und nichts
+         startet beim Seitenaufruf von allein. */
+      for (const kachel of gal[0].match(/<figure class="gal-video[\s\S]*?<\/figure>/g) || []) {
+        if (!/<span class="gal-play"/.test(kachel))
+          meckern(`${rel}: Video-Kachel ohne Play-Zeichen — sieht aus wie ein Foto`);
+        const v = kachel.match(/<video[^>]*>/);
+        if (!v) meckern(`${rel}: Video-Kachel ohne <video>`);
+        else {
+          if (/autoplay/.test(v[0])) meckern(`${rel}: Video in der Bilderwand startet von allein`);
+          if (!/preload="metadata"/.test(v[0]))
+            meckern(`${rel}: Video in der Bilderwand laedt mehr als noetig vor`);
+          if (!/playsinline/.test(v[0])) meckern(`${rel}: Video ohne playsinline (iOS)`);
+        }
+      }
+      // Ein <video> in der Bilderwand ohne die Video-Kachel drumherum waere
+      // ein Video, das wie ein Foto aussieht.
+      const videosImGrid = (gal[0].match(/<video/g) || []).length;
+      const videoKacheln = (gal[0].match(/<figure class="gal-video/g) || []).length;
+      if (videosImGrid !== videoKacheln)
+        meckern(`${rel}: ${videosImGrid} Videos, aber ${videoKacheln} Video-Kacheln`);
+
+      /* Startansicht: genau 6 Fotos (zwei Spalten, drei Reihen). Der Rest
+         steckt hinter EINEM Klick — "Mehr anzeigen" haengt nicht Reihe um
+         Reihe an, sondern zeigt alles Uebrige auf einmal. */
+      const kacheln = [...gal[0].matchAll(/<figure([^>]*)>/g)].map((m) => m[1]);
+      const sofort = kacheln.filter((a) => !a.includes("data-extra")).length;
+      if (sofort !== 6) meckern(`${rel}: Bilderwand zeigt zuerst ${sofort} Fotos statt 6`);
+      const spaeter = kacheln.length - sofort;
+      const knopf = h.match(/<button class="gal-more[^>]*data-more="([^"]*)"[^>]*data-less="([^"]*)"/);
+      if (spaeter && !knopf) meckern(`${rel}: ${spaeter} weitere Fotos, aber kein Knopf dafuer`);
+      if (knopf) {
+        if (!/\d/.test(knopf[1])) meckern(`${rel}: der Knopf sagt nicht, wie viele Fotos noch kommen`);
+        if (!knopf[2].trim()) meckern(`${rel}: kein Text zum Wieder-Zuklappen`);
+      }
+    }
+
+    /* /videos/ ist die zusaetzliche Seite, nicht die einzige Ablage: dasselbe
+       Video darf auch in der Bilderwand stehen. Geprueft wird deshalb nur, dass
+       die Seite es zeigt — nicht, dass es sonst nirgends vorkommt. */
+    for (const rel of VIDEO_SEITEN) {
+      const h = await seite(rel);
+      if (!h) {
+        meckern(`${rel}: Video-Seite fehlt`);
+        continue;
+      }
+      const hatVideo = /<video|<iframe/.test(h);
+      const hatLeer = /class="empty-state/.test(h);
+      if (!hatVideo && !hatLeer)
+        meckern(`${rel}: weder ein Video noch ein Hinweis, dass noch keins da ist`);
+      if (hatVideo) {
+        // Angeschaut, nicht von allein: Bedienelemente, kein autoplay.
+        const v = h.match(/<video[^>]*>/);
+        if (v && !/controls/.test(v[0])) meckern(`${rel}: Video ohne Bedienelemente`);
+        if (v && /autoplay/.test(v[0])) meckern(`${rel}: Video startet von allein`);
+        // Rueckfall, wenn der Browser das Format nicht kann.
+        if (!/Dein Browser kann|Your browser can|Ton navigateur ne peut/.test(h))
+          meckern(`${rel}: kein Rueckfalltext, wenn das Video nicht abspielbar ist`);
+      }
+    }
+  }
+
+  /* Kauf-Knoepfe im Shop: jeder fuehrt auf die Kasse SEINES Artikels.
+
+     Ein Stripe Payment Link gehoert zu genau einem Preis. Zeigte ein Knopf auf
+     den Link eines anderen Artikels (oder auf einen globalen), waere der
+     abgerechnete Betrag ein anderer als der angezeigte. */
+  for (const rel of ["shop/index.html", "de/shop/index.html", "fr/shop/index.html"]) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const karten = [...h.matchAll(/<article class="product[\s\S]*?<\/article>/g)].map((m) => m[0]);
+    const links = [];
+    for (const karte of karten) {
+      const name = (karte.match(/<h3>([^<]*)<\/h3>/) || [])[1] || "(ohne Namen)";
+      const kauf = karte.match(/<a class="btn sm buy-now"[^>]*href="([^"]*)"[^>]*>/);
+      if (!kauf) continue;
+      const url = kauf[1];
+      if (!/^https:\/\/buy\.stripe\.com\//.test(url))
+        meckern(`${rel}: Kauf-Knopf von "${name}" zeigt auf "${url}" — kein Stripe Payment Link`);
+      if (!/target="_blank"/.test(kauf[0]) || !/noopener/.test(kauf[0]) || !/noreferrer/.test(kauf[0]))
+        meckern(`${rel}: Kauf-Knopf von "${name}" ohne target=_blank / noopener noreferrer`);
+      links.push([name, url]);
+    }
+    // Zwei Artikel duerfen nie dieselbe Kasse haben.
+    const doppelt = links.filter(([, u], i) => links.findIndex(([, v]) => v === u) !== i);
+    if (doppelt.length)
+      meckern(`${rel}: mehrere Artikel teilen einen Payment Link: ${doppelt.map(([n]) => n).join(", ")}`);
   }
 
   /* Der Shop spricht auf jeder Route seine eigene Sprache.
