@@ -146,106 +146,6 @@
       ]
     }
   ],
-  "shop": {
-    "alteWaehrung": "CHF 5",
-    "waehrung": "CHF",
-    "_warumVerloreneWare": [
-      "Der Kunde hatte einen Artikel veroeffentlicht: 'Beispiel', CHF 35,",
-      "verfuegbar. Eine fruehere Korrektur hier loeschte ihn allein wegen des",
-      "Namens; die Verwaltung schrieb den bereinigten Stand danach zurueck in",
-      "die Datenbank. Seither steht dort keine Ware mehr und /shop/ zeigt in",
-      "allen drei Sprachen nur 'The shop opens soon'.",
-      "",
-      "'verloreneWare' holt genau diesen einen Artikel zurueck — aber nur,",
-      "solange die Warenliste in der Verwaltung komplett leer ist. Legt der",
-      "Kunde dort Ware an, greift die Regel nicht mehr und kann geloescht",
-      "werden.",
-      "",
-      "Ohne Bild mit Absicht: die damalige Bilddatei ist im Speicher weg",
-      "(HTTP 404) und war das gemeldete kaputte Bild. Ein Ersatz wird nicht",
-      "erfunden — das Bild gehoert in der Verwaltung an den Artikel.",
-      "",
-      "Ohne paymentLink mit Absicht: es gibt keinen Stripe Payment Link fuer",
-      "diesen Artikel. Der Kauf-Knopf fuehrt darum ins Bestellformular."
-    ],
-    "verloreneWare": [
-      {
-        "name": "Beispiel",
-        "price": "35",
-        "status": "available"
-      }
-    ],
-    "texte": {
-      "_warum": [
-        "Die Hauptsprache der Website ist Englisch (site.lang = 'en'); die",
-        "Grundwerte im Inhalt sind also der englische Text, und /de/ und /fr/",
-        "kommen aus i18n. Im Shop stand in den Grundwerten Deutsch — in der",
-        "Verwaltung wurde deutsch getippt. Auf der englischen /shop/ stand darum",
-        "'Merch von Sam Sparking' und 'Kaufen', und weil es fuer den Shop gar",
-        "keine Uebersetzungen gab, stand auf /fr/shop/ dasselbe Deutsch.",
-        "",
-        "Ersetzt wird nur, solange in den Grundwerten genau der bekannte deutsche",
-        "Text steht (siehe 'alt') oder das Feld leer ist. Schreibt jemand in der",
-        "Verwaltung einen eigenen englischen Text, behaelt er das letzte Wort.",
-        "Die Uebersetzungen werden gesetzt, solange dort nichts Eigenes steht.",
-        "",
-        "Uebersetzt ist nur, was auf der Seite steht: die Zeile unter der",
-        "Ueberschrift, der Leer-Text und die Aufschrift des Kauf-Knopfs."
-      ],
-      "master": {
-        "note": "Merch from Sam Sparking — every piece helps fund the next production.",
-        "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
-        "buyLabel": "Buy"
-      },
-      "alt": {
-        "note": [
-          "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen."
-        ],
-        "emptyText": [
-          "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht."
-        ],
-        "buyLabel": [
-          "Kaufen"
-        ]
-      },
-      "de": {
-        "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
-        "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
-        "buyLabel": "Kaufen"
-      },
-      "fr": {
-        "_navLabelWarum": [
-          "Die franzoesische Seite heisst 'Boutique' (pages), der Abschnitt hiess",
-          "weiter 'Shop'. Weil Generator und Seite nur dann eine doppelte",
-          "Ueberschrift weglassen, wenn beide Aufschriften uebereinstimmen, stand",
-          "auf /fr/shop/ zusaetzlich ein 'Sh op.' im Bild — auf /shop/ und",
-          "/de/shop/ nicht. Mit der Uebersetzung sehen alle drei Routen gleich aus."
-        ],
-        "navLabel": "Boutique",
-        "note": "Du merch de Sam Sparking — chaque pièce aide à financer la prochaine production.",
-        "emptyText": "La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.",
-        "buyLabel": "Acheter"
-      }
-    },
-    "_warumKeineWareRegeln": [
-      "Bis zum 11.08.2026 standen hier drei Regeln, die den Shop von aussen",
-      "gesteuert haben. Alle drei sind weg — die Verwaltung entscheidet:",
-      "",
-      "  platzhalter     raeumte Felder eines Artikels, der 'Beispiel' hiess",
-      "  entfernteWare   loeschte einen Artikel allein wegen seines Namens",
-      "  sichtbar        erzwang den Shop-Abschnitt und machte den Schalter in der",
-      "                  Verwaltung wirkungslos",
-      "",
-      "Warum weg: ein veroeffentlichter Artikel muss im Shop stehen, auch wenn er",
-      "'Beispiel' heisst — der Name ist kein Grund, etwas zu verstecken. Und",
-      "'Auf Website anzeigen' in der Verwaltung muss wirken; eine Regel, die den",
-      "Schalter ueberstimmt, macht ihn zur Attrappe.",
-      "",
-      "FOLGE: Ist der Shop-Abschnitt in der Verwaltung ausgeschaltet, gibt es",
-      "/shop/ nicht mehr (404 statt 200). Das ist gewollt — der Schalter",
-      "entscheidet."
-    ]
-  },
   "heroShows": {
     "_warum": [
       "Vorgabe: die Kennzahl im Hero nennt die Gesamtzahl der Shows, und die",
@@ -288,6 +188,28 @@
     ],
     "leeren": true
   },
+  "telefon": {
+    "_warum": [
+      "Die Telefonnummer gehoert nicht mehr auf die oeffentliche Website",
+      "(Kundenwunsch 11.08.2026). Sie stand im Kontakt-Abschnitt, verlinkt",
+      "als tel:-Adresse, und in den strukturierten Daten.",
+      "",
+      "'leeren' raeumt das Feld, solange in der Datenbank noch die alte",
+      "Nummer steht. Die Verwaltung leert es beim Laden einmalig mit und",
+      "merkt sich das; sobald der Kunde gespeichert hat, ist diese Regel",
+      "wirkungslos und kann weg.",
+      "",
+      "Das Feld selbst bleibt in der Verwaltung stehen — leer und",
+      "optional. Traegt jemand dort wieder eine Nummer ein, erscheint sie",
+      "auch wieder: geleert wird nur die eine bekannte Nummer."
+    ],
+    "leeren": true,
+    "alteNummern": [
+      "+41 77 509 11 71",
+      "+41775091171",
+      "077 509 11 71"
+    ]
+  },
   "galerie": {
     "_warum": [
       "Kundenwunsch vom 10.08.2026: die Bilderwand startet mit genau 6 Fotos —",
@@ -319,6 +241,27 @@
     "email": "info@samsparking.ch",
     "location": "Herisau, Schweiz"
   },
+  "release": {
+    "_warum": [
+      "Der Start der Website: 12.08.2026, 18:00 Uhr Europe/Zurich.",
+      "",
+      "Steht hier, weil content/site.json bei jedem Build aus der Datenbank",
+      "neu geschrieben wird. Gesetzt wird nur, was fehlt — sobald der Kunde",
+      "in der Verwaltung unter 'Website-Release' etwas eintraegt, gewinnt",
+      "sein Wert, auch das Ausschalten.",
+      "",
+      "Umgeschaltet wird im Browser: der Zeitpunkt steht als Zahl in der",
+      "Seite, assets/site.js zaehlt herunter und nimmt den Vorhang bei null",
+      "weg. Kein neuer Deploy noetig."
+    ],
+    "enabled": true,
+    "date": "2026-08-12",
+    "time": "18:00",
+    "zone": "Europe/Zurich",
+    "kicker": "Release",
+    "headline": "Sam Sparking",
+    "text": "Die neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben."
+  },
   "_wasHierNichtMehrSteht": [
     "Entfernt am 11.08.2026, weil die Verwaltung entscheidet:",
     "",
@@ -340,6 +283,23 @@
     "Die vier Kanal-Regeln waren der Grund, warum die Verwaltung links nur",
     "Mixcloud zeigte, Vorschau und Website aber vier Kanaele. Nachgetragen wird",
     "jetzt in der Verwaltung selbst (kanaele-nachtragen.js) — dort sind die",
-    "Kanaele bearbeitbar und werden mitgespeichert."
+    "Kanaele bearbeitbar und werden mitgespeichert.",
+    "",
+    "Ebenfalls entfernt am 11.08.2026 — der ganze shop-Block:",
+    "",
+    "  shop.verloreneWare   holte den Artikel 'Beispiel' zurueck, sobald die",
+    "                       Warenliste leer war. Damit liess sich der letzte",
+    "                       Artikel nie loeschen: nach dem Publizieren stand er",
+    "                       wieder da.",
+    "  shop.texte           schrieb note, emptyText und buyLabel, sobald das Feld",
+    "                       leer war oder den bekannten deutschen Text trug. Wer",
+    "                       den Text loeschte, hatte ihn nach dem Publizieren",
+    "                       wieder — genau die Meldung 'im Shop werden nicht alle",
+    "                       Aenderungen aktualisiert'.",
+    "  shop.alteWaehrung    ersetzte die Waehrung 'CHF 5'.",
+    "",
+    "Der Shop haengt jetzt ausschliesslich an der Verwaltung. Der Artikel steht",
+    "als echte Ware in der Datenbank; die Verwaltung traegt ihn beim Laden",
+    "einmalig nach, wenn er fehlt (ware-nachtragen.js), und merkt sich das."
   ]
 }

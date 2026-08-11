@@ -266,9 +266,11 @@
       faktor = Math.max(0.6, Math.floor(faktor * 100) / 100);
       venueList.style.setProperty(variable, String(faktor));
     };
+    /* Eine Gruppe, weil alle Referenzen gleich gross sind (seit 11.08.2026 gibt
+       es keine grossen Karten mehr). Der Faktor gilt fuer die ganze Liste,
+       damit die Namen untereinander gleich gross bleiben. */
     var einpassen = function () {
-      gruppe(".lead .venue-name", "--venue-lead-fit");
-      gruppe("li:not(.lead) .venue-name", "--venue-fit");
+      gruppe(".venue-name", "--venue-fit");
     };
     einpassen();
     var fitTimer;
@@ -419,7 +421,11 @@
       var s = shots[idx];
       lbImg.src = s.src;
       lbImg.alt = s.alt;
-      lbCap.textContent = s.cap + (shots.length > 1 ? "  ·  " + (idx + 1) + " / " + shots.length : "");
+      /* Seit dem 11.08.2026 tragen die Kacheln keine Beschriftung mehr (keine
+         sichtbaren Fotocredits). Dann steht hier nur die Zaehlung — ohne den
+         Trenner, der sonst vor der ersten Zahl haengen wuerde. */
+      var zaehler = shots.length > 1 ? idx + 1 + " / " + shots.length : "";
+      lbCap.textContent = [s.cap, zaehler].filter(Boolean).join("  ·  ");
     }
     function open(i, from) {
       opener = from || null;
@@ -776,20 +782,154 @@
     }
   }
 
-  /* ------------------------------------------------------- cookie-hinweis */
+  /* ------------------------------------------------------------- release */
+  /* Der Countdown vor dem Start. Der Zielzeitpunkt steht als Zahl in der Seite
+     (Millisekunden seit 1970, aus Datum/Uhrzeit/Zeitzone der Verwaltung
+     ausgerechnet) — damit ist er ueberall derselbe Moment, egal in welcher
+     Zeitzone der Besucher sitzt.
+
+     Bei null nimmt diese Stelle die Klasse "vor-release" weg. Damit ist die
+     Website da: kein Neuladen, kein neuer Deploy, kein Cache-Griff. Eine Seite,
+     die ueber den Zeitpunkt hinaus offen liegt, schaltet von selbst um.
+
+     Der Takt haengt an der Uhr, nicht am Zaehlen: jede Sekunde wird die
+     verbleibende Zeit neu ausgerechnet. Schlaeft das Geraet zwischendurch (ein
+     zugeklapptes Notebook, ein Handy in der Tasche), stimmt die Anzeige beim
+     Aufwachen trotzdem. */
+  var vorhang = document.getElementById("release");
+  if (vorhang) try {
+    var ziel = Number(vorhang.getAttribute("data-ziel")) || 0;
+    var felder = {
+      t: document.getElementById("rl-t"),
+      h: document.getElementById("rl-h"),
+      m: document.getElementById("rl-m"),
+      s: document.getElementById("rl-s"),
+    };
+    var zwei = function (n) { return (n < 10 ? "0" : "") + n; };
+    var oeffnen = function () {
+      document.documentElement.classList.remove("vor-release");
+      vorhang.hidden = true;
+    };
+    var takt = null;
+    var tick = function () {
+      var rest = ziel - Date.now();
+      if (rest <= 0) {
+        if (takt) clearInterval(takt);
+        if (felder.t) { felder.t.textContent = "0"; felder.h.textContent = "00"; felder.m.textContent = "00"; felder.s.textContent = "00"; }
+        oeffnen();
+        return;
+      }
+      var sek = Math.floor(rest / 1000);
+      if (felder.t) felder.t.textContent = String(Math.floor(sek / 86400));
+      if (felder.h) felder.h.textContent = zwei(Math.floor(sek / 3600) % 24);
+      if (felder.m) felder.m.textContent = zwei(Math.floor(sek / 60) % 60);
+      if (felder.s) felder.s.textContent = zwei(sek % 60);
+    };
+    if (!ziel || Date.now() >= ziel) {
+      oeffnen();
+    } else {
+      tick();
+      takt = setInterval(tick, 1000);
+      // Nach dem Aufwachen sofort nachrechnen, statt bis zum naechsten Takt zu
+      // warten — sonst stuende die Seite noch eine Sekunde lang falsch da.
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) tick();
+      });
+      window.addEventListener("focus", tick);
+    }
+  } catch (e) {
+    /* Geht hier etwas schief, darf die Website nicht dauerhaft verdeckt
+       bleiben — im Zweifel lieber offen als unerreichbar. */
+    try { document.documentElement.classList.remove("vor-release"); } catch (e2) {}
+  }
+
+  /* --------------------------------------------------------- einwilligung */
+  /* Zwei Entscheidungen, gleichwertig: "Nur notwendige" und "Alle akzeptieren".
+     Keine ist voreingestellt, keine wird vorausgewaehlt, und die Abfrage
+     verschwindet erst, wenn eine davon angetippt ist.
+
+     Gespeichert wird unter "sam-einwilligung" — der alte Schluessel
+     "cookie-ok" zaehlt bewusst NICHT als Entscheidung: dort stand nur, dass
+     jemand einen Hinweis weggeklickt hat, und das ist keine Wahl. Wer damals
+     geklickt hat, wird also einmal neu gefragt.
+
+     Zusatzdienste: alles, was nicht notwendig ist, steht als
+     <script type="text/plain" data-consent="alle"> in der Seite und wird erst
+     nach "Alle akzeptieren" wirklich geladen. Heute ist kein einziger solcher
+     Dienst eingebunden — der Weg ist da, damit spaeter nichts versehentlich
+     vor der Einwilligung laedt. */
+  var SPEICHER = "sam-einwilligung";
+  function wahlLesen() {
+    try {
+      var v = localStorage.getItem(SPEICHER);
+      return v === "alle" || v === "notwendig" ? v : "";
+    } catch (e) {
+      return "";
+    }
+  }
+  function zusatzFreigeben() {
+    var warten = document.querySelectorAll('script[type="text/plain"][data-consent]');
+    for (var i = 0; i < warten.length; i++) {
+      var alt = warten[i];
+      var neu = document.createElement("script");
+      for (var a = 0; a < alt.attributes.length; a++) {
+        var at = alt.attributes[a];
+        if (at.name === "type" || at.name === "data-consent") continue;
+        neu.setAttribute(at.name, at.value);
+      }
+      if (!alt.src) neu.text = alt.textContent;
+      alt.parentNode.replaceChild(neu, alt);
+    }
+  }
   var cookie = document.getElementById("cookie");
-  if (cookie) try {
-    var seen = false;
-    try { seen = localStorage.getItem("cookie-ok") === "1"; } catch (e) {}
-    if (!seen) {
-      cookie.hidden = false;
-      var okBtn = document.getElementById("cookie-ok");
-      okBtn && okBtn.addEventListener("click", function () {
-        try { localStorage.setItem("cookie-ok", "1"); } catch (e) {}
-        cookie.hidden = true;
+  try {
+    // Fuer andere Skripte lesbar, damit niemand raten muss.
+    window.samsparkingEinwilligung = wahlLesen();
+    if (window.samsparkingEinwilligung === "alle") zusatzFreigeben();
+
+    if (cookie) {
+      var zeigen = function (an) {
+        cookie.hidden = !an;
+        if (an) {
+          var erster = cookie.querySelector(".cookie-btn");
+          if (erster && document.activeElement !== erster) erster.focus({ preventScroll: true });
+        }
+      };
+      var merken = function (wahl) {
+        try { localStorage.setItem(SPEICHER, wahl); } catch (e) {}
+        window.samsparkingEinwilligung = wahl;
+        if (wahl === "alle") zusatzFreigeben();
+        zeigen(false);
+        var oeffner = document.getElementById("cookie-open");
+        if (oeffner) oeffner.focus({ preventScroll: true });
+      };
+      var knoepfe = cookie.querySelectorAll(".cookie-btn");
+      for (var k = 0; k < knoepfe.length; k++) {
+        (function (btn) {
+          btn.addEventListener("click", function () {
+            merken(btn.getAttribute("data-wahl") === "alle" ? "alle" : "notwendig");
+          });
+        })(knoepfe[k]);
+      }
+      // Erstbesuch: noch keine Entscheidung getroffen.
+      if (!wahlLesen()) zeigen(true);
+      /* Und jederzeit wieder aufmachen, um sie zu aendern. Der Name ist
+         bewusst nicht `oeffnen`: weiter oben im Release-Block heisst so schon
+         eine Funktion, und `var` gilt in der ganzen Datei — die Zuweisung hier
+         wuerde sie ueberschreiben, und der Vorhang ginge bei null nicht mehr
+         auf. Genau das ist am 11.08.2026 passiert. */
+      var oeffnenKnopf = document.getElementById("cookie-open");
+      if (oeffnenKnopf)
+        oeffnenKnopf.addEventListener("click", function () {
+          zeigen(true);
+        });
+      // Mit Escape schliessen, ohne etwas zu entscheiden — nur wenn schon
+      // einmal entschieden wurde, sonst bliebe die Frage unbeantwortet offen.
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !cookie.hidden && wahlLesen()) zeigen(false);
       });
     }
-  } catch (e) { /* Hinweis ist Beiwerk — nie die Seite gefaehrden */ }
+  } catch (e) { /* Die Abfrage darf die Seite nie lahmlegen. */ }
 
   /* -------------------------------------------- Datumswahl im Formular */
   // Kleiner Monatskalender direkt beim Booking-Formular: Tag antippen setzt

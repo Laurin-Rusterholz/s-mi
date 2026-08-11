@@ -14,6 +14,9 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   adoptTexts,
+  releaseZeitpunkt,
+  showVorbei,
+  showsNachReferenzen,
   collectStrings,
   istPaymentLink,
   istStripeAdresse,
@@ -246,40 +249,27 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if ("inHeader" in insta) meckern("Der Kopf-Schalter wurde von aussen gesetzt: " + insta.inHeader);
   if (db.sections.contact.socials.length !== 2)
     meckern("Kanalliste angefasst: " + db.sections.contact.socials.map((x) => x.label).join(", "));
-  if (db.sections.shop.currency !== "CHF") meckern("Waehrung nicht korrigiert: " + db.sections.shop.currency);
-  /* Ware wird NICHT mehr wegen ihres Namens entfernt (11.08.2026). Was in der
-     Verwaltung veroeffentlicht ist, steht im Shop — auch ein Artikel, der
-     "Beispiel" heisst. Vorher loeschte eine Regel ihn allein wegen des Namens,
-     und der Leer-Text behauptete, es gebe keine Ware. */
-  if (db.sections.shop.items.length !== 1)
-    meckern(
-      `Ware angefasst: ${db.sections.shop.items.length} Artikel statt 1 — ` +
-        db.sections.shop.items.map((p) => p.name).join(", ")
-    );
-  if (db.sections.shop.items[0]?.name !== "Beispiel")
-    meckern('Der Artikel "Beispiel" wurde entfernt oder umbenannt');
-  if (db.sections.shop.items[0]?.price !== "35") meckern("Preis der Ware angefasst");
-  // Der Schalter der Verwaltung entscheidet — keine Regel ueberstimmt ihn.
-  if (db.sections.shop.enabled !== true) meckern("Shop-Schalter veraendert");
+  /* Der Shop geht seit dem 11.08.2026 vollstaendig unangetastet durch — es
+     gibt hier keine Shop-Regel mehr. Vorher standen drei davon genau dort, wo
+     der Kunde arbeitet: eine ersetzte die Waehrung, eine schrieb die Texte,
+     eine holte den Artikel "Beispiel" zurueck, sobald die Liste leer war.
+     Zusammen ergaben sie die Meldung "nach Publizieren werden im Shop nicht
+     alle Aenderungen aktualisiert". */
+  const shopVorher = JSON.stringify({
+    currency: "CHF 5",
+    items: [{ name: "Beispiel", note: "as", alt: "as", linkUrl: "asd", price: "35" }],
+    enabled: true,
+  });
+  const shopNachher = JSON.stringify({
+    currency: db.sections.shop.currency,
+    items: db.sections.shop.items,
+    enabled: db.sections.shop.enabled,
+  });
+  if (shopVorher !== shopNachher) meckern("Der Shop wurde angefasst: " + shopNachher);
+  // Und die Texte bleiben auch: was in der Verwaltung steht, steht auf der Seite.
+  if (db.i18n?.de?.sections?.shop?.note !== template.i18n?.de?.sections?.shop?.note)
+    meckern("Shop-Text in de veraendert: " + db.i18n?.de?.sections?.shop?.note);
 
-  /* Shop-Texte: die Hauptsprache ist Englisch, in der Verwaltung stand Deutsch.
-     Der Grundwert muss englisch werden, de und fr bekommen ihre eigene
-     Fassung — sonst stand auf /shop/ und /fr/shop/ deutscher Text. */
-  const st = db.sections.shop;
-  if (st.note !== korr.shop.texte.master.note)
-    meckern("Shop-Zeile nicht auf Englisch umgestellt: " + st.note);
-  if (st.emptyText !== korr.shop.texte.master.emptyText)
-    meckern("Leer-Text des Shops nicht auf Englisch umgestellt: " + st.emptyText);
-  if (st.buyLabel !== korr.shop.texte.master.buyLabel)
-    meckern("Kauf-Aufschrift nicht auf Englisch umgestellt: " + st.buyLabel);
-  for (const lang of ["de", "fr"]) {
-    const soll = korr.shop.texte[lang];
-    const ist = db.i18n?.[lang]?.sections?.shop || {};
-    for (const feld of ["note", "emptyText", "buyLabel"]) {
-      if (ist[feld] !== soll[feld])
-        meckern(`Shop-Text ${feld} fehlt in ${lang}: "${ist[feld]}" statt "${soll[feld]}"`);
-    }
-  }
   /* Drei Seiten: Startseite, Booking, Shop. Die Video-Seite vom 10.08.2026 ist
      am 11.08.2026 wieder zurueckgenommen — Videos stehen als Kacheln in der
      Galerie, eine eigene Route dafuer gibt es nicht mehr. */
@@ -315,39 +305,38 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* Die eine veroeffentlichte Ware kommt zurueck, wenn die Liste leer ist.
+  /* Ein leerer Shop bleibt leer.
 
-     Vorgeschichte: eine fruehere Korrektur loeschte den Artikel "Beispiel"
-     allein wegen seines Namens; die Verwaltung schrieb den bereinigten Stand
-     zurueck in die Datenbank. Seither war der Shop in allen drei Sprachen
-     leer. Der Leer-Text darf nur stehen, wenn wirklich nichts veroeffentlicht
-     ist — nicht, weil der Generator etwas weggeraeumt hat. */
+     Bis zum 11.08.2026 holte hier eine Regel den Artikel "Beispiel" zurueck,
+     sobald die Warenliste leer war. Gut gemeint — aber damit liess sich der
+     letzte Artikel nie loeschen: nach dem Publizieren stand er wieder da. Die
+     Regel ist weg. Wer alles loescht, hat einen leeren Shop, und der Leer-Text
+     erscheint zu Recht. */
   const db = JSON.parse(JSON.stringify(template));
   db.sections.shop.items = [];
   nachziehen(db, korr);
-
-  const ware = db.sections.shop.items || [];
-  if (ware.length !== 1)
-    meckern("verlorene Ware nicht zurueckgeholt: " + ware.length + " Artikel");
-  if (ware[0]?.name !== "Beispiel") meckern("falsche Ware zurueckgeholt: " + ware[0]?.name);
-  if (ware[0]?.price !== "35") meckern("Preis der zurueckgeholten Ware: " + ware[0]?.price);
-  /* Ohne Bild mit Absicht: die Datei von damals ist im Speicher weg (HTTP 404)
-     und war genau das gemeldete kaputte Bild. Ein Ersatz wird nicht geraten. */
-  if (ware[0]?.src) meckern("totes Produktbild wieder eingesetzt: " + ware[0].src);
-  // Kein erfundener Bezahl-Link — der Kauf-Knopf fuehrt ins Bestellformular.
-  if (ware[0]?.paymentLink) meckern("Bezahl-Link erfunden: " + ware[0].paymentLink);
+  if ((db.sections.shop.items || []).length !== 0)
+    meckern(
+      "Ware in einen leeren Shop gelegt: " +
+        db.sections.shop.items.map((p) => p.name).join(", ")
+    );
+  if (korr.shop !== undefined) meckern("korrekturen.json traegt wieder einen shop-Block");
 }
 
 {
-  /* Gegenprobe zum Leer-Text: schaltet die Verwaltung den Shop ganz aus, holt
-     die Regel nichts zurueck — sie haengt an der Warenliste, nicht am
-     Schalter. Und ein Artikel, den jemand ausdruecklich als ausverkauft
-     markiert, bleibt ausverkauft. */
+  /* Und ein voller Shop bleibt voll — Reihenfolge, Felder und Zustand
+     unveraendert. Das ist die Gegenprobe zur Publish-Meldung: was die
+     Verwaltung schickt, kommt genau so an. */
   const db = JSON.parse(JSON.stringify(template));
-  db.sections.shop.items = [{ name: "Beispiel", price: "35", status: "soldout" }];
+  const ware = [
+    { name: "Hoodie", price: "79", badge: "Bestseller", note: "Schwer und warm.", status: "available" },
+    { name: "Cap", price: "35", status: "soldout" },
+    { name: "Beispiel", price: "35" },
+  ];
+  db.sections.shop.items = JSON.parse(JSON.stringify(ware));
   nachziehen(db, korr);
-  if (db.sections.shop.items.length !== 1) meckern("ausverkaufte Ware verdoppelt oder entfernt");
-  if (db.sections.shop.items[0].status !== "soldout") meckern("Zustand der Ware ueberschrieben");
+  if (JSON.stringify(db.sections.shop.items) !== JSON.stringify(ware))
+    meckern("Warenliste veraendert: " + JSON.stringify(db.sections.shop.items));
 }
 
 {
@@ -425,6 +414,114 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
       if (ref && ref.items !== undefined)
         meckern(`${root}.${lang}.sections.references.items steht wieder im Inhalt`);
     }
+}
+
+{
+  /* Vergangene Shows werden zu Referenzen (11.08.2026).
+
+     "Vorbei" heisst: der Tag ist ganz herum. Ein Termin am heutigen Tag zaehlt
+     bis Mitternacht als kommend — auch ohne Uhrzeit, denn eine Show endet nach
+     Mitternacht und soll nicht mittendrin aus der Liste fallen. */
+  const HEUTE = "2026-08-12";
+  if (showVorbei({ date: "2026-08-11" }, HEUTE) !== true) meckern("Gestern gilt nicht als vorbei");
+  if (showVorbei({ date: HEUTE }, HEUTE) !== false) meckern("Heute gilt schon als vorbei");
+  if (showVorbei({ date: "2026-08-13" }, HEUTE) !== false) meckern("Morgen gilt als vorbei");
+  if (showVorbei({ date: "" }, HEUTE) !== false) meckern("Ein Termin ohne Datum gilt als vorbei");
+
+  const db = JSON.parse(JSON.stringify(template));
+  db.sections.references.items = [
+    { name: "Kugl", city: "St. Gallen", highlight: true },
+    { name: "Sektor 11", city: "Zürich", highlight: true },
+  ];
+  db.sections.shows.items = [
+    { name: "Nox club", city: "Chur", date: "2026-08-13" },   // kommend
+    { name: "Altes Fest", city: "Wil", date: "2026-07-04" },  // vorbei
+    { name: "Kugl", city: "St. Gallen", date: "2026-06-01" }, // vorbei, gibt es schon
+    { name: "Ohne Datum", city: "Zug" },                      // nie vorbei
+  ];
+  const dazu = showsNachReferenzen(db, HEUTE);
+  const namen = db.sections.references.items.map((r) => `${r.name} — ${r.city}`);
+
+  if (!namen.includes("Altes Fest — Wil"))
+    meckern("Die vergangene Show wurde nicht zur Referenz: " + namen.join(", "));
+  if (namen.filter((x) => x === "Kugl — St. Gallen").length !== 1)
+    meckern("Dublette angelegt: " + namen.join(", "));
+  if (namen.includes("Nox club — Chur")) meckern("Ein kommender Termin wurde zur Referenz");
+  if (namen.includes("Ohne Datum — Zug")) meckern("Ein Termin ohne Datum wurde zur Referenz");
+  if (dazu.join(" | ") !== "Altes Fest — Wil") meckern("Falsch gemeldet: " + dazu.join(", "));
+
+  /* Die bestehenden Favoriten bleiben unangetastet, und der neue Eintrag ist
+     selbst keiner — was gross steht, entscheidet allein die Verwaltung. */
+  const gross = db.sections.references.items.filter((r) => r.highlight === true).map((r) => r.name);
+  if (gross.join(" | ") !== "Kugl | Sektor 11") meckern('"Gross zeigen" veraendert: ' + gross.join(", "));
+  const neuerEintrag = db.sections.references.items.find((r) => r.name === "Altes Fest");
+  if (neuerEintrag?.highlight) meckern("Der uebernommene Eintrag wurde automatisch gross gestellt");
+  if (db.sections.references.items[0].name !== "Kugl") meckern("Die Reihenfolge wurde umgeworfen");
+  // Der Termin selbst bleibt stehen — er zaehlt weiter zum Rueckblick.
+  if (db.sections.shows.items.length !== 4) meckern("Ein Termin wurde geloescht");
+
+  // Zweimal aufgerufen aendert nichts mehr.
+  const nochmal = showsNachReferenzen(db, HEUTE);
+  if (nochmal.length) meckern("Beim zweiten Lauf erneut uebernommen: " + nochmal.join(", "));
+
+  // Gross/Klein und Bindestriche zaehlen nicht als Unterschied.
+  const db2 = JSON.parse(JSON.stringify(template));
+  db2.sections.references.items = [{ name: "kugl", city: "st. gallen" }];
+  db2.sections.shows.items = [{ name: "Kugl", city: "St. Gallen", date: "2026-06-01" }];
+  showsNachReferenzen(db2, HEUTE);
+  if (db2.sections.references.items.length !== 1)
+    meckern("Dublette trotz gleicher Schreibweise: " + JSON.stringify(db2.sections.references.items));
+}
+
+{
+  /* Der Release-Zeitpunkt: aus Datum, Uhrzeit und Zeitzone wird EIN Moment.
+     Geprueft wird gegen die Ortszeit in Zurich — im Sommer wie im Winter, denn
+     die Umstellung steckt in der Umrechnung. */
+  const zurich = (ms) =>
+    new Intl.DateTimeFormat("sv-SE", {
+      timeZone: "Europe/Zurich",
+      dateStyle: "short",
+      timeStyle: "short",
+    }).format(new Date(ms));
+
+  const sommer = releaseZeitpunkt("2026-08-12", "18:00", "Europe/Zurich");
+  if (zurich(sommer) !== "2026-08-12 18:00") meckern("Sommerzeit falsch: " + zurich(sommer));
+  if (new Date(sommer).toISOString() !== "2026-08-12T16:00:00.000Z")
+    meckern("Sommer-Zeitpunkt in UTC falsch: " + new Date(sommer).toISOString());
+
+  const winter = releaseZeitpunkt("2026-01-15", "18:00", "Europe/Zurich");
+  if (zurich(winter) !== "2026-01-15 18:00") meckern("Winterzeit falsch: " + zurich(winter));
+
+  // Genau in der Nacht der Zeitumstellung (letzter Sonntag im Maerz 2026).
+  const umstellung = releaseZeitpunkt("2026-03-29", "12:00", "Europe/Zurich");
+  if (zurich(umstellung) !== "2026-03-29 12:00")
+    meckern("Zeitumstellung falsch: " + zurich(umstellung));
+
+  if (releaseZeitpunkt("", "18:00") !== 0) meckern("Ohne Datum muesste 0 herauskommen");
+
+  // Und die Angaben stehen bereit, damit die Sperre ueberhaupt greift.
+  if (korr.release?.enabled !== true) meckern("Die Release-Sperre ist nicht eingeschaltet");
+  if (korr.release?.date !== "2026-08-12" || korr.release?.time !== "18:00")
+    meckern(`Release steht auf ${korr.release?.date} ${korr.release?.time}`);
+  if (korr.release?.zone !== "Europe/Zurich") meckern("Zeitzone fehlt oder ist falsch");
+}
+
+{
+  /* Die Telefonnummer ist von der Website genommen (11.08.2026). Geraeumt wird
+     nur die eine bekannte Nummer — eine neue in der Verwaltung bleibt stehen. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.sections.contact.phone = "+41 77 509 11 71";
+  nachziehen(db, korr);
+  if (db.sections.contact.phone) meckern("Telefonnummer nicht geraeumt: " + db.sections.contact.phone);
+
+  const eigen = JSON.parse(JSON.stringify(template));
+  eigen.sections.contact.phone = "+41 44 000 00 00";
+  nachziehen(eigen, korr);
+  if (eigen.sections.contact.phone !== "+41 44 000 00 00")
+    meckern("Eine neue Nummer wurde mitgeraeumt: " + eigen.sections.contact.phone);
+  // E-Mail und Standort bleiben.
+  if (eigen.sections.contact.email !== template.sections.contact.email) meckern("E-Mail angefasst");
+  if (eigen.sections.contact.base !== template.sections.contact.base) meckern("Standort angefasst");
 }
 
 {

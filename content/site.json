@@ -187,7 +187,24 @@
         "shop": {
           "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
           "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
-          "buyLabel": "Kaufen"
+          "buyLabel": "Kaufen",
+          "headline": "Sam Sparking Shop",
+          "intro": "Kleine Auflagen, gemacht fürs Konzert. Was hier steht, gibt es — ist ein Stück weg, ist es weg.",
+          "ctaLabel": "Zum Katalog",
+          "info": {
+            "0": {
+              "title": "Zahlung",
+              "text": "Wie bezahlt wird, steht am Artikel. Ist kein Zahlungslink hinterlegt, kommt die Bestellung über das Formular und wird persönlich bestätigt."
+            },
+            "1": {
+              "title": "Versand",
+              "text": "Der Versand wird nach der Bestellung persönlich abgesprochen. Vorher geht nichts raus."
+            },
+            "2": {
+              "title": "Fragen",
+              "text": "Grösse, Farbe, Verfügbarkeit — schreib an info@samsparking.ch."
+            }
+          }
         }
       },
       "site": {
@@ -483,7 +500,24 @@
           "note": "Du merch de Sam Sparking — chaque pièce aide à financer la prochaine production.",
           "emptyText": "La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.",
           "buyLabel": "Acheter",
-          "navLabel": "Boutique"
+          "navLabel": "Boutique",
+          "headline": "Sam Sparking Shop",
+          "intro": "Petites séries, faites pour la scène. Ce qui est ici existe — une pièce partie ne revient pas.",
+          "ctaLabel": "Voir le catalogue",
+          "info": {
+            "0": {
+              "title": "Paiement",
+              "text": "Le mode de paiement est indiqué sur l'article. Sans lien de paiement, la commande passe par le formulaire et est confirmée personnellement."
+            },
+            "1": {
+              "title": "Expédition",
+              "text": "L'expédition est convenue personnellement après la commande. Rien ne part avant."
+            },
+            "2": {
+              "title": "Questions",
+              "text": "Taille, couleur, disponibilité — écris à info@samsparking.ch."
+            }
+          }
         }
       },
       "ui": {
@@ -1255,7 +1289,7 @@
       "enabled": true,
       "kicker": "Booking & enquiries",
       "navLabel": "Contact",
-      "phone": "+41 77 509 11 71",
+      "phone": "",
       "socials": [
         {
           "label": "Instagram",
@@ -1532,6 +1566,16 @@
           "highlight": true
         },
         {
+          "name": "BBC",
+          "city": "Gossau",
+          "highlight": true
+        },
+        {
+          "name": "Ultrawild Festival",
+          "city": "St. Gallen",
+          "highlight": true
+        },
+        {
           "name": "The Q",
           "city": "Schaan, FL"
         },
@@ -1540,18 +1584,80 @@
           "city": "St. Gallen"
         },
         {
-          "name": "BBC",
-          "city": "Gossau",
-          "highlight": true
-        },
-        {
-          "name": "B9",
+          "name": "B9 eventlocation",
           "city": "St. Gallen"
         },
         {
-          "name": "Ultrawild Festival",
-          "city": "St. Gallen",
-          "highlight": true
+          "name": "Maiaiaiparty",
+          "city": "Appenzell Ausserrhoden"
+        },
+        {
+          "name": "Amadeusbar",
+          "city": "Herisau"
+        },
+        {
+          "name": "Fasnacht Oberegg",
+          "city": "Appenzell Innerrhoden"
+        },
+        {
+          "name": "Party Weekend Sirnach",
+          "city": "St. Gallen"
+        },
+        {
+          "name": "Kantonales Musik fest",
+          "city": "Appenzell Ausserrhoden"
+        },
+        {
+          "name": "Jugendopenair",
+          "city": "St. Gallen"
+        },
+        {
+          "name": "Monoevents",
+          "city": "St. Gallen"
+        },
+        {
+          "name": "Jublasurium",
+          "city": "Aargau"
+        },
+        {
+          "name": "Dorffest Herisau",
+          "city": "Herisau"
+        },
+        {
+          "name": "Turnunterhaltung Sirnach",
+          "city": "Sirnach"
+        },
+        {
+          "name": "Xploration Events",
+          "city": "Glarus"
+        },
+        {
+          "name": "Winterzauber Bazenheid",
+          "city": "Bazenheid"
+        },
+        {
+          "name": "Firehouse Party Wittenbach",
+          "city": "Wittenbach"
+        },
+        {
+          "name": "Cyberspace party",
+          "city": "St. Gallen"
+        },
+        {
+          "name": "Talhof",
+          "city": "St. Gallen"
+        },
+        {
+          "name": "Volleyballturnier Malters",
+          "city": "Luzern"
+        },
+        {
+          "name": "Metzertor",
+          "city": "St. Gallen"
+        },
+        {
+          "name": "Abschlussball Wittenbach",
+          "city": "St. Gallen"
         }
       ],
       "moreLabel": "Also played at",
@@ -1576,7 +1682,28 @@
       "navLabel": "Shop",
       "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
-      "titleAccent": "op."
+      "titleAccent": "op.",
+      "kicker": "MERCH",
+      "headline": "Sam Sparking Shop",
+      "intro": "Small runs, made to be worn at the show. What you see here is what exists — when a piece is gone, it is gone.",
+      "ctaLabel": "Browse the drop",
+      "info": [
+        {
+          "icon": "zahlung",
+          "title": "Payment",
+          "text": "How to pay is shown on the item itself. If no payment link is set, the order comes in through the form and is confirmed personally."
+        },
+        {
+          "icon": "versand",
+          "title": "Shipping",
+          "text": "Shipping is agreed personally after the order. Nothing is sent before that is settled."
+        },
+        {
+          "icon": "fragen",
+          "title": "Questions",
+          "text": "Size, colour, availability — write to info@samsparking.ch."
+        }
+      ]
     },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -1773,5 +1900,14 @@
   "imprint": {
     "email": "info@samsparking.ch",
     "location": "Herisau, Schweiz"
+  },
+  "release": {
+    "enabled": true,
+    "date": "2026-08-12",
+    "time": "18:00",
+    "zone": "Europe/Zurich",
+    "kicker": "Release",
+    "headline": "Sam Sparking",
+    "text": "Die neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben."
   }
 }
