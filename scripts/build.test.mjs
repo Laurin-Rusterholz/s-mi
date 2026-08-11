@@ -638,6 +638,54 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
+  /* Der Fotograf ist ueberall geloescht — nicht nur unsichtbar.
+
+     Erst wurde er nur nicht mehr angezeigt; das Feld stand aber weiter in der
+     Verwaltung, und der Kunde hat es dort wiedergefunden. Jetzt wird es bei
+     JEDEM Build geraeumt, ohne Marke: das Feld gibt es im Modell nicht mehr,
+     ein Wert aus einem alten Stand waere ein Rest. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.site.photoCredit = "Sarto Photography";
+  db.sections.gallery.items = [
+    { src: "a.jpg", alt: "A", credit: "Sarto Photography" },
+    { src: "b.jpg", alt: "B" },
+  ];
+  db.sections.about.photo = { src: "p.jpg", alt: "P", credit: "Photo — Sarto Photography" };
+  db.sections.booking.photo = { src: "q.jpg", alt: "Q", credit: "Sarto Photography" };
+  db.i18n = db.i18n || {};
+  db.i18n.de = db.i18n.de || {};
+  db.i18n.de.site = { photoCredit: "Sarto Photography" };
+  nachziehen(db, korr);
+
+  const roh = JSON.stringify(db);
+  if (roh.includes("Sarto")) meckern("Der Fotograf steht noch im Inhalt");
+  if (roh.includes("photoCredit")) meckern("photoCredit steht noch im Inhalt");
+  if (roh.includes('"credit"')) meckern("ein credit-Feld steht noch im Inhalt");
+  // Die Bilder bleiben — geloescht wird nur diese eine Angabe.
+  if (db.sections.gallery.items.length !== 2) meckern("ein Medium ist verschwunden");
+  if (db.sections.gallery.items[0].src !== "a.jpg" || db.sections.gallery.items[0].alt !== "A")
+    meckern("das Medium wurde veraendert: " + JSON.stringify(db.sections.gallery.items[0]));
+  if (db.sections.about.photo.src !== "p.jpg") meckern("das Portrait wurde veraendert");
+  if (db.sections.booking.photo.src !== "q.jpg") meckern("das Booking-Bild wurde veraendert");
+}
+
+{
+  /* Und im veroeffentlichten Stand steht er auch nicht mehr — samt der Probe,
+     dass dabei nichts anderes verloren gegangen ist. */
+  const roh = JSON.stringify(template);
+  for (const wort of ["Sarto", "photoCredit", '"credit"'])
+    if (roh.includes(wort)) meckern(`"${wort}" steht wieder im Inhalt`);
+  if ((template.sections.gallery.items || []).length !== 47)
+    meckern(`${(template.sections.gallery.items || []).length} Medien statt 47`);
+  if (!(template.sections.shop.items || []).some((p) => p.paymentLink))
+    meckern("der Bezahl-Link am Artikel ist verloren gegangen");
+  if ((template.sections.references.items || []).length !== 25) meckern("die Referenzen sind nicht mehr 25");
+  if ((template.sections.contact.socials || []).length !== 4) meckern("es sind nicht mehr vier Kanaele");
+  if (template.release?.enabled !== true || template.release?.date !== "2026-08-12")
+    meckern("die Release-Sperre wurde veraendert: " + JSON.stringify(template.release));
+}
+
+{
   /* Die Telefonnummer ist von der Website genommen (11.08.2026). Geraeumt wird
      nur die eine bekannte Nummer — eine neue in der Verwaltung bleibt stehen. */
   const db = JSON.parse(JSON.stringify(template));

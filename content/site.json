@@ -73,8 +73,7 @@
             "3": "Meine Mission ist einfach: Menschen etwas Echtes spüren lassen. Diesen Schub purer positiver Energie, diesen Drang, sofort auf Repeat zu drücken, dieses überwältigende Gefühl, das nur entsteht, wenn die Musik genau richtig ist."
           },
           "photo": {
-            "alt": "Portrait von Sam Sparking",
-            "credit": "Foto — Sarto Photography"
+            "alt": "Portrait von Sam Sparking"
           },
           "title": "Über",
           "titleAccent": "mich.",
@@ -117,52 +116,40 @@
         "gallery": {
           "items": {
             "0": {
-              "alt": "Sam Sparking live — Crowd mit erhobenen Händen",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking live — Crowd mit erhobenen Händen"
             },
             "1": {
-              "alt": "Sam Sparking mixt an den CDJs",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking mixt an den CDJs"
             },
             "2": {
-              "alt": "Bühnenlicht während eines Hardstyle-Sets",
-              "credit": "Sarto Photography"
+              "alt": "Bühnenlicht während eines Hardstyle-Sets"
             },
             "3": {
-              "alt": "Sam Sparking hinter der Booth",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking hinter der Booth"
             },
             "4": {
-              "alt": "Crowd an einer Show von Sam Sparking",
-              "credit": "Sarto Photography"
+              "alt": "Crowd an einer Show von Sam Sparking"
             },
             "5": {
-              "alt": "Sam Sparking, Portrait in der Location",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking, Portrait in der Location"
             },
             "6": {
-              "alt": "Hände in der Luft auf dem Dancefloor",
-              "credit": "Sarto Photography"
+              "alt": "Hände in der Luft auf dem Dancefloor"
             },
             "7": {
-              "alt": "Sam Sparking während seines Sets",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking während seines Sets"
             },
             "8": {
-              "alt": "Lichtshow über dem Dancefloor",
-              "credit": "Sarto Photography"
+              "alt": "Lichtshow über dem Dancefloor"
             },
             "9": {
-              "alt": "Sam Sparking auf der Bühne",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking auf der Bühne"
             },
             "10": {
-              "alt": "Blick aus der Booth über die Crowd",
-              "credit": "Sarto Photography"
+              "alt": "Blick aus der Booth über die Crowd"
             },
             "11": {
-              "alt": "Letzter Moment der Nacht",
-              "credit": "Sarto Photography"
+              "alt": "Letzter Moment der Nacht"
             }
           },
           "navLabel": "Galerie",
@@ -221,7 +208,6 @@
         },
         "ogDescription": "Hardstyle-DJ und Producer aus St. Gallen. Druckvolle Kicks, emotionale Melodien. Buch mich für deinen Club oder dein Festival — Schweiz und Europa.",
         "ogTitle": "Sam Sparking — Aus Energie wird Euphorie",
-        "photoCredit": "Sarto Photography",
         "title": "Sam Sparking — Hardstyle-DJ & Producer aus St. Gallen"
       },
       "ticker": {
@@ -336,8 +322,7 @@
         },
         "ogTitle": "Sam Sparking — L'énergie devient euphorie",
         "ogDescription": "DJ et producteur hardstyle de Saint-Gall. Des kicks puissants, des mélodies émotionnelles. Réserve-moi pour ton club ou ton festival — Suisse et Europe.",
-        "claim": "L'énergie devient euphorie",
-        "photoCredit": "Sarto Photography"
+        "claim": "L'énergie devient euphorie"
       },
       "ticker": {
         "items": {
@@ -380,8 +365,7 @@
           "title": "À pro",
           "titleAccent": "pos.",
           "photo": {
-            "alt": "Portrait de Sam Sparking",
-            "credit": "Photo — Sarto Photography"
+            "alt": "Portrait de Sam Sparking"
           },
           "lede": "Je suis Sam Sparking, 19 ans, DJ et producteur de Saint-Gall. Mon histoire a commencé bien avant que je me retrouve derrière des platines.",
           "paragraphs": {
@@ -416,52 +400,40 @@
           "titleAccent": "erie.",
           "items": {
             "0": {
-              "alt": "Sam Sparking en live — public les mains en l'air",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking en live — public les mains en l'air"
             },
             "1": {
-              "alt": "Sam Sparking aux CDJ",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking aux CDJ"
             },
             "2": {
-              "alt": "Jeux de lumière pendant un set hardstyle",
-              "credit": "Sarto Photography"
+              "alt": "Jeux de lumière pendant un set hardstyle"
             },
             "3": {
-              "alt": "Sam Sparking derrière la booth",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking derrière la booth"
             },
             "4": {
-              "alt": "Le public à un show de Sam Sparking",
-              "credit": "Sarto Photography"
+              "alt": "Le public à un show de Sam Sparking"
             },
             "5": {
-              "alt": "Portrait de Sam Sparking sur place",
-              "credit": "Sarto Photography"
+              "alt": "Portrait de Sam Sparking sur place"
             },
             "6": {
-              "alt": "Les mains en l'air sur le dancefloor",
-              "credit": "Sarto Photography"
+              "alt": "Les mains en l'air sur le dancefloor"
             },
             "7": {
-              "alt": "Sam Sparking pendant son set",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking pendant son set"
             },
             "8": {
-              "alt": "Jeu de lumière au-dessus du dancefloor",
-              "credit": "Sarto Photography"
+              "alt": "Jeu de lumière au-dessus du dancefloor"
             },
             "9": {
-              "alt": "Sam Sparking sur scène",
-              "credit": "Sarto Photography"
+              "alt": "Sam Sparking sur scène"
             },
             "10": {
-              "alt": "Vue depuis la booth sur le public",
-              "credit": "Sarto Photography"
+              "alt": "Vue depuis la booth sur le public"
             },
             "11": {
-              "alt": "Dernier moment de la nuit",
-              "credit": "Sarto Photography"
+              "alt": "Dernier moment de la nuit"
             }
           },
           "aftermoviesNote": "Retour sur les derniers shows."
@@ -651,8 +623,7 @@
             "3": "ef45dd9e"
           },
           "photo": {
-            "alt": "3306dd01",
-            "credit": "605ef713"
+            "alt": "3306dd01"
           },
           "title": "58e096de",
           "titleAccent": "6eb2bfcb",
@@ -695,52 +666,40 @@
         "gallery": {
           "items": {
             "0": {
-              "alt": "00a52ff3",
-              "credit": "c9b915c3"
+              "alt": "00a52ff3"
             },
             "1": {
-              "alt": "7923d426",
-              "credit": "c9b915c3"
+              "alt": "7923d426"
             },
             "2": {
-              "alt": "8933251a",
-              "credit": "c9b915c3"
+              "alt": "8933251a"
             },
             "3": {
-              "alt": "717e7a24",
-              "credit": "c9b915c3"
+              "alt": "717e7a24"
             },
             "4": {
-              "alt": "958e2ea3",
-              "credit": "c9b915c3"
+              "alt": "958e2ea3"
             },
             "5": {
-              "alt": "2ba80b71",
-              "credit": "c9b915c3"
+              "alt": "2ba80b71"
             },
             "6": {
-              "alt": "90204112",
-              "credit": "c9b915c3"
+              "alt": "90204112"
             },
             "7": {
-              "alt": "f9eac50a",
-              "credit": "c9b915c3"
+              "alt": "f9eac50a"
             },
             "8": {
-              "alt": "177a9938",
-              "credit": "c9b915c3"
+              "alt": "177a9938"
             },
             "9": {
-              "alt": "8defe69c",
-              "credit": "c9b915c3"
+              "alt": "8defe69c"
             },
             "10": {
-              "alt": "756df434",
-              "credit": "c9b915c3"
+              "alt": "756df434"
             },
             "11": {
-              "alt": "8b0c558c",
-              "credit": "c9b915c3"
+              "alt": "8b0c558c"
             }
           },
           "navLabel": "d7b54cdd",
@@ -777,7 +736,6 @@
         },
         "ogDescription": "0181f30a",
         "ogTitle": "8062eb93",
-        "photoCredit": "c9b915c3",
         "title": "66d3c7ac"
       },
       "ticker": {
@@ -888,8 +846,7 @@
         },
         "ogTitle": "8062eb93",
         "ogDescription": "0181f30a",
-        "claim": "987181c5",
-        "photoCredit": "c9b915c3"
+        "claim": "987181c5"
       },
       "ticker": {
         "items": {
@@ -926,8 +883,7 @@
           "title": "58e096de",
           "titleAccent": "6eb2bfcb",
           "photo": {
-            "alt": "3306dd01",
-            "credit": "605ef713"
+            "alt": "3306dd01"
           },
           "lede": "7a64f0bb",
           "paragraphs": {
@@ -962,52 +918,40 @@
           "titleAccent": "2759a437",
           "items": {
             "0": {
-              "alt": "00a52ff3",
-              "credit": "c9b915c3"
+              "alt": "00a52ff3"
             },
             "1": {
-              "alt": "7923d426",
-              "credit": "c9b915c3"
+              "alt": "7923d426"
             },
             "2": {
-              "alt": "8933251a",
-              "credit": "c9b915c3"
+              "alt": "8933251a"
             },
             "3": {
-              "alt": "717e7a24",
-              "credit": "c9b915c3"
+              "alt": "717e7a24"
             },
             "4": {
-              "alt": "958e2ea3",
-              "credit": "c9b915c3"
+              "alt": "958e2ea3"
             },
             "5": {
-              "alt": "2ba80b71",
-              "credit": "c9b915c3"
+              "alt": "2ba80b71"
             },
             "6": {
-              "alt": "90204112",
-              "credit": "c9b915c3"
+              "alt": "90204112"
             },
             "7": {
-              "alt": "f9eac50a",
-              "credit": "c9b915c3"
+              "alt": "f9eac50a"
             },
             "8": {
-              "alt": "177a9938",
-              "credit": "c9b915c3"
+              "alt": "177a9938"
             },
             "9": {
-              "alt": "8defe69c",
-              "credit": "c9b915c3"
+              "alt": "8defe69c"
             },
             "10": {
-              "alt": "756df434",
-              "credit": "c9b915c3"
+              "alt": "756df434"
             },
             "11": {
-              "alt": "8b0c558c",
-              "credit": "c9b915c3"
+              "alt": "8b0c558c"
             }
           },
           "aftermoviesNote": "766693dd"
@@ -1202,7 +1146,6 @@
       ],
       "photo": {
         "alt": "Portrait of Sam Sparking",
-        "credit": "Photo — Sarto Photography",
         "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzmWLYk2xT0zQqO0ooU%2Fsartophotography-dsc04165-print.jpg?alt=media&token=37cba043-2e02-4de8-abdb-7350c6f03b1c"
       },
       "title": "About",
@@ -1235,7 +1178,6 @@
       "navLabel": "Booking",
       "photo": {
         "alt": "Sam Sparking on stage",
-        "credit": "Sarto Photography",
         "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac"
       },
       "presskitLabel": "Presskit (PDF)",
@@ -1352,62 +1294,50 @@
       "items": [
         {
           "alt": "Sam Sparking performing with a raised hand amid colourful stage lights.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tur4TDlZqWghnwV%2Fsartophotography-dsc4119-web.jpg?alt=media&token=39b02f5b-3072-4207-a0c9-87c64025044e"
         },
         {
           "alt": "DJ headphones and decks ready for Sam Sparking's hardstyle set.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taELJFkGAtqd2op%2Fsartophotography-dsc4058-web.jpg?alt=media&token=a8e8b84e-8deb-46e5-8537-a61ccd087da7"
         },
         {
           "alt": "Close-up of Sam Sparking's hand at the decks under club lights.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tu_BSqzsOCiWt6O%2Fimage00009.jpeg?alt=media&token=5b779181-8b2d-4378-be8a-45271bcd7c1c"
         },
         {
           "alt": "Sam Sparking seen from behind at the DJ booth during a club set.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taB3CDXRaKT2_rn%2Fsartophotography-dsc3972-web.jpg?alt=media&token=c8170381-57ce-4355-9124-dae2a3387a31"
         },
         {
           "alt": "Sam Sparking on stage during a hardstyle performance.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tu_BSqzsOCiWt6R%2Fimg-0635.png?alt=media&token=bca457d7-0aaf-4b95-a9f8-3bcb6644408d"
         },
         {
           "alt": "Studio portrait of Sam Sparking.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tueBBiXvgUISkeB%2Fsartophotography-dsc0697-web.jpg?alt=media&token=d9ff7189-91e3-4224-bb2f-b176219127a6"
         },
         {
           "alt": "Sam Sparking raising a hand during a high-energy club moment.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YOmQUMPdx_uuNQ%2Fsartophotography-dsc4478-web.jpg?alt=media&token=a82fa06d-0dd9-4b48-9a29-7e83afac0054"
         },
         {
           "alt": "Sam Sparking performing in front of colourful lights.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3iWHXEUYpsIBZa%2Fsartophotography-dsc4742-web.jpg?alt=media&token=890a32d9-f744-4c11-a7d9-7355cf7062ab"
         },
         {
           "alt": "Atmospheric club lighting during Sam Sparking's set.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_oi%2Fsartophotography-dsc4219-web.jpg?alt=media&token=90384443-09a8-4e3d-b5c3-afbaaf34759a"
         },
         {
           "alt": "Sam Sparking behind the decks on stage.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YHvd161CnSHPU2%2Fsartophotography-dsc4140-web.jpg?alt=media&token=e44630f0-1794-416c-a8db-e5d4b680d501"
         },
         {
           "alt": "Headphones and equipment at Sam Sparking's DJ booth.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72tz%2Fimg-0637.png?alt=media&token=8f07fa3f-70f5-40cd-aa12-245354fd3b29"
         },
         {
           "alt": "Wide view from the stage during a Sam Sparking show.",
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_ok%2Fsartophotography-dsc4221-web.jpg?alt=media&token=25ae32de-c987-4ea8-bd17-adbcbdbbd3e7"
         },
         {
@@ -1425,121 +1355,88 @@
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOr%2Fsartophotography-dsc4647-web.jpg?alt=media&token=14c31001-34f0-4239-aab7-c87ff2ef61e0"
         },
+        {},
+        {},
         {
-          "credit": "Sarto Photography"
-        },
-        {
-          "credit": "Sarto Photography"
-        },
-        {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOs%2Fsartophotography-dsc4686-web.jpg?alt=media&token=92440c7d-219e-40b1-b6d0-75343a959fd0"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YG0XLRP9aPtp9B%2Fsartophotography-dsc4098-web.jpg?alt=media&token=84a5838b-63b7-468e-858f-f4dad69bf5a4"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YJsZVJw7wFoyJ1%2Fsartophotography-dsc4309-web.jpg?alt=media&token=a9ec6a25-b0b3-4485-a3a3-871abf925e03"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YHvd161CnSHPU3%2Fsartophotography-dsc4203-web.jpg?alt=media&token=a383d4aa-66b4-4fa3-80ed-21256fe5ad28"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YG0XLRP9aPtp9E%2Fsartophotography-dsc4116-web.jpg?alt=media&token=2110d583-dfd7-484e-9453-253229eb4221"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72tx%2Fimg-0629.png?alt=media&token=ffc6862a-e4e9-48b5-b24f-0b51d981283b"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72ty%2Fimg-0635.png?alt=media&token=4ec8cbb2-1a65-4eef-aa83-fc0a15552ff1"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_uN3R_uPcrPDhd%2Fdscf7916.jpg?alt=media&token=f185dc15-0b26-47d1-9011-478096965e82"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_sCXtTujit1fmx%2Fdscf7898.jpg?alt=media&token=8f3580dd-7f03-408e-b199-f1920b0bdce8"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4ta1mmKuqV231Nwo%2Fsartophotography-dsc0692-web.jpg?alt=media&token=a43dcdca-5830-44d8-b28c-d83fd1137a6d"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4ta2CAZr3nYDillG%2Fsartophotography-dsc0696-web.jpg?alt=media&token=a115da3e-1c39-42cb-8587-8d937b9b2646"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taDB2aSb6Kdnnox%2Fsartophotography-dsc4026-web.jpg?alt=media&token=86ac60e7-9fd9-4138-8057-ee0d65adcd03"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taG7Y9QxGtL0TTz%2Fsartophotography-dsc4068-web.jpg?alt=media&token=e0600f53-fd34-4423-9b81-3e5c6d1cc3d6"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taG7Y9QxGtL0TU-%2Fsartophotography-dsc4069-web.jpg?alt=media&token=b9b63b0f-df41-4f21-8c08-f16127b02904"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_wianAtM8BDHPg%2Fsartophotography-dsc0610-web.jpg?alt=media&token=59b05b13-09d7-496a-a0dd-22a73bc0ec45"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taK6az-T7B0n6qk%2Fsartophotography-dsc4086-web.jpg?alt=media&token=21dbb34d-004b-4076-85c9-3e150b9d5335"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taHwUiXKTu1nP7_%2Fsartophotography-dsc4070-web.jpg?alt=media&token=00690437-4cce-448a-bd73-55cc047bc1d0"
         },
+        {},
         {
-          "credit": "Sarto Photography"
-        },
-        {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QgFRY1xsAZIvQz%2Fultrawild-tim.mp4?alt=media&token=3bb8019f-33a4-42b3-afc4-6ee068a9c53d"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-domJFeEFBaaQ3NH%2Fultrawild-nicolas.mp4?alt=media&token=2d1bf030-c043-4311-b35a-00079303a031"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QhuU49BhgR6eqM%2Fxploration.mp4?alt=media&token=93fd2590-6746-4925-bed3-975b4e464e40"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoW%2Fjugendopenair-nicolas.mp4?alt=media&token=64de2184-0778-45c4-b8e8-f3354d81c957"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoX%2Fpws-sirnach.mov?alt=media&token=bb8eb8a8-9a46-406a-ae49-0cfa07d35259"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QfB63t6hojsUSU%2Fsektor-11-tim.mp4?alt=media&token=1e87ba6f-8d34-4246-8d4a-d4c088896737"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_oj%2Fsartophotography-dsc4220-web.jpg?alt=media&token=191c1c78-db26-4594-82ad-6bec9c1fe35f"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YHvd161CnSHPU-%2Fsartophotography-dsc4121-web.jpg?alt=media&token=8e8ca716-205d-45a3-90ab-737b2fb00f4a"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_oh%2Fsartophotography-dsc4217-web.jpg?alt=media&token=d1179cde-6f1d-49a6-befb-192a809ecf20"
         },
         {
-          "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YJsZVJw7wFoyJ-%2Fsartophotography-dsc4231-web.jpg?alt=media&token=ca6805b3-23a4-4a94-8124-d7c54fb54f59"
         },
         {
@@ -1793,7 +1690,6 @@
     "ogDescription": "Hardstyle DJ and producer from St. Gallen. Hard kicks, emotional melodies. Book me for your club or festival — Switzerland and Europe.",
     "ogImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171",
     "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
-    "photoCredit": "Sarto Photography",
     "themeColor": "#05070e",
     "title": "Sam Sparking — Hardstyle DJ & Producer from St. Gallen, Switzerland"
   },
