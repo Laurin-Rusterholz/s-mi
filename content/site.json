@@ -6,6 +6,8 @@
     "kicker": "DJ & producer — St. Gallen, Switzerland",
     "media": {
       "alt": "Sam Sparking behind the decks, lasers and crowd in front of the stage",
+      "clipEnd": "20",
+      "clipStart": "0",
       "poster": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac",
       "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&token=d89f8d1b-067a-49e6-a950-0939b27a4b11",
       "type": "video"
@@ -1422,6 +1424,8 @@
         "Switzerland & Europe"
       ],
       "availableKicker": "Available for",
+      "claim": "Let's create",
+      "claimAccent": "something.",
       "enabled": true,
       "form": {
         "enabled": true,
@@ -1431,11 +1435,12 @@
         "successText": "Thanks — your request arrived. You'll hear from me within 48 hours.",
         "title": "Tell me about your event"
       },
+      "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
       "navLabel": "Booking",
       "photo": {
-        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac",
         "alt": "Sam Sparking on stage",
-        "credit": "Sarto Photography"
+        "credit": "Sarto Photography",
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac"
       },
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
@@ -1480,10 +1485,7 @@
         "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
       },
       "title": "Boo",
-      "titleAccent": "king.",
-      "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
-      "claim": "Let's create",
-      "claimAccent": "something."
+      "titleAccent": "king."
     },
     "contact": {
       "base": "St. Gallen, Switzerland",
@@ -1541,12 +1543,21 @@
       "title": "Experi",
       "titleAccent": "ence."
     },
+    "follow": {
+      "enabled": true,
+      "lede": "New tracks, sets and the stuff between the shows land on my channels first. Follow along and be there when the next one drops.",
+      "navLabel": "Follow",
+      "title": "Join the ",
+      "titleAccent": "movement."
+    },
     "gallery": {
+      "aftermoviesNote": "A look back at the latest shows.",
       "enabled": true,
       "items": [
         {
           "alt": "Sam Sparking performing with a raised hand amid colourful stage lights.",
-          "credit": "Sarto Photography"
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tur4TDlZqWghnwV%2Fsartophotography-dsc4119-web.jpg?alt=media&token=39b02f5b-3072-4207-a0c9-87c64025044e"
         },
         {
           "alt": "DJ headphones and decks ready for Sam Sparking's hardstyle set.",
@@ -1556,7 +1567,7 @@
         {
           "alt": "Close-up of Sam Sparking's hand at the decks under club lights.",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taJEEU43ln7Hjaa%2Fsartophotography-dsc4078-web.jpg?alt=media&token=60fcaf01-8d88-4e24-aa3f-a0ce2085822c"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tu_BSqzsOCiWt6O%2Fimage00009.jpeg?alt=media&token=5b779181-8b2d-4378-be8a-45271bcd7c1c"
         },
         {
           "alt": "Sam Sparking seen from behind at the DJ booth during a club set.",
@@ -1566,11 +1577,12 @@
         {
           "alt": "Sam Sparking on stage during a hardstyle performance.",
           "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOr%2Fsartophotography-dsc4647-web.jpg?alt=media&token=14c31001-34f0-4239-aab7-c87ff2ef61e0"
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tu_BSqzsOCiWt6R%2Fimg-0635.png?alt=media&token=bca457d7-0aaf-4b95-a9f8-3bcb6644408d"
         },
         {
           "alt": "Studio portrait of Sam Sparking.",
-          "credit": "Sarto Photography"
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tueBBiXvgUISkeB%2Fsartophotography-dsc0697-web.jpg?alt=media&token=d9ff7189-91e3-4224-bb2f-b176219127a6"
         },
         {
           "alt": "Sam Sparking raising a hand during a high-energy club moment.",
@@ -1608,15 +1620,141 @@
         },
         {
           "alt": "Sam Sparking performing at Sektor 11.",
+          "poster": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tublcc7h0PYd3We%2Fsartophotography-dsc0680-web.jpg?alt=media&token=2e22fb02-2041-480b-9f3c-511fc0c131f1",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6aLMV74xN0D0QobQ%2Fsektor-11-tim.mp4?alt=media&token=8e6d6360-95bf-4814-a486-b6bcb2850aa7"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_xakmxIqwQFxiF%2Fsartophotography-dsc0668-web.jpg?alt=media&token=80632b79-e0bb-40cf-a67b-88b17e7c742e"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOr%2Fsartophotography-dsc4647-web.jpg?alt=media&token=14c31001-34f0-4239-aab7-c87ff2ef61e0"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YUzZMsyN6_xRQh%2Fimage00014.jpeg?alt=media&token=6ea75909-564e-4e66-8a93-deb228f44650"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl37%2Fimage00002.jpeg?alt=media&token=bf3cc8be-e962-4276-bc90-bc87f6d424ef"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOs%2Fsartophotography-dsc4686-web.jpg?alt=media&token=92440c7d-219e-40b1-b6d0-75343a959fd0"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YG0XLRP9aPtp9B%2Fsartophotography-dsc4098-web.jpg?alt=media&token=84a5838b-63b7-468e-858f-f4dad69bf5a4"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YJsZVJw7wFoyJ1%2Fsartophotography-dsc4309-web.jpg?alt=media&token=a9ec6a25-b0b3-4485-a3a3-871abf925e03"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YHvd161CnSHPU3%2Fsartophotography-dsc4203-web.jpg?alt=media&token=a383d4aa-66b4-4fa3-80ed-21256fe5ad28"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YG0XLRP9aPtp9E%2Fsartophotography-dsc4116-web.jpg?alt=media&token=2110d583-dfd7-484e-9453-253229eb4221"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72tx%2Fimg-0629.png?alt=media&token=ffc6862a-e4e9-48b5-b24f-0b51d981283b"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_vL7LXd2dZ72ty%2Fimg-0635.png?alt=media&token=4ec8cbb2-1a65-4eef-aa83-fc0a15552ff1"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_uN3R_uPcrPDhd%2Fdscf7916.jpg?alt=media&token=f185dc15-0b26-47d1-9011-478096965e82"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_sCXtTujit1fmx%2Fdscf7898.jpg?alt=media&token=8f3580dd-7f03-408e-b199-f1920b0bdce8"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4ta1mmKuqV231Nwo%2Fsartophotography-dsc0692-web.jpg?alt=media&token=a43dcdca-5830-44d8-b28c-d83fd1137a6d"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4ta2CAZr3nYDillG%2Fsartophotography-dsc0696-web.jpg?alt=media&token=a115da3e-1c39-42cb-8587-8d937b9b2646"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taDB2aSb6Kdnnox%2Fsartophotography-dsc4026-web.jpg?alt=media&token=86ac60e7-9fd9-4138-8057-ee0d65adcd03"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taG7Y9QxGtL0TTz%2Fsartophotography-dsc4068-web.jpg?alt=media&token=e0600f53-fd34-4423-9b81-3e5c6d1cc3d6"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taG7Y9QxGtL0TU-%2Fsartophotography-dsc4069-web.jpg?alt=media&token=b9b63b0f-df41-4f21-8c08-f16127b02904"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4t_wianAtM8BDHPg%2Fsartophotography-dsc0610-web.jpg?alt=media&token=59b05b13-09d7-496a-a0dd-22a73bc0ec45"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taK6az-T7B0n6qk%2Fsartophotography-dsc4086-web.jpg?alt=media&token=21dbb34d-004b-4076-85c9-3e150b9d5335"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taHwUiXKTu1nP7_%2Fsartophotography-dsc4070-web.jpg?alt=media&token=00690437-4cce-448a-bd73-55cc047bc1d0"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3_49XRpdJGchwN%2Fdsc01425.jpg?alt=media&token=76fab1fc-1f56-45cc-abf6-6971d1486ae0"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QgFRY1xsAZIvQz%2Fultrawild-tim.mp4?alt=media&token=3bb8019f-33a4-42b3-afc4-6ee068a9c53d"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-domJFeEFBaaQ3NH%2Fultrawild-nicolas.mp4?alt=media&token=2d1bf030-c043-4311-b35a-00079303a031"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QhuU49BhgR6eqM%2Fxploration.mp4?alt=media&token=93fd2590-6746-4925-bed3-975b4e464e40"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoW%2Fjugendopenair-nicolas.mp4?alt=media&token=64de2184-0778-45c4-b8e8-f3354d81c957"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoX%2Fpws-sirnach.mov?alt=media&token=bb8eb8a8-9a46-406a-ae49-0cfa07d35259"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QfB63t6hojsUSU%2Fsektor-11-tim.mp4?alt=media&token=1e87ba6f-8d34-4246-8d4a-d4c088896737"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_oj%2Fsartophotography-dsc4220-web.jpg?alt=media&token=191c1c78-db26-4594-82ad-6bec9c1fe35f"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YHvd161CnSHPU-%2Fsartophotography-dsc4121-web.jpg?alt=media&token=8e8ca716-205d-45a3-90ab-737b2fb00f4a"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YILo5q9TU7I_oh%2Fsartophotography-dsc4217-web.jpg?alt=media&token=d1179cde-6f1d-49a6-befb-192a809ecf20"
+        },
+        {
+          "credit": "Sarto Photography",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YJsZVJw7wFoyJ-%2Fsartophotography-dsc4231-web.jpg?alt=media&token=ca6805b3-23a4-4a94-8124-d7c54fb54f59"
         }
       ],
       "mobileLimit": 6,
       "navLabel": "Gallery",
       "title": "Gal",
       "titleAccent": "lery.",
-      "aftermovies": [],
-      "aftermoviesNote": "A look back at the latest shows."
+      "aftermovies": []
     },
     "references": {
       "enabled": true,
@@ -1698,6 +1836,7 @@
           "city": "Glarus"
         }
       ],
+      "moreLabel": "Also played at",
       "navLabel": "References",
       "note": "Your club or festival next?",
       "noteLinkLabel": "Write to me →",
@@ -1726,6 +1865,22 @@
           "inquiryId": "-OynrY4vxLnlzNN0U2G1",
           "name": "Aftersun",
           "status": "booked"
+        },
+        {
+          "country": "CH",
+          "date": "2026-08-14",
+          "name": "SG Fest",
+          "status": "confirmed",
+          "ticketLabel": "Tickets",
+          "venue": "bermuda-Dreieck"
+        },
+        {
+          "city": "Chur",
+          "country": "CH",
+          "date": "2026-08-15",
+          "name": "Nox club",
+          "status": "confirmed",
+          "ticketLabel": "Tickets"
         }
       ],
       "navLabel": "Shows",
@@ -1761,18 +1916,42 @@
       "titleAccent": "res."
     },
     "videos": {
+      "emptyText": "No video yet — the recaps of the next shows land here.",
+      "enabled": true,
       "items": [
         {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6aLMV74xN0D0QobQ%2Fsektor-11-tim.mp4?alt=media&token=8e6d6360-95bf-4814-a486-b6bcb2850aa7",
-          "alt": "Sam Sparking performing at Sektor 11."
+          "alt": "Sam Sparking performing at Sektor 11.",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6aLMV74xN0D0QobQ%2Fsektor-11-tim.mp4?alt=media&token=8e6d6360-95bf-4814-a486-b6bcb2850aa7"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QgFRY1xsAZIvQz%2Fultrawild-tim.mp4?alt=media&token=3bb8019f-33a4-42b3-afc4-6ee068a9c53d",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-domJFeEFBaaQ3NH%2Fultrawild-nicolas.mp4?alt=media&token=2d1bf030-c043-4311-b35a-00079303a031",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QhuU49BhgR6eqM%2Fxploration.mp4?alt=media&token=93fd2590-6746-4925-bed3-975b4e464e40",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoW%2Fjugendopenair-nicolas.mp4?alt=media&token=64de2184-0778-45c4-b8e8-f3354d81c957",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoX%2Fpws-sirnach.mov?alt=media&token=bb8eb8a8-9a46-406a-ae49-0cfa07d35259",
+          "credit": "Sarto Photography"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QfB63t6hojsUSU%2Fsektor-11-tim.mp4?alt=media&token=1e87ba6f-8d34-4246-8d4a-d4c088896737",
+          "credit": "Sarto Photography"
         }
       ],
       "navLabel": "Videos",
-      "title": "Vid",
-      "titleAccent": "eos.",
-      "enabled": true,
       "note": "Aftermovies and set recordings — the shows to watch back.",
-      "emptyText": "No video yet — the recaps of the next shows land here."
+      "title": "Vid",
+      "titleAccent": "eos."
     }
   },
   "site": {
@@ -1903,6 +2082,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-09T11:49:04.770Z",
+  "updatedAt": "2026-08-11T19:23:32.277Z",
   "updatedBy": "Verwaltung"
 }
