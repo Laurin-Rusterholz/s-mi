@@ -1169,7 +1169,7 @@
       "photo": {
         "alt": "Portrait of Sam Sparking",
         "credit": "Photo — Sarto Photography",
-        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3aJ4j-O9UTDQHt%2Fsartophotography-dsc04152-print.jpg?alt=media&token=52b99ede-6e42-45de-a489-7bc800a9a63f"
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzmWLYk2xT0zQqO0ooU%2Fsartophotography-dsc04165-print.jpg?alt=media&token=37cba043-2e02-4de8-abdb-7350c6f03b1c"
       },
       "title": "About",
       "titleAccent": "Me.",
@@ -1258,23 +1258,8 @@
       "phone": "+41 77 509 11 71",
       "socials": [
         {
-          "label": "Instagram",
-          "url": "https://www.instagram.com/sam_sparking/",
-          "inHeader": false
-        },
-        {
           "label": "Mixcloud",
           "url": "https://www.mixcloud.com/samsparking/"
-        },
-        {
-          "label": "TikTok",
-          "inHeader": false,
-          "url": "https://www.tiktok.com/@sam_sparking"
-        },
-        {
-          "label": "Spotify",
-          "inHeader": false,
-          "url": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S"
         }
       ],
       "title": "Con",
@@ -1392,12 +1377,10 @@
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOr%2Fsartophotography-dsc4647-web.jpg?alt=media&token=14c31001-34f0-4239-aab7-c87ff2ef61e0"
         },
         {
-          "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YUzZMsyN6_xRQh%2Fimage00014.jpeg?alt=media&token=6ea75909-564e-4e66-8a93-deb228f44650"
+          "credit": "Sarto Photography"
         },
         {
-          "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl37%2Fimage00002.jpeg?alt=media&token=bf3cc8be-e962-4276-bc90-bc87f6d424ef"
+          "credit": "Sarto Photography"
         },
         {
           "credit": "Sarto Photography",
@@ -1468,8 +1451,7 @@
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taHwUiXKTu1nP7_%2Fsartophotography-dsc4070-web.jpg?alt=media&token=00690437-4cce-448a-bd73-55cc047bc1d0"
         },
         {
-          "credit": "Sarto Photography",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3_49XRpdJGchwN%2Fdsc01425.jpg?alt=media&token=76fab1fc-1f56-45cc-abf6-6971d1486ae0"
+          "credit": "Sarto Photography"
         },
         {
           "credit": "Sarto Photography",
@@ -1510,6 +1492,9 @@
         {
           "credit": "Sarto Photography",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YJsZVJw7wFoyJ-%2Fsartophotography-dsc4231-web.jpg?alt=media&token=ca6805b3-23a4-4a94-8124-d7c54fb54f59"
+        },
+        {
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzWRRKg06F94tn0X7Dv%2Fjugendopenair-nicolas.mp4?alt=media&token=afdd184c-6e41-4a95-9bd4-284791cf639c"
         }
       ],
       "mobileLimit": 6,
@@ -1522,36 +1507,32 @@
       "enabled": true,
       "items": [
         {
-          "name": "Kugl",
           "city": "St. Gallen",
-          "highlight": true
+          "name": "Kugl"
         },
         {
-          "name": "Sektor 11",
           "city": "Zürich",
-          "highlight": true
+          "name": "Sektor 11"
         },
         {
-          "name": "The Q",
-          "city": "Schaan, FL"
+          "city": "Schaan, FL",
+          "name": "The Q"
         },
         {
-          "name": "IVY",
-          "city": "St. Gallen"
-        },
-        {
-          "name": "BBC",
-          "city": "Gossau",
-          "highlight": true
-        },
-        {
-          "name": "B9",
-          "city": "St. Gallen"
-        },
-        {
-          "name": "Ultrawild Festival",
           "city": "St. Gallen",
-          "highlight": true
+          "name": "IVY"
+        },
+        {
+          "city": "Gossau",
+          "name": "BBC"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "B9"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Ultrawild Festival"
         }
       ],
       "moreLabel": "Also played at",
@@ -1563,20 +1544,23 @@
     },
     "shop": {
       "buyLabel": "Buy",
-      "currency": "CHF",
-      "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
+      "currency": "CHF ",
       "enabled": true,
       "items": [
         {
-          "name": "Beispiel",
-          "price": "35",
+          "alt": "Die originale Sam Sparking Gig-Cap! Mit klassischer Passform, flachem Schirm und vollem Steifleinen ausgestattet. Logo gestickt - Universelle Grösse (verstellbar) Gratis Versand innerhalb der Schweiz!",
+          "name": "Snapback-Cap Sam Sparking",
+          "paymentLink": "https://buy.stripe.com/14A14gepW8FCffs2vm7bW01",
+          "price": "25",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzmUdqLVBvID62fqsmF%2Fsam-sparking-cap-2-v2.png?alt=media&token=9728f09a-5f1f-48f2-a8fd-8245008901b8",
           "status": "available"
         }
       ],
       "navLabel": "Shop",
       "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
-      "titleAccent": "op."
+      "titleAccent": "op.",
+      "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop."
     },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -1768,7 +1752,7 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-11T19:23:32.277Z",
+  "updatedAt": "2026-08-11T20:41:08.014Z",
   "updatedBy": "Verwaltung",
   "imprint": {
     "email": "info@samsparking.ch",
