@@ -1556,36 +1556,32 @@
       "enabled": true,
       "items": [
         {
-          "name": "Kugl",
           "city": "St. Gallen",
-          "highlight": true
+          "name": "Kugl"
         },
         {
-          "name": "Sektor 11",
           "city": "Zürich",
-          "highlight": true
+          "name": "Sektor 11"
         },
         {
-          "name": "BBC",
           "city": "Gossau",
-          "highlight": true
+          "name": "BBC"
         },
         {
-          "name": "Ultrawild Festival",
           "city": "St. Gallen",
-          "highlight": true
+          "name": "Ultrawild Festival"
         },
         {
-          "name": "The Q",
-          "city": "Schaan, FL"
+          "city": "Schaan, FL",
+          "name": "The Q"
         },
         {
-          "name": "IVY",
-          "city": "St. Gallen"
+          "city": "St. Gallen",
+          "name": "IVY"
         },
         {
-          "name": "B9 eventlocation",
-          "city": "St. Gallen"
+          "city": "St. Gallen",
+          "name": "B9"
         },
         {
           "name": "Maiaiaiparty",

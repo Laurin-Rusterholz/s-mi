@@ -840,11 +840,138 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Impressum-Angabe(n)`);
   }
 
+  /* ---------------------------------------------------------------------
+     ERGAENZEN, NIE ERSETZEN.
+
+     Die folgenden Regeln fuellen Luecken im Stand aus der Datenbank, damit die
+     Website vollstaendig ist, ohne dass jemand die Verwaltung oeffnen und
+     speichern muss. Sie ueberschreiben nichts, sortieren nichts um, loeschen
+     nichts — und sie halten sich selbst an: hat die Verwaltung den Stand einmal
+     gespeichert, traegt der Inhalt unter `migrationen` eine Marke, und die
+     zugehoerige Regel laeuft nie wieder. Ab dann laesst sich alles loeschen und
+     bleibt geloescht.
+
+     Genau darin unterscheiden sie sich von den Regeln, die im August entfernt
+     wurden: jene ERSETZTEN (die Referenzliste wurde ausgetauscht, geloeschte
+     Ware kam zurueck, geleerte Texte wurden neu geschrieben).
+     --------------------------------------------------------------------- */
+  const erledigt = (marke) => live.migrationen && live.migrationen[marke] === true;
+
+  /* Referenzen: fehlende anhaengen. Erkannt an Name UND Ort, unabhaengig von
+     Gross/Klein und Bindestrichen. Nie gross, nie umsortiert. */
+  if (!erledigt("referenzen")) {
+    const soll = list(korr.referenzenNachtragen?.eintraege).filter((r) => str(r?.name));
+    if (soll.length) {
+      const ziel = ls.references || (ls.references = {});
+      if (!Array.isArray(ziel.items)) ziel.items = [];
+      const da = new Set(ziel.items.map((r) => refSchluessel(r?.name, r?.city)));
+      let n = 0;
+      for (const r of soll) {
+        const key = refSchluessel(r.name, r.city);
+        if (da.has(key)) continue;
+        ziel.items.push(str(r.city) ? { name: str(r.name), city: str(r.city) } : { name: str(r.name) });
+        da.add(key);
+        n++;
+      }
+      if (n) getan.push(`${n} Referenz(en) ergaenzt`);
+
+      /* Und die vier, die bis zum 11.08.2026 gross ueber den anderen standen,
+         ruecken einmalig nach vorne. Seit alle Referenzen gleich aussehen,
+         entscheidet allein die Reihenfolge; ohne diesen Schritt saehe die Seite
+         anders aus als vorher. Verschoben werden nur Positionen — Inhalt,
+         Schreibweise und die Reihenfolge der uebrigen bleiben. */
+      const zuerst = list(korr.referenzenNachtragen?.zuerst).map((r) =>
+        refSchluessel(r?.name, r?.city)
+      );
+      if (zuerst.length) {
+        const rang = (r) => {
+          const i = zuerst.indexOf(refSchluessel(r?.name, r?.city));
+          return i < 0 ? zuerst.length : i;
+        };
+        const vorher = ziel.items.map((r) => refSchluessel(r?.name, r?.city)).join("|");
+        // Stabil sortieren: gleiche Raenge behalten ihre bisherige Ordnung.
+        ziel.items = ziel.items
+          .map((r, i) => [r, i])
+          .sort((a, b) => rang(a[0]) - rang(b[0]) || a[1] - b[1])
+          .map(([r]) => r);
+        if (ziel.items.map((r) => refSchluessel(r?.name, r?.city)).join("|") !== vorher)
+          getan.push("die vier bisher grossen Referenzen nach vorne");
+      }
+    }
+  }
+
+  /* Kanaele: fehlende einsetzen, an der Stelle der Liste. Erkannt am Namen ODER
+     am Hostnamen — "Insta" und "Instagram" sind derselbe Kanal. Eine hinterlegte
+     Adresse gewinnt immer. */
+  if (!erledigt("kanaele")) {
+    const soll = list(korr.kanaeleNachtragen?.eintraege).filter((x) => str(x?.label));
+    if (soll.length) {
+      const ziel = ls.contact || (ls.contact = {});
+      if (!Array.isArray(ziel.socials)) ziel.socials = [];
+      const name = (x) => str(x?.label).trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+      const host = (x) => (String(x?.url || "").match(/^https?:\/\/(?:www\.)?([^/]+)/i) || [, ""])[1].toLowerCase();
+      const daNamen = new Set(ziel.socials.map(name).filter(Boolean));
+      const daHosts = new Set(ziel.socials.map(host).filter(Boolean));
+      let n = 0;
+      for (const [nr, kanal] of soll.entries()) {
+        if (daNamen.has(name(kanal))) continue;
+        const h = host(kanal);
+        if (h && daHosts.has(h)) continue;
+        const naechster = soll
+          .slice(nr + 1)
+          .map((k) => ziel.socials.findIndex((x) => name(x) === name(k)))
+          .find((i) => i >= 0);
+        ziel.socials.splice(naechster === undefined ? ziel.socials.length : naechster, 0, kopie(kanal));
+        daNamen.add(name(kanal));
+        if (h) daHosts.add(h);
+        n++;
+      }
+      if (n) getan.push(`${n} Kanal/Kanaele ergaenzt`);
+    }
+  }
+
+  /* Shop: die Einladung oben und der Informationsstreifen. Nur leere Felder,
+     und die Warenliste bleibt in jedem Fall unberuehrt. */
+  if (!erledigt("shopInfo") && korr.shopEinladung) {
+    const shop = ls.shop || (ls.shop = {});
+    let n = 0;
+    for (const [feld, wert] of Object.entries(korr.shopEinladung.felder || {})) {
+      if (str(shop[feld])) continue;
+      shop[feld] = wert;
+      n++;
+    }
+    if (!list(shop.info).length && list(korr.shopEinladung.info).length) {
+      shop.info = kopie(korr.shopEinladung.info);
+      n += shop.info.length;
+    }
+    for (const [lang, werte] of Object.entries(korr.shopEinladung.i18n || {})) {
+      const i18n = live.i18n || (live.i18n = {});
+      const dort = i18n[lang] || (i18n[lang] = {});
+      const abschnitte = dort.sections || (dort.sections = {});
+      const ziel = abschnitte.shop || (abschnitte.shop = {});
+      for (const [feld, wert] of Object.entries(werte)) {
+        if (feld === "info") {
+          // Uebersetzungen der Streifen-Punkte haengen am Platz in der Liste.
+          const vorhanden = ziel.info || (ziel.info = {});
+          list(wert).forEach((eintrag, i) => {
+            const platz = vorhanden[String(i)] || (vorhanden[String(i)] = {});
+            for (const [f, v] of Object.entries(eintrag)) if (!str(platz[f])) platz[f] = v;
+          });
+          continue;
+        }
+        if (str(ziel[feld])) continue;
+        ziel[feld] = wert;
+        n++;
+      }
+    }
+    if (n) getan.push(`${n} Shop-Angabe(n) ergaenzt`);
+  }
+
   /* Die Telefonnummer gehoert nicht mehr auf die Website (11.08.2026).
      Geleert wird nur die eine bekannte Nummer — traegt jemand in der
      Verwaltung eine neue ein, bleibt sie stehen und erscheint wieder. Der
      Generator zeigt das Feld ohnehin nur, wenn etwas darin steht. */
-  if (korr.telefon?.leeren && ls.contact) {
+  if (korr.telefon?.leeren && ls.contact && !erledigt("telefon")) {
     const ist = str(ls.contact.phone).replace(/\s+/g, "");
     const alt = list(korr.telefon.alteNummern).map((x) => str(x).replace(/\s+/g, ""));
     if (ist && alt.includes(ist)) {
@@ -2748,8 +2875,13 @@ const looksTechnical = (v) =>
 /* `imprint.*` ebenfalls: beim Standort uebersetzt renderImpressum nur das
    Landeswort. Eine zweite Uebersetzung von Hand wuerde daneben stehen. Muss mit
    der Verwaltung uebereinstimmen (verwaltung/public/js/i18n.js). */
+/* Und `sections.references.items.*`: Clubs und Festivals heissen in jeder
+   Sprache gleich, Orte ebenso. Uebersetzt man sie, haengt die Tabelle am PLATZ
+   in der Liste — kommt vorne ein Eintrag dazu, traegt plötzlich der falsche
+   Club den Namen. Genau so hiess "B9" auf /de/ und /fr/ noch "B9
+   eventlocation", nachdem die Liste gewachsen war. */
 const NO_TRANSLATE_PATH =
-  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\.|^imprint\./;
+  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\.|^sections\.references\.items\.|^imprint\./;
 
 /** Alle übersetzbaren Textstellen als [pfad, text]. */
 export function collectStrings(node, prefix = "", out = []) {
