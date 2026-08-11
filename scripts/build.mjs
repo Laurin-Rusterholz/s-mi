@@ -535,53 +535,26 @@ export function nachziehen(live, korr) {
     getan.push("Waehrung");
   }
 
-  // Tippreste aus dem ersten Einrichten ("as", "asd") aus der Beispielware
-  // raeumen. Sonst steht beim Einschalten des Shops eine Ware mit der
-  // Beschreibung "as" und einem toten Kauf-Link auf der Seite. Geraeumt wird
-  // nur, was Zeichen fuer Zeichen noch der Tippfehler ist.
-  const ph = korr.shop?.platzhalter;
-  if (ph?.name) {
-    let weg = 0;
-    list(ls.shop?.items).forEach((p) => {
-      if (str(p?.name) !== ph.name) return;
-      for (const [feld, wert] of Object.entries(ph.felder || {})) {
-        if (str(p[feld]) === wert) {
-          delete p[feld];
-          weg++;
-        }
-      }
-    });
-    if (weg) getan.push(`${weg} Platzhalter im Shop`);
-  }
+  /* Die eine veroeffentlichte Ware zurueckholen (11.08.2026).
 
-  /* Platzhalter-Ware ganz aus dem Shop nehmen — Produktentscheidung vom
-     10.08.2026 (siehe entfernteWare._warum in content/korrekturen.json).
+     Vorgeschichte: bis zum 10.08.2026 loeschte hier eine Regel jeden Artikel,
+     der "Beispiel" hiess. Die Verwaltung hat den so bereinigten Stand spaeter
+     zurueck in die Datenbank geschrieben — seither steht dort gar keine Ware
+     mehr, und der Shop zeigt in allen drei Sprachen nur noch den Leer-Text.
 
-     Anders als der Block darueber, der nur einzelne Tippreste-FELDER raeumt,
-     faellt hier der ganze Artikel weg. Anlass: "Beispiel" stand mit CHF 35,
-     totem Produktbild (Firebase antwortet 404) und einem Kauf-Knopf auf der
-     oeffentlichen Seite. Es gibt keine verifizierten Artikeldaten, also darf
-     dort auch nichts zu kaufen sein.
-
-     Gesucht wird ueber den Namen, nicht ueber den Platz in der Liste. Geloescht
-     statt markiert wird hier bewusst: Ware traegt — anders als die Kennzahlen —
-     keine ueber den Platz zugeordnete Uebersetzung.
-
-     ACHTUNG: Diese Regel greift IMMER und ueberstimmt damit die Verwaltung.
-     Echte Ware mit demselben Namen kaeme nie auf die Seite; sobald es sie gibt,
-     gehoert der Name aus der Korrekturdatei heraus. */
-  const wegWare = list(korr.shop?.entfernteWare?.namen).map((n) => str(n).toLowerCase());
-  if (wegWare.length && list(ls.shop?.items).length) {
-    const vorherZahl = list(ls.shop.items).length;
-    ls.shop.items = list(ls.shop.items).filter(
-      (p) => !wegWare.includes(str(p?.name).toLowerCase())
-    );
-    const raus = vorherZahl - ls.shop.items.length;
-    if (raus) {
-      getan.push(
-        `${raus} Platzhalter-Ware entfernt: ${list(korr.shop.entfernteWare.namen).join(", ")}`
-      );
-    }
+     Diese Regel macht genau das rueckgaengig und nichts weiter:
+       - Sie greift nur, solange die Warenliste komplett leer ist. Sobald in
+         der Verwaltung ein einziger Artikel steht, haelt sie sich raus.
+       - Sie legt nur die Werte an, die der Kunde selbst veroeffentlicht hatte
+         (Name, Preis, Zustand). Nichts davon ist erfunden.
+       - Das damalige Produktbild bleibt weg: die Datei ist im Speicher nicht
+         mehr da (HTTP 404) und war genau das "kaputte Bild" aus der Meldung
+         vom 10.08.2026. Ein Ersatzbild wird nicht geraten — die Karte zeigt
+         Name, Preis und Kauf-Knopf, das Bild kommt in der Verwaltung dazu. */
+  const zurueck = list(korr.shop?.verloreneWare).filter((w) => str(w?.name));
+  if (zurueck.length && ls.shop && !list(ls.shop.items).length) {
+    ls.shop.items = zurueck.map((w) => ({ ...w }));
+    getan.push(`${zurueck.length} veroeffentlichte Ware zurueckgeholt`);
   }
 
   /* Shop-Texte je Sprache. Die Hauptsprache ist Englisch, in den Grundwerten
@@ -626,94 +599,27 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Shop-Text(e) je Sprache`);
   }
 
-  /* Videos raus aus der Bilderwand, hinein in den eigenen Abschnitt.
-     Kundenwunsch vom 10.08.2026 (siehe videos._warum in korrekturen.json).
+  /* Die Video-Seite ist zurueckgenommen (11.08.2026). Videos stehen wieder in
+     der Bilderwand; eine eigene Seite /videos/ soll es nicht mehr geben —
+     keine Route, kein Menuepunkt, kein Eintrag in der Sitemap.
 
-     Zwei Quellen: Videos, die als Bild in sections.gallery.items stehen, und
-     die Eintraege aus sections.gallery.aftermovies. Beide landen in
-     sections.videos.items — und zwar genau einmal: erkannt wird an der Adresse,
-     ein zweiter Durchlauf findet nichts mehr.
-
-     Die Uebersetzungen der Bilderliste haengen am PLATZ (i18n.de.sections
-     .gallery.items["3"] gehoert zu items[3]). Beim Kuerzen der Liste wird die
-     Tabelle deshalb neu durchnummeriert — sonst rutschte jede Bildunterschrift
-     hinter dem Video um einen Platz nach vorn. */
-  if (korr.videos?.ausGalerie) {
-    const vid = korr.videos;
-    const ziel = ls.videos || (ls.videos = {});
-    if (!Array.isArray(ziel.items)) ziel.items = [];
-
-    // Texte setzen, solange nichts Eigenes dasteht.
-    let texte = 0;
-    for (const [feld, wert] of Object.entries(vid.abschnitt || {})) {
-      if (feld.startsWith("_")) continue;
-      if (ziel[feld] === undefined || ziel[feld] === "") {
-        ziel[feld] = wert;
-        texte++;
+     Aufgeraeumt wird hier statt nur in der Korrekturdatei, weil die Seite in
+     jedem Stand stecken kann, der zwischendurch gebaut wurde: im
+     eingecheckten Schnappschuss ebenso wie in der Datenbank, falls dort einmal
+     gespeichert wurde. Die MEDIEN bleiben unangetastet — entfernt wird nur die
+     Seite und der Abschnitt, der auf sie zeigte. */
+  {
+    const hatteSeite = list(live.pages).some((p) => str(p.slug) === "videos");
+    if (hatteSeite) live.pages = list(live.pages).filter((p) => str(p.slug) !== "videos");
+    const hatteAbschnitt = ls.videos !== undefined;
+    delete ls.videos;
+    live.layout = list(live.layout).filter((k) => k !== "videos");
+    for (const wurzel of ["i18n", "i18nHash"]) {
+      for (const lang of Object.keys(live[wurzel] || {})) {
+        delete live[wurzel][lang]?.sections?.videos;
       }
     }
-    for (const lang of ["de", "fr"]) {
-      const q = vid.i18n?.[lang];
-      if (!q) continue;
-      const i18n = live.i18n || (live.i18n = {});
-      const dort = i18n[lang] || (i18n[lang] = {});
-      const abschnitte = dort.sections || (dort.sections = {});
-      const zt = abschnitte.videos || (abschnitte.videos = {});
-      for (const [feld, wert] of Object.entries(q)) {
-        if (zt[feld] === undefined || zt[feld] === "") {
-          zt[feld] = wert;
-          texte++;
-        }
-      }
-    }
-
-    const schon = new Set(
-      list(ziel.items).map((m) => str(m?.src) || str(m?.embedUrl)).filter(Boolean)
-    );
-    let geholt = 0;
-
-    // (a) Videos, die als Bild in der Galerie stehen.
-    /* KOPIEREN, nicht verschieben: die Videos bleiben in der Bilderwand stehen
-       (Vorgabe vom 10.08.2026 — Fotos und Videos zusammen) und sind zusaetzlich
-       auf /videos/ zu sehen. Erkannt wird an der Adresse, ein zweiter Durchlauf
-       legt deshalb nichts doppelt an. Die Bilderliste wird nicht angefasst,
-       also verrutscht auch keine Uebersetzung. */
-    for (const it of list(ls.gallery?.items)) {
-      if (!safeUrl(it?.src) || !isVideoUrl(it.src)) continue;
-      const key = str(it.src);
-      if (schon.has(key)) continue;
-      schon.add(key);
-      ziel.items.push(nurGefuellt({
-        title: str(it.title),
-        event: str(it.event),
-        src: it.src,
-        poster: str(it.poster),
-        alt: str(it.alt),
-        credit: str(it.credit),
-      }));
-      geholt++;
-    }
-
-    // (b) Die bisherigen Aftermovies.
-    for (const m of list(ls.gallery?.aftermovies)) {
-      const key = str(m?.src) || str(m?.embedUrl);
-      if (!key || schon.has(key)) continue;
-      schon.add(key);
-      ziel.items.push(nurGefuellt({
-        title: str(m.title),
-        event: str(m.event),
-        src: str(m.src),
-        embedUrl: str(m.embedUrl),
-        poster: str(m.poster),
-        alt: str(m.alt),
-        credit: str(m.credit),
-      }));
-      geholt++;
-    }
-    if (list(ls.gallery?.aftermovies).length) ls.gallery.aftermovies = [];
-
-    if (geholt) getan.push(`${geholt} Video(s) auch auf die Video-Seite uebernommen`);
-    else if (texte) getan.push("Video-Abschnitt angelegt");
+    if (hatteSeite || hatteAbschnitt) getan.push("Video-Seite zurueckgenommen");
   }
 
   // Seitenaufteilung: Booking und Shop haben eigene Seiten bekommen. Ersetzt
@@ -785,47 +691,25 @@ export function nachziehen(live, korr) {
       ziel.about = { ...ziel.about, facts: kopie(q.aboutFacts) };
     }
     if (q.seiten && live.i18n?.[lang]) live.i18n[lang].pages = kopie(q.seiten);
+    /* Im franzoesischen Menue stand "Kontakt" — der deutsche Wert war in die
+       franzoesische Uebersetzung geraten. Ersetzt wird nur genau dieser
+       Fehlwert; ein eigener Text bleibt stehen. */
+    if (q.kontaktNavLabel && zielS?.contact && str(zielS.contact.navLabel) === "Kontakt") {
+      zielS.contact.navLabel = q.kontaktNavLabel;
+      getan.push(`Kontakt-Menuepunkt ${lang}`);
+    }
   }
 
-  /* Sichtbarkeit und Reihenfolge bleiben grundsaetzlich unangetastet — darueber
-     entscheidet die Verwaltung. Ein frueherer Versuch, sie hier zu erzwingen,
-     hat den Schalter fuer den Shop wirkungslos gemacht.
+  /* Sichtbarkeit und Reihenfolge bleiben unangetastet — darueber entscheidet
+     allein die Verwaltung.
 
-     Eine einzige Ausnahme, und die steht in der Korrekturdatei statt hier im
-     Code: der Shop. Vorgabe vom 10.08.2026 ist, dass /shop/ oeffentlich
-     erreichbar sein muss (200), waehrend die Startseite noch "Coming soon"
-     zeigt. Ohne eingeschalteten Abschnitt gaebe es die Seite nicht — eine
-     Unterseite ohne Abschnitt wird nicht gebaut, /shop/ liefe auf 404.
+     Bis zum 11.08.2026 gab es hier eine Ausnahme: `shop.sichtbar` erzwang den
+     Shop-Abschnitt, damit /shop/ oeffentlich mit 200 antwortet. Der Preis war,
+     dass der Schalter "Auf Website anzeigen" in der Verwaltung wirkungslos
+     blieb — eine Attrappe. Die Regel ist weg. Schaltet jemand den Shop aus,
+     verschwindet /shop/ tatsaechlich (404); genau das soll der Schalter ja
+     bewirken. */
 
-     Der Preis dafuer ist ehrlich zu benennen: solange `shop.sichtbar` in
-     content/korrekturen.json auf true steht, ist der Shop-Schalter in der
-     Verwaltung wirkungslos. Ausschalten geht ueber die Korrekturdatei. */
-  if (korr.shop?.sichtbar === true && ls.shop && ls.shop.enabled !== true) {
-    ls.shop.enabled = true;
-    getan.push("Shop sichtbar (Vorgabe, siehe korrekturen.json)");
-  }
-
-  /* Kennzahlen, die ganz weg sollen — ausdruecklicher Kundenwunsch vom
-     10.08.2026 fuer "First set 2021".
-
-     Warum hier und nicht im Schnappschuss: content/site.json wird bei jedem
-     Build aus der Datenbank ueberschrieben; dort geloescht waere die Kennzahl
-     beim naechsten Build zurueck.
-
-     Gesucht wird ueber die Aufschrift, nicht ueber den Platz in der Liste —
-     sonst traefe die Regel eine fremde Kennzahl, sobald jemand umsortiert.
-     Getroffen werden die Kennzahlen im Hero (samt Uebersetzung, die ueber den
-     Platz zugeordnet ist) und die Faktenzeile in "Ueber mich".
-
-     ACHTUNG: Diese Regel greift IMMER — wie shop.sichtbar und heroShows
-     ueberstimmt sie damit die Verwaltung. Soll die Kennzahl zurueck: den
-     Eintrag aus `entfernteKennzahlen` in content/korrekturen.json loeschen.
-
-     Sie steht bewusst ganz am Schluss: die Umbenennung und heroShows pruefen
-     die Liste noch in voller Laenge gegen alteHeroStats, und der Abgleich der
-     Uebersetzungen weiter oben schreibt die Kennzahl-Uebersetzung aus der
-     Korrekturdatei neu. Wuerde hier frueher gekuerzt, kaeme sie dort zurueck —
-     und die Uebersetzung saesse um einen Platz verschoben auf der Seite. */
   /* Die Kennzahl "First set 2021" war vom 10.08.2026 bis zur Rueckmeldung des
      Kunden am selben Tag stillgelegt (Regel `entfernteKennzahlen`). Der Kunde
      will die Jahreszahl im Hero wieder sehen — die Regel ist damit weg, und
@@ -1425,12 +1309,31 @@ function renderShows(n, s) {
   const t = today();
   const items = list(s.items).filter((i) => str(i?.name));
   if (!items.length) return "";
+  /* Chronologisch, immer — unabhaengig davon, in welcher Reihenfolge die
+     Termine in der Verwaltung stehen. Zuerst das Datum, bei gleichem Datum die
+     Uhrzeit. Termine ohne Datum stehen ganz hinten: sie lassen sich nirgends
+     einordnen, und "irgendwann" gehoert nicht vor einen festen Termin.
+     Uhrzeit fehlt haeufig — dann zaehlt sie als 00:00 und der Termin steht vor
+     denen mit Zeitangabe am selben Tag. */
+  const zeit = (i) => {
+    const m = String(i?.time ?? "").match(/^(\d{1,2}):(\d{2})/);
+    return m ? Number(m[1]) * 60 + Number(m[2]) : -1;
+  };
+  const chronologisch = (a, b) => {
+    const da = isoDate(a.date), db = isoDate(b.date);
+    if (!da && !db) return 0;
+    if (!da) return 1;
+    if (!db) return -1;
+    if (da !== db) return da < db ? -1 : 1;
+    return zeit(a) - zeit(b);
+  };
   const upcoming = items
     .filter((i) => !isoDate(i.date) || isoDate(i.date) >= t)
-    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    .sort(chronologisch);
+  // Rueckblick andersherum: das Juengste zuerst.
   const past = items
     .filter((i) => isoDate(i.date) && isoDate(i.date) < t)
-    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    .sort((a, b) => -chronologisch(a, b));
 
 
   return `
@@ -1547,77 +1450,6 @@ function renderReferences(n, s, bookingTarget) {
             )}</a></p>`
           : ""
       }
-    </div>
-  </section>`;
-}
-
-/**
- * Videos — Aftermovies und Mitschnitte, auf ihrer eigenen Seite.
- *
- * WARUM EIGENE SEITE UND NICHT IN DER BILDERWAND: Videos standen bis August
- * 2026 als stumme Schleifen zwischen den Fotos (und die Aftermovies in einem
- * Klappkasten darüber). Das mischte zwei verschiedene Dinge — ein Foto sieht
- * man an, ein Video schaut man — und zog beim Aufruf der Startseite Megabyte,
- * die niemand angefordert hatte. Sie liegen deshalb auf /videos/.
- *
- * Dass es eine eigene SEITE sein muss und kein Abschnitt der Startseite, hat
- * einen zweiten Grund: die Startseite antwortet weiter mit "Coming soon" (503).
- * Ein Abschnitt dort wäre öffentlich nicht erreichbar — eine eigene Seite ist
- * es, genau wie /booking/ und /shop/.
- *
- * Angeschaut wird bewusst: mit Bedienelementen, Ton und Vorschaubild, nichts
- * startet von allein, `preload="none"` lädt erst auf Klick. Fremdvideos
- * (YouTube/Vimeo) kommen über embedUrl, eigene Dateien über src.
- */
-function renderVideos(n, s) {
-  const movies = list(s.items).filter((m) => safeUrl(m?.src) || safeUrl(m?.embedUrl));
-
-  const cards = movies
-    .map((m) => {
-      const titel = str(m.title);
-      const media = safeUrl(m.embedUrl)
-        ? `<iframe src="${href(m.embedUrl)}" title="${esc(titel || str(s.navLabel, "Video"))}" loading="lazy"
-              allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture; fullscreen"
-              referrerpolicy="strict-origin-when-cross-origin" allowfullscreen frameborder="0"></iframe>`
-        : /* Kann der Browser das Format nicht, bleibt der Text im <video> als
-             Rückfall stehen — samt Adresse, damit die Datei trotzdem erreichbar
-             ist. Ohne ihn sähe man einen schwarzen Kasten. */
-          /* Mit Vorschaubild reicht `none` — dann laedt gar nichts, bis geklickt
-             wird. Ohne Vorschaubild waere das ein schwarzer Kasten; `metadata`
-             holt nur den Kopf der Datei und zeigt das erste Bild. Erfunden wird
-             kein Poster. */
-          `<video src="${href(m.src)}" controls playsinline preload="${
-            safeUrl(m.poster) ? "none" : "metadata"
-          }"${
-            safeUrl(m.poster) ? ` poster="${esc(cdnUrl(m.poster, 800))}"` : ""
-          }${m.alt ? ` aria-label="${esc(m.alt)}"` : ""}>
-            <p>${esc(UI.videoUnsupported)} <a href="${href(m.src)}">${esc(UI.videoOpen)}</a></p>
-          </video>`;
-      return `<article class="video-card rv">
-          <div class="video-media">${media}</div>
-          ${titel ? `<h3>${esc(titel)}</h3>` : ""}
-          ${str(m.event) ? `<span class="mono">${esc(m.event)}</span>` : ""}
-          ${str(m.credit) ? `<figcaption class="mono">${esc(m.credit)}</figcaption>` : ""}
-        </article>`;
-    })
-    .join("\n        ");
-
-  /* Ohne Video steht hier ein ehrlicher Satz statt eines leeren Rasters. Die
-     Seite bleibt trotzdem gebaut: sie ist im Menü verlinkt und muss mit 200
-     antworten, sonst zeigte der Menüpunkt ins Leere. */
-  const rumpf = movies.length
-    ? `<div class="video-grid">
-        ${cards}
-      </div>`
-    : `<div class="empty-state rv"><span class="mono">${esc(
-        str(s.navLabel, "Videos")
-      )}</span><p>${esc(str(s.emptyText, UI.videosEmpty))}</p></div>`;
-
-  return `
-  <section class="pad" id="videos" aria-labelledby="videos-h">
-    <div class="wrap">${sectionHead(n, s, "videos")}
-      ${str(s.note) ? `<p class="lede rv">${inline(s.note)}</p>` : ""}
-      ${rumpf}
     </div>
   </section>`;
 }
@@ -2444,11 +2276,6 @@ const UI_DEFAULTS = {
   lessStory: "Weniger anzeigen",
   showMoreImages: "{n} weitere Bilder",
   showLessImages: "Weniger Bilder",
-  // Eigene Video-Seite: die Videos stehen seit August 2026 nicht mehr zwischen
-  // den Fotos, sondern auf /videos/.
-  videosEmpty: "Noch kein Video hinterlegt — die Rückblicke der nächsten Shows kommen hierher.",
-  videoUnsupported: "Dein Browser kann dieses Video nicht abspielen.",
-  videoOpen: "Video herunterladen oder direkt öffnen",
   allRequired: "Alle Felder sind Pflichtfelder.",
   onThisPage: "Auf dieser Seite",
   payTitle: "Bezahlen",
@@ -2522,9 +2349,6 @@ const UI_SPRACHE = {
     buy: "Buy",
     soldOut: "Sold out",
     onThisPage: "On this page",
-    videosEmpty: "No video yet — the recaps of the next shows land here.",
-    videoUnsupported: "Your browser can't play this video.",
-    videoOpen: "Download or open the video directly",
     payStripeNote:
       "Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.",
     orderTitle: "Order",
@@ -2551,9 +2375,6 @@ const UI_SPRACHE = {
     buy: "Acheter",
     soldOut: "Épuisé",
     onThisPage: "Sur cette page",
-    videosEmpty: "Pas encore de vidéo — les retours des prochains shows arrivent ici.",
-    videoUnsupported: "Ton navigateur ne peut pas lire cette vidéo.",
-    videoOpen: "Télécharger ou ouvrir la vidéo directement",
     payStripeNote:
       "Le paiement se fait après l'envoi, via Stripe — carte, Apple Pay, Google Pay ou TWINT. L'expédition part dès que le paiement est confirmé.",
     orderTitle: "Commande",
@@ -2845,9 +2666,6 @@ const BAUBAR = new Set([
   "shows",
   "references",
   "gallery",
-  // Videos liegen auf ihrer eigenen Seite (/videos/) — nicht mehr zwischen den
-  // Fotos. Steht der Schluessel hier nicht, waere die Seite nicht baubar.
-  "videos",
   "booking",
   "shop",
   "contact",
@@ -2891,13 +2709,18 @@ function renderPage(c, page, pages, lang, langs) {
   const hasShows = list(sections.shows?.items).some(
     (item) => str(item?.name) && (!isoDate(item.date) || isoDate(item.date) >= heute)
   );
-  const order = list(page.sections).filter(
-    (key) =>
-      sections[key] &&
-      BAUBAR.has(key) &&
-      sections[key].enabled !== false &&
-      (key !== "shows" || hasShows)
-  );
+  /* Welche Abschnitte eine Seite wirklich baut. Als Funktion, weil das Menue
+     dieselbe Rechnung fuer die STARTSEITE braucht — nicht nur fuer die Seite,
+     auf der man gerade steht. */
+  const baubareAbschnitte = (seite) =>
+    list(seite?.sections).filter(
+      (key) =>
+        sections[key] &&
+        BAUBAR.has(key) &&
+        sections[key].enabled !== false &&
+        (key !== "shows" || hasShows)
+    );
+  const order = baubareAbschnitte(page);
   const effectivePage = { ...page, sections: order };
   CTX = { page: effectivePage, pages, hideHead: null, prefix: navPrefix(lang, master) };
   // Das Formular haengt nicht mehr an einer in der Verwaltung hinterlegten
@@ -2931,7 +2754,6 @@ function renderPage(c, page, pages, lang, langs) {
     shows: renderShows,
     references: (n, s) => renderReferences(n, s, bookingTarget),
     gallery: renderGallery,
-    videos: renderVideos,
     shop: (n, s) => renderShop(n, s, site),
     booking: (n, s) => renderBooking(n, s, site),
     contact: (n, s) => renderContact(n, s, bookingTarget),
@@ -2953,23 +2775,36 @@ function renderPage(c, page, pages, lang, langs) {
   const navPages = pages.filter((p) => p.inNav);
 
   /**
-   * Ein Menü für beides. Booking und Shop liegen seit August 2026 auf eigenen
-   * Seiten (/booking/, /shop/) — trotzdem darf das Menü nicht auf drei
-   * Seitennamen zusammenschrumpfen: die Abschnitte der Startseite müssen
-   * erreichbar bleiben. Deshalb stehen zuerst die anderen Seiten (Booking als
-   * Hauptknopf, danach der Shop) und darunter die Abschnitte der Seite, auf
-   * der man gerade steht.
+   * EIN Menü für alle Seiten — auf /shop/ steht dasselbe wie auf /.
+   *
+   * Vorher hing das Menü an der Seite, auf der man gerade stand: die
+   * Startseite zeigte ihre Abschnitte (About, Shows, …), der Shop nur "#shop",
+   * und die eigene Seite fehlte jeweils in der Liste. Damit sah der Kopf auf
+   * jeder Seite anders aus.
+   *
+   * Jetzt gilt überall dieselbe Liste: zuerst alle Seiten (Booking als
+   * Hauptknopf, danach der Shop), dann die Abschnitte der STARTSEITE. Steht man
+   * nicht auf der Startseite, zeigen deren Sprungmarken quer dorthin
+   * (`/#about` statt `#about`) — sonst führten sie ins Leere.
+   *
+   * Einziger Unterschied je Seite ist `aria-current` am eigenen Eintrag: das
+   * ist keine andere Navigation, sondern die Auskunft, wo man gerade ist (die
+   * Unterstreichung im Kopf hängt daran).
    */
   const pageCls = (slug) =>
     slug === "booking" ? ' class="nav-cta"' : slug === "shop" ? ' class="nav-hot"' : "";
-  const pageLinks = navPages
-    .filter((p) => p.slug !== page.slug)
-    .map(
-      (p) => `<li${pageCls(p.slug)}><a href="${esc(pagePath(p.slug))}">${esc(p.navLabel)}</a></li>`
-    );
-  const sectionLinks = order.map((key) => {
+  const pageLinks = navPages.map(
+    (p) =>
+      `<li${pageCls(p.slug)}><a href="${esc(pagePath(p.slug))}"${
+        p.slug === page.slug ? ' aria-current="page"' : ""
+      }>${esc(p.navLabel)}</a></li>`
+  );
+  const startseite = pages.find((p) => !p.slug) || pages[0];
+  const istStartseite = !page.slug;
+  const sectionLinks = baubareAbschnitte(startseite).map((key) => {
     const cls = key === "booking" ? ' class="nav-cta"' : key === "shop" ? ' class="nav-hot"' : "";
-    return `<li${cls}><a href="#${esc(key)}">${esc(
+    const ziel = istStartseite ? `#${key}` : `${pagePath(startseite.slug)}#${key}`;
+    return `<li${cls}><a href="${esc(ziel)}">${esc(
       str(sections[key]?.navLabel, str(sections[key]?.title, key))
     )}</a></li>`;
   });

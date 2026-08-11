@@ -147,6 +147,20 @@
           }
         ]
       }
+    },
+    {
+      "@type": "Product",
+      "name": "Beispiel",
+      "brand": {
+        "@type": "Brand",
+        "name": "Sam Sparking"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "35",
+        "priceCurrency": "CHF",
+        "availability": "https://schema.org/InStock"
+      }
     }
   ]
 }
@@ -176,9 +190,13 @@
       <button class="nav-close" type="button" aria-label="Fermer">✕</button>
       <ul>
           <li><a href="/fr/">Accueil</a></li>
-          <li><a href="/fr/videos/">Vidéos</a></li>
           <li class="nav-cta"><a href="/fr/booking/">Booking</a></li>
-          <li class="nav-hot"><a href="#shop">Boutique</a></li>
+          <li class="nav-hot"><a href="/fr/shop/" aria-current="page">Boutique</a></li>
+          <li><a href="/fr/#about">À propos</a></li>
+          <li><a href="/fr/#shows">Dates</a></li>
+          <li><a href="/fr/#references">Références</a></li>
+          <li><a href="/fr/#gallery">Galerie</a></li>
+          <li><a href="/fr/#contact">Contact</a></li>
       </ul>
       <div class="nav-langs"><a href="/shop/" lang="en">EN</a><a href="/de/shop/" lang="de">DE</a><a href="/fr/shop/" lang="fr" aria-current="true">FR</a></div>
     </nav>
@@ -198,7 +216,80 @@
   <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
     <div class="wrap">
       <p class="shop-note rv">Du merch de Sam Sparking — chaque pièce aide à financer la prochaine production.</p>
-      <div class="empty-state rv"><span class="mono">Shop</span><p>La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.</p></div>
+      <div class="shop-grid" style="--tile:240px">
+      <article class="product rv">
+          
+          <div class="product-body">
+            <h3>Beispiel</h3>
+            
+            <div class="product-foot">
+              <span class="price">CHF 35.—</span>
+              <a class="btn sm order-jump" href="#order-form" data-product="Beispiel">Acheter</a>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="pay-methods rv">
+        <!-- TODO Kunde: Es fehlt noch der echte Stripe-Zahlungslink. Anlegen im
+             Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
+             Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
+             in Netlify hinterlegen (Site settings → Environment variables).
+             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
+             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
+             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->
+        <span class="mono">Paiement</span>
+        <p class="pay-note">Le lien de paiement n&#39;est pas encore actif. Ta commande est enregistrée ici et tu recevras une confirmation par e-mail — les informations de paiement suivront dedans.</p>
+      </div>
+
+      <form class="oform rv" id="order-form" data-endpoint="/api/order"
+            data-sending="Envoi …" data-invalid="Merci de vérifier les champs signalés."
+            data-paying="Ouverture de la page de paiement …" novalidate>
+        <div class="bform-head">
+          <span class="mono">Commande</span>
+          <h3>Où faut-il l&#39;envoyer ?</h3>
+          <p class="bform-required mono">Tous les champs sont obligatoires.</p>
+        </div>
+        <div class="bform-grid">
+          <label><span class="lbl">Article <i aria-hidden="true">*</i></span>
+            <select name="product" required>
+              <option value="Beispiel">Beispiel — CHF 35.—</option>
+            </select>
+          </label>
+          <label><span class="lbl">Quantité <i aria-hidden="true">*</i></span>
+            <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
+          </label>
+          <label><span class="lbl">Nom <i aria-hidden="true">*</i></span>
+            <input name="name" type="text" required maxlength="120" autocomplete="name">
+          </label>
+          <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
+            <input name="email" type="email" required maxlength="160" autocomplete="email">
+          </label>
+          <label class="span-2"><span class="lbl">Rue et numéro <i aria-hidden="true">*</i></span>
+            <input name="street" type="text" required maxlength="160" autocomplete="street-address">
+          </label>
+          <label><span class="lbl">NPA <i aria-hidden="true">*</i></span>
+            <input name="zip" type="text" required maxlength="12" autocomplete="postal-code">
+          </label>
+          <label><span class="lbl">Localité <i aria-hidden="true">*</i></span>
+            <input name="city" type="text" required maxlength="120" autocomplete="address-level2">
+          </label>
+          <label><span class="lbl">Pays <i aria-hidden="true">*</i></span>
+            <input name="country" type="text" required maxlength="80" value="Schweiz" autocomplete="country-name">
+          </label>
+          
+          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Laisser vide</span>
+            <input name="website" type="text" tabindex="-1" autocomplete="off">
+          </label>
+        </div>
+        <div class="bform-foot">
+          <button class="btn solid big" type="submit">Envoyer la commande<span class="cta-arr" aria-hidden="true">→</span></button>
+          <span class="mono reply-note">Confirmation par e-mail — le lien de paiement suivra dedans</span>
+          <p class="bform-msg" role="status" aria-live="polite"
+             data-success="Merci — ta commande est arrivée. Tu recevras une confirmation par e-mail." data-error="Cela n&#39;a pas fonctionné. Écris-moi directement à info@samsparking.ch."></p>
+          
+        </div>
+      </form>
     </div>
   </section>
   </main>

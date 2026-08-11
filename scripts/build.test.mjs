@@ -240,15 +240,20 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   const insta = db.sections.contact.socials.find((x) => /instagram/i.test(x.label));
   if (insta.inHeader !== false) meckern("Instagram steht weiter im Kopf");
   if (db.sections.shop.currency !== "CHF") meckern("Waehrung nicht korrigiert: " + db.sections.shop.currency);
-  /* Die Platzhalter-Ware faellt ganz weg (Produktentscheidung 10.08.2026): es
-     gibt keine verifizierten Artikeldaten, also darf auf /shop/ auch nichts zu
-     kaufen sein. Vorher blieb der Artikel stehen und nur die Tippreste
-     ("as", "asd") wurden geraeumt — mit CHF 35 und Kauf-Knopf auf der Seite. */
-  if (db.sections.shop.items.length !== 0)
+  /* Ware wird NICHT mehr wegen ihres Namens entfernt (11.08.2026). Was in der
+     Verwaltung veroeffentlicht ist, steht im Shop — auch ein Artikel, der
+     "Beispiel" heisst. Vorher loeschte eine Regel ihn allein wegen des Namens,
+     und der Leer-Text behauptete, es gebe keine Ware. */
+  if (db.sections.shop.items.length !== 1)
     meckern(
-      "Platzhalter-Ware steht weiter im Shop: " +
+      `Ware angefasst: ${db.sections.shop.items.length} Artikel statt 1 — ` +
         db.sections.shop.items.map((p) => p.name).join(", ")
     );
+  if (db.sections.shop.items[0]?.name !== "Beispiel")
+    meckern('Der Artikel "Beispiel" wurde entfernt oder umbenannt');
+  if (db.sections.shop.items[0]?.price !== "35") meckern("Preis der Ware angefasst");
+  // Der Schalter der Verwaltung entscheidet — keine Regel ueberstimmt ihn.
+  if (db.sections.shop.enabled !== true) meckern("Shop-Schalter veraendert");
 
   /* Shop-Texte: die Hauptsprache ist Englisch, in der Verwaltung stand Deutsch.
      Der Grundwert muss englisch werden, de und fr bekommen ihre eigene
@@ -268,10 +273,9 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
         meckern(`Shop-Text ${feld} fehlt in ${lang}: "${ist[feld]}" statt "${soll[feld]}"`);
     }
   }
-  /* Vier Seiten: Startseite, Videos, Booking, Shop. Die Video-Seite kam am
-     10.08.2026 dazu — Videos duerfen nicht mehr zwischen den Fotos stehen, und
-     ein Abschnitt der Startseite waere oeffentlich nicht erreichbar (die
-     Startseite bleibt "Coming soon"). */
+  /* Drei Seiten: Startseite, Booking, Shop. Die Video-Seite vom 10.08.2026 ist
+     am 11.08.2026 wieder zurueckgenommen — Videos stehen als Kacheln in der
+     Galerie, eine eigene Route dafuer gibt es nicht mehr. */
   const sollSeiten = korr.seiten.map((p) => p.slug);
   if (db.pages.map((p) => p.slug).join("|") !== sollSeiten.join("|"))
     meckern("Seitenadressen stimmen nicht: " + db.pages.map((p) => p.slug).join(", "));
@@ -280,9 +284,8 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* Die Gegenprobe zur Platzhalter-Regel: echte Ware darf sie nicht treffen,
-     und ein selbst geschriebener Text behaelt das letzte Wort. Ohne diese
-     Probe waere die Regel ein Loeschwerkzeug, das jeden Shop leer raeumt. */
+  /* Gegenprobe: der Generator fasst die Warenliste ueberhaupt nicht mehr an,
+     und ein selbst geschriebener Text behaelt das letzte Wort. */
   const db = JSON.parse(JSON.stringify(template));
   db.sections.shop.items = [
     { name: "Beispiel", price: "35" },
@@ -292,11 +295,52 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   nachziehen(db, korr);
 
   const namen = db.sections.shop.items.map((p) => p.name);
-  if (namen.includes("Beispiel")) meckern("Platzhalter-Ware nicht entfernt: " + namen.join(", "));
+  if (!namen.includes("Beispiel"))
+    meckern('"Beispiel" wurde entfernt — der Name ist kein Grund, Ware zu verstecken');
   if (!namen.includes("Hoodie Euphoric"))
-    meckern("echte Ware mitgeloescht — uebrig: " + (namen.join(", ") || "nichts"));
+    meckern("echte Ware verschwunden — uebrig: " + (namen.join(", ") || "nichts"));
+  if (namen.length !== 2) meckern("Warenliste veraendert: " + namen.join(", "));
   if (db.sections.shop.note !== "Our own line, hand-printed in St. Gallen.")
     meckern("eigener Shop-Text ueberschrieben: " + db.sections.shop.note);
+  // Die Rueckhol-Regel darf sich nicht einmischen, solange Ware dasteht.
+  if (namen.filter((x) => x === "Beispiel").length !== 1)
+    meckern('"Beispiel" doppelt eingesetzt: ' + namen.join(", "));
+}
+
+{
+  /* Die eine veroeffentlichte Ware kommt zurueck, wenn die Liste leer ist.
+
+     Vorgeschichte: eine fruehere Korrektur loeschte den Artikel "Beispiel"
+     allein wegen seines Namens; die Verwaltung schrieb den bereinigten Stand
+     zurueck in die Datenbank. Seither war der Shop in allen drei Sprachen
+     leer. Der Leer-Text darf nur stehen, wenn wirklich nichts veroeffentlicht
+     ist — nicht, weil der Generator etwas weggeraeumt hat. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.sections.shop.items = [];
+  nachziehen(db, korr);
+
+  const ware = db.sections.shop.items || [];
+  if (ware.length !== 1)
+    meckern("verlorene Ware nicht zurueckgeholt: " + ware.length + " Artikel");
+  if (ware[0]?.name !== "Beispiel") meckern("falsche Ware zurueckgeholt: " + ware[0]?.name);
+  if (ware[0]?.price !== "35") meckern("Preis der zurueckgeholten Ware: " + ware[0]?.price);
+  /* Ohne Bild mit Absicht: die Datei von damals ist im Speicher weg (HTTP 404)
+     und war genau das gemeldete kaputte Bild. Ein Ersatz wird nicht geraten. */
+  if (ware[0]?.src) meckern("totes Produktbild wieder eingesetzt: " + ware[0].src);
+  // Kein erfundener Bezahl-Link — der Kauf-Knopf fuehrt ins Bestellformular.
+  if (ware[0]?.paymentLink) meckern("Bezahl-Link erfunden: " + ware[0].paymentLink);
+}
+
+{
+  /* Gegenprobe zum Leer-Text: schaltet die Verwaltung den Shop ganz aus, holt
+     die Regel nichts zurueck — sie haengt an der Warenliste, nicht am
+     Schalter. Und ein Artikel, den jemand ausdruecklich als ausverkauft
+     markiert, bleibt ausverkauft. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.sections.shop.items = [{ name: "Beispiel", price: "35", status: "soldout" }];
+  nachziehen(db, korr);
+  if (db.sections.shop.items.length !== 1) meckern("ausverkaufte Ware verdoppelt oder entfernt");
+  if (db.sections.shop.items[0].status !== "soldout") meckern("Zustand der Ware ueberschrieben");
 }
 
 {
@@ -615,4 +659,77 @@ console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlung
     meckern("ein globaler Zahlungslink springt fuer einen Artikel ein — falscher Preis");
   if (vorher === undefined) delete process.env.STRIPE_PAYMENT_LINK_URL;
   else process.env.STRIPE_PAYMENT_LINK_URL = vorher;
+}
+
+{
+  /* Kommende Shows stehen immer chronologisch — unabhaengig davon, wie sie in
+     der Verwaltung sortiert sind. Bei gleichem Tag entscheidet die Uhrzeit.
+
+     Geprueft wird an der GEBAUTEN Seite: die Reihenfolge entsteht erst dort,
+     und genau dort ist sie sichtbar. */
+  const { readFileSync } = await import("node:fs");
+  const html = readFileSync(resolve(ROOT, "index.html"), "utf8");
+  const liste = html.match(/<ul class="show-list rv" id="show-list">[\s\S]*?<\/ul>/);
+  if (liste) {
+    const daten = [...liste[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]);
+    const sortiert = [...daten].sort();
+    if (daten.join(",") !== sortiert.join(","))
+      meckern("Kommende Shows stehen nicht chronologisch: " + daten.join(", "));
+  }
+}
+
+{
+  /* Die Sortier-Regel selbst, mit einem Stand, den die Verwaltung so liefern
+     koennte: durcheinander, zwei Termine am selben Tag, einer ohne Datum. */
+  const db = JSON.parse(JSON.stringify(template));
+  db.sections.shows.items = [
+    { name: "C spaet", date: "2099-07-01", time: "23:00" },
+    { name: "A frueh", date: "2099-06-01" },
+    { name: "D ohne Datum" },
+    { name: "B frueh am selben Tag", date: "2099-07-01", time: "18:30" },
+    { name: "E ohne Uhrzeit, selber Tag", date: "2099-07-01" },
+  ];
+  nachziehen(db, korr);
+
+  /* Dieselbe Rechnung wie im Generator — hier als Erwartung ausgeschrieben,
+     damit der Test nicht einfach die Umsetzung wiederholt. */
+  const soll = ["A frueh", "E ohne Uhrzeit, selber Tag", "B frueh am selben Tag", "C spaet", "D ohne Datum"];
+
+  const zeit = (i) => {
+    const m = String(i?.time ?? "").match(/^(\d{1,2}):(\d{2})/);
+    return m ? Number(m[1]) * 60 + Number(m[2]) : -1;
+  };
+  const ist = [...db.sections.shows.items]
+    .sort((a, b) => {
+      const da = a.date || "", dbb = b.date || "";
+      if (!da && !dbb) return 0;
+      if (!da) return 1;
+      if (!dbb) return -1;
+      if (da !== dbb) return da < dbb ? -1 : 1;
+      return zeit(a) - zeit(b);
+    })
+    .map((i) => i.name);
+  if (ist.join(" | ") !== soll.join(" | "))
+    meckern(`Termine falsch sortiert:\n         soll: ${soll.join(" | ")}\n         ist:  ${ist.join(" | ")}`);
+}
+
+{
+  /* "Auf Website anzeigen" / "Ausblenden" muss wirken — der Schalter der
+     Verwaltung entscheidet, keine Regel ueberstimmt ihn mehr.
+
+     Anlass: `shop.sichtbar` in der Korrekturdatei erzwang den Shop-Abschnitt.
+     Der Schalter war damit eine Attrappe: ausschalten aenderte nichts. */
+  for (const abschnitt of ["shop", "gallery", "references", "booking"]) {
+    const aus = JSON.parse(JSON.stringify(template));
+    aus.sections[abschnitt].enabled = false;
+    nachziehen(aus, korr);
+    if (aus.sections[abschnitt].enabled !== false)
+      meckern(`"${abschnitt}" wurde wieder eingeschaltet — der Schalter ist wirkungslos`);
+
+    const an = JSON.parse(JSON.stringify(template));
+    an.sections[abschnitt].enabled = true;
+    nachziehen(an, korr);
+    if (an.sections[abschnitt].enabled !== true)
+      meckern(`"${abschnitt}" wurde ausgeschaltet, obwohl es an war`);
+  }
 }

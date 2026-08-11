@@ -56,12 +56,9 @@
           "navLabel": "Start"
         },
         "1": {
-          "navLabel": "Videos"
-        },
-        "2": {
           "navLabel": "Booking"
         },
-        "3": {
+        "2": {
           "navLabel": "Shop"
         }
       },
@@ -247,13 +244,6 @@
           "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
           "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
           "buyLabel": "Kaufen"
-        },
-        "videos": {
-          "navLabel": "Videos",
-          "title": "Vid",
-          "titleAccent": "eos.",
-          "note": "Rückblicke und Mitschnitte — die Shows zum Nachschauen.",
-          "emptyText": "Noch kein Video hinterlegt — die Rückblicke der nächsten Shows kommen hierher."
         }
       },
       "site": {
@@ -417,12 +407,9 @@
           "navLabel": "Accueil"
         },
         "1": {
-          "navLabel": "Vidéos"
-        },
-        "2": {
           "navLabel": "Booking"
         },
-        "3": {
+        "2": {
           "navLabel": "Boutique"
         }
       },
@@ -598,7 +585,7 @@
           "claimAccent": "quelque chose."
         },
         "contact": {
-          "navLabel": "Kontakt",
+          "navLabel": "Contact",
           "title": "Kon",
           "titleAccent": "takt.",
           "kicker": "Booking & demandes",
@@ -609,13 +596,6 @@
           "emptyText": "La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.",
           "buyLabel": "Acheter",
           "navLabel": "Boutique"
-        },
-        "videos": {
-          "navLabel": "Vidéos",
-          "title": "Vid",
-          "titleAccent": "éos.",
-          "note": "Retours et enregistrements — les shows à revoir.",
-          "emptyText": "Pas encore de vidéo — les retours des prochains shows arrivent ici."
         }
       },
       "ui": {
@@ -1354,18 +1334,6 @@
       ]
     },
     {
-      "slug": "videos",
-      "navLabel": "Videos",
-      "title": "Videos",
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
-      "enabled": true,
-      "sections": [
-        "videos"
-      ]
-    },
-    {
       "slug": "booking",
       "navLabel": "Booking",
       "title": "Booking",
@@ -1848,7 +1816,13 @@
       "currency": "CHF",
       "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
       "enabled": true,
-      "items": [],
+      "items": [
+        {
+          "name": "Beispiel",
+          "price": "35",
+          "status": "available"
+        }
+      ],
       "navLabel": "Shop",
       "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
@@ -1914,44 +1888,6 @@
       "note": "Powerful kicks. Emotional melodies. Sets built on storytelling and crowd energy.",
       "title": "Gen",
       "titleAccent": "res."
-    },
-    "videos": {
-      "emptyText": "No video yet — the recaps of the next shows land here.",
-      "enabled": true,
-      "items": [
-        {
-          "alt": "Sam Sparking performing at Sektor 11.",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6aLMV74xN0D0QobQ%2Fsektor-11-tim.mp4?alt=media&token=8e6d6360-95bf-4814-a486-b6bcb2850aa7"
-        },
-        {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QgFRY1xsAZIvQz%2Fultrawild-tim.mp4?alt=media&token=3bb8019f-33a4-42b3-afc4-6ee068a9c53d",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-domJFeEFBaaQ3NH%2Fultrawild-nicolas.mp4?alt=media&token=2d1bf030-c043-4311-b35a-00079303a031",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QhuU49BhgR6eqM%2Fxploration.mp4?alt=media&token=93fd2590-6746-4925-bed3-975b4e464e40",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoW%2Fjugendopenair-nicolas.mp4?alt=media&token=64de2184-0778-45c4-b8e8-f3354d81c957",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QWia4knG6FCLoX%2Fpws-sirnach.mov?alt=media&token=bb8eb8a8-9a46-406a-ae49-0cfa07d35259",
-          "credit": "Sarto Photography"
-        },
-        {
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QfB63t6hojsUSU%2Fsektor-11-tim.mp4?alt=media&token=1e87ba6f-8d34-4246-8d4a-d4c088896737",
-          "credit": "Sarto Photography"
-        }
-      ],
-      "navLabel": "Videos",
-      "note": "Aftermovies and set recordings — the shows to watch back.",
-      "title": "Vid",
-      "titleAccent": "eos."
     }
   },
   "site": {
