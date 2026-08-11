@@ -23,7 +23,6 @@
     "themeColor": "#05070e",
     "accentColor": "#2e6bff",
     "claim": "Turning energy into euphoria",
-    "photoCredit": "Sarto Photography",
     "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json"
   },
   "hero": {
@@ -122,7 +121,7 @@
       ],
       "seo": {
         "title": "Gallery — Sam Sparking live",
-        "description": "Live photos of Sam Sparking behind the decks — clubs and festivals, shot by Sarto Photography."
+        "description": "Live photos of Sam Sparking behind the decks — clubs and festivals,."
       }
     },
     {
@@ -151,8 +150,7 @@
       "titleAccent": "Me.",
       "photo": {
         "src": "img/about.jpg",
-        "alt": "Portrait of Sam Sparking",
-        "credit": "Photo — Sarto Photography"
+        "alt": "Portrait of Sam Sparking"
       },
       "lede": "Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.",
       "paragraphs": [
@@ -244,63 +242,51 @@
       "items": [
         {
           "src": "img/gallery-01.jpg",
-          "alt": "Sam Sparking live — crowd with hands up",
-          "credit": "Sarto Photography"
+          "alt": "Sam Sparking live — crowd with hands up"
         },
         {
           "src": "img/gallery-02.jpg",
-          "alt": "Sam Sparking mixing on CDJs",
-          "credit": "Sarto Photography"
+          "alt": "Sam Sparking mixing on CDJs"
         },
         {
           "src": "img/gallery-03.jpg",
-          "alt": "Stage lights during a hardstyle set",
-          "credit": "Sarto Photography"
+          "alt": "Stage lights during a hardstyle set"
         },
         {
           "src": "img/gallery-04.jpg",
-          "alt": "Sam Sparking behind the booth",
-          "credit": "Sarto Photography"
+          "alt": "Sam Sparking behind the booth"
         },
         {
           "src": "img/gallery-05.jpg",
-          "alt": "Crowd at a Sam Sparking show",
-          "credit": "Sarto Photography"
+          "alt": "Crowd at a Sam Sparking show"
         },
         {
           "src": "img/gallery-06.jpg",
-          "alt": "Sam Sparking portrait at the venue",
-          "credit": "Sarto Photography"
+          "alt": "Sam Sparking portrait at the venue"
         },
         {
           "src": "img/gallery-07.jpg",
-          "alt": "Hands in the air on the dancefloor",
-          "credit": "Sarto Photography"
+          "alt": "Hands in the air on the dancefloor"
         },
         {
           "src": "img/gallery-08.jpg",
-          "alt": "Sam Sparking during his set",
-          "credit": "Sarto Photography"
+          "alt": "Sam Sparking during his set"
         },
         {
           "src": "img/gallery-09.jpg",
-          "alt": "Light show over the dancefloor",
-          "credit": "Sarto Photography"
+          "alt": "Light show over the dancefloor"
         },
         {
           "src": "img/gallery-10.jpg",
-          "alt": "Sam Sparking on stage",
-          "credit": "Sarto Photography"
+          "alt": "Sam Sparking on stage"
         },
         {
           "src": "img/gallery-11.jpg",
-          "alt": "Booth view over the crowd",
-          "credit": "Sarto Photography"
+          "alt": "Booth view over the crowd"
         },
         {
           "src": "img/gallery-12.jpg",
-          "alt": "Closing moment of the night",
-          "credit": "Sarto Photography"
+          "alt": "Closing moment of the night"
         }
       ]
     },
