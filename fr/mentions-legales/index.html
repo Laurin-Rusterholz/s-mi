@@ -15,8 +15,30 @@
     .legal a{color:var(--spark);}
     .legal .langs{border:0;padding:0;margin:22px 0 0;}
   </style>
+  <script>/* Vorhang setzen, bevor gezeichnet wird — sonst blitzt die Seite auf. */
+  (function(){try{if(Date.now()<1786550400000)document.documentElement.className+=" vor-release";}catch(e){}})();
+  </script>
 </head>
 <body>
+
+  <section class="release" id="release" data-ziel="1786550400000" aria-live="polite">
+    <div class="rl-in">
+      <span class="mono rl-kicker">Release</span>
+      <h1 class="rl-head">Sam Sparking</h1>
+      <p class="rl-text">Die neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben.</p>
+      <div class="rl-uhr" role="timer">
+        <div class="rl-teil"><span class="rl-zahl" id="rl-t">--</span><span class="mono">Jours</span></div>
+        <div class="rl-teil"><span class="rl-zahl" id="rl-h">--</span><span class="mono">H</span></div>
+        <div class="rl-teil"><span class="rl-zahl" id="rl-m">--</span><span class="mono">Min</span></div>
+        <div class="rl-teil"><span class="rl-zahl" id="rl-s">--</span><span class="mono">Sec</span></div>
+      </div>
+      <p class="rl-fuss mono">La page s&#39;ouvre d&#39;elle-même — il suffit de la laisser ouverte.</p>
+      <p class="rl-ways">
+        <a href="/fr/impressum/">Impressum</a>
+        <a href="/fr/mentions-legales/">Protection des données</a>
+      </p>
+    </div>
+  </section>
   <main class="legal">
     <a class="mono" href="/fr">← Sam Sparking</a>
     <nav class="langs" aria-label="Français"><a href="/legal/" lang="en">English</a><a href="/de/rechtliches/" lang="de">Deutsch</a><a href="/fr/mentions-legales/" lang="fr" aria-current="true">Français</a></nav>
@@ -32,5 +54,6 @@
     <h3>Stockage local</h3><p>Le site retient uniquement dans ton navigateur (localStorage) que tu as confirmé l&#39;avis en bas de page. Aucun cookie publicitaire ou d&#39;analyse n&#39;est déposé.</p>
     <h3>Tes droits</h3><p>Tu as le droit d&#39;accéder à tes données, de les corriger et de les supprimer (LPD/RGPD). Il suffit d&#39;envoyer un e-mail.</p>
   </main>
+  <script src="/assets/site.js" defer></script>
 </body>
 </html>

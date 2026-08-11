@@ -135,38 +135,18 @@ for (const [datei, h] of html) {
   }
 }
 
-/* Die Rangfolge der Referenzen haengt allein an der Schriftgroesse: oben gross,
-   darunter klein. Die erste Fassung setzte den Rest auf 1rem — das sind bei
-   html{font-size:17px} genau 17px, also Fliesstextgroesse, und damit war
-   "klein" nicht zu erkennen. So ein Fehler faellt in keinem HTML-Test auf,
-   deshalb steht die Pruefung hier. */
+/* Die Referenzen stehen seit dem 11.08.2026 alle im selben kleinen Stil — es
+   gibt keine grossen Karten und keinen "Rest" mehr. Frueher pruefte diese
+   Stelle, dass der Rest wirklich kleiner ist als die grossen Zeilen; jetzt
+   pruefen wir das Gegenteil: dass es die zweite Stufe im CSS nicht mehr gibt.
+   Sonst kaeme sie ueber ein spaeteres Stylesheet still zurueck. */
 {
   const css = await readFile(resolve(ROOT, "assets/site.css"), "utf8");
-  const groesse = (selektor) => {
-    const m = css.match(
-      new RegExp(selektor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*\\{[^}]*?font-size:([^;]+);")
-    );
-    if (!m) return null;
-    // Aus clamp(a,b,c) den groessten rem-Wert nehmen — das ist die Obergrenze.
-    const rems = [...m[1].matchAll(/([\d.]+)rem/g)].map((x) => Number(x[1]));
-    return rems.length ? Math.max(...rems) : null;
-  };
-  const rest = groesse(".venue-more .venue-name");
-  const oben = groesse(".venue-list .lead .venue-name");
-  if (rest === null) meckern("Keine Schriftgroesse fuer .venue-more .venue-name gefunden");
-  else if (rest >= 1)
-    meckern(
-      `Die Restliste steht auf ${rest}rem (= ${(rest * 17).toFixed(0)}px bei html:17px) — ` +
-        "das ist Fliesstextgroesse und nicht die verlangte kleine Schrift."
-    );
-  if (oben !== null && rest !== null && oben <= rest)
-    meckern("Die hervorgehobenen Eintraege sind nicht groesser als der Rest");
-  if (rest !== null && oben !== null && !fehler) {
-    console.log(
-      `Referenzen: oben bis ${oben}rem (${(oben * 17).toFixed(0)}px), Rest bis ${rest}rem ` +
-        `(${(rest * 17).toFixed(0)}px) — die Rangfolge ist auch an der Groesse zu sehen.`
-    );
-  }
+  for (const weg of [".venue-more", ".venue-rest", ".venue-group", "--venue-lead-fit", ".venue-idx"])
+    if (css.includes(weg)) meckern(`assets/site.css traegt wieder "${weg}" — die zweite Stufe ist zurueck`);
+  const js = await readFile(resolve(ROOT, "assets/site.js"), "utf8");
+  if (js.includes("--venue-lead-fit"))
+    meckern("assets/site.js rechnet wieder mit zwei Groessen fuer die Referenzen");
 }
 
 /* Die Kundenwuensche vom 10.08.2026, gemessen an der fertigen Seite — nicht
@@ -209,36 +189,28 @@ for (const [datei, h] of html) {
         if (about[0].includes(wort)) meckern(`${rel}: Fakt "${wort}" steht wieder in "Ueber mich"`);
     }
 
-    /* 3) Referenzen: genau die Liste der Verwaltung, in ihrer Reihenfolge.
-
-       Hier stand bis zum 11.08.2026 das Gegenteil — "IVY darf nicht
-       vorkommen, Club Eden und Picante muessen". Das war die im Repo
-       gepflegte Ersatzliste, und sie war der Grund, warum "IVY — St. Gallen"
-       aus der Verwaltung auf der Website fehlte. Geprueft wird jetzt gegen
-       den Inhalt, mit dem gebaut wurde: gross zuerst (hoechstens vier), dann
-       der Rest, beide in der Reihenfolge der Verwaltung. */
-    const sollGross = refImInhalt.filter((r) => r.highlight === true).slice(0, 4);
-    const sollRest = refImInhalt.filter((r) => !sollGross.includes(r));
-    /* Nur im Referenz-Abschnitt suchen: der Kopf hat auch <li><a>-Zeilen, und
-       eine gierige Suche holte sich sonst den ersten Namen von dort. */
+    /* 3) Referenzen: eine Liste, genau die der Verwaltung, in ihrer
+       Reihenfolge. Bis zum 11.08.2026 gab es oben vier grosse Karten und
+       darunter, hinter der Zeile "Also played at", den kleinen Rest — eine
+       zweite Rangfolge, die in der Verwaltung nicht zu sehen war. Jetzt zaehlt
+       allein die Reihenfolge dort. */
     const refBlock = (h.match(/<section class="pad" id="references"[\s\S]*?<\/section>/) || [""])[0];
-    const gelesen = (regex) =>
-      [...refBlock.matchAll(regex)].map((m) => `${m[1]} — ${m[2]}`);
-    const istGross = gelesen(
-      /<li class="lead"><a[^>]*>[\s\S]*?venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
-    );
-    const istRest = gelesen(
+    const istRef = [...refBlock.matchAll(
       /<li><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
-    );
-    const alsText = (r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, "");
-    const vergleich = (name, soll, ist) => {
-      const a = soll.map(alsText).join(" | ");
-      const b = ist.map((x) => x.replace(/ — $/, "")).join(" | ");
-      if (a !== b) meckern(`${rel}: ${name} weichen ab\n           Verwaltung: ${a}\n           Seite:      ${b}`);
-    };
-    vergleich("die grossen Referenzen", sollGross, istGross);
-    vergleich("die kleinen Referenzen", sollRest, istRest);
-    if (istGross.length > 4) meckern(`${rel}: ${istGross.length} grosse Referenzen — mehr als vier`);
+    )].map((m) => `${m[1]} — ${m[2]}`.trim().replace(/ —$/, ""));
+    const sollRef = refImInhalt.map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
+    if (istRef.join(" | ") !== sollRef.join(" | "))
+      meckern(
+        `${rel}: Referenzen weichen ab\n           Verwaltung: ${sollRef.join(" | ")}` +
+          `\n           Seite:      ${istRef.join(" | ")}`
+      );
+    // Keine zweite Stufe mehr: keine grossen Karten, keine Zwischenzeile.
+    if (/class="lead"/.test(refBlock)) meckern(`${rel}: es gibt wieder grosse Referenz-Karten`);
+    for (const weg of ["venue-more", "venue-rest", "venue-group"])
+      if (refBlock.includes(weg)) meckern(`${rel}: "${weg}" steht wieder in den Referenzen`);
+    const mehr = String(INHALT.sections?.references?.moreLabel || "").trim();
+    if (mehr && refBlock.includes(mehr))
+      meckern(`${rel}: die Zwischenzeile "${mehr}" steht wieder da`);
     // Und die Gegenprobe zur Ursache: der Eintrag der Verwaltung ist wirklich da.
     if (refImInhalt.some((r) => r.name === "IVY") && !/venue-name">IVY</.test(h))
       meckern(`${rel}: "IVY" steht in der Verwaltung, aber nicht auf der Seite`);
@@ -340,8 +312,18 @@ for (const [datei, h] of html) {
   const shop = await seite("shop/index.html");
   if (shop) {
     if (/qr-?code/i.test(shop)) meckern("shop: QR-Code auf der Seite, obwohl keiner hinterlegt ist");
+    /* Stripe-Adressen: erlaubt ist genau, was am Artikel in der Verwaltung
+       steht — ein Payment Link je Preis. Alles andere waere geraten. Frueher
+       stand hier "gar keine Stripe-Adresse"; seit der Kunde Payment Links
+       pflegt, gehoeren sie auf die Seite. */
+    const erlaubteKassen = new Set(
+      (INHALT.sections?.shop?.items || [])
+        .map((p) => String(p?.paymentLink || "").trim())
+        .filter(Boolean)
+    );
     for (const m of shop.match(/https?:\/\/[^"'\s<]*stripe[^"'\s<]*/gi) || [])
-      meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
+      if (!erlaubteKassen.has(m))
+        meckern(`shop: Stripe-Adresse im Quelltext, die so nicht hinterlegt ist: ${m}`);
   }
 
   /* Die Bilderwand: gleichmaessiges Raster, 6 Fotos zu Beginn, Videos als
@@ -443,7 +425,7 @@ for (const [datei, h] of html) {
   for (const rel of ["shop/index.html", "de/shop/index.html", "fr/shop/index.html"]) {
     const h = await seite(rel);
     if (!h) continue;
-    const karten = [...h.matchAll(/<article class="product[\s\S]*?<\/article>/g)].map((m) => m[0]);
+    const karten = [...h.matchAll(/<article class="prod[\s\S]*?<\/article>/g)].map((m) => m[0]);
     const links = [];
     for (const karte of karten) {
       const name = (karte.match(/<h3>([^<]*)<\/h3>/) || [])[1] || "(ohne Namen)";
@@ -473,9 +455,9 @@ for (const [datei, h] of html) {
 
      Erkannt wird an Woertern, die es nur in einer Sprache gibt. Eigennamen
      ("Merch", "Shop", "Sam Sparking") taugen dafuer nicht. */
-  const NUR_DEUTSCH = ["jedes Teil", "Kaufen", "ist bald offen", "verpasst du", "Kanälen"];
-  const NUR_FRANZOESISCH = ["chaque pièce", "Acheter", "bientôt", "ci-dessous"];
-  const NUR_ENGLISCH = ["every piece", "opens soon", "the works", "so you don't miss"];
+  const NUR_DEUTSCH = ["Zum Katalog", "Kleine Auflagen", "Versand", "Kaufen", "ist bald offen"];
+  const NUR_FRANZOESISCH = ["Voir le catalogue", "Petites séries", "Expédition", "Acheter", "bientôt"];
+  const NUR_ENGLISCH = ["Browse the drop", "Small runs", "Shipping", "opens soon"];
   const SPRACHPROBE = {
     "shop/index.html": { erlaubt: NUR_ENGLISCH, verboten: [...NUR_DEUTSCH, ...NUR_FRANZOESISCH] },
     "de/shop/index.html": { erlaubt: NUR_DEUTSCH, verboten: [...NUR_ENGLISCH, ...NUR_FRANZOESISCH] },
@@ -484,7 +466,7 @@ for (const [datei, h] of html) {
   for (const [rel, probe] of Object.entries(SPRACHPROBE)) {
     const h = await seite(rel);
     if (!h) continue;
-    const abschnitt = h.match(/<section class="pad shop-sec"[\s\S]*?<\/section>/);
+    const abschnitt = h.match(/<section class="[^"]*shop-sec"[\s\S]*?<\/section>\s*<\/div>\s*<\/div>\s*<\/section>|<section class="[^"]*shop-sec"[\s\S]*/);
     if (!abschnitt) {
       meckern(`${rel}: kein Shop-Abschnitt auf der Seite`);
       continue;
@@ -538,7 +520,7 @@ for (const [datei, h] of html) {
        Ein Formular ohne Ware waere eine Bestellung ins Leere; steht Ware da,
        muss das Formular her. Erkannt wird die Ware am Kachel-Bauteil, nicht
        am Inhalt. */
-    const hatWare = /<article class="product/.test(h);
+    const hatWare = /<article class="prod/.test(h);
     const hatFormular = /id="order-form"/.test(h);
     if (hatWare && !hatFormular) meckern(`${rel}: Ware ohne Bestellformular`);
     if (!hatWare && hatFormular)
@@ -575,6 +557,147 @@ for (const [datei, h] of html) {
       meckern("site.js leitet allein auf Verdacht weiter — die Adresse wird nicht geprueft");
     if (!/istStripeAdresse\(\s*out\.paymentUrl\s*\)/.test(js))
       meckern("site.js prueft die Bezahladresse nicht, bevor es weiterleitet");
+  }
+
+  /* Der Vorhang vor dem Release (11.08.2026). Er liegt auf JEDER oeffentlichen
+     Seite — sonst waere ueber eine Unteradresse schon vorher etwas erreichbar. */
+  {
+    const ziel = INHALT.release?.enabled === false ? 0 : 1;
+    for (const [datei, h] of html) {
+      if (datei === "coming-soon.html") continue;
+      const hatVorhang = /<section class="release"/.test(h);
+      const hatSkript = /vor-release/.test(h);
+      if (ziel && !hatVorhang) meckern(`${datei}: kein Release-Vorhang`);
+      if (ziel && !hatSkript) meckern(`${datei}: kein Skript, das den Vorhang vor dem Zeichnen setzt`);
+      if (!ziel && hatVorhang) meckern(`${datei}: Release-Vorhang, obwohl abgeschaltet`);
+      if (!ziel) continue;
+      const zeit = h.match(/data-ziel="(\d+)"/);
+      if (!zeit) meckern(`${datei}: kein Zielzeitpunkt am Vorhang`);
+      else if (Number(zeit[1]) !== 1786550400000)
+        meckern(`${datei}: Zielzeitpunkt ${zeit[1]} statt 12.08.2026 18:00 Europe/Zurich`);
+      // Vier Felder: Tage, Stunden, Minuten, Sekunden.
+      if ((h.match(/class="rl-zahl"/g) || []).length !== 4)
+        meckern(`${datei}: der Zaehler hat nicht vier Felder`);
+      // Und von dort geht es weiter zu Impressum und Datenschutz.
+      if (!/class="rl-ways"/.test(h)) meckern(`${datei}: keine Wege aus dem Vorhang heraus`);
+    }
+  }
+
+  /* Die Einwilligung: zwei gleichwertige Entscheidungen, ein Weg zurueck im
+     Fuss, und kein Skript, das vor der Zustimmung laedt. */
+  {
+    for (const rel of [...startseiten, "shop/index.html", "booking/index.html"]) {
+      const h = await seite(rel);
+      if (!h) continue;
+      const box = h.match(/<aside class="cookie"[\s\S]*?<\/aside>/);
+      if (!box) {
+        meckern(`${rel}: keine Einwilligungs-Abfrage`);
+        continue;
+      }
+      const knoepfe = [...box[0].matchAll(/<button class="([^"]*)"[^>]*data-wahl="([^"]*)"/g)];
+      if (knoepfe.length !== 2) meckern(`${rel}: ${knoepfe.length} Entscheidungen statt zwei`);
+      const wahlen = knoepfe.map((k) => k[2]).sort().join("|");
+      if (wahlen !== "alle|notwendig") meckern(`${rel}: die Entscheidungen heissen "${wahlen}"`);
+      /* Gleichwertig heisst auch: gleich aussehen. Traegt einer der beiden
+         Knoepfe eine Klasse, die der andere nicht hat, ist einer betont. */
+      if (knoepfe.length === 2 && knoepfe[0][1] !== knoepfe[1][1])
+        meckern(`${rel}: die Knoepfe sehen unterschiedlich aus: "${knoepfe[0][1]}" / "${knoepfe[1][1]}"`);
+      // Von der Abfrage aus erreichbar: Impressum und Datenschutz.
+      if (!/class="cookie-ways"/.test(box[0])) meckern(`${rel}: keine Wege aus der Abfrage heraus`);
+      // Und im Fuss laesst sie sich wieder oeffnen.
+      if (!/id="cookie-open"/.test(h)) meckern(`${rel}: kein Zugang "Cookie-Einstellungen" im Fuss`);
+      /* Nichts Fremdes darf vor der Einwilligung laden. Geprueft wird der
+         gebaute Quelltext: jedes <script src> zeigt auf die eigene Domain. */
+      for (const m of h.matchAll(/<script[^>]*\ssrc="([^"]*)"/g)) {
+        const url = m[1];
+        if (/^https?:\/\//i.test(url)) meckern(`${rel}: laedt ein fremdes Skript: ${url}`);
+      }
+      for (const m of h.matchAll(/<(iframe|img)[^>]*\ssrc="(https?:\/\/[^"]*)"/g)) {
+        // Bilder und Videos vom eigenen Speicher sind notwendig; Werbe- oder
+        // Analyse-Einbettungen waeren es nicht.
+        if (!/firebasestorage\.googleapis\.com/.test(m[2]))
+          meckern(`${rel}: fremde Einbettung vor der Einwilligung: ${m[2]}`);
+      }
+    }
+  }
+
+  /* Kein sichtbarer Fotocredit mehr (11.08.2026) — weder an der Galerie noch
+     im Fuss, am Booking-Bild oder in den strukturierten Daten. Das Feld bleibt
+     im Inhalt stehen, es wird nur nicht mehr angezeigt. */
+  {
+    const credit = String(INHALT.site?.photoCredit || "").trim();
+    for (const [datei, h] of html) {
+      if (credit && h.includes(credit)) meckern(`${datei}: der Fotocredit "${credit}" steht wieder da`);
+      if (/creditText/.test(h)) meckern(`${datei}: Fotocredit in den strukturierten Daten`);
+      const gal = h.match(/<div class="gal"[\s\S]*?<\/div>\s*<\/div>/);
+      if (gal && /<figcaption/.test(gal[0])) meckern(`${datei}: Beschriftung an den Galerie-Kacheln`);
+    }
+  }
+
+  /* Die Telefonnummer ist von der Website genommen. Das Feld im
+     Booking-Formular bleibt — dort traegt der Besucher SEINE Nummer ein. */
+  {
+    const nummer = String(INHALT.sections?.contact?.phone || "").trim();
+    for (const [datei, h] of html) {
+      if (nummer && h.includes(nummer)) meckern(`${datei}: die Telefonnummer steht wieder da`);
+      if (/href="tel:/.test(h)) meckern(`${datei}: eine tel:-Adresse steht auf der Seite`);
+      if (/"telephone"/.test(h)) meckern(`${datei}: Telefonnummer in den strukturierten Daten`);
+    }
+  }
+
+  /* Der Shop im neuen Bild: helle Einladung, dunkler Katalog, Infostreifen.
+     Alles Inhaltliche kommt aus der Verwaltung. */
+  for (const rel of ["shop/index.html", "de/shop/index.html", "fr/shop/index.html"]) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const ware = (INHALT.sections?.shop?.items || []).filter((p) => p && p.name);
+    if (!ware.length) continue;
+    for (const [was, muster] of [
+      ["Kicker", /class="mono shop-kicker"/],
+      ["Ueberschrift", /class="shop-headline"/],
+      ["Knopf zum Katalog", /class="btn solid big shop-cta"/],
+      ["Katalog", /id="shop-katalog"/],
+      ["Raster", /class="shop-grid/],
+    ])
+      if (!muster.test(h)) meckern(`${rel}: ${was} fehlt im Shop`);
+    // Der Knopf muss wirklich zum Katalog fuehren.
+    const cta = h.match(/class="btn solid big shop-cta" href="([^"]*)"/);
+    if (cta && !cta[1].endsWith("#shop-katalog"))
+      meckern(`${rel}: der Knopf zeigt auf "${cta[1]}" statt auf den Katalog`);
+    // Der Informationsstreifen: hoechstens drei Punkte, alle mit Zeichen.
+    const streifen = h.match(/<ul class="shop-info rv">[\s\S]*?<\/ul>/);
+    const infoImInhalt = (INHALT.sections?.shop?.info || []).filter((i) => i && (i.title || i.text));
+    if (infoImInhalt.length && !streifen) meckern(`${rel}: der Informationsstreifen fehlt`);
+    if (streifen) {
+      const punkte = (streifen[0].match(/<li>/g) || []).length;
+      if (punkte !== Math.min(3, infoImInhalt.length))
+        meckern(`${rel}: ${punkte} Punkte im Streifen statt ${Math.min(3, infoImInhalt.length)}`);
+      if ((streifen[0].match(/<svg /g) || []).length !== punkte)
+        meckern(`${rel}: nicht jeder Punkt hat ein Zeichen`);
+      /* Keine unbelegten Versprechen. Stripe, TWINT und feste Lieferfristen
+         gehoeren nicht in einen Text, den niemand einloesen kann. */
+      const text = streifen[0].replace(/<[^>]+>/g, " ");
+      for (const wort of ["Stripe", "TWINT", "Apple Pay", "Google Pay", "kostenlos", "free shipping", "24h", "48h"])
+        if (text.includes(wort)) meckern(`${rel}: der Streifen verspricht "${wort}"`);
+    }
+    // Die alte Einleitungszeile darf ueber Ware nicht mehr stehen.
+    if (/class="shop-note/.test(h)) meckern(`${rel}: die alte Einleitungszeile steht ueber der Ware`);
+    if (/class="empty-state/.test(h)) meckern(`${rel}: der Leer-Block steht trotz Ware da`);
+    // Jede Karte traegt, was die Verwaltung hergibt.
+    for (const p of ware) {
+      const karte = [...h.matchAll(/<article class="prod[\s\S]*?<\/article>/g)]
+        .map((m) => m[0])
+        .find((k) => k.includes(`<h3>${p.name}</h3>`));
+      if (!karte) {
+        meckern(`${rel}: der Artikel "${p.name}" fehlt`);
+        continue;
+      }
+      if (p.badge && !karte.includes(`class="prod-badge">${p.badge}<`))
+        meckern(`${rel}: das Abzeichen "${p.badge}" fehlt an "${p.name}"`);
+      if (!p.badge && /class="prod-badge"/.test(karte))
+        meckern(`${rel}: "${p.name}" traegt ein Abzeichen, das im Inhalt nicht steht`);
+      if (p.price && !/class="price"/.test(karte)) meckern(`${rel}: kein Preis an "${p.name}"`);
+    }
   }
 
   /* Das Impressum: eigene Seite je Sprache, im Fuss jeder Seite verlinkt, und

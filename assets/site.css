@@ -319,17 +319,53 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
 .totop.show{opacity:1;pointer-events:auto;transform:none;}
 .totop:hover{border-color:var(--spark);color:var(--spark);}
 
+/* Die Einwilligung. Zwei Entscheidungen, absichtlich gleich gross und gleich
+   betont: keine ist voreingestellt, keine sieht wichtiger aus. */
 .cookie{
   position:fixed;left:18px;right:18px;bottom:18px;z-index:95;
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
-  background:rgba(10,14,25,.96);border:1px solid var(--line);border-left:2px solid var(--spark);
-  padding:16px 18px;backdrop-filter:blur(10px);
-  max-width:560px;margin:0 auto;box-shadow:0 20px 50px -20px rgba(0,0,0,.8);
+  background:rgba(10,14,25,.97);border:1px solid var(--line);border-left:2px solid var(--spark);
+  padding:18px 20px;backdrop-filter:blur(10px);
+  max-width:620px;margin:0 auto;box-shadow:0 20px 50px -20px rgba(0,0,0,.8);
   animation:cookie-in .45s cubic-bezier(.22,.8,.28,1) both;
 }
 @keyframes cookie-in{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
-.cookie p{font-size:.84rem;color:var(--bone-dim);flex:1 1 260px;}
-.cookie .btn{margin-top:0;padding:11px 20px;font-size:.66rem;}
+.cookie-in{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;}
+.cookie-say{flex:1 1 280px;min-width:0;}
+.cookie-say .mono{display:block;font-size:.62rem;letter-spacing:.18em;color:var(--spark);margin-bottom:8px;}
+.cookie p{font-size:.82rem;line-height:1.55;color:var(--bone-dim);}
+.cookie-ways{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;}
+.cookie-ways a{
+  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bone-dim);border-bottom:1px solid transparent;transition:color .2s,border-color .2s;
+}
+.cookie-ways a:hover,.cookie-ways a:focus-visible{color:var(--bone);border-bottom-color:var(--spark);}
+/* Gleichwertig: gleiche Groesse, gleicher Rahmen, gleiche Schrift. Der
+   Unterschied liegt nur im Text, nicht im Gewicht. */
+/* Zwei gleich breite Spalten: die Knoepfe sind damit auf den Pixel gleich
+   gross, unabhaengig davon, wie lang die Aufschrift in der jeweiligen Sprache
+   ist. Sonst waere "Nécessaires uniquement" breiter als "Tout accepter" — und
+   breiter liest sich als wichtiger. */
+.cookie-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:0 0 auto;min-width:min(320px,100%);}
+.cookie .cookie-btn{
+  margin-top:0;padding:12px 14px;font-size:.66rem;letter-spacing:.12em;
+  width:100%;justify-content:center;text-align:center;
+  background:transparent;color:var(--bone);border:1px solid var(--line);
+}
+.cookie .cookie-btn:hover,.cookie .cookie-btn:focus-visible{border-color:var(--spark);color:var(--bone);}
+@media (max-width:520px){
+  .cookie{left:10px;right:10px;bottom:10px;padding:16px;}
+  .cookie-acts{width:100%;}
+  .cookie .cookie-btn{min-width:0;}
+}
+
+/* Der Zugang im Fuss sieht aus wie die Links daneben, ist aber ein Knopf: er
+   oeffnet keine Seite, sondern holt die Abfrage zurueck. */
+.foot-link{
+  background:none;border:0;padding:0;cursor:pointer;font:inherit;
+  color:var(--bone-dim);border-bottom:1px solid transparent;
+  transition:color .2s,border-color .2s;
+}
+.foot-link:hover,.foot-link:focus-visible{color:var(--bone);border-bottom-color:var(--spark);}
 
 /* Daumen-Leiste: Buchen und Shop immer in Reichweite (nur Handy) */
 .actbar{
@@ -781,63 +817,155 @@ blockquote.lede footer{
   .show-date b{font-size:1.6rem;}
 }
 
-/* ---------- REFERENCES ---------- */
-.venue-list{list-style:none;display:flex;flex-direction:column;gap:14px;}
-@media(min-width:860px){.venue-list{display:grid;grid-template-columns:1fr 1fr;}}
+/* ---------- REFERENCES ----------
+
+   Eine Liste, ein Stil. Bis zum 11.08.2026 standen oben vier grosse Karten und
+   darunter der kleine Rest — eine zweite Rangfolge neben der Reihenfolge in der
+   Verwaltung, die dort niemand sehen konnte. Jetzt sind alle Karten gleich, und
+   die Reihenfolge aus der Verwaltung ist eins zu eins zu lesen.
+
+   Klein heisst wirklich klein: so passen auch fuenfundzwanzig Adressen ins Bild,
+   ohne die Seite zu einer Namensliste zu machen. Das Raster fuellt sich selbst,
+   je Breite kommen mehr Spalten dazu. */
+.venue-list{
+  list-style:none;display:grid;gap:8px;
+  grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));
+}
 .venue-list a{
-  display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:18px;align-items:center;
-  padding:18px 20px;background:var(--card);border:1px solid var(--line);
-  min-height:var(--tap);
-  transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:11px 14px;background:var(--card);border:1px solid var(--line);
+  text-decoration:none;
+  transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s,color .25s;
 }
-.venue-list a:hover{transform:translateY(-2px);border-color:rgba(46,107,255,.5);}
-/* Die wichtigsten Referenzen stehen oben und nehmen die ganze Breite ein. */
-@media(min-width:860px){.venue-list .lead{grid-column:1/-1;}}
-.venue-list .lead a{border-color:rgba(46,107,255,.45);background:linear-gradient(90deg,rgba(46,107,255,.10),var(--card) 55%);}
-.venue-list .lead .venue-idx{color:var(--spark);opacity:1;}
-/* Der Name steht immer auf EINER Zeile. Die Grundgrösse ist darum bewusst
-   zurückhaltend; passt ein langer Name trotzdem nicht, verkleinert ihn
-   assets/site.js so weit, bis er in die Zeile geht (--venue-fit). */
+.venue-list a:hover,.venue-list a:focus-visible{
+  transform:translateY(-2px);border-color:rgba(46,107,255,.5);
+}
+/* Der Name steht auf EINER Zeile. Passt ein langer Name nicht, verkleinert ihn
+   assets/site.js so weit, bis er hineingeht (--venue-fit). */
 .venue-name{
-  font-size:calc(clamp(1rem,2.1vw,1.55rem) * var(--venue-fit,1));
-  text-transform:uppercase;font-variation-settings:'wdth' 116,'wght' 700;
-  display:block;min-width:0;white-space:nowrap;overflow:hidden;
+  font-size:calc(clamp(.8rem,1.05vw,.92rem) * var(--venue-fit,1));
+  text-transform:uppercase;font-variation-settings:'wdth' 112,'wght' 640;
+  display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-/* Die beiden wichtigsten Referenzen stehen gross über die ganze Breite. */
-.venue-list .lead .venue-name{font-size:calc(clamp(1.5rem,4vw,2.9rem) * var(--venue-lead-fit,1));}
-.venue-city{font-family:var(--font-m);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);}
-.venue-idx{font-family:var(--font-m);font-size:.72rem;color:var(--warm);opacity:.65;font-variant-numeric:tabular-nums;}
+.venue-list a:hover .venue-name{color:var(--bone);}
+.venue-city{
+  font-family:var(--font-m);font-size:.56rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--bone-dim);white-space:nowrap;opacity:.85;
+}
+@media(max-width:700px){
+  .venue-list{grid-template-columns:repeat(auto-fill,minmax(min(160px,100%),1fr));gap:6px;}
+  .venue-list a{padding:10px 12px;}
+  .venue-city{font-size:.5rem;}
+}
 .live-note{margin-top:26px;color:var(--bone-dim);font-size:.92rem;}
 
 /* ---------- SHOP ---------- */
 .shop-note{color:var(--bone-dim);max-width:60ch;margin-bottom:clamp(26px,4vw,40px);}
-/* Alles auf einen Blick: die Karten sind bewusst klein gehalten, damit
-   moeglichst viel Ware gleichzeitig sichtbar ist. Wie klein, haengt an der
-   Menge — `--tile` setzt der Generator je nach Anzahl Produkte (siehe
-   kachelbreite() in scripts/build.mjs). Das min() haelt eine Kachel davon ab,
-   breiter zu werden als das Raster selbst. */
-.shop-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(min(var(--tile,168px),100%),1fr));
-  gap:clamp(12px,1.6vw,18px);
+/* ---------------------------------------------------------------- der Shop
+
+   Zwei Flaechen: oben hell und grosszuegig (die Einladung), darunter dunkel
+   (der Katalog). Der gemeinsame Kopf der Website bleibt unangetastet — das
+   Shop-Bild beginnt darunter.
+
+   Farben und Schriften kommen aus demselben Designsystem wie der Rest der
+   Seite; die helle Flaeche dreht nur Vorder- und Hintergrund um. */
+.shop-intro{
+  background:var(--bone);color:var(--ink);
+  padding:clamp(64px,11vw,132px) 0 clamp(56px,9vw,112px);
+  border-bottom:1px solid rgba(0,0,0,.08);
 }
-.product{
+.shop-intro-in{max-width:none;}
+.shop-kicker{
+  display:block;color:var(--spark);font-size:.66rem;letter-spacing:.34em;
+  text-transform:uppercase;margin-bottom:clamp(16px,2.4vw,26px);
+}
+.shop-headline{
+  font-size:clamp(2.3rem,8.4vw,5.6rem);line-height:.94;letter-spacing:-.02em;
+  text-transform:uppercase;color:var(--ink);
+  font-variation-settings:'wdth' 118,'wght' 860;
+  max-width:22ch;
+}
+.shop-lede{
+  margin-top:clamp(18px,2.6vw,28px);max-width:54ch;
+  font-size:clamp(1rem,1.5vw,1.2rem);line-height:1.55;
+  color:rgba(5,7,14,.72);
+}
+.shop-cta{margin-top:clamp(26px,3.6vw,40px);}
+/* Auf der hellen Flaeche muss der Knopf dunkel sein, sonst verschwindet er. */
+.shop-intro .btn.solid{background:var(--ink);color:var(--bone);border-color:var(--ink);}
+.shop-intro .btn.solid:hover,.shop-intro .btn.solid:focus-visible{
+  background:var(--spark);border-color:var(--spark);color:#fff;
+}
+
+.shop-cat{background:var(--ink);scroll-margin-top:calc(var(--head) + 12px);}
+
+/* Drei Spalten am Rechner, zwei am Tablet, eine am Handy. Feste Stufen statt
+   auto-fill: so ist die Zahl der Spalten vorhersehbar, und ein einzelner
+   Artikel streckt sich nicht ueber die ganze Breite (`.einer`). */
+.shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2vw,26px);}
+.shop-grid.einer{grid-template-columns:minmax(0,clamp(280px,38vw,420px));justify-content:start;}
+@media (max-width:1000px){
+  .shop-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:640px){
+  .shop-grid,.shop-grid.einer{grid-template-columns:minmax(0,1fr);}
+}
+
+.prod{
   background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;
   transition:transform .25s cubic-bezier(.22,.8,.28,1),border-color .25s;
 }
-.product:hover{transform:translateY(-3px);border-color:rgba(46,107,255,.55);}
-.product-img{aspect-ratio:1;overflow:hidden;}
-.product-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
-.product:hover .product-img img{transform:scale(1.04);}
-.product-body{padding:11px 12px 13px;display:flex;flex-direction:column;gap:5px;flex:1;}
-.product-body h3{font-size:.92rem;font-variation-settings:'wdth' 116,'wght' 740;}
-.product-body p{color:var(--bone-dim);font-size:.78rem;line-height:1.45;}
-.product-foot{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;}
-.price{font-variant-numeric:tabular-nums;font-family:var(--font-m);font-size:.8rem;color:var(--spark);letter-spacing:.06em;}
-.product .btn{margin-top:0;padding:9px 14px;font-size:.6rem;min-height:36px;}
+.prod:hover{transform:translateY(-4px);border-color:rgba(46,107,255,.55);}
+.prod-shot{position:relative;aspect-ratio:4/5;overflow:hidden;background:#0b0f1a;}
+.prod-shot img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.prod:hover .prod-shot img{transform:scale(1.04);}
+/* Ohne Bild: der Anfangsbuchstabe statt einer leeren Flaeche. */
+.prod-noshot{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-size:clamp(3rem,7vw,5rem);color:rgba(240,238,232,.14);
+  font-variation-settings:'wdth' 118,'wght' 860;
+}
+.prod-badge{
+  position:absolute;top:12px;left:12px;
+  background:var(--spark);color:#fff;
+  font-family:var(--font-m);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:6px 10px;
+}
+.prod-body{padding:clamp(16px,1.6vw,20px);display:flex;flex-direction:column;gap:8px;flex:1;}
+.prod-body h3{font-size:clamp(1rem,1.4vw,1.15rem);font-variation-settings:'wdth' 116,'wght' 760;}
+.prod-body p{color:var(--bone-dim);font-size:.84rem;line-height:1.5;}
+.prod-foot{
+  margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;
+  justify-content:space-between;gap:10px;padding-top:14px;
+}
+.price{font-variant-numeric:tabular-nums;font-family:var(--font-m);font-size:.9rem;color:var(--spark);letter-spacing:.06em;}
+.prod .btn{margin-top:0;padding:11px 18px;font-size:.62rem;min-height:40px;}
+.prod.soldout{opacity:.62;}
+.sold-mark{font-size:.62rem;letter-spacing:.14em;color:var(--bone-dim);}
 .btn.ghost{border-color:var(--line);color:var(--bone);}
 .btn.ghost:hover{border-color:var(--bone);background:none;color:var(--bone);}
-.product.soldout{opacity:.55;}
+
+/* Der Informationsstreifen: drei Punkte, gleiches Gewicht, kleine Zeichen. */
+.shop-info{
+  list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(16px,2vw,28px);margin-top:clamp(34px,5vw,58px);
+  padding-top:clamp(26px,3.4vw,40px);border-top:1px solid var(--line);
+}
+.shop-info li{display:flex;gap:14px;align-items:flex-start;}
+.shop-info-ico{
+  flex:0 0 auto;width:34px;height:34px;display:grid;place-items:center;
+  border:1px solid var(--line);color:var(--spark);
+}
+.shop-info-ico svg{width:19px;height:19px;display:block;}
+.shop-info strong{
+  display:block;font-family:var(--font-m);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--bone);margin-bottom:6px;
+}
+.shop-info p{color:var(--bone-dim);font-size:.82rem;line-height:1.55;}
+@media (max-width:800px){
+  .shop-info{grid-template-columns:minmax(0,1fr);gap:18px;}
+}
+
 .empty-note{color:var(--bone-dim);border:1px dashed var(--line);padding:26px 28px;max-width:52ch;}
 
 /* Bezahlen: TWINT/Bank samt QR-Code zum Abscannen */
@@ -1396,14 +1524,13 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     grid-template-columns:54px minmax(0,1fr);align-items:start;
     background:rgba(23,30,48,.72);border-width:0 0 0 2px;
   }
-  .venue-list{gap:0;border-top:1px solid var(--line);}
+  /* Auf dem Handy stehen die Referenzen als ruhige Zeilenliste statt als
+     Kaertchen — bei fuenfundzwanzig Adressen liest sich das besser. */
+  .venue-list{grid-template-columns:minmax(0,1fr);gap:0;border-top:1px solid var(--line);}
   .venue-list a{
-    grid-template-columns:32px minmax(0,1fr);gap:10px;padding:17px 2px;
-    background:none;border:0;border-bottom:1px solid var(--line);
+    padding:14px 2px;background:none;border:0;border-bottom:1px solid var(--line);
   }
-  .venue-name{font-size:calc(1.12rem * var(--venue-fit,1));}
-  .venue-list .lead .venue-name{font-size:calc(1.5rem * var(--venue-lead-fit,1));}
-  .venue-city{grid-column:2;}
+  .venue-name{font-size:calc(.95rem * var(--venue-fit,1));}
   .genre-list li{font-size:1.15rem;padding:16px;}
   .avail li{font-size:1.05rem;}
 
@@ -1620,7 +1747,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     grid-template-columns:28px minmax(0,1fr);gap:8px;padding:12px 1px;
   }
   .venue-name{font-size:calc(.98rem * var(--venue-fit,1));}
-  .venue-list .lead .venue-name{font-size:calc(1.3rem * var(--venue-lead-fit,1));}
   .venue-city{font-size:.56rem;}
 
   .gal{
@@ -1752,7 +1878,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 .genre-list li:hover::before{width:3px;}
 
 /* Referenzen: Nummer springt beim Hover auf Blau */
-.venue-list a:hover .venue-idx{color:var(--spark);opacity:1;}
 
 /* Mix-Karte reagiert wie die anderen Karten */
 .mix-card{transition:border-color .25s;}
@@ -1786,41 +1911,10 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 /* Sanftere Kante zwischen Booking und Kontakt */
 .booking{border-bottom:1px solid var(--line);}
 
-/* ---------- REFERENZEN: Rest unter den wichtigsten Adressen ---------- */
-/* Oben stehen die wichtigsten als grosse Zeilen (.venue-list .lead). Alles
-   Weitere gehoert dazu, darf aber nicht gleich laut sein.
+/* Der frueher hier stehende Block fuer den "Rest" unter den grossen Karten ist
+   weg (11.08.2026) — es gibt keinen Rest mehr, alle Referenzen sind gleich.
+   Siehe .venue-list weiter oben. */
 
-   Die erste Fassung war zu zaghaft: 1rem sind bei html{font-size:17px} genau
-   17px — also Fliesstextgroesse. Damit stand der Rest optisch gleichauf mit
-   dem uebrigen Text und war nicht als untergeordnet zu erkennen. Klein heisst
-   hier deshalb wirklich klein: gut ein Fuenftel kleiner als der Fliesstext,
-   leichter Schnitt, gedaempfte Farbe und engere Zeilen. Die Rangfolge liest
-   man jetzt auf einen Blick — gross, dann klein. */
-.venue-rest{margin-top:clamp(22px,3.2vw,36px);display:flex;flex-direction:column;gap:20px;}
-.venue-group-h{display:block;color:var(--warm);margin-bottom:10px;font-size:.62rem;letter-spacing:.18em;}
-.venue-more{list-style:none;display:grid;gap:6px 16px;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));}
-.venue-more a{
-  display:flex;align-items:baseline;justify-content:space-between;gap:10px;
-  padding:7px 10px;border:1px solid var(--line);background:var(--card);
-  text-decoration:none;transition:border-color .2s,color .2s;
-}
-.venue-more a:hover{border-color:rgba(46,107,255,.45);}
-/* .venue-name traegt eine clamp()-Groesse fuer die grossen Zeilen — die wird
-   hier bewusst ueberschrieben, sonst waere der Rest genauso gross. */
-.venue-more .venue-name{
-  font-size:clamp(.72rem,.85vw,.8rem);
-  font-variation-settings:'wdth' 100,'wght' 520;
-  color:var(--bone-dim);letter-spacing:.005em;line-height:1.35;
-}
-.venue-more a:hover .venue-name{color:var(--bone);}
-.venue-more .venue-city{font-size:.52rem;white-space:nowrap;opacity:.75;}
-
-/* Auf schmalen Bildschirmen schrumpfen die grossen Zeilen mit — der Rest darf
-   dann nicht relativ dazu wachsen, sonst kippt die Rangfolge. */
-@media(max-width:700px){
-  .venue-more{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px 10px;}
-  .venue-more .venue-name{font-size:.72rem;}
-  .venue-more .venue-city{font-size:.48rem;}
 }
 
 
@@ -1830,4 +1924,61 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 @media(max-width:379px){
   .gal{grid-template-columns:1fr;gap:12px;}
   .gal figure{aspect-ratio:4/3;}
+}
+
+/* ---------------------------------------------------------------- Release
+
+   Der Vorhang vor dem Start. Er liegt ueber allem, solange die Klasse
+   "vor-release" auf <html> steht; gesetzt wird sie von einem winzigen Skript
+   im Kopf der Seite, damit die Website nicht kurz aufblitzt. Bei null nimmt
+   assets/site.js die Klasse weg — ohne Neuladen, ohne neuen Deploy.
+
+   Diese Regeln stehen bewusst am Ende der Datei: sie muessen alles davor
+   ueberstimmen koennen. */
+.release{display:none;}
+html.vor-release{overflow:hidden;}
+html.vor-release body > *:not(.release){display:none !important;}
+html.vor-release .release{
+  display:grid;place-items:center;
+  position:fixed;inset:0;z-index:9999;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(46,107,255,.20), transparent 62%),
+    var(--ink);
+  padding:clamp(24px,6vw,64px);overflow:auto;
+}
+.rl-in{max-width:840px;text-align:center;}
+.rl-kicker{
+  display:block;color:var(--spark);font-size:.66rem;letter-spacing:.36em;
+  text-transform:uppercase;margin-bottom:clamp(18px,2.6vw,28px);
+}
+.rl-head{
+  font-size:clamp(2.2rem,8vw,5.4rem);line-height:.94;letter-spacing:-.02em;
+  text-transform:uppercase;font-variation-settings:'wdth' 118,'wght' 860;
+}
+.rl-text{
+  margin:clamp(16px,2.4vw,26px) auto 0;max-width:52ch;
+  color:var(--bone-dim);font-size:clamp(.95rem,1.4vw,1.12rem);line-height:1.6;
+}
+/* Der Zaehler. Feste Ziffernbreite, damit beim Weiterlaufen nichts zuckt. */
+.rl-uhr{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:clamp(8px,1.4vw,18px);margin:clamp(30px,4.4vw,52px) auto 0;max-width:620px;
+}
+.rl-teil{border:1px solid var(--line);background:rgba(23,30,48,.5);padding:clamp(12px,1.8vw,20px) 6px;}
+.rl-zahl{
+  display:block;font-variant-numeric:tabular-nums;
+  font-size:clamp(1.7rem,5.6vw,3.4rem);line-height:1;
+  font-variation-settings:'wdth' 112,'wght' 780;
+}
+.rl-teil .mono{display:block;margin-top:8px;font-size:.56rem;letter-spacing:.2em;color:var(--bone-dim);}
+.rl-fuss{margin-top:clamp(20px,3vw,32px);font-size:.62rem;letter-spacing:.14em;color:var(--bone-dim);}
+.rl-ways{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:18px;}
+.rl-ways a{
+  font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);
+  border-bottom:1px solid transparent;transition:color .2s,border-color .2s;
+}
+.rl-ways a:hover,.rl-ways a:focus-visible{color:var(--bone);border-bottom-color:var(--spark);}
+@media (prefers-reduced-motion: no-preference){
+  html.vor-release .release{animation:rl-in .6s cubic-bezier(.22,.8,.28,1) both;}
+  @keyframes rl-in{from{opacity:0;}to{opacity:1;}}
 }

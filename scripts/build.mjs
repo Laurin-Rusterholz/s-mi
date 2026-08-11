@@ -86,7 +86,19 @@ const isoDate = (v) => {
   return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
 };
 
-const today = () => (process.env.BUILD_DATE || new Date().toISOString()).slice(0, 10);
+/**
+ * Das heutige Datum in der Zeitzone der Website: Europe/Zurich.
+ *
+ * Vorher stand hier die UTC-Zeit. In der Schweiz ist es im Sommer zwei Stunden
+ * spaeter, im Winter eine — zwischen 00:00 und 02:00 Ortszeit war "heute" damit
+ * noch der Vortag. Ein Termin galt dann fuer zwei Stunden als kommend, obwohl er
+ * vorbei war. `sv-SE` liefert das Datum von sich aus als JJJJ-MM-TT.
+ */
+const ZEITZONE = "Europe/Zurich";
+const today = () =>
+  process.env.BUILD_DATE
+    ? String(process.env.BUILD_DATE).slice(0, 10)
+    : new Intl.DateTimeFormat("sv-SE", { timeZone: ZEITZONE }).format(new Date());
 
 /**
  * Unterverzeichnis, in dem die fertige Website ausgeliefert wird.
@@ -104,6 +116,198 @@ const BASE = String(process.env.SITE_BASE || "")
 
 /* ------------------------------------------------------------------ laden */
 
+/* ----------------------------------------------------------- Release-Sperre */
+
+/**
+ * Wann genau ist der Release? Aus Datum, Uhrzeit und Zeitzone der Verwaltung
+ * wird EIN fester Zeitpunkt in Millisekunden seit 1970 (UTC).
+ *
+ * Warum als Zeitpunkt und nicht als Text: der Browser des Besuchers steht in
+ * irgendeiner Zeitzone, vielleicht in Tokio. Vergleicht er einen Text wie
+ * "18:00", schaltet die Seite dort acht Stunden zu frueh oder zu spaet um.
+ * Ein Zeitpunkt ist ueberall derselbe Moment — auch ueber die Sommerzeit
+ * hinweg, denn die steckt schon in der Umrechnung.
+ *
+ * Die Umrechnung geht ueber Intl: die gewuenschte Ortszeit wird zuerst als UTC
+ * gelesen, dann wird geprueft, welche Ortszeit dabei wirklich herauskaeme, und
+ * die Differenz abgezogen. Zwei Durchgaenge genuegen auch an den beiden Tagen
+ * im Jahr, an denen die Uhr umgestellt wird.
+ */
+export function releaseZeitpunkt(datum, zeit, zone = ZEITZONE) {
+  const d = isoDate(datum);
+  if (!d) return 0;
+  const m = String(zeit ?? "").match(/^(\d{1,2}):(\d{2})/);
+  const stunde = m ? Number(m[1]) : 0;
+  const minute = m ? Number(m[2]) : 0;
+  const [jahr, monat, tag] = d.split("-").map(Number);
+  const alsUtc = Date.UTC(jahr, monat - 1, tag, stunde, minute, 0);
+  const abstand = (ms) => {
+    // Was zeigt eine Uhr in `zone` zu diesem Zeitpunkt?
+    const teile = new Intl.DateTimeFormat("en-US", {
+      timeZone: zone,
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit",
+      hourCycle: "h23",
+    }).formatToParts(new Date(ms));
+    const w = Object.fromEntries(teile.map((t) => [t.type, t.value]));
+    const dortAlsUtc = Date.UTC(
+      Number(w.year), Number(w.month) - 1, Number(w.day),
+      Number(w.hour), Number(w.minute), Number(w.second)
+    );
+    return dortAlsUtc - ms;
+  };
+  let ms = alsUtc - abstand(alsUtc);
+  ms = alsUtc - abstand(ms);
+  return ms;
+}
+
+/**
+ * Der Vorhang vor dem Release — Markup und das kleine Skript im Kopf.
+ *
+ * Es sind zwei Teile:
+ *
+ *   releaseKopf()    ein winziges Skript ganz oben im <head>. Es setzt die
+ *                    Klasse "vor-release" auf <html>, BEVOR der Browser etwas
+ *                    zeichnet. Das CSS blendet damit alles ausser dem Vorhang
+ *                    aus — ohne dieses Skript blitzte die Website kurz auf.
+ *   releaseVorhang() der Vorhang selbst: Kicker, Ueberschrift, Text und der
+ *                    Zaehler, der jede Sekunde weiterlaeuft.
+ *
+ * Umgeschaltet wird im Browser, nicht auf dem Server: der Zeitpunkt steht als
+ * Zahl in der Seite, assets/site.js zaehlt herunter und nimmt bei null die
+ * Klasse wieder weg. Es braucht also weder einen neuen Deploy noch einen
+ * Cache-Griff, und eine Seite, die offen liegen bleibt, schaltet von selbst um.
+ *
+ * EINSCHRAENKUNG, die man kennen muss: der Inhalt der Seite steht waehrend der
+ * Sperre trotzdem im Quelltext. Wer "Seitenquelltext anzeigen" waehlt oder die
+ * Seite mit curl abruft, kann ihn lesen. Wirklich unsichtbar waere er nur mit
+ * einer Sperre auf dem Server — die braeuchte aber genau das, was hier
+ * ausgeschlossen ist: einen Deploy zum Zielzeitpunkt.
+ *
+ * Die Vorfuehr-Fassung unter /site/ (SITE_BASE gesetzt) bekommt keinen Vorhang:
+ * dort wird gearbeitet.
+ */
+function releaseKopf(rel) {
+  if (!rel.an || BASE) return "";
+  return `
+  <script>/* Vorhang setzen, bevor gezeichnet wird — sonst blitzt die Seite auf. */
+  (function(){try{if(Date.now()<${rel.ms})document.documentElement.className+=" vor-release";}catch(e){}})();
+  </script>`;
+}
+
+function releaseVorhang(rel, ui, lang, master) {
+  if (!rel.an || BASE) return "";
+  const stueck = (id, label) =>
+    `<div class="rl-teil"><span class="rl-zahl" id="${id}">--</span><span class="mono">${esc(
+      label
+    )}</span></div>`;
+  return `
+  <section class="release" id="release" data-ziel="${rel.ms}" aria-live="polite">
+    <div class="rl-in">
+      ${rel.kicker ? `<span class="mono rl-kicker">${esc(rel.kicker)}</span>` : ""}
+      <h1 class="rl-head">${esc(rel.headline || "Coming soon")}</h1>
+      ${rel.text ? `<p class="rl-text">${esc(rel.text)}</p>` : ""}
+      <div class="rl-uhr" role="timer">
+        ${stueck("rl-t", ui.rlDays)}
+        ${stueck("rl-h", ui.rlHours)}
+        ${stueck("rl-m", ui.rlMinutes)}
+        ${stueck("rl-s", ui.rlSeconds)}
+      </div>
+      <p class="rl-fuss mono">${esc(ui.rlNote)}</p>
+      <p class="rl-ways">
+        <a href="${esc(navPrefix(lang, master) + "/" + IMPRESSUM_SLUG + "/")}">${esc(
+    (IMPRESSUM_TEXT[lang] || IMPRESSUM_TEXT.de).titel
+  )}</a>
+        <a href="${esc(navPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
+    LEGAL_FUSS[lang] || LEGAL_FUSS.de
+  )}</a>
+      </p>
+    </div>
+  </section>`;
+}
+
+/** Die Angaben zur Release-Sperre, fertig ausgerechnet. */
+function releaseStand(c) {
+  const r = c?.release || {};
+  const an = r.enabled !== false && !!isoDate(r.date);
+  const ms = an ? releaseZeitpunkt(r.date, r.time, str(r.zone, ZEITZONE)) : 0;
+  return {
+    an: an && ms > 0,
+    ms,
+    zone: str(r.zone, ZEITZONE),
+    kicker: str(r.kicker),
+    headline: str(r.headline),
+    text: str(r.text),
+  };
+}
+
+/* --------------------------------------------- vergangene Shows nachziehen */
+
+/** Vergleichbar machen: Gross/Klein, Leerzeichen und Bindestriche zaehlen nicht. */
+const refSchluessel = (name, city) =>
+  `${String(name ?? "").trim().toLowerCase()}|${String(city ?? "").trim().toLowerCase()}`
+    .replace(/[\s–—-]+/g, " ")
+    .replace(/\s+/g, " ");
+
+/**
+ * Ist dieser Termin vorbei?
+ *
+ * "Vorbei" heisst: der Tag des Termins ist ganz herum. Ein Termin am heutigen
+ * Tag gilt bis Mitternacht als kommend — auch ohne Uhrzeit, und auch wenn er
+ * am Abend laeuft, denn eine Show endet nach Mitternacht und soll nicht
+ * mittendrin aus der Liste fallen. Gerechnet wird in Europe/Zurich (`heute`
+ * kommt aus today()). Ein Termin ohne Datum ist nie vorbei.
+ */
+export const showVorbei = (show, heute) => {
+  const d = isoDate(show?.date);
+  return !!d && d < String(heute);
+};
+
+/**
+ * Vergangene Shows werden zu Referenzen — Name und Ort wandern hinueber.
+ *
+ * Der Kunde pflegt einen Termin einmal unter "Shows". Ist er vorbei, gehoert er
+ * nicht mehr unter "kommende Shows", sondern zu den Orten, an denen Sam schon
+ * gespielt hat. Das passiert von selbst, ohne Nachpflege.
+ *
+ * Regeln, die dabei gelten:
+ *   - Keine Dubletten: gibt es die Referenz schon (Name und Ort, unabhaengig
+ *     von Gross/Klein und Bindestrichen), passiert nichts.
+ *   - Nie automatisch gross: ein uebernommener Eintrag traegt kein `highlight`.
+ *   - Bestehende Referenzen bleiben unberuehrt — Reihenfolge, Schreibweise und
+ *     "Gross zeigen" aendert diese Funktion nie. Neues kommt hinten dran, in
+ *     der Reihenfolge der Termine (das Aelteste zuerst).
+ *   - Der Termin selbst bleibt in der Liste stehen. Er zaehlt weiter zum
+ *     Rueckblick ("schon gespielt"), er ist nur nicht mehr kommend.
+ *
+ * Gibt die Namen der uebernommenen Termine zurueck.
+ */
+export function showsNachReferenzen(content, heute) {
+  const shows = content?.sections?.shows;
+  const refs = content?.sections?.references;
+  if (!refs || !Array.isArray(shows?.items)) return [];
+  if (!Array.isArray(refs.items)) refs.items = [];
+
+  const bekannt = new Set(refs.items.map((r) => refSchluessel(r?.name, r?.city)));
+  const uebernommen = [];
+  const vorbei = shows.items
+    .filter((i) => str(i?.name) && showVorbei(i, heute))
+    .sort((a, b) => (isoDate(a.date) < isoDate(b.date) ? -1 : 1));
+
+  for (const show of vorbei) {
+    const name = str(show.name).trim();
+    const city = str(show.city).trim();
+    const key = refSchluessel(name, city);
+    if (bekannt.has(key)) continue;
+    // Ohne highlight: automatisch uebernommene Eintraege stehen unten mit den
+    // anderen. Was gross steht, entscheidet der Kunde in der Verwaltung.
+    refs.items.push(city ? { name, city } : { name });
+    bekannt.add(key);
+    uebernommen.push(city ? `${name} — ${city}` : name);
+  }
+  return uebernommen;
+}
+
 /**
  * Fehlendes aus der Vorlage ergänzen — der Stand aus der Verwaltung gewinnt,
  * aber Felder, die es dort noch gar nicht gibt (neu dazugekommene Bausteine
@@ -111,14 +315,82 @@ const BASE = String(process.env.SITE_BASE || "")
  * eingecheckten content/site.json. Sonst müsste nach jeder Erweiterung erst
  * jemand in der Verwaltung speichern, bevor sie auf der Website ankommt.
  */
-function withDefaults(target, defaults) {
+function withDefaults(target, defaults, pfad = "") {
   if (Array.isArray(defaults)) return Array.isArray(target) ? target : defaults;
   if (defaults && typeof defaults === "object") {
     const out = target && typeof target === "object" && !Array.isArray(target) ? target : {};
-    for (const [k, v] of Object.entries(defaults)) out[k] = withDefaults(out[k], v);
+    for (const [k, v] of Object.entries(defaults))
+      out[k] = withDefaults(out[k], v, pfad ? `${pfad}.${k}` : k);
     return out;
   }
   return target === undefined ? defaults : target;
+}
+
+/* Listen, die allein die Verwaltung pflegt. Fehlt eine im Stand aus der
+   Datenbank, ist sie LEER — nicht "wie beim letzten Build".
+
+   Warum das eine eigene Regel braucht: die Realtime Database speichert keine
+   leeren Listen. Loescht der Kunde den letzten Artikel im Shop und publiziert,
+   kommt aus der Datenbank gar kein `items` mehr zurueck. withDefaults hielt das
+   fuer "fehlt noch" und ergaenzte die Liste aus dem eingecheckten
+   content/site.json — also aus dem VORHERIGEN Build. Die geloeschten Artikel
+   standen danach wieder im Shop, und im Bau-Protokoll stand nichts davon.
+   Genau das ist die Meldung "nach Publizieren werden im Shop nicht alle
+   Aenderungen aktualisiert".
+
+   Muss mit `normalize()` in der Verwaltung uebereinstimmen
+   (verwaltung/public/js/store.js) — dort wird beim Laden dieselbe Liste zu
+   echten Arrays gemacht. */
+const VERWALTETE_LISTEN = [
+  "site.keywords",
+  "hero.stats",
+  "ticker.items",
+  "layout",
+  "pages",
+  "sections.about.paragraphs",
+  "sections.about.words",
+  "sections.about.facts",
+  "sections.shows.items",
+  "sections.references.items",
+  "sections.gallery.items",
+  "sections.shop.items",
+  "sections.booking.available",
+  "sections.contact.socials",
+];
+
+/**
+ * Setzt jede verwaltete Liste, die im Stand aus der Datenbank fehlt, auf eine
+ * leere Liste — damit withDefaults sie nicht aus dem alten Schnappschuss
+ * nachfuellt. Gibt die Pfade zurueck, die dadurch leer bleiben.
+ */
+function leereListenFesthalten(live) {
+  const leer = [];
+  for (const pfad of VERWALTETE_LISTEN) {
+    const teile = pfad.split(".");
+    let node = live;
+    for (let i = 0; i < teile.length - 1; i++) {
+      if (!node || typeof node !== "object") {
+        node = null;
+        break;
+      }
+      node = node[teile[i]];
+    }
+    if (!node || typeof node !== "object") continue;
+    const letztes = teile[teile.length - 1];
+    if (Array.isArray(node[letztes])) continue;
+    // Ein Objekt mit Zahlen-Schluesseln ist eine Liste mit Loechern — die
+    // Datenbank speichert Listen so, sobald ein Platz fehlt.
+    if (node[letztes] && typeof node[letztes] === "object") {
+      node[letztes] = Object.keys(node[letztes])
+        .sort((a, b) => Number(a) - Number(b))
+        .map((k) => node[letztes][k])
+        .filter((x) => x !== null && x !== undefined);
+      continue;
+    }
+    node[letztes] = [];
+    leer.push(pfad);
+  }
+  return leer;
 }
 
 /**
@@ -463,76 +735,25 @@ export function nachziehen(live, korr) {
   }
 
 
-  // Waehrung: in der Verwaltung stand "CHF 5" im Feld fuer die Waehrung —
-  // daraus wurde auf der Seite "CHF 5 35.—".
-  if (korr.shop?.alteWaehrung && str(ls.shop?.currency) === korr.shop.alteWaehrung) {
-    ls.shop.currency = str(korr.shop.waehrung, "CHF");
-    getan.push("Waehrung");
-  }
+  /* Der Shop hatte hier drei Regeln. Alle drei sind weg (11.08.2026):
 
-  /* Die eine veroeffentlichte Ware zurueckholen (11.08.2026).
+       verloreneWare   holte den Artikel "Beispiel" zurueck, sobald die
+                       Warenliste leer war
+       texte           schrieb note, emptyText und buyLabel, sobald das Feld
+                       leer war oder den bekannten deutschen Text trug
+       alteWaehrung    ersetzte die Waehrung "CHF 5"
 
-     Vorgeschichte: bis zum 10.08.2026 loeschte hier eine Regel jeden Artikel,
-     der "Beispiel" hiess. Die Verwaltung hat den so bereinigten Stand spaeter
-     zurueck in die Datenbank geschrieben — seither steht dort gar keine Ware
-     mehr, und der Shop zeigt in allen drei Sprachen nur noch den Leer-Text.
+     Warum weg: sie standen genau dort, wo der Kunde arbeitet. Wer den letzten
+     Artikel loeschte, hatte ihn nach dem Publizieren wieder; wer die
+     Einleitungszeile leerte, las danach erneut "Merch from Sam Sparking …".
+     Das ist die Meldung "nach Publizieren werden im Shop nicht alle
+     Aenderungen aktualisiert" — von hier kam sie.
 
-     Diese Regel macht genau das rueckgaengig und nichts weiter:
-       - Sie greift nur, solange die Warenliste komplett leer ist. Sobald in
-         der Verwaltung ein einziger Artikel steht, haelt sie sich raus.
-       - Sie legt nur die Werte an, die der Kunde selbst veroeffentlicht hatte
-         (Name, Preis, Zustand). Nichts davon ist erfunden.
-       - Das damalige Produktbild bleibt weg: die Datei ist im Speicher nicht
-         mehr da (HTTP 404) und war genau das "kaputte Bild" aus der Meldung
-         vom 10.08.2026. Ein Ersatzbild wird nicht geraten — die Karte zeigt
-         Name, Preis und Kauf-Knopf, das Bild kommt in der Verwaltung dazu. */
-  const zurueck = list(korr.shop?.verloreneWare).filter((w) => str(w?.name));
-  if (zurueck.length && ls.shop && !list(ls.shop.items).length) {
-    ls.shop.items = zurueck.map((w) => ({ ...w }));
-    getan.push(`${zurueck.length} veroeffentlichte Ware zurueckgeholt`);
-  }
-
-  /* Shop-Texte je Sprache. Die Hauptsprache ist Englisch, in den Grundwerten
-     stand aber Deutsch — auf /shop/ (englisch) las man "Merch von Sam
-     Sparking" und "Kaufen", auf /fr/shop/ dasselbe, weil es fuer den Shop
-     keine Uebersetzungen gab.
-
-     Der Grundwert wird nur ersetzt, solange dort genau der bekannte deutsche
-     Text steht (korr.shop.texte.alt) oder nichts. Die Uebersetzungen werden
-     gesetzt, solange in der Verwaltung nichts Eigenes dasteht — wer dort
-     schreibt, behaelt das letzte Wort. */
-  const txt = korr.shop?.texte;
-  if (txt?.master && ls.shop) {
-    let n = 0;
-    for (const [feld, soll] of Object.entries(txt.master)) {
-      if (feld.startsWith("_")) continue;
-      const ist = str(ls.shop[feld]);
-      if (ist === soll) continue;
-      if (!ist || list(txt.alt?.[feld]).map(String).includes(ist)) {
-        ls.shop[feld] = soll;
-        n++;
-      }
-    }
-    for (const lang of ["de", "fr"]) {
-      const q = txt[lang];
-      if (!q) continue;
-      const i18n = live.i18n || (live.i18n = {});
-      const dort = i18n[lang] || (i18n[lang] = {});
-      const abschnitte = dort.sections || (dort.sections = {});
-      const ziel = abschnitte.shop || (abschnitte.shop = {});
-      for (const [feld, soll] of Object.entries(q)) {
-        if (feld.startsWith("_")) continue;
-        const ist = str(ziel[feld]);
-        // Leer, oder noch der Grundwert-Text von vorher: dann setzen.
-        if (ist === soll) continue;
-        if (!ist || list(txt.alt?.[feld]).map(String).includes(ist)) {
-          ziel[feld] = soll;
-          n++;
-        }
-      }
-    }
-    if (n) getan.push(`${n} Shop-Text(e) je Sprache`);
-  }
+     Der Shop haengt jetzt ausschliesslich an der Verwaltung: Warenliste,
+     Felder, Zustand, Reihenfolge und Loeschungen. Nichts wird hier ergaenzt,
+     nichts ersetzt. Der Artikel steht als echte Ware in der Datenbank; fehlt
+     er dort, traegt ihn die Verwaltung einmalig nach und merkt sich das
+     (verwaltung/public/js/ware-nachtragen.js). */
 
   /* Die Video-Seite ist zurueckgenommen (11.08.2026). Videos stehen wieder in
      der Bilderwand; eine eigene Seite /videos/ soll es nicht mehr geben —
@@ -617,6 +838,40 @@ export function nachziehen(live, korr) {
       n++;
     }
     if (n) getan.push(`${n} Impressum-Angabe(n)`);
+  }
+
+  /* Die Telefonnummer gehoert nicht mehr auf die Website (11.08.2026).
+     Geleert wird nur die eine bekannte Nummer — traegt jemand in der
+     Verwaltung eine neue ein, bleibt sie stehen und erscheint wieder. Der
+     Generator zeigt das Feld ohnehin nur, wenn etwas darin steht. */
+  if (korr.telefon?.leeren && ls.contact) {
+    const ist = str(ls.contact.phone).replace(/\s+/g, "");
+    const alt = list(korr.telefon.alteNummern).map((x) => str(x).replace(/\s+/g, ""));
+    if (ist && alt.includes(ist)) {
+      ls.contact.phone = "";
+      getan.push("Telefonnummer geraeumt");
+    }
+  }
+
+  /* Release-Sperre: wie beim Impressum stehen die Angaben in
+     content/korrekturen.json, weil content/site.json bei jedem Build aus der
+     Datenbank neu geschrieben wird. Gesetzt wird nur, was fehlt — und der
+     Schalter nur, wenn er dort ueberhaupt nicht vorkommt. Wer in der
+     Verwaltung ausschaltet, bleibt ausgeschaltet. */
+  const rel = Object.entries(korr.release || {}).filter(([f]) => !f.startsWith("_"));
+  if (rel.length) {
+    const ziel = live.release || (live.release = {});
+    let n = 0;
+    for (const [feld, wert] of rel) {
+      if (feld === "enabled") {
+        if (ziel.enabled === undefined) { ziel.enabled = wert; n++; }
+        continue;
+      }
+      if (str(ziel[feld])) continue;
+      ziel[feld] = wert;
+      n++;
+    }
+    if (n) getan.push(`${n} Release-Angabe(n)`);
   }
 
   if (korr.bookingBild?.src && !ls.booking?.photo?.src) {
@@ -765,13 +1020,20 @@ async function loadContent() {
       const headers = { Accept: "application/json" };
       const token = process.env.CONTENT_API_TOKEN;
       if (token) headers.Authorization = `Bearer ${token}`;
-      const res = await fetch(apiUrl, { headers });
+      // no-store: der Build darf nie eine zwischengespeicherte Antwort sehen.
+      // Sonst baut er nach dem Publizieren noch den Stand von vorher.
+      const res = await fetch(apiUrl, { headers, cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       const live = data && data.content ? data.content : data;
       if (!live || typeof live !== "object" || !live.site) {
         throw new Error("Antwort enthält kein site-Objekt");
       }
+      /* Zuerst festhalten, welche verwalteten Listen die Datenbank NICHT
+         geliefert hat — die bleiben leer, statt aus dem letzten Build
+         nachgefuellt zu werden. Muss vor withDefaults passieren. */
+      const leer = leereListenFesthalten(live);
+      if (leer.length) console.log(`[build] leer aus der Verwaltung: ${leer.join(", ")}`);
       let content = live;
       try {
         const template = JSON.parse(await readFile(LOCAL_CONTENT, "utf8"));
@@ -804,6 +1066,9 @@ async function loadContent() {
       } catch (e) {
         console.warn("[build] Vorlage content/site.json nicht lesbar:", e.message);
       }
+      const gerutscht = showsNachReferenzen(content, today());
+      if (gerutscht.length)
+        console.log(`[build] vorbei, jetzt Referenz: ${gerutscht.join(", ")}`);
       console.log(`[build] Inhalt von der Verwaltung geladen: ${apiUrl}`);
       // Snapshot mitschreiben, damit der Build ohne API reproduzierbar bleibt.
       await writeFile(LOCAL_CONTENT, JSON.stringify(content, null, 2) + "\n");
@@ -826,6 +1091,8 @@ async function loadContent() {
   // und traegt darum dieselben alten Stellen. Ohne diesen Schritt haette die
   // Vorschau ohne API einen anderen Inhalt als die Website.
   const korrigiert = nachziehen(lokal, KORREKTUREN);
+  const gerutschtLokal = showsNachReferenzen(lokal, today());
+  if (gerutschtLokal.length) korrigiert.push(`vorbei, jetzt Referenz: ${gerutschtLokal.join(", ")}`);
   console.log(
     "[build] Inhalt aus content/site.json geladen" +
       (korrigiert.length ? ` — nachgezogen: ${korrigiert.join(", ")}` : "")
@@ -1065,7 +1332,6 @@ function renderAbout(n, s) {
       <div class="about-grid">
         <div class="about-photo rv">
           ${picture(s.photo, { sizes: "(max-width:860px) 90vw, 40vw" })}
-          ${str(s.photo?.credit) ? `<span class="mono">${esc(s.photo.credit)}</span>` : ""}
         </div>
         <div class="about-copy rv">
           ${str(s.lede) ? `<p class="lede">${inline(s.lede)}</p>` : ""}
@@ -1314,34 +1580,24 @@ function renderShows(n, s) {
 }
 
 /**
- * Referenzen in zwei Stufen.
+ * Referenzen — eine Liste, ein Stil, eine Reihenfolge.
  *
- * Oben die wichtigsten Adressen — die tragen `highlight` („Gross zeigen“ in der
- * Verwaltung), höchstens vier davon. Darunter alles Weitere, kleiner gesetzt
- * und nach `group` gebündelt, falls Gruppen gepflegt sind. Eine Liste aus
- * fünfzehn gleich grossen Zeilen liest niemand; so springt ins Auge, was zählt,
- * und der Rest bleibt trotzdem vollständig nachlesbar.
+ * Bis zum 11.08.2026 standen oben vier grosse Karten und darunter, hinter einer
+ * Zwischenzeile ("Also played at"), der kleine Rest. Das ist weg: alle
+ * Referenzen erscheinen fortlaufend im selben kleinen Stil.
  *
- * Beide Stufen behalten die Reihenfolge aus der Verwaltung. Das ist eine
- * Rangfolge, keine Sortierung — und die Verwaltung sagt es dem Kunden auch so
- * zu, samt ↑ ↓ zum Verschieben.
+ * Warum: die Aufteilung war eine zweite, unsichtbare Rangfolge neben der
+ * Reihenfolge in der Verwaltung. Wer dort mit ↑ ↓ etwas nach oben schob, sah
+ * nichts davon, solange der Eintrag nicht auch "Gross zeigen" trug — und wer
+ * "Gross zeigen" setzte, sprengte die Reihenfolge. Jetzt entscheidet allein die
+ * Reihenfolge in der Verwaltung, und die ist eins zu eins zu sehen.
+ *
+ * `highlight` bleibt im Inhalt stehen (die Auswahl des Kunden geht nicht
+ * verloren), hat auf die Darstellung aber keine Wirkung mehr. Auch `group`
+ * buendelt nichts mehr — eine Liste bleibt eine Liste.
  */
-/** So viele Referenzen stehen gross — genau die Zahl, die die Verwaltung zulaesst. */
-const REFERENZEN_GROSS = 4;
-
 function renderReferences(n, s, bookingTarget) {
   const items = list(s.items).filter((i) => str(i?.name));
-  /* Gross zeigen: in der Reihenfolge der Verwaltung, hoechstens vier. Die
-     Verwaltung laesst kein fuenftes zu; kaeme ueber die Datenbank doch eines
-     herein, steht es unten mit den anderen statt die Zeile zu sprengen. */
-  const gross = items.filter((v) => v.highlight === true);
-  const lead = gross.slice(0, REFERENZEN_GROSS);
-  const zuViel = new Set(gross.slice(REFERENZEN_GROSS));
-  /* Und der Rest ebenfalls in der Reihenfolge der Verwaltung. Bis zum
-     11.08.2026 wurde hier alphabetisch sortiert — die Verwaltung versprach
-     aber "Die Reihenfolge hier ist auch die Reihenfolge auf der Website", und
-     mit ↑ ↓ liess sich nichts bewegen. */
-  const rest = items.filter((v) => v.highlight !== true || zuViel.has(v));
 
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
@@ -1349,54 +1605,23 @@ function renderReferences(n, s, bookingTarget) {
     return { url, ext };
   };
 
-  const leadList = lead.length
+  const liste = items.length
     ? `<ul class="venue-list rv">
-        ${lead
-          .map((v, i) => {
+        ${items
+          .map((v) => {
             const { url, ext } = linkOf(v);
-            return `<li class="lead"><a href="${esc(url)}"${ext}><span class="venue-idx">${num(
-              i + 1
-            )}</span><span class="venue-name">${esc(v.name)}</span><span class="venue-city">${esc(
-              str(v.city)
-            )}</span></a></li>`;
+            return `<li><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
+              v.name
+            )}</span><span class="venue-city">${esc(str(v.city))}</span></a></li>`;
           })
           .join("\n        ")}
       </ul>`
     : "";
 
-  // Gruppen in der Reihenfolge ihres ersten Auftretens; Einträge ohne Gruppe
-  // bilden den ersten, namenlosen Block.
-  const gruppen = [];
-  for (const v of rest) {
-    const key = str(v.group);
-    let g = gruppen.find((x) => x.key === key);
-    if (!g) gruppen.push((g = { key, items: [] }));
-    g.items.push(v);
-  }
-  const restList = gruppen
-    .map((g) => {
-      const zeilen = g.items
-        .map((v) => {
-          const { url, ext } = linkOf(v);
-          return `<li><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
-            v.name
-          )}</span><span class="venue-city">${esc(str(v.city))}</span></a></li>`;
-        })
-        .join("\n          ");
-      return `<div class="venue-group">
-          ${g.key ? `<span class="mono venue-group-h">${esc(g.key)}</span>` : ""}
-          <ul class="venue-more">
-          ${zeilen}
-          </ul>
-        </div>`;
-    })
-    .join("\n        ");
-
   return `
   <section class="pad" id="references" aria-labelledby="references-h">
     <div class="wrap">${sectionHead(n, s, "references")}
-      ${leadList}
-      ${rest.length ? `<div class="venue-rest rv">\n        ${restList}\n      </div>` : ""}
+      ${liste}
       ${
         str(s.note)
           ? `<p class="live-note rv">${inline(s.note)} <a class="accent" href="${esc(
@@ -1447,7 +1672,6 @@ function renderGallery(n, s) {
         g.poster ? ` poster="${href(cdnUrl(g.poster, 800))}"` : ""
       }${gf.style}${clipAttrs(g)} aria-label="${esc(g.alt || "")}"></video>
           <span class="gal-play" aria-hidden="true"></span>
-          ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
         </figure>`;
     }
     const idx = photos.indexOf(g) + 1;
@@ -1456,7 +1680,6 @@ function renderGallery(n, s) {
             UI.openImage.replace("{n}", idx).replace("{total}", photos.length)
           )}">
             ${picture(g, { sizes: "(max-width:700px) 100vw, 33vw", widths: [480, 800] })}
-            ${g.credit ? `<figcaption>${esc(g.credit)}</figcaption>` : ""}
           </button>
         </figure>`;
   };
@@ -1676,58 +1899,54 @@ function kachelbreite(anzahl) {
   return 116;
 }
 
+/* Die drei Zeichen fuer den Informationsstreifen unter dem Katalog. Fest im
+   Generator, weil ein Zeichen kein Inhalt ist — Titel und Text kommen aus der
+   Verwaltung. Bewusst schlicht: Strichzeichnung in der Textfarbe, kein Bild,
+   keine fremde Schrift, kein Nachladen. */
+const SHOP_ICONS = {
+  zahlung: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19"/>',
+  versand: '<path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/>',
+  fragen: '<path d="M21 12a9 9 0 1 1-3.2-6.9"/><path d="M9.4 9a2.7 2.7 0 1 1 3.4 2.6c-.6.2-.9.7-.9 1.3v.6"/><path d="M12 17h.01"/>',
+};
+const shopIcon = (key) =>
+  `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${
+    SHOP_ICONS[String(key || "").toLowerCase()] || SHOP_ICONS.fragen
+  }</svg>`;
+
+/**
+ * Der Shop — eigenes Bild, aber im Haus-Designsystem.
+ *
+ * Aufbau (Kundenwunsch vom 11.08.2026), unter dem unveraenderten Kopf:
+ *
+ *   1. helle, grosszuegige Merch-Flaeche: Kicker, starke Ueberschrift, kurze
+ *      Beschreibung, ein kontrastreicher Knopf, der zum Katalog scrollt.
+ *   2. dunkler Katalog: Karten mit Bild, optionalem Abzeichen ("Bestseller"),
+ *      Name, Beschreibung, Preis und Kauf-Knopf. Drei Spalten auf dem Rechner,
+ *      zwei auf dem Tablet, eine auf dem Handy — auch mit einem einzigen
+ *      Artikel sauber (die Karte bleibt in Lesebreite statt sich zu strecken).
+ *   3. Informationsstreifen aus drei Punkten mit Zeichen.
+ *
+ * Alles Inhaltliche kommt aus der Verwaltung: Kicker, Ueberschrift,
+ * Beschreibung, Knopf-Aufschrift, je Artikel Bild, Abzeichen, Name,
+ * Beschreibung, Preis, Kauf-Link, Zustand und Reihenfolge, sowie die drei
+ * Punkte des Streifens. Der Generator liefert nur Rueckfalltexte, damit nie
+ * eine leere Flaeche dasteht.
+ *
+ * Ist gar keine Ware da, bleibt es beim schlichten Leer-Block mit dem Text aus
+ * der Verwaltung — dann gibt es nichts zu bewerben.
+ */
 function renderShop(n, s, site) {
   const items = list(s.items).filter((p) => str(p?.name));
   const cur = str(s.currency, "CHF");
   const buy = str(s.buyLabel, UI.buy);
   const form = orderForm(s, site, items, cur);
   const hasOrderForm = !!form;
-  const cards = items
-    .map((p) => {
-      const sold = p.status === "soldout";
-      // Nur echte Adressen zaehlen als Bezahl-Link — Tippreste wie "asd"
-      // fallen sonst als toter Kauf-Knopf auf die Website
-      const price = priceTag(p.price, cur);
-      // Der Kauf-Knopf fuehrt immer ins Bestellformular und waehlt die Ware
-      // dort schon aus. Kein "Bestellen per E-Mail" mehr: eine Mail traegt
-      // weder Lieferadresse noch Bezahlung, und ohne die beiden kann niemand
-      // etwas verschicken. Ein eigener Bezahl-Link je Artikel entfaellt
-      // ebenfalls — bezahlt wird nach dem Formular ueber Stripe, sonst kaeme
-      // die Bestellung ohne Adresse an.
-      /* Der Kauf-Knopf fuehrt auf die Kasse DIESES Artikels, wenn dafuer ein
-         Stripe Payment Link hinterlegt ist. Damit stimmen Preis und Ware
-         garantiert zusammen: Stripe kennt beides aus dem Link.
 
-         Kein Rueckfall auf einen globalen Link: der gehoert zu einem anderen
-         Preis und wuerde den falschen Betrag abrechnen. Fehlt der Link, geht es
-         wie bisher ins Bestellformular — die Bestellung wird erfasst, bezahlt
-         wird spaeter. Eine ungueltige Adresse (Tippfehler, Dashboard-Link)
-         zaehlt wie keine. */
-      const kasse = istPaymentLink(p.paymentLink) ? str(p.paymentLink).trim() : "";
-      const cta = sold
-        ? `<span class="mono">${esc(UI.soldOut)}</span>`
-        : kasse
-        ? `<a class="btn sm buy-now" href="${esc(kasse)}" target="_blank" rel="noopener noreferrer"
-            data-product="${esc(p.name)}">${esc(buy)}</a>`
-        : hasOrderForm
-        ? `<a class="btn sm order-jump" href="#order-form" data-product="${esc(p.name)}">${esc(
-            buy
-          )}</a>`
-        : "";
-      return `<article class="product rv${sold ? " soldout" : ""}">
-          ${p.src ? `<div class="product-img">${picture(p, { sizes: "(max-width:700px) 46vw, 280px", widths: [480, 800] })}</div>` : ""}
-          <div class="product-body">
-            <h3>${esc(p.name)}</h3>
-            ${str(p.note) ? `<p>${esc(p.note)}</p>` : ""}
-            <div class="product-foot">
-              ${str(p.price) ? `<span class="price">${esc(price)}</span>` : ""}
-              ${cta}
-            </div>
-          </div>
-        </article>`;
-    })
-    .join("\n        ");
-
+  /* Kein Artikel: der Leer-Block. Hier — und nur hier — steht die
+     Einleitungszeile `note`. Ueber Ware gehoert sie nicht: der Satz "Merch from
+     Sam Sparking — every piece helps fund the next production." stammt aus der
+     Zeit, als es nichts zu kaufen gab (Kundenwunsch 11.08.2026). Geloescht ist
+     er nicht, er erscheint nur im leeren Shop. */
   if (!items.length) {
     return `
   <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
@@ -1740,18 +1959,113 @@ function renderShop(n, s, site) {
   </section>`;
   }
 
-  // Der ganze Shop ist auf einen Blick da — Bilder, Preise, Bezahlung und
-  // Bestellung. Die Ware steht dafuer in kleineren Karten, damit mehr davon
-  // gleichzeitig ins Bild passt.
+  const cards = items
+    .map((p) => {
+      const sold = p.status === "soldout";
+      const price = priceTag(p.price, cur);
+      /* Der Kauf-Knopf fuehrt auf die Kasse DIESES Artikels, wenn dafuer ein
+         Stripe Payment Link hinterlegt ist. Damit stimmen Preis und Ware
+         garantiert zusammen: Stripe kennt beides aus dem Link.
+
+         Kein Rueckfall auf einen globalen Link: der gehoert zu einem anderen
+         Preis und wuerde den falschen Betrag abrechnen. Fehlt der Link, geht es
+         ins Bestellformular — die Bestellung wird erfasst, bezahlt wird
+         spaeter. Eine ungueltige Adresse (Tippfehler, Dashboard-Link) zaehlt
+         wie keine. */
+      const kasse = istPaymentLink(p.paymentLink) ? str(p.paymentLink).trim() : "";
+      const cta = sold
+        ? `<span class="mono sold-mark">${esc(UI.soldOut)}</span>`
+        : kasse
+        ? `<a class="btn sm solid buy-now" href="${esc(kasse)}" target="_blank" rel="noopener noreferrer"
+              data-product="${esc(p.name)}">${esc(buy)}</a>`
+        : hasOrderForm
+        ? `<a class="btn sm solid order-jump" href="#order-form" data-product="${esc(p.name)}">${esc(
+            buy
+          )}</a>`
+        : "";
+      /* Das Abzeichen ist frei beschriftbar ("Bestseller", "Neu", "Letzte
+         Stueck") und steht nur da, wenn in der Verwaltung etwas eingetragen
+         ist. Ausverkauft schlaegt es: dann sagt die Karte das Wichtigere. */
+      const abzeichen =
+        !sold && str(p.badge)
+          ? `<span class="prod-badge">${esc(str(p.badge).trim())}</span>`
+          : "";
+      return `<article class="prod rv${sold ? " soldout" : ""}">
+          <div class="prod-shot">
+            ${
+              p.src
+                ? picture(p, {
+                    sizes: "(max-width:640px) 92vw, (max-width:1000px) 44vw, 30vw",
+                    widths: [480, 800, 1200],
+                  })
+                : `<span class="prod-noshot" aria-hidden="true">${esc(
+                    str(p.name).trim().slice(0, 1).toUpperCase()
+                  )}</span>`
+            }
+            ${abzeichen}
+          </div>
+          <div class="prod-body">
+            <h3>${esc(p.name)}</h3>
+            ${str(p.note) ? `<p>${esc(p.note)}</p>` : ""}
+            <div class="prod-foot">
+              ${str(p.price) ? `<span class="price">${esc(price)}</span>` : ""}
+              ${cta}
+            </div>
+          </div>
+        </article>`;
+    })
+    .join("\n        ");
+
+  // Die drei Punkte des Streifens. Steht in der Verwaltung nichts, bleibt der
+  // Streifen ganz weg — statt drei leere Kaesten zu zeigen.
+  const infos = list(s.info)
+    .filter((i) => str(i?.title) || str(i?.text))
+    .slice(0, 3);
+  const streifen = infos.length
+    ? `
+      <ul class="shop-info rv">
+        ${infos
+          .map(
+            (i) => `<li>
+          <span class="shop-info-ico" aria-hidden="true">${shopIcon(i.icon)}</span>
+          <div>
+            ${str(i.title) ? `<strong>${esc(i.title)}</strong>` : ""}
+            ${str(i.text) ? `<p>${inline(i.text)}</p>` : ""}
+          </div>
+        </li>`
+          )
+          .join("\n        ")}
+      </ul>`
+    : "";
+
+  const ctaLabel = str(s.ctaLabel, UI.shopCta);
   return `
-  <section class="pad shop-sec" id="shop" aria-labelledby="shop-h">
-    <div class="wrap">${sectionHead(n, s, "shop")}
-      ${str(s.note) ? `<p class="shop-note rv">${inline(s.note)}</p>` : ""}
-      <div class="shop-grid" style="--tile:${kachelbreite(items.length)}px">
-      ${cards}
+  <section class="shop-sec" id="shop" aria-labelledby="shop-h">
+    <div class="shop-intro">
+      <div class="wrap shop-intro-in rv">
+        <span class="mono shop-kicker">${esc(str(s.kicker, UI.shopKicker))}</span>
+        <h2 id="shop-h" class="shop-headline">${esc(
+          str(s.headline, `${str(site?.artist, "Sam Sparking")} Shop`)
+        )}</h2>
+        ${str(s.intro) ? `<p class="shop-lede">${inline(s.intro)}</p>` : ""}
+        ${
+          ctaLabel
+            ? `<a class="btn solid big shop-cta" href="${anchor("#shop-katalog")}">${esc(
+                ctaLabel
+              )}</a>`
+            : ""
+        }
       </div>
+    </div>
+    <div class="shop-cat pad" id="shop-katalog">
+      <div class="wrap">
+        <div class="shop-grid${items.length === 1 ? " einer" : ""}">
+        ${cards}
+        </div>
+${streifen}
 ${payMethods(s, site)}
 ${form}
+      </div>
     </div>
   </section>`;
 }
@@ -1796,9 +2110,9 @@ function renderBooking(n, s, site) {
             ? `<figure class="booking-photo rv">
           ${picture(s.photo, { sizes: "(max-width:900px) 92vw, 42vw", widths: [600, 1000] })}
           ${
-            str(s.photo?.credit)
-              ? `<figcaption class="mono">${esc(s.photo.credit)}</figcaption>`
-              : ""
+            /* Fotocredit: siehe unten — sichtbare Credits sind seit dem
+               11.08.2026 ueberall weg. */
+            ""
           }
         </figure>`
             : ""
@@ -1923,14 +2237,15 @@ function socialIcon(label, url) {
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
 }
 
-/** Kanäle mit Namen, aber noch ohne Adresse — die werden nicht verlinkt. */
-const pendingSocials = (s) =>
-  list(s?.socials).filter((x) => str(x?.label) && !safeUrl(x?.url));
+/* Kanaele ohne Adresse standen hier bis zum 11.08.2026 als "folgt" auf der
+   Seite — genannt, aber nicht verlinkt. Der Kunde will das nicht mehr: ein
+   Kanal, der nirgendwo hinfuehrt, gehoert nicht auf die Website. Gezeigt wird
+   nur noch, was eine gueltige Adresse hat; sobald in der Verwaltung eine
+   eingetragen und publiziert ist, erscheint der Kanal von selbst. */
 
 function renderContact(n, s, bookingTarget) {
   const mail = str(s.email);
   const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
-  const pending = pendingSocials(s);
   const meta = `
         <div class="contact-meta">
           ${
@@ -1949,18 +2264,7 @@ function renderContact(n, s, bookingTarget) {
   return `
   <section class="pad contact accent-block" id="contact" aria-labelledby="contact-h">
     <span class="contact-mark" aria-hidden="true">${esc(str(s.title) + str(s.titleAccent))}</span>
-    <div class="wrap">${sectionHead(n, s, "contact")}${
-      pending.length
-        ? `
-      <!-- TODO Kunde: Fuer diese Kanaele fehlt noch die Adresse, sie werden
-           deshalb weder hier noch im Fuss verlinkt: ${pending
-             .map((x) => str(x.label))
-             .join(", ")}.
-           Eintragen in der Verwaltung unter Kontakt → Kanaele, jeweils die
-           komplette Profil-Adresse (z. B. https://www.instagram.com/… bzw. das
-           Spotify-Kuenstlerprofil ueber "Teilen → Link kopieren"). -->`
-        : ""
-    }
+    <div class="wrap">${sectionHead(n, s, "contact")}
       <div class="contact-grid rv">
         <div class="contact-main">
           ${str(s.kicker) ? `<span class="mono">${esc(s.kicker)}</span>` : ""}
@@ -1982,7 +2286,7 @@ function renderContact(n, s, bookingTarget) {
           ${meta}
         </div>
         ${
-          socials.length || pending.length
+          socials.length
             ? `<div class="contact-side">
           <span class="mono side-label">${esc(UI.follow)}</span>
           <div class="social-cards">
@@ -1996,19 +2300,6 @@ function renderContact(n, s, bookingTarget) {
             ${handle ? `<span class="mono">${esc(handle)}</span>` : ""}
           </a>`;
             })
-            .join("\n          ")}
-          ${pending
-            /* Kanal ohne Adresse: er wird genannt, aber nicht verlinkt. Ein
-               geratener Link fuehrt auf ein fremdes Profil — lieber ehrlich
-               "folgt" als ein falsches Ziel. Kein <a>, damit hier nichts
-               anklickbar ist, was nirgendwo hinfuehrt. */
-            .map(
-              (x) => `<span class="scard scard-soon">
-            <span class="scard-ico" aria-hidden="true">${socialIcon(x.label, "")}</span>
-            <span class="scard-name">${esc(x.label)}</span>
-            <span class="mono">${esc(UI.channelSoon)}</span>
-          </span>`
-            )
             .join("\n          ")}
           </div>
         </div>`
@@ -2127,7 +2418,6 @@ function structuredData(c, sections, page, pages) {
           "@type": "ImageObject",
           contentUrl: absolute(base, g.src),
           caption: g.alt || site.artist,
-          creditText: str(site.photoCredit),
         })),
       });
     }
@@ -2230,8 +2520,20 @@ const UI_DEFAULTS = {
   pickDay: "Oder Wunschdatum direkt im Kalender antippen:",
   dayBusy: "Belegt",
   toTop: "Nach oben",
-  cookieText: "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
-  cookieOk: "Alles klar",
+  shopKicker: "MERCH",
+  shopCta: "Zum Katalog",
+  rlDays: "Tage",
+  rlHours: "Std",
+  rlMinutes: "Min",
+  rlSeconds: "Sek",
+  rlNote: "Die Seite öffnet sich von selbst — offen lassen genügt.",
+  cookieTitle: "Cookies",
+  cookieText: "Notwendige Speicherung hält diese Seite am Laufen — zum Beispiel deine Entscheidung hier. Darüber hinaus setzt die Website nichts: kein Tracking, keine Werbe-Cookies, keine Analyse. Wählst du „Alle akzeptieren“, wären künftige Zusatzdienste erlaubt; heute ist keiner eingebunden.",
+  cookieNecessary: "Nur notwendige",
+  cookieAll: "Alle akzeptieren",
+  cookieSettings: "Cookie-Einstellungen",
+  cookieSavedNecessary: "Gespeichert: nur notwendige.",
+  cookieSavedAll: "Gespeichert: alle akzeptiert.",
   replyNote: "Antwort meist innert 48 Stunden",
   copyMail: "E-Mail kopieren",
   copied: "Kopiert ✓",
@@ -2313,6 +2615,21 @@ const UI_SPRACHE = {
     buy: "Buy",
     soldOut: "Sold out",
     onThisPage: "On this page",
+    shopKicker: "MERCH",
+    shopCta: "Browse the drop",
+    rlDays: "Days",
+    rlHours: "Hrs",
+    rlMinutes: "Min",
+    rlSeconds: "Sec",
+    rlNote: "The page opens by itself — just leave it open.",
+    cookieTitle: "Cookies",
+    cookieText:
+      "Necessary storage keeps this page working — your choice here, for example. Beyond that the site sets nothing: no tracking, no advertising cookies, no analytics. Choosing \u201cAccept all\u201d would allow future extras; today none are in use.",
+    cookieNecessary: "Necessary only",
+    cookieAll: "Accept all",
+    cookieSettings: "Cookie settings",
+    cookieSavedNecessary: "Saved: necessary only.",
+    cookieSavedAll: "Saved: all accepted.",
     payStripeNote:
       "Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.",
     orderTitle: "Order",
@@ -2339,6 +2656,21 @@ const UI_SPRACHE = {
     buy: "Acheter",
     soldOut: "Épuisé",
     onThisPage: "Sur cette page",
+    shopKicker: "MERCH",
+    shopCta: "Voir le catalogue",
+    rlDays: "Jours",
+    rlHours: "H",
+    rlMinutes: "Min",
+    rlSeconds: "Sec",
+    rlNote: "La page s'ouvre d'elle-même — il suffit de la laisser ouverte.",
+    cookieTitle: "Cookies",
+    cookieText:
+      "Le stockage nécessaire fait fonctionner cette page — ton choix ici, par exemple. Au-delà, le site ne dépose rien : ni traçage, ni cookies publicitaires, ni analyse. « Tout accepter » autoriserait de futurs services additionnels ; aujourd\u2019hui aucun n\u2019est intégré.",
+    cookieNecessary: "Nécessaires uniquement",
+    cookieAll: "Tout accepter",
+    cookieSettings: "Réglages des cookies",
+    cookieSavedNecessary: "Enregistré : nécessaires uniquement.",
+    cookieSavedAll: "Enregistré : tout accepté.",
     payStripeNote:
       "Le paiement se fait après l'envoi, via Stripe — carte, Apple Pay, Google Pay ou TWINT. L'expédition part dès que le paiement est confirmé.",
     orderTitle: "Commande",
@@ -2661,6 +2993,8 @@ const formDemoNote = () =>
 
 function renderPage(c, page, pages, lang, langs) {
   const master = langs[0];
+  // Der Vorhang vor dem Release — siehe releaseKopf()/releaseVorhang().
+  const rel = releaseStand(c);
   UI = uiFuer(c, lang);
   const ui = UI;
   const site = c.site;
@@ -2801,9 +3135,7 @@ function renderPage(c, page, pages, lang, langs) {
   const footSocials = list(sections.contact?.socials).filter(
     (x) => str(x?.label) && safeUrl(x?.url)
   );
-  // Kanaele, die es geben soll, zu denen aber noch keine Adresse hinterlegt
-  // ist. Sie werden genannt und NICHT verlinkt (siehe renderContact).
-  const footPending = pendingSocials(sections.contact);
+
   // Im Kopf steht standardmaessig KEIN Kanal-Zeichen mehr: der Kopf traegt den
   // Namen und das Menue, mehr nicht — das Instagram-Zeichen sass dort im Weg
   // und stand doppelt zum Fuss. Wer einen Kanal doch oben will, schaltet ihn
@@ -3034,9 +3366,10 @@ ${jsonScript(structuredData(c, sections, page, pages))}
   <link rel="preload" as="font" type="font/woff2" href="${BASE}/assets/fonts/plexmono-400-latin.woff2" crossorigin>
 ${heroPreload}
   <link rel="stylesheet" href="${BASE}/assets/site.css">
-  <style>:root{--ink:${ink};--spark:${accent};}</style>
+  <style>:root{--ink:${ink};--spark:${accent};}</style>${releaseKopf(rel)}
 </head>
 <body data-page="${esc(page.slug || "home")}">
+${releaseVorhang(rel, ui, lang, master)}
 ${pageBackground(site)}
   <a class="skip" href="#${esc(order[0] || "top")}">${esc(ui.skip)}</a>
 
@@ -3086,13 +3419,44 @@ ${
     : ""
 }
 
-  <aside class="cookie" id="cookie" hidden aria-label="Cookies">
-    <p>${esc(ui.cookieText)}</p>
-    <button class="btn sm solid" id="cookie-ok" type="button">${esc(ui.cookieOk)}</button>
+  ${/* Die Einwilligung. Zwei Entscheidungen, gleich gross und gleich betont —
+        keine ist als Standard hervorgehoben. Sie steht beim ersten Besuch da,
+        wird gespeichert und laesst sich unten im Fuss ueber
+        "Cookie-Einstellungen" jederzeit wieder oeffnen und aendern.
+
+        Von hier gehen zwei Wege weiter: zum Impressum und zur Datenschutz-
+        Erklaerung. Beide bleiben inhaltlich unveraendert.
+
+        Erst nach "Alle akzeptieren" darf ueberhaupt etwas Zusaetzliches laden.
+        Wie das technisch faellt, steht in assets/site.js (data-consent) — und
+        heute ist kein einziger solcher Dienst eingebunden. */ ""}
+  <aside class="cookie" id="cookie" hidden role="region" aria-labelledby="cookie-h">
+    <div class="cookie-in">
+      <div class="cookie-say">
+        <span class="mono" id="cookie-h">${esc(ui.cookieTitle)}</span>
+        <p>${esc(ui.cookieText)}</p>
+        <p class="cookie-ways">
+          <a href="${esc(navPrefix(lang, master) + "/" + IMPRESSUM_SLUG + "/")}">${esc(
+    (IMPRESSUM_TEXT[lang] || IMPRESSUM_TEXT.de).titel
+  )}</a>
+          <a href="${esc(navPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
+    LEGAL_FUSS[lang] || LEGAL_FUSS.de
+  )}</a>
+        </p>
+      </div>
+      <div class="cookie-acts">
+        <button class="btn sm cookie-btn" id="cookie-min" type="button" data-wahl="notwendig">${esc(
+          ui.cookieNecessary
+        )}</button>
+        <button class="btn sm cookie-btn" id="cookie-all" type="button" data-wahl="alle">${esc(
+          ui.cookieAll
+        )}</button>
+      </div>
+    </div>
   </aside>
 
   <footer>${
-    footSocials.length || footPending.length
+    footSocials.length
       ? `
     <div class="wrap foot-social">
       <span class="mono">${esc(ui.follow)}</span>
@@ -3105,17 +3469,6 @@ ${
               )}"><span aria-hidden="true">${socialIcon(x.label, x.url)}</span><span>${esc(
                 x.label
               )}</span></a></li>`
-          )
-          .join("\n        ")}
-        ${footPending
-          .map(
-            (x) =>
-              `<li class="foot-soon"><span><span aria-hidden="true">${socialIcon(
-                x.label,
-                ""
-              )}</span><span>${esc(x.label)}</span><span class="mono">${esc(
-                ui.channelSoon
-              )}</span></span></li>`
           )
           .join("\n        ")}
       </ul>
@@ -3149,11 +3502,19 @@ ${
       <a class="mono" href="${esc(navPrefix(lang, master) + "/" + (LEGAL_SLUG[lang] || "legal") + "/")}">${esc(
     LEGAL_FUSS[lang] || LEGAL_FUSS.de
   )}</a>
+      ${/* Die Entscheidung laesst sich jederzeit aendern. Ein Knopf und kein
+           Link, weil er keine Seite oeffnet, sondern die Abfrage zurueckholt.
+           Sieht aus wie die Links daneben. */ ""}
+      <button class="mono foot-link" id="cookie-open" type="button">${esc(
+        ui.cookieSettings
+      )}</button>
       ${site.claim ? `<span class="claim">${esc(site.claim)}</span>` : ""}
       ${
-        site.photoCredit
-          ? `<span class="mono">${esc(ui.photography)} — ${esc(site.photoCredit)}</span>`
-          : ""
+        /* Der Fotocredit im Fuss ("Photography — …") ist weg. Kundenwunsch vom
+           11.08.2026: keine sichtbaren Fotografen-Angaben, weder hier noch an
+           der Galerie, im Booking-Bild oder in den strukturierten Daten. Das
+           Feld bleibt im Inhalt stehen, es wird nur nicht mehr angezeigt. */
+        ""
       }
     </div>
   </footer>
@@ -3267,6 +3628,10 @@ const standortInSprache = (wert, lang) => {
 function renderImpressum(c, lang, langs) {
   const site = c.site;
   const master = langs[0];
+  // Auch das Impressum bleibt bis zum Release hinter dem Vorhang — sonst waere
+  // ueber diese Adresse schon vorher etwas erreichbar.
+  const rel = releaseStand(c);
+  const ui = uiFuer(c, lang);
   const t = IMPRESSUM_TEXT[lang] || IMPRESSUM_TEXT.de;
   const imp = c.imprint || {};
   const contact = c.sections?.contact || {};
@@ -3298,9 +3663,10 @@ function renderImpressum(c, lang, langs) {
     .legal p .mono{display:block;color:var(--bone);}
     .legal a{color:var(--spark);}
     .legal .langs{border:0;padding:0;margin:22px 0 0;}
-  </style>
+  </style>${releaseKopf(rel)}
 </head>
 <body>
+${releaseVorhang(rel, ui, lang, master)}
   <main class="legal">
     <a class="mono" href="${esc(prefix || "/")}">← ${artist} — ${esc(t.zurueck)}</a>
     ${
@@ -3323,6 +3689,9 @@ function renderImpressum(c, lang, langs) {
     LEGAL_LABEL[lang] || LEGAL_LABEL.de
   )}</a></p>
   </main>
+  ${/* Ohne dieses Skript laeuft der Countdown auf dieser Seite nicht — der
+       Vorhang ginge hier nie auf. */ ""}
+  <script src="${BASE}/assets/site.js" defer></script>
 </body>
 </html>
 `;
@@ -3332,6 +3701,8 @@ function renderImpressum(c, lang, langs) {
 function renderLegal(c, lang, langs) {
   const site = c.site;
   const master = langs[0];
+  const rel = releaseStand(c);
+  const ui = uiFuer(c, lang);
   const t = LEGAL_TEXT[lang] || LEGAL_TEXT.de;
   const contact = c.sections?.contact || {};
   const email = esc(str(contact.email, "info@samsparking.ch"));
@@ -3356,9 +3727,10 @@ function renderLegal(c, lang, langs) {
     .legal p{color:var(--bone-dim);margin-bottom:12px;}
     .legal a{color:var(--spark);}
     .legal .langs{border:0;padding:0;margin:22px 0 0;}
-  </style>
+  </style>${releaseKopf(rel)}
 </head>
 <body>
+${releaseVorhang(rel, ui, lang, master)}
   <main class="legal">
     <a class="mono" href="${esc(prefix || "/")}">← ${artist}</a>
     ${
@@ -3379,6 +3751,7 @@ function renderLegal(c, lang, langs) {
     <h2>${esc(t.privacy)}</h2>
     ${t.blocks.map(([h, b]) => `<h3>${esc(h)}</h3><p>${esc(b)}</p>`).join("\n    ")}
   </main>
+  <script src="${BASE}/assets/site.js" defer></script>
 </body>
 </html>
 `;
@@ -3457,6 +3830,8 @@ ${rows.join("\n")}
 /** Einfache 404-Seite im Look der Website. */
 function render404(c, langs) {
   const site = c.site;
+  // Auch die 404-Seite bleibt bis zum Release hinter dem Vorhang.
+  const rel = releaseStand(c);
   const ink = color(site.themeColor, "#05070e");
   const accent = color(site.accentColor, "#2e6bff");
   const ui = uiFuer(c, langs[0]);
@@ -3472,9 +3847,10 @@ function render404(c, langs) {
     .nf{min-height:100svh;display:flex;align-items:center;}
     .nf h1{font-size:clamp(3rem,14vw,9rem);font-variation-settings:'wdth' 122,'wght' 850;}
     .nf p{color:var(--bone-dim);margin:18px 0 30px;max-width:46ch;}
-  </style>
+  </style>${releaseKopf(rel)}
 </head>
 <body data-page="404">
+${releaseVorhang(rel, ui, langs[0], langs[0])}
 ${pageBackground(site)}
   <main class="nf">
     <div class="wrap">
@@ -3484,6 +3860,7 @@ ${pageBackground(site)}
       <a class="btn" href="${BASE}/">${esc(str(ui.notFoundCta, "Zur Startseite"))}</a>
     </div>
   </main>
+  <script src="${BASE}/assets/site.js" defer></script>
 </body>
 </html>
 `;
