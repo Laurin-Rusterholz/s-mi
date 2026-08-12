@@ -179,30 +179,9 @@
 
   <link rel="stylesheet" href="/assets/site.css">
   <style>:root{--ink:#05070e;--spark:#2e6bff;}</style>
-  <script>/* Vorhang setzen, bevor gezeichnet wird — sonst blitzt die Seite auf. */
-  (function(){try{if(Date.now()<1786550400000)document.documentElement.className+=" vor-release";}catch(e){}})();
-  </script>
 </head>
 <body data-page="shop">
 
-  <section class="release" id="release" data-ziel="1786550400000" aria-live="polite">
-    <div class="rl-in">
-      <span class="mono rl-kicker">Release</span>
-      <h1 class="rl-head">Sam Sparking</h1>
-      <p class="rl-text">Meine neue Website geht am 12. August 2026 um 18:00 Uhr online. Diese Seite öffnet sich von selbst — sie muss nur offen bleiben.</p>
-      <div class="rl-uhr" role="timer">
-        <div class="rl-teil"><span class="rl-zahl" id="rl-t">--</span><span class="mono">Days</span></div>
-        <div class="rl-teil"><span class="rl-zahl" id="rl-h">--</span><span class="mono">Hrs</span></div>
-        <div class="rl-teil"><span class="rl-zahl" id="rl-m">--</span><span class="mono">Min</span></div>
-        <div class="rl-teil"><span class="rl-zahl" id="rl-s">--</span><span class="mono">Sec</span></div>
-      </div>
-      <p class="rl-fuss mono">The page opens by itself — just leave it open.</p>
-      <p class="rl-ways">
-        <a href="/impressum/">Impressum</a>
-        <a href="/legal/">Privacy</a>
-      </p>
-    </div>
-  </section>
   <div class="page-bg" aria-hidden="true" style="background-image:url('https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3Y6YTa6zJklnO4%2Fdsc00389-verbessert-rr.jpg?alt=media&amp;token=24cc6380-f841-4b19-a437-358805f25892')"></div>
   <a class="skip" href="#shop">Skip to content</a>
 
@@ -288,67 +267,6 @@
           </div>
         </li>
       </ul>
-
-      <div class="pay-methods rv">
-        <!-- TODO Kunde: Es fehlt noch der echte Stripe-Zahlungslink. Anlegen im
-             Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
-             Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
-             in Netlify hinterlegen (Site settings → Environment variables).
-             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
-             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
-             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->
-        <span class="mono">Payment</span>
-        <p class="pay-note">The payment link isn&#39;t active yet. Your order is recorded here and you&#39;ll get a confirmation by e-mail — the payment details follow in it.</p>
-      </div>
-
-      <form class="oform rv" id="order-form" data-endpoint="/api/order"
-            data-sending="Sending …" data-invalid="Please check the highlighted fields."
-            data-paying="Opening the payment page …" novalidate>
-        <div class="bform-head">
-          <span class="mono">Order</span>
-          <h3>Where should it go?</h3>
-          <p class="bform-required mono">All fields are required.</p>
-        </div>
-        <div class="bform-grid">
-          <label><span class="lbl">Item <i aria-hidden="true">*</i></span>
-            <select name="product" required>
-              <option value="Snapback-Cap Sam Sparking">Snapback-Cap Sam Sparking — CHF 25.—</option>
-            </select>
-          </label>
-          <label><span class="lbl">Quantity <i aria-hidden="true">*</i></span>
-            <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
-          </label>
-          <label><span class="lbl">Name <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
-          </label>
-          <label><span class="lbl">E-mail <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
-          </label>
-          <label class="span-2"><span class="lbl">Street and number <i aria-hidden="true">*</i></span>
-            <input name="street" type="text" required maxlength="160" autocomplete="street-address">
-          </label>
-          <label><span class="lbl">Postcode <i aria-hidden="true">*</i></span>
-            <input name="zip" type="text" required maxlength="12" autocomplete="postal-code">
-          </label>
-          <label><span class="lbl">City <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120" autocomplete="address-level2">
-          </label>
-          <label><span class="lbl">Country <i aria-hidden="true">*</i></span>
-            <input name="country" type="text" required maxlength="80" value="Schweiz" autocomplete="country-name">
-          </label>
-          
-          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">Leave empty</span>
-            <input name="website" type="text" tabindex="-1" autocomplete="off">
-          </label>
-        </div>
-        <div class="bform-foot">
-          <button class="btn solid big" type="submit">Send order<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">Confirmation by e-mail — the payment link follows in it</span>
-          <p class="bform-msg" role="status" aria-live="polite"
-             data-success="Thanks — your order arrived. You&#39;ll get a confirmation by e-mail shortly." data-error="That didn&#39;t work. Please write to me directly at info@samsparking.ch."></p>
-          
-        </div>
-      </form>
       </div>
     </div>
   </section>

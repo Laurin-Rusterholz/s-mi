@@ -236,13 +236,23 @@ function releaseVorhang(rel, ui, lang, master) {
   </section>`;
 }
 
-/** Die Angaben zur Release-Sperre, fertig ausgerechnet. */
-function releaseStand(c) {
+/**
+ * Die Angaben zur Release-Sperre, fertig ausgerechnet.
+ *
+ * Ein VERGANGENER Zeitpunkt sperrt nichts mehr. Bis zum 12.08.2026, 18:00 stand
+ * der Vorhang in jeder gebauten Seite und wurde im Browser beim Erreichen der
+ * Zeit weggenommen — richtig fuer eine Seite, die offen liegen bleibt, aber
+ * falsch fuer jeden Build danach: der Vorhang lag dann weiter im Quelltext und
+ * verschwand erst, wenn JavaScript lief. Ist der Zeitpunkt herum, wird gar kein
+ * Vorhang mehr gebaut. Der Schalter in der Verwaltung bleibt, wie er ist — ein
+ * naechster Release braucht nur ein neues Datum.
+ */
+function releaseStand(c, jetzt = Date.now()) {
   const r = c?.release || {};
   const an = r.enabled !== false && !!isoDate(r.date);
   const ms = an ? releaseZeitpunkt(r.date, r.time, str(r.zone, ZEITZONE)) : 0;
   return {
-    an: an && ms > 0,
+    an: an && ms > 0 && ms > jetzt,
     ms,
     zone: str(r.zone, ZEITZONE),
     kicker: str(r.kicker),
@@ -1824,17 +1834,38 @@ function renderReferences(n, s, bookingTarget) {
     return { url, ext };
   };
 
+  /* Auf dem Handy zunaechst nur die obersten vier, der Rest hinter einem Knopf
+     (Kundenwunsch 12.08.2026). Auf dem Desktop bleibt alles zu sehen — dort
+     steht die Liste als Raster und kostet kaum Hoehe, auf dem Handy dagegen
+     untereinander: 25 Eintraege waren dort eine halbe Seite Scrollen zwischen
+     zwei Abschnitten.
+
+     Alle Eintraege stehen im Dokument, auch die verborgenen. Verborgen wird
+     ausschliesslich per CSS und nur in der schmalen Breite — wer kein
+     JavaScript hat, sieht die vollstaendige Liste (`html.js` fehlt dann). */
+  const MOBIL_SICHTBAR = 4;
+  const versteckt = Math.max(0, items.length - MOBIL_SICHTBAR);
   const liste = items.length
-    ? `<ul class="venue-list rv">
+    ? `<ul class="venue-list rv" id="venue-list">
         ${items
-          .map((v) => {
+          .map((v, i) => {
             const { url, ext } = linkOf(v);
-            return `<li><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
+            const extra = i >= MOBIL_SICHTBAR ? ' data-extra="true"' : "";
+            return `<li${extra}><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
               v.name
             )}</span><span class="venue-city">${esc(str(v.city))}</span></a></li>`;
           })
           .join("\n        ")}
-      </ul>`
+      </ul>${
+        versteckt
+          ? `
+      <button class="venue-more btn" type="button" aria-controls="venue-list" aria-expanded="false"
+              data-more="${esc(UI.showMoreVenues.replace("{n}", versteckt))}"
+              data-less="${esc(UI.showLessVenues)}">${esc(
+              UI.showMoreVenues.replace("{n}", versteckt)
+            )}</button>`
+          : ""
+      }`
     : "";
 
   return `
@@ -2004,108 +2035,24 @@ export const zahlungBereit = (site) =>
   istStripeAdresse(site?.stripePaymentLink) ||
   site?.stripeReady === true;
 
-function payMethods(s, site) {
-  // Ohne hinterlegten Zahlungslink darf hier NICHTS von Stripe, TWINT, Apple
-  // Pay oder Google Pay stehen: die Kundin waehlt sonst eine Bezahlart, die es
-  // auf dieser Seite gar nicht gibt. Stattdessen die Wahrheit — die Bestellung
-  // wird erfasst, bezahlt wird spaeter.
-  const bereit = zahlungBereit(site);
-  return `
-      <div class="pay-methods rv">${
-        bereit
-          ? ""
-          : `
-        <!-- TODO Kunde: Es fehlt noch der echte Stripe-Zahlungslink. Anlegen im
-             Stripe-Dashboard unter "Payment links" fuer den Artikel dieses
-             Shops und die Adresse als Umgebungsvariable STRIPE_PAYMENT_LINK_URL
-             in Netlify hinterlegen (Site settings → Environment variables).
-             Solange sie fehlt, nimmt das Formular die Bestellung entgegen und
-             meldet sie per E-Mail; die Seite verspricht ausdruecklich KEINE
-             Bezahlung. Details: AUDIT.md, Abschnitt "Stripe". -->`
-      }
-        <span class="mono">${esc(UI.payTitle)}</span>
-        <p class="pay-note">${esc(bereit ? UI.payStripeNote : UI.payPendingNote)}</p>
-      </div>`;
-}
-
-/**
- * Bestellformular. Der Shop verschickt Ware, deshalb sind Liefer- und
- * Kontaktangaben Pflicht — ohne sie kann nichts versendet werden. Die
- * Bestellung landet im selben Eingang wie die Booking-Anfragen (kind:"order").
+/*
+ * Hier standen bis zum 12.08.2026 zwei Bloecke: "Bezahlen" mit einem Hinweis
+ * zur Zahlungsart und darunter das Bestellformular "Wohin darf es gehen?" mit
+ * Name, E-Mail und Lieferadresse.
+ *
+ * Beide sind weg (Kundenwunsch 12.08.2026). Gekauft wird ueber den Stripe
+ * Payment Link des Artikels: Stripe nimmt Adresse und Zahlung in einem Schritt
+ * auf, das Formular fragte dieselben Angaben ein zweites Mal ab und versprach
+ * ausserdem eine Bestaetigungsmail an die Kundschaft, die es nie verschickt hat.
+ *
+ * Der Endpunkt /api/order bleibt bestehen und unveraendert — er wird von der
+ * Seite nur nicht mehr aufgerufen.
+ *
+ * Ein Artikel OHNE gueltigen Zahlungslink hat damit keinen Kaufweg mehr. Statt
+ * eines Knopfes, der nirgendwohin fuehrt, steht dort ein Verweis auf die
+ * E-Mail-Adresse der Seite (siehe `kasse` unten).
  */
-function orderForm(s, site, items, cur) {
-  if (!items.length) return "";
-  const options = items
-    .filter((p) => p.status !== "soldout")
-    .map((p) => {
-      const price = priceTag(p.price, cur);
-      return `<option value="${esc(p.name)}">${esc(
-        [str(p.name), price].filter(Boolean).join(" — ")
-      )}</option>`;
-    })
-    .join("\n              ");
-  if (!options) return "";
-  // Ohne hinterlegten Zahlungslink fuehrt der Knopf nirgendwohin weiter — er
-  // heisst dann "Bestellung senden" und nicht "Weiter zur Bezahlung".
-  const bereit = zahlungBereit(site);
-  return `
-      <form class="oform rv" id="order-form" data-endpoint="${esc(ORDER_ENDPOINT)}"
-            data-sending="${esc(UI.sending)}" data-invalid="${esc(UI.formInvalid)}"
-            data-paying="${esc(UI.oPaying)}"${formDemoAttr} novalidate>
-        <div class="bform-head">
-          <span class="mono">${esc(UI.orderTitle)}</span>
-          <h3>${esc(UI.orderHeadline)}</h3>
-          <p class="bform-required mono">${esc(UI.allRequired)}</p>
-        </div>
-        <div class="bform-grid">
-          <label><span class="lbl">${esc(UI.oProduct)} <i aria-hidden="true">*</i></span>
-            <select name="product" required>
-              ${options}
-            </select>
-          </label>
-          <label><span class="lbl">${esc(UI.oQuantity)} <i aria-hidden="true">*</i></span>
-            <input name="quantity" type="number" required min="1" max="20" step="1" value="1" inputmode="numeric">
-          </label>
-          <label><span class="lbl">${esc(UI.fName)} <i aria-hidden="true">*</i></span>
-            <input name="name" type="text" required maxlength="120" autocomplete="name">
-          </label>
-          <label><span class="lbl">${esc(UI.fEmail)} <i aria-hidden="true">*</i></span>
-            <input name="email" type="email" required maxlength="160" autocomplete="email">
-          </label>
-          <label class="span-2"><span class="lbl">${esc(UI.oStreet)} <i aria-hidden="true">*</i></span>
-            <input name="street" type="text" required maxlength="160" autocomplete="street-address">
-          </label>
-          <label><span class="lbl">${esc(UI.oZip)} <i aria-hidden="true">*</i></span>
-            <input name="zip" type="text" required maxlength="12" autocomplete="postal-code">
-          </label>
-          <label><span class="lbl">${esc(UI.oCity)} <i aria-hidden="true">*</i></span>
-            <input name="city" type="text" required maxlength="120" autocomplete="address-level2">
-          </label>
-          <label><span class="lbl">${esc(UI.oCountry)} <i aria-hidden="true">*</i></span>
-            <input name="country" type="text" required maxlength="80" value="${esc(
-              str(s.defaultCountry, "Schweiz")
-            )}" autocomplete="country-name">
-          </label>
-          ${/* Keine Auswahl der Zahlungsart mehr: bezahlt wird über Stripe.
-               Die frühere Auswahl TWINT/Bank stand für "Ich überweise dann
-               mal" — der Shop wusste danach nie, ob das jemand tat. */ ""}
-          <label class="hp" aria-hidden="true" tabindex="-1"><span class="lbl">${esc(UI.fHoneypot)}</span>
-            <input name="website" type="text" tabindex="-1" autocomplete="off">
-          </label>
-        </div>
-        <div class="bform-foot">
-          <button class="btn solid big" type="submit">${esc(
-            bereit ? UI.oSubmit : UI.oSubmitPending
-          )}<span class="cta-arr" aria-hidden="true">→</span></button>
-          <span class="mono reply-note">${esc(
-            bereit ? UI.oReplyNote : UI.oReplyNotePending
-          )}</span>
-          <p class="bform-msg" role="status" aria-live="polite"
-             data-success="${esc(UI.oSuccess)}" data-error="${esc(UI.oError)}"></p>
-          ${formDemoNote()}
-        </div>
-      </form>`;
-}
+
 
 /**
  * Wie breit eine Ware-Kachel mindestens sein darf, je nachdem wie viel im Shop
@@ -2160,12 +2107,13 @@ const shopIcon = (key) =>
  * Ist gar keine Ware da, bleibt es beim schlichten Leer-Block mit dem Text aus
  * der Verwaltung — dann gibt es nichts zu bewerben.
  */
-function renderShop(n, s, site) {
+function renderShop(n, s, site, kontaktMail = "") {
   const items = list(s.items).filter((p) => str(p?.name));
   const cur = str(s.currency, "CHF").trim() || "CHF";
   const buy = str(s.buyLabel, UI.buy);
-  const form = orderForm(s, site, items, cur);
-  const hasOrderForm = !!form;
+  // Wohin ein Artikel ohne Zahlungslink verweist: an die E-Mail-Adresse aus dem
+  // Kontakt. Ein Bestellformular gibt es hier nicht mehr.
+  const mail = str(kontaktMail).trim();
 
   /* Kein Artikel: der Leer-Block. Hier — und nur hier — steht die
      Einleitungszeile `note`. Ueber Ware gehoert sie nicht: der Satz "Merch from
@@ -2193,20 +2141,25 @@ function renderShop(n, s, site) {
          garantiert zusammen: Stripe kennt beides aus dem Link.
 
          Kein Rueckfall auf einen globalen Link: der gehoert zu einem anderen
-         Preis und wuerde den falschen Betrag abrechnen. Fehlt der Link, geht es
-         ins Bestellformular — die Bestellung wird erfasst, bezahlt wird
-         spaeter. Eine ungueltige Adresse (Tippfehler, Dashboard-Link) zaehlt
-         wie keine. */
+         Preis und wuerde den falschen Betrag abrechnen. Eine ungueltige Adresse
+         (Tippfehler, Dashboard-Link) zaehlt wie keine.
+
+         Fehlt der Link, ging es bis zum 12.08.2026 ins Bestellformular weiter
+         unten. Das Formular ist weg; ohne Zahlungslink verweist der Knopf
+         darum auf die E-Mail-Adresse aus dem Kontakt — mit dem Artikel im
+         Betreff. Fehlt auch die, steht kein Knopf da: ein Weg, der nirgendwohin
+         fuehrt, ist schlimmer als keiner. */
       const kasse = istPaymentLink(p.paymentLink) ? str(p.paymentLink).trim() : "";
+      const perMail = mail
+        ? `mailto:${mail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}`
+        : "";
       const cta = sold
         ? `<span class="mono sold-mark">${esc(UI.soldOut)}</span>`
         : kasse
         ? `<a class="btn sm solid buy-now" href="${esc(kasse)}" target="_blank" rel="noopener noreferrer"
               data-product="${esc(p.name)}">${esc(buy)}</a>`
-        : hasOrderForm
-        ? `<a class="btn sm solid order-jump" href="#order-form" data-product="${esc(p.name)}">${esc(
-            buy
-          )}</a>`
+        : perMail
+        ? `<a class="btn sm solid buy-mail" href="${esc(perMail)}">${esc(UI.orderByMail)}</a>`
         : "";
       /* Das Abzeichen ist frei beschriftbar ("Bestseller", "Neu", "Letzte
          Stueck") und steht nur da, wenn in der Verwaltung etwas eingetragen
@@ -2288,8 +2241,6 @@ function renderShop(n, s, site) {
         ${cards}
         </div>
 ${streifen}
-${payMethods(s, site)}
-${form}
       </div>
     </div>
   </section>`;
@@ -2761,30 +2712,16 @@ const UI_DEFAULTS = {
   lessStory: "Weniger anzeigen",
   showMoreImages: "{n} weitere Bilder",
   showLessImages: "Weniger Bilder",
-  allRequired: "Alle Felder sind Pflichtfelder.",
+  /* Referenzen auf dem Handy: nur die obersten vier, der Rest hinter diesem
+     Knopf. Auf dem Desktop steht der Knopf nicht da (CSS). */
+  showMoreVenues: "{n} weitere anzeigen",
+  showLessVenues: "Weniger anzeigen",
   onThisPage: "Auf dieser Seite",
-  payTitle: "Bezahlen",
-  payStripeNote: "Bezahlt wird nach dem Absenden über Stripe — Karte, Apple Pay, Google Pay oder TWINT. Der Versand geht raus, sobald die Zahlung bestätigt ist.",
-  orderTitle: "Bestellung",
-  orderHeadline: "Wohin darf es gehen?",
-  oProduct: "Artikel",
-  oQuantity: "Anzahl",
-  oStreet: "Strasse und Nummer",
-  oZip: "PLZ",
-  oCity: "Ort",
-  oCountry: "Land",
-  oSubmit: "Weiter zur Bezahlung",
-  oPaying: "Bezahlseite wird geöffnet …",
-  oReplyNote: "Weiter zu Stripe — die Bestätigung kommt danach per Mail",
-  /* Solange kein echter Zahlungslink hinterlegt ist. Diese Texte versprechen
-     ausdruecklich keine Bezahlart — weder Stripe noch TWINT, Apple Pay oder
-     Google Pay. Sie sagen, was wirklich passiert. */
-  payPendingNote:
-    "Der Zahlungslink ist noch nicht aktiv. Deine Bestellung wird hier erfasst und du bekommst eine Bestätigung per E-Mail — die Angaben zur Bezahlung kommen darin nach.",
-  oSubmitPending: "Bestellung senden",
-  oReplyNotePending: "Bestätigung per Mail — der Zahlungslink folgt darin",
-  oSuccess: "Danke — deine Bestellung ist da. Du bekommst gleich eine Bestätigung per Mail.",
-  oError: "Das hat nicht geklappt. Schreib mir bitte direkt eine Mail an info@samsparking.ch.",
+  /* Fuer eine Ware ohne Zahlungslink: der Knopf schreibt eine Mail, mit dem
+     Artikel im Betreff. Versprochen wird dabei nichts — kein Preis, keine
+     Bezahlart, keine Lieferzeit. */
+  orderByMail: "Per E-Mail bestellen",
+  orderSubject: "Bestellung",
   formDemo: "Vorführ-Fassung: dieses Formular sendet nichts.",
   follow: "Kanäle",
   notFoundTitle: "Nichts hier.",
@@ -2822,8 +2759,9 @@ const UI_DEFAULTS = {
 /**
  * UI_DEFAULTS ist deutsch. Es ist der Rückfall für alles, was die Verwaltung
  * (noch) nicht mitliefert — und damit fiel auf der englischen und der
- * französischen Seite deutscher Text heraus: auf /shop/ standen mitten im
- * englischen Text "Wohin darf es gehen?" und "Weiter zur Bezahlung".
+ * französischen Seite deutscher Text heraus: auf /shop/ stand mitten im
+ * englischen Text deutsche Formular-Beschriftung. Das Formular ist inzwischen
+ * weg, die Lehre bleibt: jeder Oberflächentext braucht hier seine Sprache.
  *
  * Diese Tabelle trägt den Rückfall je Sprache nach. Sie enthält bewusst nur
  * Oberflächentexte — Inhalte kommen weiter aus der Verwaltung, und was dort
@@ -2832,6 +2770,10 @@ const UI_DEFAULTS = {
 const UI_SPRACHE = {
   en: {
     buy: "Buy",
+    orderByMail: "Order by e-mail",
+    showMoreVenues: "Show {n} more",
+    showLessVenues: "Show less",
+    orderSubject: "Order",
     soldOut: "Sold out",
     onThisPage: "On this page",
     shopKicker: "MERCH",
@@ -2851,28 +2793,15 @@ const UI_SPRACHE = {
     cookieSavedAll: "Saved: all accepted.",
     payStripeNote:
       "Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.",
-    orderTitle: "Order",
-    orderHeadline: "Where should it go?",
-    oProduct: "Item",
-    oQuantity: "Quantity",
-    oStreet: "Street and number",
-    oZip: "Postcode",
-    oCity: "City",
-    oCountry: "Country",
-    oSubmit: "Continue to payment",
-    oPaying: "Opening the payment page …",
-    oReplyNote: "Continuing to Stripe — the confirmation follows by e-mail",
-    payPendingNote:
-      "The payment link isn't active yet. Your order is recorded here and you'll get a confirmation by e-mail — the payment details follow in it.",
-    oSubmitPending: "Send order",
-    oReplyNotePending: "Confirmation by e-mail — the payment link follows in it",
-    oSuccess: "Thanks — your order arrived. You'll get a confirmation by e-mail shortly.",
-    oError: "That didn't work. Please write to me directly at info@samsparking.ch.",
     formDemo: "Demo version: this form does not send anything.",
     channelSoon: "follows",
   },
   fr: {
     buy: "Acheter",
+    orderByMail: "Commander par e-mail",
+    showMoreVenues: "Afficher {n} de plus",
+    showLessVenues: "Afficher moins",
+    orderSubject: "Commande",
     soldOut: "Épuisé",
     onThisPage: "Sur cette page",
     shopKicker: "MERCH",
@@ -2892,23 +2821,6 @@ const UI_SPRACHE = {
     cookieSavedAll: "Enregistré : tout accepté.",
     payStripeNote:
       "Le paiement se fait après l'envoi, via Stripe — carte, Apple Pay, Google Pay ou TWINT. L'expédition part dès que le paiement est confirmé.",
-    orderTitle: "Commande",
-    orderHeadline: "Où faut-il l'envoyer ?",
-    oProduct: "Article",
-    oQuantity: "Quantité",
-    oStreet: "Rue et numéro",
-    oZip: "NPA",
-    oCity: "Localité",
-    oCountry: "Pays",
-    oSubmit: "Continuer vers le paiement",
-    oPaying: "Ouverture de la page de paiement …",
-    oReplyNote: "Direction Stripe — la confirmation suit par e-mail",
-    payPendingNote:
-      "Le lien de paiement n'est pas encore actif. Ta commande est enregistrée ici et tu recevras une confirmation par e-mail — les informations de paiement suivront dedans.",
-    oSubmitPending: "Envoyer la commande",
-    oReplyNotePending: "Confirmation par e-mail — le lien de paiement suivra dedans",
-    oSuccess: "Merci — ta commande est arrivée. Tu recevras une confirmation par e-mail.",
-    oError: "Cela n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
     formDemo: "Version de démonstration : ce formulaire n'envoie rien.",
     channelSoon: "à venir",
   },
@@ -3279,7 +3191,7 @@ function renderPage(c, page, pages, lang, langs) {
     shows: renderShows,
     references: (n, s) => renderReferences(n, s, bookingTarget),
     gallery: renderGallery,
-    shop: (n, s) => renderShop(n, s, site),
+    shop: (n, s) => renderShop(n, s, site, str(sections.contact?.email)),
     booking: (n, s) => renderBooking(n, s, site),
     contact: (n, s) => renderContact(n, s, bookingTarget),
   };

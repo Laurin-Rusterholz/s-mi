@@ -322,17 +322,31 @@
     });
   }
 
-  // „Kaufen" an einer Ware waehlt sie im Bestellformular gleich aus.
-  document.addEventListener("click", function (e) {
-    var jump = e.target.closest && e.target.closest(".order-jump");
-    if (!jump) return;
-    var sel = document.querySelector('#order-form select[name="product"]');
-    if (!sel) return;
-    var wanted = jump.getAttribute("data-product");
-    Array.prototype.forEach.call(sel.options, function (o) {
-      if (o.value === wanted) sel.value = o.value;
+  /* Hier waehlte „Kaufen" die Ware im Bestellformular vor. Das Formular gibt
+     es nicht mehr; der Knopf fuehrt direkt zur Bezahlseite des Artikels. */
+
+  // Referenzen: auf dem Handy stehen zunaechst nur die obersten vier, der Rest
+  // klappt hier auf. Alle Eintraege sind im Dokument — verborgen wird per CSS
+  // und nur in der schmalen Breite. Auf dem Desktop ist der Knopf unsichtbar
+  // (display:none), dieser Umschalter laeuft dort also nie.
+  /* Eigene Namen. `venueList` gibt es in diesem Gueltigkeitsbereich schon (die
+     Namens-Einpassung weiter oben) — ein zweites `var venueList` wuerde die
+     erste Referenz ueberschreiben. Genau so hat ein doppelter Name am
+     11.08.2026 den Countdown lahmgelegt. */
+  var refMehr = document.querySelector(".venue-more");
+  var refListe = document.getElementById("venue-list");
+  if (refMehr && refListe) {
+    refMehr.addEventListener("click", function () {
+      var offen = !refListe.classList.contains("offen");
+      refListe.classList.toggle("offen", offen);
+      refMehr.setAttribute("aria-expanded", offen ? "true" : "false");
+      refMehr.textContent = refMehr.getAttribute(offen ? "data-less" : "data-more") || "";
+      /* Die eben eingeblendeten Namen waren verborgen und hatten damit keine
+         Breite — die Einpassung hat sie uebersprungen. Jetzt nachrechnen,
+         sonst laeuft ein langer Name aus der Zeile. */
+      if (offen && typeof einpassen === "function") einpassen();
     });
-  });
+  }
 
   /* -------------------------------------------- scroll progress + active nav */
   var progress = document.getElementById("progress");
@@ -1164,116 +1178,11 @@
     });
   }
 
-  /* ----------------------------------------------------------- bestellform */
-  // Versand braucht vollstaendige Angaben — deshalb ist hier jedes Feld
-  // Pflicht. Die Bestellung geht in denselben Eingang wie die Booking-
-  // Anfragen, aber mit kind:"order" gekennzeichnet.
-  var oform = document.getElementById("order-form");
-  if (oform) {
-    var oEndpoint = oform.getAttribute("data-endpoint");
-    var oSending = oform.getAttribute("data-sending") || "…";
-    var oInvalid = oform.getAttribute("data-invalid") || "";
-    var oPaying = oform.getAttribute("data-paying") || oSending;
-    var oMsg = oform.querySelector(".bform-msg");
-    var oOpened = Date.now();
-    var FIELDS = ["product", "quantity", "name", "email", "street", "zip", "city", "country"];
-
-    var setOMsg = function (text, cls) {
-      if (!oMsg) return;
-      oMsg.textContent = text;
-      oMsg.className = "bform-msg" + (cls ? " " + cls : "");
-    };
-
-    /* Nur eine echte Stripe-Adresse darf eine Weiterleitung ankuendigen.
-       Dieselbe Regel wie im Endpunkt (netlify/functions/order.mjs) und beim
-       Bauen: nur https, nur stripe.com oder link.com. Ein blosses "ist da"
-       genuegt nicht — kaeme aus der Antwort je etwas anderes, schickte die
-       Zeile darunter die Kundschaft irgendwohin. */
-    var istStripeAdresse = function (roh) {
-      var wert = String(roh == null ? "" : roh).trim();
-      if (!/^https:\/\/[^\s]+$/i.test(wert)) return false;
-      try {
-        var host = new URL(wert).hostname;
-        return /(^|\.)stripe\.com$/i.test(host) || /(^|\.)link\.com$/i.test(host);
-      } catch (e) {
-        return false;
-      }
-    };
-
-    oform.addEventListener("submit", function (e) {
-      e.preventDefault();
-      if (oform.classList.contains("busy")) return;
-
-      var data = {};
-      FIELDS.forEach(function (k) {
-        var f = oform.elements[k];
-        data[k] = f ? String(f.value || "").trim() : "";
-      });
-      var bad = null;
-      FIELDS.forEach(function (k) {
-        var f = oform.elements[k];
-        if (!f) return;
-        var ok = data[k].length >= (k === "zip" ? 3 : 2);
-        if (k === "email") ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.email);
-        if (k === "quantity") ok = Number(data.quantity) >= 1 && Number(data.quantity) <= 20;
-        f.setAttribute("aria-invalid", ok ? "false" : "true");
-        if (!ok && !bad) bad = f;
-      });
-      if (bad) {
-        setOMsg(oInvalid, "err");
-        bad.focus();
-        return;
-      }
-
-      // Wie beim Booking: Honeypot und Ausfuellzeit entscheidet der Server.
-      var hp = oform.elements.website;
-      data.website = hp ? String(hp.value || "") : "";
-      data.elapsedMs = Date.now() - oOpened;
-      data.source = location.hostname || "website";
-
-      if (oform.getAttribute("data-demo") === "true") {
-        oform.classList.add("sent");
-        setOMsg(oMsg ? oMsg.getAttribute("data-success") : "", "ok");
-        return;
-      }
-
-      oform.classList.add("busy");
-      setOMsg(oSending, "");
-
-      fetch(oEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-        .then(function (res) {
-          if (!res.ok) throw new Error("HTTP " + res.status);
-          return res.json().catch(function () {
-            return {};
-          });
-        })
-        .then(function (out) {
-          oform.classList.remove("busy");
-          oform.classList.add("sent");
-          // Die Bestellung ist aufgenommen und gemeldet. Gibt es eine
-          // Bezahlseite, geht es dort weiter — die Bestellnummer faehrt als
-          // client_reference_id mit, damit der Webhook beides zusammenbringt.
-          if (out && istStripeAdresse(out.paymentUrl)) {
-            setOMsg(oPaying, "ok");
-            location.assign(out.paymentUrl);
-            return;
-          }
-          // Keine (gueltige) Bezahladresse: die Bestellung ist aufgenommen und
-          // gemeldet, mehr wird nicht behauptet. Die Bestaetigung kommt per
-          // Mail — genau das sagt die Erfolgsmeldung.
-          oform.reset();
-          setOMsg(oMsg.getAttribute("data-success"), "ok");
-        })
-        .catch(function () {
-          oform.classList.remove("busy");
-          setOMsg(oMsg.getAttribute("data-error"), "err");
-        });
-    });
-  }
+  /* Hier stand bis zum 12.08.2026 das Bestellformular des Shops: acht Pflicht-
+     felder, Versand an den Bestell-Endpunkt und danach Weiterleitung auf die
+     Stripe-Bezahlseite. Der Block ist weg, weil das Formular weg ist (Kundenwunsch).
+     Gekauft wird ueber den Zahlungslink des Artikels; Adresse und Zahlung
+     nimmt Stripe in einem Schritt auf. Der Endpunkt selbst bleibt unberuehrt. */
 
   /* ------------------------------------------------------------------ jahr */
   var yr = document.getElementById("yr");

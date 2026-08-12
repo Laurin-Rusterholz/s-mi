@@ -857,6 +857,9 @@ blockquote.lede footer{
   .venue-list a{padding:10px 12px;}
   .venue-city{font-size:.5rem;}
 }
+/* Der Knopf gehoert zur schmalen Breite. Auf dem Desktop steht die ganze Liste
+   da, ein Knopf waere dort ohne Wirkung — deshalb gar nicht erst sichtbar. */
+.venue-more{display:none;}
 .live-note{margin-top:26px;color:var(--bone-dim);font-size:.92rem;}
 
 /* ---------- SHOP ---------- */
@@ -1531,6 +1534,13 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
     padding:14px 2px;background:none;border:0;border-bottom:1px solid var(--line);
   }
   .venue-name{font-size:calc(.95rem * var(--venue-fit,1));}
+  /* Auf dem Handy zunaechst nur die obersten vier Referenzen, der Rest hinter
+     dem Knopf (Kundenwunsch 12.08.2026). Nur hier, nur mit JavaScript: ohne
+     `html.js` steht die vollstaendige Liste da, sonst waeren die Eintraege
+     unerreichbar. Auf dem Desktop bleibt alles sichtbar — dort ist die Liste
+     ein Raster und kostet kaum Hoehe. */
+  .js .venue-list:not(.offen) > li[data-extra]{display:none;}
+  .venue-more{display:inline-flex;margin-top:18px;}
   .genre-list li{font-size:1.15rem;padding:16px;}
   .avail li{font-size:1.05rem;}
 

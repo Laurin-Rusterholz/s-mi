@@ -18,7 +18,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { istStripeAdresse } from "./build.mjs";
+import { istStripeAdresse, releaseZeitpunkt } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -136,17 +136,34 @@ for (const [datei, h] of html) {
 }
 
 /* Die Referenzen stehen seit dem 11.08.2026 alle im selben kleinen Stil — es
-   gibt keine grossen Karten und keinen "Rest" mehr. Frueher pruefte diese
-   Stelle, dass der Rest wirklich kleiner ist als die grossen Zeilen; jetzt
-   pruefen wir das Gegenteil: dass es die zweite Stufe im CSS nicht mehr gibt.
-   Sonst kaeme sie ueber ein spaeteres Stylesheet still zurueck. */
+   gibt keine grossen Karten und keinen "Rest" mehr.
+
+   NEU am 12.08.2026: auf dem HANDY stehen zunaechst nur die obersten vier, der
+   Rest klappt auf. Das ist keine Rueckkehr der zweiten Stufe — alle Eintraege
+   sehen gleich aus, die Reihenfolge bleibt die der Verwaltung, und auf dem
+   Desktop steht weiterhin alles da. `.venue-more` ist darum erlaubt; verboten
+   bleibt, was zwei GROESSEN oder zwei GRUPPEN gemacht hat.
+
+   Diese Stelle prueft deshalb dreierlei: die alten Bauteile sind weg, der
+   Knopf gehoert zur schmalen Breite (auf dem Desktop display:none), und
+   verborgen wird nur mit JavaScript — ohne `html.js` steht die ganze Liste da,
+   sonst waeren Eintraege unerreichbar. */
 {
   const css = await readFile(resolve(ROOT, "assets/site.css"), "utf8");
-  for (const weg of [".venue-more", ".venue-rest", ".venue-group", "--venue-lead-fit", ".venue-idx"])
+  for (const weg of [".venue-rest", ".venue-group", "--venue-lead-fit", ".venue-idx"])
     if (css.includes(weg)) meckern(`assets/site.css traegt wieder "${weg}" — die zweite Stufe ist zurueck`);
+  if (!/\.venue-more\{display:none;\}/.test(css))
+    meckern("assets/site.css zeigt den Referenz-Knopf auch auf dem Desktop");
+  const handy = css.match(/@media\(max-width:700px\)\{[\s\S]*?\n\}/g) || [];
+  if (!handy.some((b) => b.includes(".venue-more{display:inline-flex")))
+    meckern("assets/site.css blendet den Referenz-Knopf auf dem Handy nicht ein");
+  if (!/\.js \.venue-list:not\(\.offen\) > li\[data-extra\]\{display:none;\}/.test(css))
+    meckern("assets/site.css verbirgt die weiteren Referenzen nicht (oder auch ohne JavaScript)");
   const js = await readFile(resolve(ROOT, "assets/site.js"), "utf8");
   if (js.includes("--venue-lead-fit"))
     meckern("assets/site.js rechnet wieder mit zwei Groessen fuer die Referenzen");
+  if (!/refListe\.classList\.toggle\("offen"/.test(js))
+    meckern("assets/site.js hat keinen Umschalter fuer die weiteren Referenzen");
 }
 
 /* Die Kundenwuensche vom 10.08.2026, gemessen an der fertigen Seite — nicht
@@ -196,7 +213,7 @@ for (const [datei, h] of html) {
        allein die Reihenfolge dort. */
     const refBlock = (h.match(/<section class="pad" id="references"[\s\S]*?<\/section>/) || [""])[0];
     const istRef = [...refBlock.matchAll(
-      /<li><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
+      /<li[^>]*><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
     )].map((m) => `${m[1]} — ${m[2]}`.trim().replace(/ —$/, ""));
     const sollRef = refImInhalt.map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
     if (istRef.join(" | ") !== sollRef.join(" | "))
@@ -206,8 +223,26 @@ for (const [datei, h] of html) {
       );
     // Keine zweite Stufe mehr: keine grossen Karten, keine Zwischenzeile.
     if (/class="lead"/.test(refBlock)) meckern(`${rel}: es gibt wieder grosse Referenz-Karten`);
-    for (const weg of ["venue-more", "venue-rest", "venue-group"])
+    for (const weg of ["venue-rest", "venue-group"])
       if (refBlock.includes(weg)) meckern(`${rel}: "${weg}" steht wieder in den Referenzen`);
+
+    /* Die Handy-Stufe (12.08.2026): die obersten vier stehen offen da, alles
+       weitere traegt data-extra, und der Knopf steht genau dann da, wenn es
+       etwas aufzuklappen gibt. Die Reihenfolge ist oben schon geprueft — sie
+       aendert sich dadurch nicht, es geht nur um sichtbar/verborgen. */
+    const offen = [...refBlock.matchAll(/<li(?! data-extra)[^>]*><a/g)].length;
+    const weitere = [...refBlock.matchAll(/<li data-extra="true">/g)].length;
+    const hatKnopf = /class="venue-more btn"/.test(refBlock);
+    if (istRef.length) {
+      if (offen !== Math.min(4, istRef.length))
+        meckern(`${rel}: ${offen} Referenzen stehen auf dem Handy offen, erwartet ${Math.min(4, istRef.length)}`);
+      if (weitere !== Math.max(0, istRef.length - 4))
+        meckern(`${rel}: ${weitere} Referenzen sind eingeklappt, erwartet ${Math.max(0, istRef.length - 4)}`);
+      if (weitere && !hatKnopf) meckern(`${rel}: eingeklappte Referenzen ohne Knopf zum Aufklappen`);
+      if (!weitere && hatKnopf) meckern(`${rel}: Knopf zum Aufklappen, obwohl nichts eingeklappt ist`);
+      if (hatKnopf && !/aria-expanded="false"/.test(refBlock))
+        meckern(`${rel}: der Knopf sagt Hilfsmitteln nicht, dass die Liste eingeklappt ist`);
+    }
     const mehr = String(INHALT.sections?.references?.moreLabel || "").trim();
     if (mehr && refBlock.includes(mehr))
       meckern(`${rel}: die Zwischenzeile "${mehr}" steht wieder da`);
@@ -501,30 +536,45 @@ for (const [datei, h] of html) {
     // Kommentare zaehlen nicht — der Wartungshinweis darf Stripe nennen, er
     // steht nicht auf der Seite.
     const sichtbar = h.replace(/<!--[\s\S]*?-->/g, "");
-    const versprochen = ZAHLWORTE.filter((w) => sichtbar.includes(w));
-    if (!zahlbar && versprochen.length)
-      meckern(
-        `${rel}: verspricht ${versprochen.join(", ")}, obwohl kein Zahlungslink hinterlegt ist`
-      );
-    if (zahlbar && !versprochen.length)
-      meckern(`${rel}: Zahlungslink hinterlegt, aber die Seite sagt nichts zur Bezahlung`);
+    /* Im SICHTBAREN Text darf keine Bezahlart stehen — weder mit noch ohne
+       hinterlegten Zahlungslink. Frueher war die Regel zweiseitig: ohne Link
+       durfte nichts versprochen werden, mit Link musste etwas dastehen. Der
+       Block "Bezahlen" ist weg; welche Karten und Wallets gelten, sagt Stripe
+       auf seiner eigenen Seite, und nur dort ist es auch wahr.
+       Adressen zaehlen nicht mit — "buy.stripe.com" im href ist keine Aussage
+       an die Kundschaft. */
+    const nurText = sichtbar.replace(/<[^>]*>/g, " ");
+    const versprochen = ZAHLWORTE.filter((w) => nurText.includes(w));
+    if (versprochen.length)
+      meckern(`${rel}: nennt ${versprochen.join(", ")} im sichtbaren Text — das verspricht die Seite nicht mehr`);
 
-    // Der Knopf darf nur weiterfuehren, wenn es auch weitergeht.
-    const knopf = sichtbar.match(/<button class="btn solid big" type="submit">([^<]*)</);
-    const weiter = /Bezahlung|payment|paiement/i.test(knopf ? knopf[1] : "");
-    if (!zahlbar && weiter)
-      meckern(`${rel}: Knopf "${knopf[1].trim()}" kuendigt eine Bezahlung an, die es nicht gibt`);
+    /* KEIN Bestellformular mehr, auf keiner Sprachfassung.
 
-    /* Bestellformular: genau dann, wenn es auch etwas zu bestellen gibt.
-       Seit der Produktentscheidung vom 10.08.2026 steht keine Ware im Shop —
-       Ein Formular ohne Ware waere eine Bestellung ins Leere; steht Ware da,
-       muss das Formular her. Erkannt wird die Ware am Kachel-Bauteil, nicht
-       am Inhalt. */
+       Bis zum 12.08.2026 stand unter dem Katalog ein Block "Bezahlen" und
+       darunter das Formular "Wohin darf es gehen?" mit acht Pflichtfeldern.
+       Diese Stelle verlangte damals das Gegenteil: Ware ohne Formular war ein
+       Fehler. Der Kunde hat den ganzen Teil abbestellt — Adresse und Zahlung
+       nimmt Stripe in einem Schritt auf, das Formular fragte dasselbe ein
+       zweites Mal ab und versprach ausserdem eine Bestaetigungsmail an die
+       Kundschaft, die nie verschickt wurde. */
     const hatWare = /<article class="prod/.test(h);
-    const hatFormular = /id="order-form"/.test(h);
-    if (hatWare && !hatFormular) meckern(`${rel}: Ware ohne Bestellformular`);
-    if (!hatWare && hatFormular)
-      meckern(`${rel}: Bestellformular ohne Ware — bestellen liesse sich nichts`);
+    for (const weg of ['id="order-form"', 'class="oform', "/api/order", "#order-form", "pay-methods"])
+      if (h.includes(weg)) meckern(`${rel}: "${weg}" ist zurueck — das Bestellformular ist abbestellt`);
+
+    /* Jede Ware braucht trotzdem einen Weg zum Kauf: entweder die Bezahlseite
+       dieses Artikels oder, wenn keine hinterlegt ist, die E-Mail-Adresse aus
+       dem Kontakt. Ein Knopf, der nirgendwohin fuehrt, waere schlimmer als
+       keiner — und genau das war der Rueckfall aufs Formular. */
+    const karten = [...h.matchAll(/<article class="prod[\s\S]*?<\/article>/g)].map((m) => m[0]);
+    for (const karte of karten) {
+      const name = (karte.match(/<h3>([^<]*)<\/h3>/) || ["", "?"])[1];
+      if (/class="mono sold-mark"/.test(karte)) continue; // ausverkauft: kein Weg noetig
+      const kasse = /href="https:\/\/buy\.stripe\.com\/[^"]+"/.test(karte);
+      const perMail = /href="mailto:[^"]+"/.test(karte);
+      if (!kasse && !perMail) meckern(`${rel}: "${name}" hat keinen Weg zum Kauf`);
+      if (kasse && !/target="_blank" rel="noopener noreferrer"/.test(karte))
+        meckern(`${rel}: die Bezahlseite von "${name}" oeffnet ohne target/rel`);
+    }
     // Und ohne Ware muss die Seite sagen, warum sie leer ist.
     if (!hatWare && !/class="empty-state/.test(h))
       meckern(`${rel}: leerer Shop ohne Hinweis, dass noch keine Ware da ist`);
@@ -547,29 +597,43 @@ for (const [datei, h] of html) {
       if (!h.includes(`<h3>${name}</h3>`)) meckern(`${rel}: Artikel "${name}" fehlt auf der Seite`);
   }
 
-  /* Die Weiterleitung im Browser: sie darf erst kommen, wenn die Antwort des
-     Endpunkts wirklich eine Stripe-Adresse enthaelt. Ein blosses "ist da"
-     genuegt nicht — sonst schickt eine falsche Antwort die Kundschaft
-     irgendwohin. */
+  /* Hier stand die Regel fuer die Weiterleitung nach dem Bestellformular: erst
+     weiterleiten, wenn die Antwort wirklich eine Stripe-Adresse enthaelt. Das
+     Formular ist weg (12.08.2026), also darf im Browser auch nichts mehr
+     weiterleiten. Geprueft wird jetzt das: kein Versand, keine Weiterleitung,
+     keine Vorauswahl im Formular. */
   {
     const js = await readFile(resolve(ROOT, "assets/site.js"), "utf8");
-    if (/if\s*\(\s*out\s*&&\s*out\.paymentUrl\s*\)/.test(js))
-      meckern("site.js leitet allein auf Verdacht weiter — die Adresse wird nicht geprueft");
-    if (!/istStripeAdresse\(\s*out\.paymentUrl\s*\)/.test(js))
-      meckern("site.js prueft die Bezahladresse nicht, bevor es weiterleitet");
+    for (const weg of ["order-form", "order-jump", "paymentUrl", "/api/order"])
+      if (js.includes(weg))
+        meckern(`assets/site.js arbeitet wieder mit "${weg}" — das Bestellformular ist abbestellt`);
   }
 
-  /* Der Vorhang vor dem Release (11.08.2026). Er liegt auf JEDER oeffentlichen
-     Seite — sonst waere ueber eine Unteradresse schon vorher etwas erreichbar. */
+  /* Der Vorhang vor dem Release (11.08.2026). Solange der Zeitpunkt in der
+     Zukunft liegt, liegt er auf JEDER oeffentlichen Seite — sonst waere ueber
+     eine Unteradresse schon vorher etwas erreichbar.
+
+     Seit dem 12.08.2026, 18:00 gilt die andere Haelfte derselben Regel: ist der
+     Zeitpunkt herum, darf auf keiner Seite noch ein Vorhang stehen. Frueher
+     hing das allein am Schalter `release.enabled`; ein abgelaufener Release
+     baute weiter einen Vorhang, den erst JavaScript im Browser wegnahm. */
   {
-    const ziel = INHALT.release?.enabled === false ? 0 : 1;
+    const relZiel = (() => {
+      const r = INHALT.release || {};
+      if (r.enabled === false || !/^\d{4}-\d{2}-\d{2}$/.test(String(r.date || ""))) return 0;
+      return releaseZeitpunkt(r.date, r.time, r.zone || "Europe/Zurich");
+    })();
+    const ziel = relZiel > Date.now() ? 1 : 0;
     for (const [datei, h] of html) {
       if (datei === "coming-soon.html") continue;
       const hatVorhang = /<section class="release"/.test(h);
       const hatSkript = /vor-release/.test(h);
       if (ziel && !hatVorhang) meckern(`${datei}: kein Release-Vorhang`);
       if (ziel && !hatSkript) meckern(`${datei}: kein Skript, das den Vorhang vor dem Zeichnen setzt`);
-      if (!ziel && hatVorhang) meckern(`${datei}: Release-Vorhang, obwohl abgeschaltet`);
+      if (!ziel && hatVorhang)
+        meckern(`${datei}: Release-Vorhang, obwohl abgeschaltet oder der Zeitpunkt herum ist`);
+      if (!ziel && hatSkript)
+        meckern(`${datei}: die Seite setzt noch die Klasse "vor-release" — der Release ist durch`);
       if (!ziel) continue;
       const zeit = h.match(/data-ziel="(\d+)"/);
       if (!zeit) meckern(`${datei}: kein Zielzeitpunkt am Vorhang`);
