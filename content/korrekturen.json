@@ -205,28 +205,6 @@
     ],
     "leeren": true
   },
-  "telefon": {
-    "_warum": [
-      "Die Telefonnummer gehoert nicht mehr auf die oeffentliche Website",
-      "(Kundenwunsch 11.08.2026). Sie stand im Kontakt-Abschnitt, verlinkt",
-      "als tel:-Adresse, und in den strukturierten Daten.",
-      "",
-      "'leeren' raeumt das Feld, solange in der Datenbank noch die alte",
-      "Nummer steht. Die Verwaltung leert es beim Laden einmalig mit und",
-      "merkt sich das; sobald der Kunde gespeichert hat, ist diese Regel",
-      "wirkungslos und kann weg.",
-      "",
-      "Das Feld selbst bleibt in der Verwaltung stehen — leer und",
-      "optional. Traegt jemand dort wieder eine Nummer ein, erscheint sie",
-      "auch wieder: geleert wird nur die eine bekannte Nummer."
-    ],
-    "leeren": true,
-    "alteNummern": [
-      "+41 77 509 11 71",
-      "+41775091171",
-      "077 509 11 71"
-    ]
-  },
   "galerie": {
     "_warum": [
       "Kundenwunsch vom 10.08.2026: die Bilderwand startet mit genau 6 Fotos —",
@@ -323,7 +301,16 @@
     "",
     "Der Shop haengt jetzt ausschliesslich an der Verwaltung. Der Artikel steht",
     "als echte Ware in der Datenbank; die Verwaltung traegt ihn beim Laden",
-    "einmalig nach, wenn er fehlt (ware-nachtragen.js), und merkt sich das."
+    "einmalig nach, wenn er fehlt (ware-nachtragen.js), und merkt sich das.",
+    "",
+    "Ebenfalls entfernt am 12.08.2026:",
+    "",
+    "  telefon.leeren   leerte die eine bekannte Telefonnummer. Das war halb: das",
+    "                   Feld stand weiter in der Verwaltung und der Schluessel",
+    "                   weiter in den Daten. Jetzt wird sections.contact.phone",
+    "                   ganz geloescht — direkt im Generator, ohne Marke, wie beim",
+    "                   Fotografen. Das Telefonfeld IM Booking-Formular bleibt:",
+    "                   dort traegt der Besucher seine eigene Nummer ein."
   ],
   "referenzenNachtragen": {
     "_warum": [
