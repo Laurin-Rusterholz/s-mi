@@ -42,7 +42,17 @@ const safeUrl = (v) => {
   if (!s) return "";
   if (/^(https?:|mailto:|tel:)/i.test(s)) return s;
   if (/^[a-z][a-z0-9+.-]*:/i.test(s)) return ""; // javascript:, data:, …
-  return s;
+  /* Freier Text ist keine Adresse. In der Verwaltung stand am 12.08.2026 in
+     einem Ticket-Feld "DM for friendlist" — daraus wurde der Link
+     "/DM for friendlist", der auf allen drei Startseiten ins Leere fuehrte.
+
+     Durchgelassen wird nur, was eine Adresse sein KANN: ein Sprungziel (#…),
+     ein Pfad (mit /) oder ein Dateiname (mit .). Leerzeichen schliessen es aus —
+     die kommen in einer Adresse nicht unkodiert vor. Relative Pfade wie
+     "img/hero.jpg" bleiben damit gueltig. */
+  if (/\s/.test(s)) return "";
+  if (s.startsWith("#") || s.includes("/") || s.includes(".")) return s;
+  return "";
 };
 
 const href = (v) => esc(rooted(v));
@@ -1018,16 +1028,23 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Shop-Angabe(n) ergaenzt`);
   }
 
-  /* Die Telefonnummer gehoert nicht mehr auf die Website (11.08.2026).
-     Geleert wird nur die eine bekannte Nummer — traegt jemand in der
-     Verwaltung eine neue ein, bleibt sie stehen und erscheint wieder. Der
-     Generator zeigt das Feld ohnehin nur, wenn etwas darin steht. */
-  if (korr.telefon?.leeren && ls.contact && !erledigt("telefon")) {
-    const ist = str(ls.contact.phone).replace(/\s+/g, "");
-    const alt = list(korr.telefon.alteNummern).map((x) => str(x).replace(/\s+/g, ""));
-    if (ist && alt.includes(ist)) {
-      ls.contact.phone = "";
-      getan.push("Telefonnummer geraeumt");
+  /* Die Telefonnummer gibt es nicht mehr — ueberall (12.08.2026).
+
+     Erst wurde sie nur nicht mehr angezeigt, dann geleert. Beides war halb: das
+     Feld stand weiter in der Verwaltung und der Schluessel weiter in den Daten.
+     Der Kunde will es ganz weg, also wird `sections.contact.phone` GELOESCHT —
+     hier und in den Uebersetzungen.
+
+     Wie beim Fotografen haengt das an keiner Marke: das Feld gibt es im Modell
+     nicht mehr, und ein Wert aus einem alten Stand waere ein Rest.
+
+     Das Telefonfeld IM Booking-Formular bleibt — dort traegt der Besucher seine
+     eigene Nummer ein, das ist etwas anderes. */
+  if (ls.contact && ls.contact.phone !== undefined) delete ls.contact.phone;
+  for (const wurzel of ["i18n", "i18nHash"]) {
+    for (const tabelle of Object.values(live[wurzel] || {})) {
+      const dort = tabelle?.sections?.contact;
+      if (dort && dort.phone !== undefined) delete dort.phone;
     }
   }
 
@@ -1285,9 +1302,13 @@ async function loadContent() {
     "[build] Inhalt aus content/site.json geladen" +
       (korrigiert.length ? ` — nachgezogen: ${korrigiert.join(", ")}` : "")
   );
-  // Korrigierten Stand zurueckschreiben, sonst weicht die eingecheckte Datei
-  // von dem ab, was gebaut wurde.
-  if (korrigiert.length) await writeFile(LOCAL_CONTENT, JSON.stringify(lokal, null, 2) + "\n");
+  /* Korrigierten Stand zurueckschreiben, sonst weicht die eingecheckte Datei von
+     dem ab, was gebaut wurde. Verglichen wird der Text, nicht die Liste der
+     Meldungen: manche Korrekturen loeschen nur ein Feld und melden das
+     absichtlich nicht (Fotograf, Telefonnummer) — die waeren sonst im
+     Schnappschuss nicht angekommen. */
+  const nachher = JSON.stringify(lokal, null, 2) + "\n";
+  if (nachher !== raw) await writeFile(LOCAL_CONTENT, nachher);
   return lokal;
 }
 
@@ -1705,7 +1726,17 @@ function showRow(sh, idx) {
               ? `<a class="btn btn-sm" href="${href(
                   sh.ticketUrl
                 )}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`
-              : `<span class="mono">${esc(soldOut || booked ? label : "")}</span>`
+              : /* Kein Link, aber ein Hinweis: steht im Ticket-Feld ein Text
+                   statt einer Adresse ("DM for friendlist"), zeigen wir genau
+                   diesen Text — er sagt ja, wie man an Tickets kommt. Als
+                   Beschriftung, nicht als Knopf, denn es fuehrt nirgendwohin. */
+              `<span class="mono">${esc(
+                  soldOut || booked
+                    ? label
+                    : !safeUrl(sh.ticketUrl) && str(sh.ticketUrl)
+                    ? str(sh.ticketUrl).trim()
+                    : ""
+                )}</span>`
           }</span>
         </li>`;
 }
@@ -2437,13 +2468,8 @@ function renderContact(n, s, bookingTarget) {
   const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
   const meta = `
         <div class="contact-meta">
-          ${
-            str(s.phone)
-              ? `<div><span class="mono">${esc(UI.phone)}</span><a href="tel:${esc(
-                  s.phone.replace(/[^\d+]/g, "")
-                )}">${esc(s.phone)}</a></div>`
-              : ""
-          }
+          ${/* Hier stand die Telefonnummer. Sie ist weg — das Feld gibt es
+                nicht mehr (siehe nachziehen). */ ""}
           ${
             str(s.base)
               ? `<div><span class="mono">${esc(UI.base)}</span><span>${esc(s.base)}</span></div>`
@@ -2525,7 +2551,6 @@ function structuredData(c, sections, page, pages) {
       : undefined,
   };
   if (contact.email) person.email = `mailto:${contact.email}`;
-  if (contact.phone) person.telephone = contact.phone.replace(/[^\d+]/g, "");
   if (sameAs.length) person.sameAs = sameAs;
   if (contact.base) {
     const [city, country] = String(contact.base).split(",").map((x) => x.trim());
@@ -2535,12 +2560,11 @@ function structuredData(c, sections, page, pages) {
       addressCountry: /schweiz|switzerland|suisse|ch/i.test(country || "") ? "CH" : country || "CH",
     };
   }
-  if (contact.email || contact.phone) {
+  if (contact.email) {
     person.contactPoint = {
       "@type": "ContactPoint",
       contactType: "booking",
       ...(contact.email ? { email: contact.email } : {}),
-      ...(contact.phone ? { telephone: contact.phone.replace(/[^\d+]/g, "") } : {}),
       availableLanguage: languagesOf(c).map((l) => LANG_NAMES[l] || l),
     };
   }
@@ -2696,7 +2720,6 @@ const UI_DEFAULTS = {
   nextImage: "Nächstes Bild",
   openImage: "Bild {n} von {total} gross öffnen",
   rights: "Alle Rechte vorbehalten",
-  phone: "Telefon",
   base: "Standort",
   tickets: "Tickets",
   soldOut: "Ausverkauft",

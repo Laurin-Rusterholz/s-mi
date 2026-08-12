@@ -450,8 +450,9 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
       meckern("trotz Marke ergaenzt: " + paare(db).join(", "));
     if (db.sections.contact.socials.length !== 1)
       meckern("trotz Marke Kanaele ergaenzt: " + db.sections.contact.socials.map((x) => x.label).join(", "));
-    if (db.sections.contact.phone !== "+41 77 509 11 71")
-      meckern("trotz Marke die Nummer geraeumt");
+    /* Die Telefonnummer ist die Ausnahme: sie wird IMMER geloescht, ohne Marke.
+       Das Feld gibt es im Modell nicht mehr — wie beim Fotografen. */
+    if ("phone" in db.sections.contact) meckern("das Telefonfeld steht noch da");
     if ((db.sections.shop.info || []).length) meckern("trotz Marke den Streifen angelegt");
     if (db.sections.shop.kicker) meckern("trotz Marke den Kicker gesetzt");
   }
@@ -525,7 +526,7 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (kanaele.map((x) => x.label).join(" | ") !== "Instagram | Mixcloud | TikTok | Spotify")
     meckern("Kanaele: " + kanaele.map((x) => x.label).join(", "));
   for (const k of kanaele) if (!k.url) meckern(`Kanal "${k.label}" ohne Adresse`);
-  if (db.sections.contact.phone !== "") meckern("Telefonnummer nicht geraeumt");
+  if ("phone" in db.sections.contact) meckern("das Telefonfeld steht noch im Kontakt");
   if (!db.sections.shop.kicker || !db.sections.shop.headline || !db.sections.shop.ctaLabel)
     meckern("Shop-Einladung fehlt");
   if ((db.sections.shop.info || []).length !== 3) meckern("Infostreifen fehlt");
@@ -693,10 +694,12 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   /* Die Bilderwand ist vollzaehlig: 47 Eintraege, davon 44 mit Adresse (drei
      leere Plaetze aus der Verwaltung). Geloescht wurde nur die Angabe zum
      Fotografen AM Eintrag — keine Datei, keine Adresse, kein Eintrag. */
+  /* 44 Medien, jedes mit Adresse. Die drei frueheren Leer-Plaetze sind beim
+     Publizieren der Verwaltung von selbst weggefallen — die Datenbank speichert
+     ein leeres Objekt nicht. Kein Medium ist verloren. */
   const medien = template.sections.gallery.items || [];
-  if (medien.length !== 47) meckern(`${medien.length} Galerie-Eintraege statt 47`);
-  if (medien.filter((i) => i && i.src).length !== 44)
-    meckern(`${medien.filter((i) => i && i.src).length} Medien-Adressen statt 44`);
+  if (medien.length !== 44) meckern(`${medien.length} Galerie-Eintraege statt 44`);
+  if (medien.some((i) => !i || !i.src)) meckern("ein Galerie-Eintrag ohne Adresse");
   if (!(template.sections.shop.items || []).some((p) => p.paymentLink))
     meckern("der Bezahl-Link am Artikel ist verloren gegangen");
   if ((template.sections.references.items || []).length !== 25) meckern("die Referenzen sind nicht mehr 25");
@@ -708,17 +711,25 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 {
   /* Die Telefonnummer ist von der Website genommen (11.08.2026). Geraeumt wird
      nur die eine bekannte Nummer — eine neue in der Verwaltung bleibt stehen. */
+  /* Das Telefonfeld gibt es nicht mehr — es wird geloescht, nicht geleert, und
+     zwar jede Nummer. Bis zum 12.08.2026 wurde nur die eine bekannte Nummer
+     geleert; das Feld stand danach weiter in der Verwaltung und der Schluessel
+     weiter in den Daten. Der Kunde will es ganz weg. */
   const db = JSON.parse(JSON.stringify(template));
-  delete db.migrationen; // der Zustand VOR dem Nachtrag
   db.sections.contact.phone = "+41 77 509 11 71";
   nachziehen(db, korr);
-  if (db.sections.contact.phone) meckern("Telefonnummer nicht geraeumt: " + db.sections.contact.phone);
+  if ("phone" in db.sections.contact) meckern("Telefonfeld nicht geloescht");
 
   const eigen = JSON.parse(JSON.stringify(template));
   eigen.sections.contact.phone = "+41 44 000 00 00";
   nachziehen(eigen, korr);
-  if (eigen.sections.contact.phone !== "+41 44 000 00 00")
-    meckern("Eine neue Nummer wurde mitgeraeumt: " + eigen.sections.contact.phone);
+  if ("phone" in eigen.sections.contact) meckern("auch eine neue Nummer muss weg");
+  // Und in den Uebersetzungen ebenso.
+  const mitI18n = JSON.parse(JSON.stringify(template));
+  mitI18n.i18n = { de: { sections: { contact: { phone: "077 …" } } } };
+  nachziehen(mitI18n, korr);
+  if ("phone" in (mitI18n.i18n.de.sections.contact || {}))
+    meckern("Telefonfeld in der Uebersetzung geblieben");
   // E-Mail und Standort bleiben.
   if (eigen.sections.contact.email !== template.sections.contact.email) meckern("E-Mail angefasst");
   if (eigen.sections.contact.base !== template.sections.contact.base) meckern("Standort angefasst");

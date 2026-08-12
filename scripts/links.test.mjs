@@ -641,10 +641,16 @@ for (const [datei, h] of html) {
        schon gar nicht eine Datei oder ihre Adresse. Dass in manchen Dateinamen
        historisch "sarto" steckt, aendert daran nichts: Adressen werden nicht
        angefasst. */
+    /* 44 Medien, jedes mit Adresse. Bis zum 12.08.2026 standen hier 47
+       Eintraege — drei davon waren leere Plaetze ohne Bild und ohne Adresse
+       ("leerer Platz" in der Verwaltung). Die Datenbank speichert ein leeres
+       Objekt nicht, deshalb sind sie beim Publizieren der Verwaltung von selbst
+       weggefallen. Verloren ist dabei kein Medium: alle 44 Adressen sind
+       unveraendert. */
     const medien = INHALT.sections?.gallery?.items || [];
-    if (medien.length !== 47) meckern(`${medien.length} Galerie-Eintraege statt 47`);
-    const mitAdresse = medien.filter((i) => i && i.src).length;
-    if (mitAdresse !== 44) meckern(`${mitAdresse} Medien-Adressen statt 44`);
+    if (medien.length !== 44) meckern(`${medien.length} Galerie-Eintraege statt 44`);
+    const ohneAdresse = medien.filter((i) => !i || !i.src).length;
+    if (ohneAdresse) meckern(`${ohneAdresse} Galerie-Eintraege ohne Adresse`);
   }
 
   /* Die Telefonnummer ist von der Website genommen. Das Feld im
