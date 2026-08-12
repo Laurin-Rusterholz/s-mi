@@ -901,6 +901,14 @@ blockquote.lede footer{
 }
 
 .shop-cat{background:var(--ink);scroll-margin-top:calc(var(--head) + 12px);}
+/* Nur die Einladung: so steht der Block auf der Startseite, zwischen Galerie
+   und Kontakt (12.08.2026). Die helle Flaeche schliesst dort oben und unten
+   gegen dunkle Abschnitte ab — darum eine Linie auf beiden Seiten statt nur
+   unten, sonst schwebt sie. */
+.shop-sec.nur-einladung .shop-intro{
+  border-top:1px solid rgba(0,0,0,.08);
+}
+.shop-sec.nur-einladung{scroll-margin-top:calc(var(--head) + 12px);}
 
 /* Drei Spalten am Rechner, zwei am Tablet, eine am Handy. Feste Stufen statt
    auto-fill: so ist die Zahl der Spalten vorhersehbar, und ein einzelner

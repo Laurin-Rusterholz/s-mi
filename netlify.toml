@@ -194,26 +194,6 @@
   to = "/fr/#gallery"
   status = 301
 
-# Der Shop hatte bis zum 12.08.2026 eine eigene Seite. Er steht jetzt auf der
-# Startseite unter der Galerie — alte Links, Lesezeichen und Suchtreffer landen
-# per 301 an der richtigen Stelle statt auf 404.
-[[redirects]]
-  from = "/shop/*"
-  to = "/#shop"
-  status = 301
-[[redirects]]
-  from = "/de/shop/*"
-  to = "/de/#shop"
-  status = 301
-[[redirects]]
-  from = "/en/shop/*"
-  to = "/en/#shop"
-  status = 301
-[[redirects]]
-  from = "/fr/shop/*"
-  to = "/fr/#shop"
-  status = 301
-
 # Ohne www und mit www duerfen nicht beide indexiert werden — Netlify leitet
 # automatisch auf die Primary Domain um, sobald die Domain dort gesetzt ist.
 # Unbekannte Adressen beantwortet Netlify von selbst mit 404.html.

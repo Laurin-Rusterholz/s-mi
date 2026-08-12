@@ -140,6 +140,15 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://djsamsparkling.netlify.app/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://djsamsparkling.netlify.app/de/</loc>
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
@@ -279,6 +288,15 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://djsamsparkling.netlify.app/de/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://djsamsparkling.netlify.app/fr/</loc>
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
@@ -413,6 +431,15 @@
       <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
       <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/fr/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
     <lastmod>2026-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

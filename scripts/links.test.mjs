@@ -733,25 +733,53 @@ for (const [datei, h] of html) {
     }
   }
 
-  /* Der Shop im neuen Bild: helle Einladung, dunkler Katalog, Infostreifen.
-     Alles Inhaltliche kommt aus der Verwaltung. */
+  /* Zwei Ansichten desselben Abschnitts (12.08.2026):
+
+       Startseite   der helle Block "Sam Sparking Shop" als Einladung — Kicker,
+                    Ueberschrift, Knopf auf /shop/. KEINE Ware, keine Preise.
+       /shop/       der dunkle Katalog mit der Ware und dem Infostreifen.
+
+     Erst lag beides auf /shop/, dann alles auf der Startseite. Beide Male war es
+     nicht gemeint; diese Pruefung haelt die jetzige Aufteilung fest. */
+  for (const rel of startseiten) {
+    const h = await seite(rel);
+    if (!h) continue;
+    const block = (h.match(/<section class="shop-sec[\s\S]*?<\/section>/) || [""])[0];
+    if (!block) {
+      meckern(`${rel}: die Shop-Einladung fehlt auf der Startseite`);
+      continue;
+    }
+    if (!/nur-einladung/.test(block)) meckern(`${rel}: die Startseite zeigt mehr als die Einladung`);
+    for (const [was, muster] of [
+      ["Kicker", /class="mono shop-kicker"/],
+      ["Ueberschrift", /class="shop-headline"/],
+      ["Knopf", /class="btn solid big shop-cta"/],
+    ])
+      if (!muster.test(block)) meckern(`${rel}: ${was} fehlt in der Shop-Einladung`);
+    // Der Knopf fuehrt auf die Shop-Seite, nicht ins Nichts.
+    const cta = block.match(/class="btn solid big shop-cta" href="([^"]*)"/);
+    if (cta && !/\/shop\/$/.test(cta[1]))
+      meckern(`${rel}: der Knopf der Einladung zeigt auf "${cta[1]}" statt auf /shop/`);
+    // Und keine Ware: die gehoert auf die Shop-Seite.
+    if (/<article class="prod/.test(block)) meckern(`${rel}: Ware steht in der Einladung`);
+    if (/class="shop-info/.test(block)) meckern(`${rel}: der Infostreifen steht in der Einladung`);
+  }
+
   for (const rel of ["shop/index.html", "de/shop/index.html", "fr/shop/index.html"]) {
     const h = await seite(rel);
     if (!h) continue;
     const ware = (INHALT.sections?.shop?.items || []).filter((p) => p && p.name);
     if (!ware.length) continue;
     for (const [was, muster] of [
-      ["Kicker", /class="mono shop-kicker"/],
-      ["Ueberschrift", /class="shop-headline"/],
-      ["Knopf zum Katalog", /class="btn solid big shop-cta"/],
       ["Katalog", /id="shop-katalog"/],
       ["Raster", /class="shop-grid/],
     ])
       if (!muster.test(h)) meckern(`${rel}: ${was} fehlt im Shop`);
-    // Der Knopf muss wirklich zum Katalog fuehren.
-    const cta = h.match(/class="btn solid big shop-cta" href="([^"]*)"/);
-    if (cta && !cta[1].endsWith("#shop-katalog"))
-      meckern(`${rel}: der Knopf zeigt auf "${cta[1]}" statt auf den Katalog`);
+    /* Der helle Block steht hier NICHT mehr — er ist auf die Startseite
+       gewandert. Die Seite traegt ihren Titel im Kopf (h1 "Shop"). */
+    if (/class="shop-intro"/.test(h))
+      meckern(`${rel}: die Einladung steht wieder auf der Shop-Seite`);
+    if (!/<h1[^>]*>/.test(h)) meckern(`${rel}: die Shop-Seite hat keine Ueberschrift`);
     // Der Informationsstreifen: hoechstens drei Punkte, alle mit Zeichen.
     const streifen = h.match(/<ul class="shop-info rv">[\s\S]*?<\/ul>/);
     const infoImInhalt = (INHALT.sections?.shop?.info || []).filter((i) => i && (i.title || i.text));

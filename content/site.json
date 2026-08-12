@@ -1129,6 +1129,18 @@
         "booking",
         "contact"
       ]
+    },
+    {
+      "slug": "shop",
+      "navLabel": "Shop",
+      "title": "Shop",
+      "hero": "compact",
+      "ticker": false,
+      "inNav": true,
+      "enabled": true,
+      "sections": [
+        "shop"
+      ]
     }
   ],
   "release": {

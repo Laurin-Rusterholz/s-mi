@@ -1038,58 +1038,66 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Shop-Angabe(n) ergaenzt`);
   }
 
-  /* Der Shop gehoert auf die Startseite, unter die Galerie (12.08.2026).
+  /* Zwei Ansichten des Shops (12.08.2026, zweiter Anlauf).
 
-     Bis dahin hatte er eine eigene Seite /shop/. Der Kunde hat ein Produkt
-     veroeffentlicht und es auf der Startseite gesucht — dort stand nichts, und
-     der Weg ueber das Menue war ihm nicht der richtige. Der Abschnitt wandert
-     deshalb in die Startseite, direkt hinter die Galerie; die eigene Seite
-     faellt weg, wenn sonst nichts darauf steht.
+     Erst hatte der Shop nur eine eigene Seite /shop/ — der Kunde suchte sein
+     Produkt auf der Startseite und fand nichts. Dann wanderte alles auf die
+     Startseite; auch das war nicht gemeint. Gewollt ist beides:
 
-     Einmalig, mit Marke: sobald die Verwaltung den Stand gespeichert hat,
-     entscheidet die Seitenaufteilung dort. Wer den Shop danach wieder auf eine
-     eigene Seite legt, behaelt das letzte Wort.
+       Startseite, unter der Galerie:  der helle Block "Sam Sparking Shop" als
+                                       Einladung, mit Knopf auf /shop/
+       /shop/:                         der dunkle Katalog mit der Ware
 
-     Die Uebersetzungen der Seitennamen haengen am PLATZ in der Liste — faellt
-     eine Seite weg, muss ihr Eintrag in `i18n.<lang>.pages` mitfallen, sonst
-     heisst die Booking-Seite auf einmal "Boutique". */
-  if (!erledigt("shopAufStart")) {
+     Beides kommt aus demselben Abschnitt in der Verwaltung — es gibt nichts
+     doppelt zu pflegen. Welche Ansicht eine Seite zeigt, entscheidet der
+     Generator: traegt mehr als eine Seite den Shop, zeigt die erste die
+     Einladung und die letzte den Katalog (siehe renderPage).
+
+     Diese Regel sorgt nur dafuer, dass BEIDE Plaetze da sind — einmalig, mit
+     Marke. Danach entscheidet die Seitenaufteilung der Verwaltung.
+
+     Die Marke heisst absichtlich anders als beim ersten Anlauf ("shopAufStart"):
+     wer den Stand zwischendurch gespeichert hat, traegt jene Marke schon und
+     saehe diese Korrektur sonst nie. */
+  if (!erledigt("shopSeiteUndEinladung")) {
     const seiten = list(live.pages);
     const start = seiten[0];
-    const traeger = seiten.findIndex((p) => list(p?.sections).includes("shop"));
-    if (start && traeger > 0) {
-      // Aus der alten Seite nehmen; ist sie danach leer, fliegt sie ganz weg.
-      const alt = seiten[traeger];
-      alt.sections = list(alt.sections).filter((k) => k !== "shop");
-      let entfernt = -1;
-      if (!alt.sections.length) {
-        seiten.splice(traeger, 1);
-        entfernt = traeger;
-      }
-      // In die Startseite, direkt hinter die Galerie.
-      const ziel = list(start.sections).filter((k) => k !== "shop");
-      const nachGalerie = ziel.indexOf("gallery");
-      ziel.splice(nachGalerie < 0 ? ziel.length : nachGalerie + 1, 0, "shop");
-      start.sections = ziel;
-      live.pages = seiten;
+    if (start) {
+      const getan2 = [];
+      /* 1) Die eigene Seite /shop/ zurueckholen — aber nur als REPARATUR.
 
-      if (entfernt >= 0) {
-        for (const wurzel of ["i18n", "i18nHash"]) {
-          for (const tabelle of Object.values(live[wurzel] || {})) {
-            const alteTabelle = tabelle?.pages;
-            if (!alteTabelle || typeof alteTabelle !== "object") continue;
-            const neueTabelle = {};
-            for (const [platz, wert] of Object.entries(alteTabelle)) {
-              const i = Number(platz);
-              if (!Number.isInteger(i)) continue;
-              if (i === entfernt) continue;
-              neueTabelle[String(i > entfernt ? i - 1 : i)] = wert;
-            }
-            tabelle.pages = neueTabelle;
-          }
+         Fehlt sie, weil der erste Anlauf sie aufgeloest hat (Marke
+         "shopAufStart"), kommt sie zurueck. Fehlt sie, weil jemand in der
+         Verwaltung eine eigene Aufteilung gebaut hat, bleibt das so: eine
+         Aufteilung von Hand ist eine Entscheidung, kein Versehen. */
+      const repariert = erledigt("shopAufStart");
+      if (repariert && !seiten.some((p) => str(p?.slug) === "shop")) {
+        const vorlage = list(korr.seiten).find((p) => str(p?.slug) === "shop");
+        seiten.push(
+          kopie(vorlage || { slug: "shop", navLabel: "Shop", title: "Shop", hero: "compact", inNav: true, enabled: true, sections: ["shop"] })
+        );
+        // Der Seitenname haengt am Platz in der Liste — Uebersetzung mitgeben.
+        const platz = String(seiten.length - 1);
+        for (const [lang, block] of Object.entries(korr.i18n || {})) {
+          const name = block?.seiten?.["2"];
+          if (!name) continue;
+          const i18n = live.i18n || (live.i18n = {});
+          const dort = i18n[lang] || (i18n[lang] = {});
+          const tabelle = dort.pages || (dort.pages = {});
+          if (!tabelle[platz]) tabelle[platz] = kopie(name);
         }
+        getan2.push("Seite /shop/");
       }
-      getan.push("Shop auf die Startseite (unter die Galerie)");
+      // 2) Die Startseite traegt den Shop, direkt hinter der Galerie.
+      const ziel = list(start.sections);
+      if (!ziel.includes("shop")) {
+        const nachGalerie = ziel.indexOf("gallery");
+        ziel.splice(nachGalerie < 0 ? ziel.length : nachGalerie + 1, 0, "shop");
+        start.sections = ziel;
+        getan2.push("Einladung auf der Startseite");
+      }
+      live.pages = seiten;
+      if (getan2.length) getan.push(`Shop: ${getan2.join(" + ")}`);
     }
   }
 
@@ -2162,7 +2170,21 @@ const shopIcon = (key) =>
  * Ist gar keine Ware da, bleibt es beim schlichten Leer-Block mit dem Text aus
  * der Verwaltung — dann gibt es nichts zu bewerben.
  */
-function renderShop(n, s, site, kontaktMail = "") {
+/**
+ * Der Shop in zwei Ansichten — aus demselben Abschnitt der Verwaltung.
+ *
+ *   "einladung"  der helle Block: Kleinzeile, Ueberschrift, ein, zwei Saetze
+ *                und ein Knopf. Steht auf der Startseite unter der Galerie und
+ *                fuehrt auf die Shop-Seite. Keine Ware, keine Preise — wer
+ *                kaufen will, geht einen Schritt weiter.
+ *   "katalog"    der dunkle Teil: die Ware und der Informationsstreifen, mit
+ *                normaler Abschnitts-Ueberschrift. Steht auf /shop/.
+ *   "alles"      beides untereinander (eine Seite traegt den Shop allein).
+ *
+ * `katalogZiel` ist die Adresse der Shop-Seite; sie steht am Knopf der
+ * Einladung. Fehlt sie, springt der Knopf zum Katalog auf derselben Seite.
+ */
+function renderShop(n, s, site, kontaktMail = "", modus = "alles", katalogZiel = "") {
   const items = list(s.items).filter((p) => str(p?.name));
   const cur = str(s.currency, "CHF").trim() || "CHF";
   const buy = str(s.buyLabel, UI.buy);
@@ -2272,8 +2294,10 @@ function renderShop(n, s, site, kontaktMail = "") {
     : "";
 
   const ctaLabel = str(s.ctaLabel, UI.shopCta);
-  return `
-  <section class="shop-sec" id="shop" aria-labelledby="shop-h">
+  /* Der Knopf der Einladung fuehrt auf die Shop-Seite. Nur wenn Einladung und
+     Katalog auf derselben Seite stehen, springt er nach unten. */
+  const ctaZiel = modus === "einladung" && katalogZiel ? katalogZiel : anchor("#shop-katalog");
+  const einladung = `
     <div class="shop-intro">
       <div class="wrap shop-intro-in rv">
         <span class="mono shop-kicker">${esc(str(s.kicker, UI.shopKicker))}</span>
@@ -2283,22 +2307,36 @@ function renderShop(n, s, site, kontaktMail = "") {
         ${str(s.intro) ? `<p class="shop-lede">${inline(s.intro)}</p>` : ""}
         ${
           ctaLabel
-            ? `<a class="btn solid big shop-cta" href="${anchor("#shop-katalog")}">${esc(
-                ctaLabel
-              )}</a>`
+            ? `<a class="btn solid big shop-cta" href="${esc(ctaZiel)}">${esc(ctaLabel)}</a>`
             : ""
         }
       </div>
-    </div>
+    </div>`;
+  const katalog = `
     <div class="shop-cat pad" id="shop-katalog">
       <div class="wrap">
+        ${modus === "katalog" ? sectionHead(n, s, "shop") : ""}
         <div class="shop-grid${items.length === 1 ? " einer" : ""}">
         ${cards}
         </div>
 ${streifen}
       </div>
-    </div>
+    </div>`;
+
+  /* Der Abschnitt verweist nur dann auf eine Ueberschrift, wenn es sie in ihm
+     wirklich gibt. Auf /shop/ traegt die Seite ihren Titel schon im Kopf, die
+     Abschnitts-Ueberschrift entfaellt darum (CTX.hideHead) — ein
+     aria-labelledby ins Leere waere fuer Hilfsmittel schlechter als keines. */
+  const bau = (inhalt, extra = "") =>
+    `
+  <section class="shop-sec${extra}" id="shop"${
+      inhalt.includes('id="shop-h"') ? ' aria-labelledby="shop-h"' : ""
+    }>${inhalt}
   </section>`;
+
+  if (modus === "einladung") return bau(einladung, " nur-einladung");
+  if (modus === "katalog") return bau(katalog);
+  return bau(`${einladung}${katalog}`);
 }
 
 /* Der technische Rider ("Preferred setup", CDJs, Mixer, Booth-Monitore) stand
@@ -3246,7 +3284,27 @@ function renderPage(c, page, pages, lang, langs) {
     shows: renderShows,
     references: (n, s) => renderReferences(n, s, bookingTarget),
     gallery: renderGallery,
-    shop: (n, s) => renderShop(n, s, site, str(sections.contact?.email)),
+    /* Traegt mehr als eine Seite den Shop, zeigt die erste die Einladung und die
+       letzte den Katalog. Traegt ihn nur eine, steht dort beides. So gibt es
+       nichts doppelt in der Verwaltung und keinen zweiten Abschnitt. */
+    shop: (n, s) => {
+      const traeger = pages.filter((p) => list(p.sections).includes("shop"));
+      const katalogSeite = traeger[traeger.length - 1];
+      const modus =
+        traeger.length < 2
+          ? "alles"
+          : str(katalogSeite?.slug) === str(page.slug)
+          ? "katalog"
+          : "einladung";
+      return renderShop(
+        n,
+        s,
+        site,
+        str(sections.contact?.email),
+        modus,
+        modus === "einladung" ? pagePath(str(katalogSeite?.slug)) : ""
+      );
+    },
     booking: (n, s) => renderBooking(n, s, site),
     contact: (n, s) => renderContact(n, s, bookingTarget),
   };

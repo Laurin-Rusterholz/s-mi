@@ -1120,52 +1120,71 @@ console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlung
 }
 
 {
-  /* Der Shop steht auf der Startseite, direkt unter der Galerie.
+  /* Zwei Ansichten des Shops (12.08.2026, zweiter Anlauf).
 
-     Anlass (Kundenmeldung 12.08.2026): ein veroeffentlichter Artikel war "nicht
-     zu sehen" — er stand auf der eigenen Seite /shop/, gesucht wurde er auf der
-     Startseite. Der Abschnitt wandert deshalb dorthin, hinter die Galerie.
+     Erst hatte der Shop nur seine eigene Seite — ein veroeffentlichter Artikel
+     war "nicht zu sehen", weil ihn auf der Startseite nichts ankuendigte. Dann
+     wanderte alles auf die Startseite; auch das war nicht gemeint. Jetzt gilt:
+     die Einladung (heller Block) auf der Startseite unter der Galerie, der
+     Katalog auf /shop/. Diese Regel sorgt dafuer, dass beide Plaetze da sind.
 
-     Einmalig mit Marke: hat die Verwaltung den Stand gespeichert, entscheidet
-     ihre Seitenaufteilung. Beides wird hier geprueft. */
-  const alt = JSON.parse(JSON.stringify(template));
-  alt.pages = [
+     Aelter als diese Stelle ist die Regel selbst nicht: der erste Anlauf hiess
+     "shopAufStart" und loeste die Shop-Seite auf. Traegt ein Stand jene Marke,
+     wird die Seite hier zurueckgeholt — sonst blieben Kunden mit dem
+     Zwischenstand haengen. */
+  const frisch = JSON.parse(JSON.stringify(template));
+  frisch.pages = [
     { slug: "", navLabel: "Home", sections: ["about", "shows", "references", "gallery", "contact"] },
     { slug: "booking", navLabel: "Booking", sections: ["booking", "contact"] },
     { slug: "shop", navLabel: "Shop", sections: ["shop"] },
   ];
-  alt.i18n = { de: { pages: { 0: { navLabel: "Start" }, 1: { navLabel: "Booking" }, 2: { navLabel: "Shop" } } } };
-  delete alt.migrationen;
+  delete frisch.migrationen;
 
-  nachziehen(alt, korr);
+  nachziehen(frisch, korr);
 
-  const start = alt.pages[0];
-  if (!start.sections.includes("shop")) meckern("der Shop steht nicht auf der Startseite");
-  else {
-    const nach = start.sections.indexOf("shop");
-    const galerie = start.sections.indexOf("gallery");
-    if (galerie < 0 || nach !== galerie + 1)
-      meckern(`der Shop steht nicht direkt unter der Galerie: ${start.sections.join(", ")}`);
-  }
-  if (alt.pages.some((p) => String(p.slug) === "shop")) meckern("die Seite /shop/ steht noch da");
-  if (alt.pages.length !== 2) meckern(`${alt.pages.length} Seiten statt zwei`);
-  /* Die Seitennamen haengen am Platz: faellt die dritte Seite weg, darf kein
-     Eintrag "2" zurueckbleiben — sonst hiesse Booking auf einmal "Shop". */
-  const namen = alt.i18n?.de?.pages || {};
-  if (Object.keys(namen).length !== 2)
-    meckern(`Seitennamen (de) haben ${Object.keys(namen).length} Eintraege statt zwei`);
-  if (namen["1"]?.navLabel !== "Booking")
-    meckern(`Seite 1 heisst auf Deutsch "${namen["1"]?.navLabel}" statt "Booking"`);
+  const start = frisch.pages[0];
+  if (!start.sections.includes("shop"))
+    meckern("die Einladung fehlt auf der Startseite: " + start.sections.join(", "));
+  else if (start.sections.indexOf("shop") !== start.sections.indexOf("gallery") + 1)
+    meckern("die Einladung steht nicht direkt unter der Galerie: " + start.sections.join(", "));
+  if (!frisch.pages.some((p) => String(p.slug) === "shop")) meckern("die Seite /shop/ fehlt");
+  if (frisch.pages.length !== 3) meckern(`${frisch.pages.length} Seiten statt drei`);
 
-  // Und mit Marke bleibt die eigene Aufteilung, wie sie ist.
-  const eigen = JSON.parse(JSON.stringify(template));
-  eigen.pages = [
-    { slug: "", navLabel: "Home", sections: ["about", "gallery", "contact"] },
-    { slug: "booking", navLabel: "Booking", sections: ["booking"] },
-    { slug: "shop", navLabel: "Shop", sections: ["shop"] },
+  /* Reparatur: der erste Anlauf hatte die Shop-Seite aufgeloest. Wer den Stand
+     in der Zwischenzeit gespeichert hat, bekommt sie zurueck — samt
+     uebersetztem Seitennamen. */
+  const zwischen = JSON.parse(JSON.stringify(template));
+  zwischen.pages = [
+    { slug: "", navLabel: "Home", sections: ["about", "gallery", "shop", "contact"] },
+    { slug: "booking", navLabel: "Booking", sections: ["booking", "contact"] },
   ];
-  eigen.migrationen = { shopAufStart: true };
-  nachziehen(eigen, korr);
-  if (!eigen.pages.some((p) => String(p.slug) === "shop"))
-    meckern("die eigene Shop-Seite wurde trotz gesetzter Marke aufgeloest");
+  zwischen.i18n = { de: { pages: { 0: { navLabel: "Start" }, 1: { navLabel: "Booking" } } } };
+  zwischen.migrationen = { shopAufStart: true };
+
+  nachziehen(zwischen, korr);
+
+  if (!zwischen.pages.some((p) => String(p.slug) === "shop"))
+    meckern("die Shop-Seite kam nicht zurueck: " + zwischen.pages.map((p) => p.slug).join(", "));
+  if (zwischen.i18n.de.pages["2"]?.navLabel !== "Shop")
+    meckern(`der deutsche Name der Shop-Seite fehlt: ${JSON.stringify(zwischen.i18n.de.pages)}`);
+
+  /* Eine eigene Aufteilung OHNE jene Marke bleibt, wie sie ist: wer den Shop
+     bewusst nur auf die Startseite legt, bekommt keine Seite aufgedraengt. */
+  const eigenSeiten = JSON.parse(JSON.stringify(template));
+  eigenSeiten.pages = [
+    { slug: "", navLabel: "Home", sections: ["about", "gallery", "shop", "contact"] },
+    { slug: "booking", navLabel: "Booking", sections: ["booking", "contact"] },
+  ];
+  delete eigenSeiten.migrationen;
+  nachziehen(eigenSeiten, korr);
+  if (eigenSeiten.pages.length !== 2)
+    meckern("eine eigene Aufteilung bekam eine Shop-Seite aufgedraengt");
+
+  // Und mit gesetzter Marke wird gar nichts mehr angefasst.
+  const marke = JSON.parse(JSON.stringify(template));
+  marke.pages = [{ slug: "", navLabel: "Home", sections: ["about", "gallery", "contact"] }, { slug: "laden", navLabel: "Laden", sections: ["shop"] }];
+  marke.migrationen = { shopSeiteUndEinladung: true };
+  nachziehen(marke, korr);
+  if (marke.pages[0].sections.includes("shop"))
+    meckern("die Einladung wurde trotz gesetzter Marke nachgetragen");
 }

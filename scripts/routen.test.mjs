@@ -109,12 +109,12 @@ const ERWARTET = [
   ["/booking/", 200, "/booking/index.html"],
   ["/de/booking/", 200, "/de/booking/index.html"],
   ["/fr/booking/", 200, "/fr/booking/index.html"],
-  /* Der Shop hat seit dem 12.08.2026 keine eigene Seite mehr — er steht auf der
-     Startseite unter der Galerie. Alte Links durften nicht auf 404 laufen,
-     darum eine dauerhafte Umleitung an die richtige Stelle. */
-  ["/shop/", 301, "/#shop"],
-  ["/de/shop/", 301, "/de/#shop"],
-  ["/fr/shop/", 301, "/fr/#shop"],
+  /* Der Shop hat seine eigene Seite — dort steht der Katalog. Auf der Startseite
+     steht nur die Einladung (der helle Block) mit einem Knopf hierher; das war
+     am 12.08.2026 zwischenzeitlich anders geloest und ist zurueckgedreht. */
+  ["/shop/", 200, "/shop/index.html"],
+  ["/de/shop/", 200, "/de/shop/index.html"],
+  ["/fr/shop/", 200, "/fr/shop/index.html"],
 
   // Die Endpunkte.
   ["/api/booking", 200, "/.netlify/functions/booking"],
