@@ -1376,8 +1376,6 @@
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOr%2Fsartophotography-dsc4647-web.jpg?alt=media&token=14c31001-34f0-4239-aab7-c87ff2ef61e0"
         },
-        null,
-        null,
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YPIFnsrxxyruOs%2Fsartophotography-dsc4686-web.jpg?alt=media&token=92440c7d-219e-40b1-b6d0-75343a959fd0"
         },
@@ -1429,7 +1427,6 @@
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4taHwUiXKTu1nP7_%2Fsartophotography-dsc4070-web.jpg?alt=media&token=00690437-4cce-448a-bd73-55cc047bc1d0"
         },
-        null,
         {
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-_QgFRY1xsAZIvQz%2Fultrawild-tim.mp4?alt=media&token=3bb8019f-33a4-42b3-afc4-6ee068a9c53d"
         },
@@ -1632,7 +1629,8 @@
           "date": "2026-08-29",
           "inquiryId": "-OynrY4vxLnlzNN0U2G1",
           "name": "Aftersun",
-          "status": "booked"
+          "status": "booked",
+          "ticketUrl": "https://events.beyond-tickets.com/de/events/979ac8d6-7d4e-4d05-9375-b4bf34984272?utm_source=ig&utm_medium=social&utm_content=link_in_bio"
         },
         {
           "country": "CH",
@@ -1648,7 +1646,8 @@
           "date": "2026-08-15",
           "name": "Nox club",
           "status": "confirmed",
-          "ticketLabel": "Tickets"
+          "ticketLabel": "Tickets",
+          "ticketUrl": "DM for friendlist"
         }
       ],
       "navLabel": "Shows",
@@ -1811,6 +1810,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-11T21:40:47.343Z",
+  "updatedAt": "2026-08-12T06:32:13.285Z",
   "updatedBy": "Verwaltung"
 }
