@@ -22,6 +22,7 @@ import {
   istStripeAdresse,
   localize,
   nachziehen,
+  priceTag,
   zahlungBereit,
 } from "./build.mjs";
 
@@ -1084,5 +1085,27 @@ console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlung
     nachziehen(an, korr);
     if (an.sections[abschnitt].enabled !== true)
       meckern(`"${abschnitt}" wurde ausgeschaltet, obwohl es an war`);
+  }
+}
+
+{
+  /* Der Preis bekommt genau einen Abstand.
+
+     Anlass: in der Verwaltung stand als Waehrung "CHF " mit Leerzeichen am
+     Ende. Auf der Shop-Seite stand darum "CHF  25.—" mit doppeltem Abstand.
+     Die Waehrung wird jetzt beschnitten — der Wert in der Datenbank bleibt,
+     wie er ist, nur die Ausgabe ist sauber. */
+  const faelle = [
+    [["25", "CHF "], "CHF 25.—"],
+    [["25", " CHF"], "CHF 25.—"],
+    [["25", "CHF"], "CHF 25.—"],
+    [["25.50", "CHF"], "CHF 25.50"],
+    [["", "CHF"], ""],
+    [["auf Anfrage", "CHF"], "auf Anfrage"],
+  ];
+  for (const [[preis, waehrung], soll] of faelle) {
+    const ist = priceTag(preis, waehrung);
+    if (ist !== soll) meckern(`priceTag(${JSON.stringify(preis)}, ${JSON.stringify(waehrung)}) = ${JSON.stringify(ist)} statt ${JSON.stringify(soll)}`);
+    if (/ {2}/.test(ist)) meckern(`doppelter Abstand im Preis: ${JSON.stringify(ist)}`);
   }
 }

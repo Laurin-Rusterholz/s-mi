@@ -1922,11 +1922,17 @@ function renderGallery(n, s) {
   </section>`;
 }
 
-/** Preis huebsch ausgeben: "45" + "CHF" -> "CHF 45.—" */
-function priceTag(price, currency) {
+/**
+ * Preis huebsch ausgeben: "45" + "CHF" -> "CHF 45.—"
+ *
+ * Die Waehrung wird beschnitten. In der Verwaltung stand "CHF " mit Leerzeichen
+ * am Ende — auf der Seite wurde daraus "CHF  25.—" mit doppeltem Abstand.
+ */
+export function priceTag(price, currency) {
   const v = String(price ?? "").trim();
   if (!v) return "";
-  return /[A-Za-z]/.test(v) ? v : `${currency} ${v}${/[.,]/.test(v) ? "" : ".—"}`;
+  const cur = String(currency ?? "").trim();
+  return /[A-Za-z]/.test(v) ? v : `${cur} ${v}${/[.,]/.test(v) ? "" : ".—"}`.trim();
 }
 
 /**
@@ -2156,7 +2162,7 @@ const shopIcon = (key) =>
  */
 function renderShop(n, s, site) {
   const items = list(s.items).filter((p) => str(p?.name));
-  const cur = str(s.currency, "CHF");
+  const cur = str(s.currency, "CHF").trim() || "CHF";
   const buy = str(s.buyLabel, UI.buy);
   const form = orderForm(s, site, items, cur);
   const hasOrderForm = !!form;
@@ -2638,7 +2644,9 @@ function structuredData(c, sections, page, pages) {
 
   // Produkte des Shops (nur mit Preis)
   if (!page || list(page.sections).includes("shop")) {
-    const cur = str(sections.shop?.currency, "CHF");
+    // Beschnitten: "CHF " mit Leerzeichen waere in den strukturierten Daten
+    // keine gueltige Waehrung.
+    const cur = str(sections.shop?.currency, "CHF").trim() || "CHF";
     for (const p of list(sections.shop?.items)) {
       if (!str(p?.name) || !str(p?.price) || p.status === "soldout") continue;
       const amount = String(p.price).replace(/[^\d.]/g, "");
