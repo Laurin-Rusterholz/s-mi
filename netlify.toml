@@ -12,15 +12,30 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Inhaltsquelle beim Bauen: der Stand aus der Verwaltung, direkt aus der
+  # Datenbank. Ohne diese Adresse baut Netlify aus dem eingecheckten
+  # Schnappschuss — dann zeigt die Website den Stand des letzten Abgleichs und
+  # ein neuer Artikel taucht erst mit dem naechsten Zeitplan-Lauf auf. Genau das
+  # war am 12.08.2026 der Fall: ein gespeicherter Sticker war nicht zu sehen.
+  #
+  # Damit gilt jetzt: JEDER Netlify-Build zeigt den aktuellen Stand. Ruft die
+  # Verwaltung beim Publizieren den Build-Hook, ist die Aenderung nach dem Build
+  # (rund eine Minute) live — ohne Zeitplan, ohne Warten.
+  #
+  # Kein Geheimnis: die Adresse ist oeffentlich lesbar und steht seit Juli in
+  # .github/workflows/inhalt.yml. Schreiben kann damit niemand.
+  CONTENT_API_URL = "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json"
 
 # Bild-CDN: Firebase-Storage-Bilder duerfen ueber /.netlify/images verkleinert
 # und als WebP/AVIF ausgeliefert werden (der Generator schreibt diese Adressen).
 [images]
   remote_images = ['https://firebasestorage\.googleapis\.com/.*']
-  # Inhaltsquelle: Verwaltung (Firebase Realtime Database, öffentlich lesbarer
-  # content-Knoten). Ist die API nicht erreichbar, fällt der Build auf den im
-  # Repo eingecheckten Stand content/site.json zurück.
-  CONTENT_API_URL = "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json"
+  # Hier stand bis zum 12.08.2026 CONTENT_API_URL — mitten in [images]. Das ist
+  # kein Bild-Schluessel und keine Umgebungsvariable: Netlify hat sie nie an den
+  # Build weitergegeben, und JEDER Netlify-Build baute darum aus dem
+  # eingecheckten Schnappschuss statt aus der Verwaltung. "Publizieren" konnte
+  # so nicht wirken; neuer Inhalt kam erst, wenn der Zeitplan im Repo ihn
+  # eincheckte. Die Zeile steht jetzt in [build.environment] weiter oben.
 
 [[headers]]
   for = "/*"

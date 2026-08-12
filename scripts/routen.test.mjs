@@ -203,3 +203,31 @@ console.log(
     `Geprueft wird die Regelkette und ob die Zieldatei gebaut ist — nicht die\n` +
     `Antwort des laufenden Servers.`
 );
+
+{
+  /* Die Inhaltsquelle muss beim Bauen ANKOMMEN.
+
+     Anlass (12.08.2026): CONTENT_API_URL stand in netlify.toml mitten im
+     [images]-Block. Das ist kein Bild-Schluessel und keine Umgebungsvariable —
+     Netlify gab sie nie an den Build weiter. Jeder Netlify-Build baute darum aus
+     dem eingecheckten Schnappschuss statt aus der Verwaltung: "Publizieren"
+     konnte nicht wirken, und ein gespeicherter Artikel war nicht zu sehen, bis
+     der Zeitplan im Repo ihn eincheckte.
+
+     Geprueft wird darum beides: sie steht in [build.environment], und sie steht
+     NICHT irgendwo sonst. */
+  const toml = await readFile(resolve(ROOT, "netlify.toml"), "utf8");
+  const zeilen = toml.split("\n");
+  let block = "";
+  const treffer = [];
+  for (const z of zeilen) {
+    const tabelle = z.match(/^\s*\[+([^\]]+)\]+/);
+    if (tabelle) block = tabelle[1].trim();
+    if (/^\s*CONTENT_API_URL\s*=/.test(z)) treffer.push(block);
+  }
+  if (!treffer.length) meckern("netlify.toml nennt CONTENT_API_URL nicht — der Build baut aus dem Schnappschuss");
+  for (const wo of treffer)
+    if (wo !== "build.environment")
+      meckern(`CONTENT_API_URL steht in [${wo}] — dort erreicht sie den Build nicht`);
+  if (treffer.length > 1) meckern(`CONTENT_API_URL steht ${treffer.length}× in netlify.toml`);
+}
