@@ -1,12 +1,24 @@
 # Holt den Stand aus der Verwaltung (Realtime Database) und checkt die neu
 # gebaute Website ein — der Push loest den Netlify-Deploy aus. Damit wirkt
-# "Publizieren" in der Verwaltung auch OHNE hinterlegten Netlify-Build-Hook:
-# spaetestens eine Stunde nach dem Speichern ist der Stand live.
+# "Publizieren" in der Verwaltung auch OHNE hinterlegten Netlify-Build-Hook.
+#
+# Seit dem 12.08.2026 laeuft das alle fuenf Minuten statt stuendlich: eine
+# Stunde Wartezeit war der Grund, warum eine Aenderung in der Verwaltung
+# gefuehlt "nicht publiziert" wurde. Fuenf Minuten ist das kuerzeste Intervall,
+# das GitHub fuer Zeitplaene erlaubt (und es kann sich unter Last verzoegern).
+#
+# Das kostet nichts Zusaetzliches: ist der Stand unveraendert, endet der Lauf
+# nach wenigen Sekunden ohne Commit, und Netlify baut nichts. Nur ein wirklich
+# neuer Stand loest einen Deploy aus.
+#
+# Der schnelle Weg bleibt der Build-Hook: die Verwaltung ruft ihn beim
+# Publizieren sofort auf, dann ist der Stand nach dem Netlify-Build (rund eine
+# Minute) live. Dieser Zeitplan ist das Netz darunter.
 name: Inhalt aus der Verwaltung uebernehmen
 
 on:
   schedule:
-    - cron: "23 * * * *"   # stuendlich
+    - cron: "*/5 * * * *"   # alle fuenf Minuten (GitHub-Minimum)
   workflow_dispatch: {}     # von Hand: Actions -> Run workflow
 
 permissions:
