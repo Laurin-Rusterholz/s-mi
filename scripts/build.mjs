@@ -2036,8 +2036,22 @@ function renderGallery(n, s) {
 export function priceTag(price, currency) {
   const v = String(price ?? "").trim();
   if (!v) return "";
-  const cur = String(currency ?? "").trim();
-  return /[A-Za-z]/.test(v) ? v : `${cur} ${v}${/[.,]/.test(v) ? "" : ".—"}`.trim();
+  const cur = String(currency ?? "").trim() || "CHF";
+  /* Steht die Waehrung im Preisfeld mit drin, wird sie herausgenommen und der
+     Preis normal gesetzt. Anlass (12.08.2026): im Shop stand "CHF 25.—" neben
+     "5CHF" — beim zweiten Artikel war "5 CHF" ins Preisfeld getippt, und weil
+     dort ein Buchstabe stand, ging der Preis unveraendert durch. Zwei
+     Schreibweisen im selben Regal sehen nach Versehen aus.
+
+     Ein Preisfeld mit echtem Text ("auf Anfrage") bleibt dagegen unangetastet —
+     das ist eine Aussage, keine Zahl. */
+  const bekannt = new Set([cur.toUpperCase(), "CHF", "EUR", "USD", "GBP", "FR.", "SFR"]);
+  const ohneWaehrung = v
+    .replace(/[A-Za-zÀ-ÿ.]+/g, (wort) => (bekannt.has(wort.toUpperCase()) ? " " : wort))
+    .trim();
+  const zahl = /[A-Za-zÀ-ÿ]/.test(ohneWaehrung) ? "" : ohneWaehrung.replace(/\s+/g, "");
+  if (!zahl) return v;
+  return `${cur} ${zahl}${/[.,]/.test(zahl) ? "" : ".—"}`.trim();
 }
 
 /**

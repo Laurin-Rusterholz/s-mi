@@ -1111,6 +1111,14 @@ console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlung
     [["25.50", "CHF"], "CHF 25.50"],
     [["", "CHF"], ""],
     [["auf Anfrage", "CHF"], "auf Anfrage"],
+    /* Waehrung im Preisfeld. Anlass (12.08.2026): im Shop stand "CHF 25.—"
+       neben "5CHF" — beim zweiten Artikel war die Waehrung mit ins Preisfeld
+       getippt, und weil dort ein Buchstabe stand, ging der Preis unveraendert
+       durch. Jetzt wird sie herausgenommen und der Preis normal gesetzt. */
+    [["5CHF", "CHF"], "CHF 5.—"],
+    [["5 CHF", "CHF"], "CHF 5.—"],
+    [["CHF 12", "CHF"], "CHF 12.—"],
+    [["19,90", "EUR"], "EUR 19,90"],
   ];
   for (const [[preis, waehrung], soll] of faelle) {
     const ist = priceTag(preis, waehrung);
