@@ -1038,6 +1038,61 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Shop-Angabe(n) ergaenzt`);
   }
 
+  /* Der Shop gehoert auf die Startseite, unter die Galerie (12.08.2026).
+
+     Bis dahin hatte er eine eigene Seite /shop/. Der Kunde hat ein Produkt
+     veroeffentlicht und es auf der Startseite gesucht — dort stand nichts, und
+     der Weg ueber das Menue war ihm nicht der richtige. Der Abschnitt wandert
+     deshalb in die Startseite, direkt hinter die Galerie; die eigene Seite
+     faellt weg, wenn sonst nichts darauf steht.
+
+     Einmalig, mit Marke: sobald die Verwaltung den Stand gespeichert hat,
+     entscheidet die Seitenaufteilung dort. Wer den Shop danach wieder auf eine
+     eigene Seite legt, behaelt das letzte Wort.
+
+     Die Uebersetzungen der Seitennamen haengen am PLATZ in der Liste — faellt
+     eine Seite weg, muss ihr Eintrag in `i18n.<lang>.pages` mitfallen, sonst
+     heisst die Booking-Seite auf einmal "Boutique". */
+  if (!erledigt("shopAufStart")) {
+    const seiten = list(live.pages);
+    const start = seiten[0];
+    const traeger = seiten.findIndex((p) => list(p?.sections).includes("shop"));
+    if (start && traeger > 0) {
+      // Aus der alten Seite nehmen; ist sie danach leer, fliegt sie ganz weg.
+      const alt = seiten[traeger];
+      alt.sections = list(alt.sections).filter((k) => k !== "shop");
+      let entfernt = -1;
+      if (!alt.sections.length) {
+        seiten.splice(traeger, 1);
+        entfernt = traeger;
+      }
+      // In die Startseite, direkt hinter die Galerie.
+      const ziel = list(start.sections).filter((k) => k !== "shop");
+      const nachGalerie = ziel.indexOf("gallery");
+      ziel.splice(nachGalerie < 0 ? ziel.length : nachGalerie + 1, 0, "shop");
+      start.sections = ziel;
+      live.pages = seiten;
+
+      if (entfernt >= 0) {
+        for (const wurzel of ["i18n", "i18nHash"]) {
+          for (const tabelle of Object.values(live[wurzel] || {})) {
+            const alteTabelle = tabelle?.pages;
+            if (!alteTabelle || typeof alteTabelle !== "object") continue;
+            const neueTabelle = {};
+            for (const [platz, wert] of Object.entries(alteTabelle)) {
+              const i = Number(platz);
+              if (!Number.isInteger(i)) continue;
+              if (i === entfernt) continue;
+              neueTabelle[String(i > entfernt ? i - 1 : i)] = wert;
+            }
+            tabelle.pages = neueTabelle;
+          }
+        }
+      }
+      getan.push("Shop auf die Startseite (unter die Galerie)");
+    }
+  }
+
   /* Die Telefonnummer gibt es nicht mehr — ueberall (12.08.2026).
 
      Erst wurde sie nur nicht mehr angezeigt, dann geleert. Beides war halb: das

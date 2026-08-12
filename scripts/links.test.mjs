@@ -301,7 +301,12 @@ for (const [datei, h] of html) {
     const kopf = h.match(/<header[\s\S]*?<\/header>/);
     if (kopf && kopf[0].includes("<svg")) meckern(`${rel}: Zeichen im Kopf — dort gehoert keins hin`);
     if (kopf && !/href="[^"]*\/booking\/"/.test(kopf[0])) meckern(`${rel}: kein Weg zum Booking im Kopf`);
-    if (kopf && !/href="[^"]*\/shop\/"/.test(kopf[0])) meckern(`${rel}: kein Weg zum Shop im Kopf`);
+    /* Der Shop steht seit dem 12.08.2026 auf der Startseite unter der Galerie.
+       Der Weg im Kopf ist darum ein Sprungziel (#shop) und keine eigene Seite
+       mehr — beides gilt, damit die Pruefung auch nach einer Rueckkehr zur
+       eigenen Seite noch stimmt. */
+    if (kopf && !/href="[^"]*(\/shop\/|#shop)"/.test(kopf[0]))
+      meckern(`${rel}: kein Weg zum Shop im Kopf`);
   }
 
   // 2) Shows stehen nur da, wenn ein Termin aussteht — sonst gar nicht.

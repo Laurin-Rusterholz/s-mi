@@ -818,8 +818,17 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   eigen.sections.contact.socials = [
     { label: "Instagram", url: "https://instagram.com/x", inHeader: true },
   ];
+  /* Eine eigene Seitenaufteilung. Sie versorgt ALLE beschlossenen Abschnitte —
+     sonst greift die Regel vom 10.08.2026 und legt die fehlende Seite an, deren
+     Abschnitte nirgends stehen. Das ist gewollt (ein Abschnitt darf nicht
+     heimatlos werden) und hier nicht der Pruefgegenstand: hier geht es darum,
+     dass eine eigene Aufteilung nicht umgebaut wird.
+
+     Bis zum 12.08.2026 lagen Booking und Shop auf eigenen Seiten. Der Shop ist
+     seither ein Abschnitt der Startseite, und die Startseite hier deckt beides
+     mit ab. */
   eigen.pages = [
-    { slug: "", navLabel: "Home", sections: ["about"] },
+    { slug: "", navLabel: "Home", sections: ["about", "shop", "booking", "contact"] },
     { slug: "extra", navLabel: "Extra", sections: ["gallery"] },
   ];
 
@@ -1108,4 +1117,55 @@ console.log("Bezahlung: nur https und nur stripe.com/link.com gelten als Zahlung
     if (ist !== soll) meckern(`priceTag(${JSON.stringify(preis)}, ${JSON.stringify(waehrung)}) = ${JSON.stringify(ist)} statt ${JSON.stringify(soll)}`);
     if (/ {2}/.test(ist)) meckern(`doppelter Abstand im Preis: ${JSON.stringify(ist)}`);
   }
+}
+
+{
+  /* Der Shop steht auf der Startseite, direkt unter der Galerie.
+
+     Anlass (Kundenmeldung 12.08.2026): ein veroeffentlichter Artikel war "nicht
+     zu sehen" — er stand auf der eigenen Seite /shop/, gesucht wurde er auf der
+     Startseite. Der Abschnitt wandert deshalb dorthin, hinter die Galerie.
+
+     Einmalig mit Marke: hat die Verwaltung den Stand gespeichert, entscheidet
+     ihre Seitenaufteilung. Beides wird hier geprueft. */
+  const alt = JSON.parse(JSON.stringify(template));
+  alt.pages = [
+    { slug: "", navLabel: "Home", sections: ["about", "shows", "references", "gallery", "contact"] },
+    { slug: "booking", navLabel: "Booking", sections: ["booking", "contact"] },
+    { slug: "shop", navLabel: "Shop", sections: ["shop"] },
+  ];
+  alt.i18n = { de: { pages: { 0: { navLabel: "Start" }, 1: { navLabel: "Booking" }, 2: { navLabel: "Shop" } } } };
+  delete alt.migrationen;
+
+  nachziehen(alt, korr);
+
+  const start = alt.pages[0];
+  if (!start.sections.includes("shop")) meckern("der Shop steht nicht auf der Startseite");
+  else {
+    const nach = start.sections.indexOf("shop");
+    const galerie = start.sections.indexOf("gallery");
+    if (galerie < 0 || nach !== galerie + 1)
+      meckern(`der Shop steht nicht direkt unter der Galerie: ${start.sections.join(", ")}`);
+  }
+  if (alt.pages.some((p) => String(p.slug) === "shop")) meckern("die Seite /shop/ steht noch da");
+  if (alt.pages.length !== 2) meckern(`${alt.pages.length} Seiten statt zwei`);
+  /* Die Seitennamen haengen am Platz: faellt die dritte Seite weg, darf kein
+     Eintrag "2" zurueckbleiben — sonst hiesse Booking auf einmal "Shop". */
+  const namen = alt.i18n?.de?.pages || {};
+  if (Object.keys(namen).length !== 2)
+    meckern(`Seitennamen (de) haben ${Object.keys(namen).length} Eintraege statt zwei`);
+  if (namen["1"]?.navLabel !== "Booking")
+    meckern(`Seite 1 heisst auf Deutsch "${namen["1"]?.navLabel}" statt "Booking"`);
+
+  // Und mit Marke bleibt die eigene Aufteilung, wie sie ist.
+  const eigen = JSON.parse(JSON.stringify(template));
+  eigen.pages = [
+    { slug: "", navLabel: "Home", sections: ["about", "gallery", "contact"] },
+    { slug: "booking", navLabel: "Booking", sections: ["booking"] },
+    { slug: "shop", navLabel: "Shop", sections: ["shop"] },
+  ];
+  eigen.migrationen = { shopAufStart: true };
+  nachziehen(eigen, korr);
+  if (!eigen.pages.some((p) => String(p.slug) === "shop"))
+    meckern("die eigene Shop-Seite wurde trotz gesetzter Marke aufgeloest");
 }
