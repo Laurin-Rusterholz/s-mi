@@ -408,6 +408,12 @@ header nav a:hover::after,header nav a[aria-current]::after{width:100%;}
 .gal-video.fit-full video{object-fit:contain;background:var(--ink);}
 
 /* ---------- HERO (Unterseiten) ---------- */
+/* Kompakter Kopf, zwei Zeilen: Name in Knochenweiss, Seite in der Akzentfarbe.
+   So steht der Name auch auf /shop/ und /booking/ oben. */
+.hero-zwei{display:block;line-height:.95;}
+.hero-artist,.hero-seite{display:block;}
+.hero-artist{color:var(--bone);}
+.hero-seite{color:var(--spark);}
 .hero-compact{
   min-height:0;height:auto;display:block;text-align:center;
   padding:clamp(120px,16vh,180px) 0 clamp(26px,4vw,44px);
@@ -1999,4 +2005,26 @@ html.vor-release .release{
 @media (prefers-reduced-motion: no-preference){
   html.vor-release .release{animation:rl-in .6s cubic-bezier(.22,.8,.28,1) both;}
   @keyframes rl-in{from{opacity:0;}to{opacity:1;}}
+}
+
+/* ---------- EIN EINZELNER ARTIKEL AUF DEM HANDY ---------- */
+/* Kundenmeldung 12.08.2026: "das Produkt auf dem Handy ist viel zu gross". Es
+   war eine Kachel ueber die ganze Breite mit hochkantem Bild — 390 x 490 px
+   allein fuer das Foto, zusammen fast ein ganzer Bildschirm.
+
+   Nur der EINZELNE Artikel (`.einer`) wird kleiner: eine ruhige Kachel bis
+   300 px, das Bild quadratisch statt hochkant. Stehen mehrere Artikel im Shop,
+   bleibt das kleine Raster von weiter oben — dort ist keine Kachel zu gross.
+
+   Diese Regeln stehen bewusst am Ende der Datei: die Grundregeln fuer
+   .prod-shot und .shop-grid kommen im Stylesheet spaeter als die Handy-Bloecke
+   und haetten sie sonst wieder ueberschrieben. */
+@media (max-width:640px){
+  .shop-grid.einer{
+    grid-template-columns:minmax(0,1fr);
+    max-width:min(100%,300px);justify-content:start;
+  }
+  .shop-grid.einer .prod-shot{aspect-ratio:1/1;}
+  .shop-grid.einer .prod-body{padding:14px;}
+  .shop-grid.einer .prod-body h3{font-size:1rem;}
 }

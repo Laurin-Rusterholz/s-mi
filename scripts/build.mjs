@@ -3463,7 +3463,17 @@ function renderPage(c, page, pages, lang, langs) {
   <section class="hero hero-compact" id="top">
     <div class="wrap">
       <p class="mono">${esc(str(c.hero?.kicker, site.artist))}</p>
-      <h1>${esc(str(page.title, page.navLabel))}</h1>
+      ${/* Zwei Zeilen: der Name, darunter die Seite in der Akzentfarbe. Bis zum
+           12.08.2026 stand hier nur "Shop" — auf der Shop-Seite fehlte der Name
+           ganz (Kundenwunsch: "oben noch den Namen schreiben"). Der Name kommt
+           aus den Stammdaten, die Zeile darunter ist der Seitentitel. */ ""}
+      <h1 class="hero-zwei"><span class="hero-artist">${esc(
+        str(site.artist, "Sam Sparking")
+      )}</span><span class="hero-seite">${esc(
+        /* Der Menuename zuerst: er ist uebersetzt ("Boutique" auf /fr/), der
+           Seitentitel steht nur in der Hauptsprache. */
+        str(page.navLabel, page.title)
+      )}</span></h1>
       <div class="sparks" aria-hidden="true">${sparks(8)}</div>
     </div>
   </section>`
