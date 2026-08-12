@@ -1095,9 +1095,11 @@
   "migrationen": {
     "kanaele": true,
     "referenzen": true,
+    "shopAufStart": true,
     "shopInfo": true,
     "telefon": true,
-    "ware": true
+    "ware": true,
+    "shopSeiteUndEinladung": true
   },
   "pages": [
     {
@@ -1609,15 +1611,26 @@
           "name": "Snapback-Cap Sam Sparking",
           "paymentLink": "https://buy.stripe.com/14A14gepW8FCffs2vm7bW01",
           "price": "25",
-          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzmUdqLVBvID62fqsmF%2Fsam-sparking-cap-2-v2.png?alt=media&token=9728f09a-5f1f-48f2-a8fd-8245008901b8",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzrMCd5kxCdtd0T9XJG%2Fsam-sparking-cap-white-bg.png?alt=media&token=c95a6609-0f17-47f0-801f-7432841ff770",
+          "status": "available"
+        },
+        {
+          "alt": "Sam Sparking Stickers(50 Stück pro Bestellung) - Gratis Versand innerhalb der Schweiz!",
+          "badge": "",
+          "linkUrl": "",
+          "name": "Sticker Sam Sparking",
+          "note": "",
+          "paymentLink": "https://buy.stripe.com/dRm9AM6Xu3li2sGfi87bW02",
+          "price": "5CHF",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzrKKyvvlsK8Hdn-ayc%2Fdesign-02.jpg?alt=media&token=250f3ed0-dab0-42e9-a804-2686edf6cfe8",
           "status": "available"
         }
       ],
+      "kicker": "MERCH",
       "navLabel": "Shop",
       "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
-      "titleAccent": "op.",
-      "kicker": "MERCH"
+      "titleAccent": "op."
     },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -1810,6 +1823,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-12T15:16:51.345Z",
+  "updatedAt": "2026-08-12T19:11:52.747Z",
   "updatedBy": "Verwaltung"
 }
