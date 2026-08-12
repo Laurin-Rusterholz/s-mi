@@ -1199,7 +1199,7 @@
       "navLabel": "Booking",
       "photo": {
         "alt": "Sam Sparking on stage",
-        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac"
+        "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzpsxxW-_M-F5RGxWUW%2Fdscf8788.jpg?alt=media&token=95caa516-76a8-401d-9dc1-9bc127c2ffbb"
       },
       "presskitLabel": "Presskit (PDF)",
       "presskitUrl": "presskit/sam-sparking-presskit-2026.pdf",
@@ -1809,6 +1809,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-12T11:18:21.083Z",
+  "updatedAt": "2026-08-12T12:13:15.268Z",
   "updatedBy": "Verwaltung"
 }
