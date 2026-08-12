@@ -1095,7 +1095,9 @@
   "migrationen": {
     "kanaele": true,
     "referenzen": true,
+    "shopAufStart": true,
     "shopInfo": true,
+    "shopSeiteUndEinladung": true,
     "telefon": true,
     "ware": true
   },
@@ -1611,13 +1613,24 @@
           "price": "25",
           "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzmUdqLVBvID62fqsmF%2Fsam-sparking-cap-2-v2.png?alt=media&token=9728f09a-5f1f-48f2-a8fd-8245008901b8",
           "status": "available"
+        },
+        {
+          "alt": "Sam Sparking Stickers(50 Stück pro Bestellung) - Gratis Versand innerhalb der Schweiz!",
+          "badge": "",
+          "linkUrl": "",
+          "name": "Sticker Sam Sparking",
+          "note": "",
+          "paymentLink": "https://buy.stripe.com/dRm9AM6Xu3li2sGfi87bW02",
+          "price": "5 CHF",
+          "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzqbTQsI5mohV0hINzW%2Fdesign-02gg.jpg?alt=media&token=dbe5dc86-6eb5-4988-aa3e-881d3c97d47c",
+          "status": "available"
         }
       ],
+      "kicker": "MERCH",
       "navLabel": "Shop",
       "note": "Merch from Sam Sparking — every piece helps fund the next production.",
       "title": "Sh",
-      "titleAccent": "op.",
-      "kicker": "MERCH"
+      "titleAccent": "op."
     },
     "shows": {
       "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -1810,6 +1823,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-12T15:16:51.345Z",
+  "updatedAt": "2026-08-12T17:04:18.921Z",
   "updatedBy": "Verwaltung"
 }
