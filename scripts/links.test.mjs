@@ -307,6 +307,19 @@ for (const [datei, h] of html) {
        eigenen Seite noch stimmt. */
     if (kopf && !/href="[^"]*(\/shop\/|#shop)"/.test(kopf[0]))
       meckern(`${rel}: kein Weg zum Shop im Kopf`);
+    /* Und nur EINEN. Anlass (Sichtbefund 12.08.2026): der Shop steht an zwei
+       Plaetzen (Katalog auf /shop/, Einladung auf der Startseite) — im Kopf
+       stand daraufhin zweimal "Shop", einmal als Seite und einmal als
+       Sprungmarke. Die Seite gewinnt. */
+    if (kopf) {
+      const shopEintraege = [...kopf[0].matchAll(/<li[^>]*><a[^>]*href="([^"]*)"/g)].filter((m) =>
+        /(\/shop\/|#shop)$/.test(m[1])
+      );
+      if (shopEintraege.length > 1)
+        meckern(`${rel}: ${shopEintraege.length}× Shop im Kopf: ${shopEintraege.map((m) => m[1]).join(", ")}`);
+      // Der Kontakt bleibt als Sprungmarke — er steht auch auf der Booking-Seite.
+      if (!/href="[^"]*#contact"/.test(kopf[0])) meckern(`${rel}: kein Weg zum Kontakt im Kopf`);
+    }
   }
 
   // 2) Shows stehen nur da, wenn ein Termin aussteht — sonst gar nicht.

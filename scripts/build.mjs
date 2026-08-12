@@ -3351,7 +3351,19 @@ function renderPage(c, page, pages, lang, langs) {
   );
   const startseite = pages.find((p) => !p.slug) || pages[0];
   const istStartseite = !page.slug;
-  const sectionLinks = baubareAbschnitte(startseite).map((key) => {
+  /* Ein Abschnitt, der auch eine eigene Seite hat, steht NUR als Seite im Menü.
+     Anlass (12.08.2026): der Shop steht seit heute an zwei Plaetzen — der
+     Katalog auf /shop/, die Einladung auf der Startseite. Im Kopf stand
+     daraufhin zweimal "Shop": einmal als Seite, einmal als Sprungmarke. Die
+     Seite gewinnt: dort liegt die Ware.
+
+     Verglichen wird der Name der Seite mit dem des Abschnitts (/shop/ zu
+     "shop"). Nicht die Abschnitte der Unterseiten: "contact" steht auch auf der
+     Booking-Seite, gehoert im Menue aber weiter zur Startseite. */
+  const alsSeite = new Set(navPages.map((p) => str(p.slug)).filter(Boolean));
+  const sectionLinks = baubareAbschnitte(startseite)
+    .filter((key) => !alsSeite.has(key))
+    .map((key) => {
     const cls = key === "booking" ? ' class="nav-cta"' : key === "shop" ? ' class="nav-hot"' : "";
     const ziel = istStartseite ? `#${key}` : `${pagePath(startseite.slug)}#${key}`;
     return `<li${cls}><a href="${esc(ziel)}">${esc(
