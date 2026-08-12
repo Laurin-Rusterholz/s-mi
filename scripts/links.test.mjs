@@ -259,8 +259,18 @@ for (const [datei, h] of html) {
     const fuss = h.match(/<div class="wrap foot-social">[\s\S]*?<\/ul>/);
     if (!fuss) meckern(`${rel}: kein Kanal-Block im Fuss`);
     else {
-      // Der Name steht im letzten <span> der Zeile — davor steht das Zeichen.
-      const istKanaele = [...fuss[0].matchAll(/<li[^>]*>[\s\S]*?<span>([^<]*)<\/span>/g)].map((m) => m[1]);
+      /* Der Name steht im letzten <span> der Zeile — davor steht das Zeichen.
+
+         Das Presskit steht seit dem 12.08.2026 mit in dieser Reihe (Kundenwunsch),
+         gehoert aber nicht zu den Kanaelen aus der Verwaltung: es ist eine Datei
+         zum Herunterladen. Es hat darum seinen eigenen Test weiter unten und
+         bleibt beim Vergleich der Kanaele ausgeklammert. */
+      const presskit = String(INHALT.sections?.booking?.presskitUrl || "").trim();
+      const kanalzeilen = [...fuss[0].matchAll(/<li[^>]*>[\s\S]*?<\/li>/g)]
+        .map((m) => m[0])
+        .filter((z) => !presskit || !z.includes(presskit));
+      const istKanaele = kanalzeilen
+        .map((z) => (z.match(/<span>([^<]*)<\/span>\s*<\/a>/) || z.match(/<span>([^<]*)<\/span>/) || ["", ""])[1]);
       const sollKanaele = kanaeleImInhalt.map((x) => String(x.label));
       if (istKanaele.join(" | ") !== sollKanaele.join(" | "))
         meckern(
@@ -269,6 +279,13 @@ for (const [datei, h] of html) {
         );
       /* Kein geratener Link: jede Adresse auf der Seite muss im Inhalt stehen. */
       const erlaubt = new Set(kanaeleImInhalt.map((x) => String(x.url || "")).filter(Boolean));
+      /* Die eigene Datei, kein geratener Kanal. Im Inhalt steht sie relativ
+         ("presskit/…"), auf der Seite mit fuehrendem Schraegstrich — beide
+         Schreibweisen zaehlen. */
+      if (presskit) {
+        erlaubt.add(presskit);
+        erlaubt.add("/" + presskit.replace(/^\/+/, ""));
+      }
       for (const treffer of fuss[0].match(/href="([^"]*)"/g) || []) {
         const url = treffer.slice(6, -1);
         if (!erlaubt.has(url))
@@ -900,3 +917,71 @@ console.log(
     `Formulare: senden nur an /api/booking und /api/order, jedes Feld Pflicht,\n` +
     `           Erfolgs- und Fehlermeldung vorhanden, keine Datenbank-Adresse im Quelltext.`
 );
+
+{
+  /* Tickets: der Knopf haengt am LINK, nicht am Status.
+
+     Anlass (Kundenmeldung 12.08.2026): "Tickets buchen ueber Shows geht nicht".
+     Bei "Aftersun" stand eine echte Ticket-Adresse in der Verwaltung, auf der
+     Seite aber nur das Wort "Gebucht" — der Link wurde bei status "booked"
+     unterdrueckt. Das war eine Fehldeutung: "gebucht" heisst, dass Sam den
+     Termin hat, nicht dass es keine Tickets gibt. Nur "ausverkauft" schliesst
+     den Verkauf aus. */
+  const shows = (INHALT.sections?.shows?.items || []).filter((s) => s && s.name);
+  const START = ["index.html", "de/index.html", "fr/index.html"];
+  for (const rel of START) {
+    const h = html.get(rel);
+    if (!h) continue;
+    const zeilen = [...h.matchAll(/<li class="show[^"]*"[\s\S]*?<\/li>/g)].map((m) => m[0]);
+    for (const sh of shows) {
+      const zeile = zeilen.find((z) => z.includes(`>${sh.name}<`));
+      if (!zeile) continue; // vergangene Termine stehen woanders
+      const cta = (zeile.match(/<span class="show-cta">([\s\S]*?)<\/span>\s*$/) || ["", ""])[1];
+      const echteAdresse = /^https?:\/\//i.test(String(sh.ticketUrl || "").trim());
+      const ausverkauft = sh.status === "soldout";
+      if (echteAdresse && !ausverkauft) {
+        if (!zeile.includes(`href="${sh.ticketUrl.replace(/&/g, "&amp;")}"`))
+          meckern(`${rel}: "${sh.name}" hat eine Ticket-Adresse, aber keinen Ticket-Knopf`);
+        if (!/target="_blank"/.test(zeile) || !/rel="noopener noreferrer"/.test(zeile))
+          meckern(`${rel}: der Ticket-Knopf von "${sh.name}" oeffnet ohne target/rel`);
+      }
+      if (ausverkauft && /<a /.test(cta))
+        meckern(`${rel}: "${sh.name}" ist ausverkauft und hat trotzdem einen Ticket-Knopf`);
+      // Kein leeres Feld: entweder Knopf, oder Hinweis, oder gar nichts.
+      if (/<span class="mono">\s*<\/span>/.test(cta))
+        meckern(`${rel}: "${sh.name}" hat eine leere Beschriftung in der Zeile`);
+    }
+  }
+}
+
+{
+  /* Das Presskit steht bei den Kanaelen (Kundenwunsch 12.08.2026) — als Datei
+     zum Mitnehmen, nicht als Kanal zum Folgen: eigenes Zeichen, `download`,
+     hinten in der Reihe. Ohne hinterlegte Datei steht es nirgends. */
+  const pk = String(INHALT.sections?.booking?.presskitUrl || "").trim();
+  for (const [datei, h] of html) {
+    if (datei === "coming-soon.html" || /impressum|legal|rechtliches|mentions/.test(datei)) continue;
+    const fuss = (h.match(/<div class="wrap foot-social">[\s\S]*?<\/div>/) || [""])[0];
+    if (!fuss) continue;
+    if (pk) {
+      // Im Inhalt relativ, auf der Seite mit fuehrendem Schraegstrich.
+      const pfad = "/" + pk.replace(/^\/+/, "");
+      if (!fuss.includes(pfad)) meckern(`${datei}: das Presskit fehlt bei den Kanaelen im Fuss`);
+      const eintrag = (fuss.match(new RegExp(`<li><a href="${pfad.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*>`)) || [""])[0];
+      if (eintrag && !/\bdownload\b/.test(eintrag))
+        meckern(`${datei}: das Presskit im Fuss laedt nicht herunter`);
+    } else if (/presskit/i.test(fuss)) {
+      meckern(`${datei}: Presskit im Fuss, obwohl keine Datei hinterlegt ist`);
+    }
+  }
+  // Und im Kontakt-Abschnitt als Karte.
+  for (const rel of ["index.html", "de/index.html", "fr/index.html"]) {
+    const h = html.get(rel);
+    if (!h || !pk) continue;
+    const karten = (h.match(/<div class="social-cards">[\s\S]*?<\/div>/) || [""])[0];
+    if (!/class="scard scard-file"/.test(karten))
+      meckern(`${rel}: keine Presskit-Karte bei den Kanaelen`);
+    if (!karten.includes("/" + pk.replace(/^\/+/, "")))
+      meckern(`${rel}: die Presskit-Karte zeigt nicht auf die Datei`);
+  }
+}

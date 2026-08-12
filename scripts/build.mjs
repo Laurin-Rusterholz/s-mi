@@ -1782,7 +1782,26 @@ function showRow(sh, idx) {
     : "";
   const year = d ? d.getUTCFullYear() : "";
   const soldOut = sh.status === "soldout";
-  const label = soldOut ? UI.soldOut : booked ? UI.booked : str(sh.ticketLabel, UI.tickets);
+  /* Der Ticket-Link haengt AM LINK, nicht am Status.
+
+     Anlass (Kundenmeldung 12.08.2026): "Tickets buchen über Shows geht nicht".
+     Und tatsaechlich — bei "Aftersun" stand eine echte Ticket-Adresse in der
+     Verwaltung, auf der Seite aber nur das Wort "Gebucht". Der Grund: der Link
+     wurde bei `status === "booked"` unterdrueckt.
+
+     Das war eine Fehldeutung des Status. In der Verwaltung heisst er
+     "bestaetigt / gebucht / ausverkauft" — "gebucht" sagt, dass Sam den Termin
+     hat, nicht dass es keine Tickets gibt. Nur "ausverkauft" schliesst den
+     Verkauf aus.
+
+     Also: gueltige Adresse und nicht ausverkauft -> Ticket-Knopf. Sonst steht
+     dort, was zutrifft: "Ausverkauft", ein freier Hinweis aus dem Ticket-Feld
+     ("DM for friendlist") oder — wenn es nichts zu sagen gibt — nichts. Eine
+     leere Beschriftung stand vorher als leeres Feld in der Zeile. */
+  const kasse = safeUrl(sh.ticketUrl) && !soldOut;
+  const freierHinweis = !safeUrl(sh.ticketUrl) ? str(sh.ticketUrl).trim() : "";
+  const label = soldOut ? UI.soldOut : str(sh.ticketLabel, UI.tickets);
+  const hinweis = soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
   return `<li class="show${soldOut ? " soldout" : ""}${booked ? " booked" : ""}"${date ? ` data-date="${esc(date)}"` : ""}>
           <span class="show-date"><b>${esc(day)}</b><span class="mono">${esc(month)} ${esc(
     year
@@ -1794,23 +1813,15 @@ function showRow(sh, idx) {
               .map(esc)
               .join(" · ")}</span>
           </span>
-          <span class="show-cta">${
-            safeUrl(sh.ticketUrl) && !soldOut && !booked
-              ? `<a class="btn btn-sm" href="${href(
+          ${
+            kasse
+              ? `<span class="show-cta"><a class="btn btn-sm" href="${href(
                   sh.ticketUrl
-                )}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`
-              : /* Kein Link, aber ein Hinweis: steht im Ticket-Feld ein Text
-                   statt einer Adresse ("DM for friendlist"), zeigen wir genau
-                   diesen Text — er sagt ja, wie man an Tickets kommt. Als
-                   Beschriftung, nicht als Knopf, denn es fuehrt nirgendwohin. */
-              `<span class="mono">${esc(
-                  soldOut || booked
-                    ? label
-                    : !safeUrl(sh.ticketUrl) && str(sh.ticketUrl)
-                    ? str(sh.ticketUrl).trim()
-                    : ""
-                )}</span>`
-          }</span>
+                )}" target="_blank" rel="noopener noreferrer">${esc(label)}</a></span>`
+              : hinweis
+              ? `<span class="show-cta"><span class="mono">${esc(hinweis)}</span></span>`
+              : `<span class="show-cta"></span>`
+          }
         </li>`;
 }
 
@@ -2503,6 +2514,10 @@ function socialIcon(label, url) {
     body = `<path d="M4 15v-3M6.5 15v-5M9 15V8M11.5 15V6.5M14 15V9" ${P}/><path d="M14 15h3.5a2.5 2.5 0 0 0 .4-4.97A4 4 0 0 0 14 9" ${P}/>`;
   else if (key.includes("facebook"))
     body = `<path d="M14.5 8H13c-.8 0-1.3.5-1.3 1.3V11h2.6l-.4 2.6h-2.2V20" ${P}/><rect x="3.5" y="3.5" width="17" height="17" rx="4.5" ${P}/>`;
+  else if (key.includes("presskit") || key.includes(".pdf"))
+    /* Blatt mit Pfeil nach unten — das Presskit ist kein Kanal zum Folgen,
+       sondern eine Datei zum Mitnehmen. */
+    body = `<path d="M6 3.5h7.5L18 8v12.5H6z" ${P}/><path d="M13.5 3.5V8H18" ${P}/><path d="M12 11v5.5M9.6 14.4 12 16.8l2.4-2.4" ${P}/>`;
   else body = `<path d="M7 17 17 7M9.5 7H17v7.5" ${P}/>`;
   return `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
 }
@@ -2513,9 +2528,20 @@ function socialIcon(label, url) {
    nur noch, was eine gueltige Adresse hat; sobald in der Verwaltung eine
    eingetragen und publiziert ist, erscheint der Kanal von selbst. */
 
-function renderContact(n, s, bookingTarget) {
+/**
+ * Kontakt — E-Mail, Standort, Kanaele.
+ *
+ * Bei den Kanaelen steht seit dem 12.08.2026 auch das Presskit (Kundenwunsch).
+ * Es ist kein Kanal zum Folgen, sondern eine Datei zum Mitnehmen: eigenes
+ * Zeichen, `download`, und es steht hinten — die Kanaele behalten ihre
+ * Reihenfolge. Ohne hinterlegte Datei steht es nirgends.
+ */
+function renderContact(n, s, bookingTarget, presskit = {}) {
   const mail = str(s.email);
   const socials = list(s.socials).filter((x) => str(x?.label) && safeUrl(x?.url));
+  const pk = safeUrl(presskit.url)
+    ? { url: presskit.url, label: str(presskit.label, "Presskit (PDF)") }
+    : null;
   const meta = `
         <div class="contact-meta">
           ${/* Hier stand die Telefonnummer. Sie ist weg — das Feld gibt es
@@ -2551,7 +2577,7 @@ function renderContact(n, s, bookingTarget) {
           ${meta}
         </div>
         ${
-          socials.length
+          socials.length || pk
             ? `<div class="contact-side">
           <span class="mono side-label">${esc(UI.follow)}</span>
           <div class="social-cards">
@@ -2566,6 +2592,16 @@ function renderContact(n, s, bookingTarget) {
           </a>`;
             })
             .join("\n          ")}
+          ${
+            pk
+              ? `<a class="scard scard-file" href="${href(pk.url)}" download>
+            <span class="scard-ico" aria-hidden="true">${socialIcon("presskit", pk.url)}</span>
+            <span class="scard-arrow" aria-hidden="true">↓</span>
+            <span class="scard-name">${esc(pk.label)}</span>
+            <span class="mono">PDF</span>
+          </a>`
+              : ""
+          }
           </div>
         </div>`
             : ""
@@ -3306,7 +3342,11 @@ function renderPage(c, page, pages, lang, langs) {
       );
     },
     booking: (n, s) => renderBooking(n, s, site),
-    contact: (n, s) => renderContact(n, s, bookingTarget),
+    contact: (n, s) =>
+      renderContact(n, s, bookingTarget, {
+        url: sections.booking?.presskitUrl,
+        label: sections.booking?.presskitLabel,
+      }),
   };
 
   const norm = (v) => String(v || "").toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -3742,6 +3782,20 @@ ${
               )}</span></a></li>`
           )
           .join("\n        ")}
+        ${
+          /* Auch im Fuss steht das Presskit bei den Kanaelen (12.08.2026) —
+             dieselbe Datei, dasselbe Zeichen, zum Herunterladen. */
+          safeUrl(sections.booking?.presskitUrl)
+            ? `<li><a href="${href(sections.booking.presskitUrl)}" download title="${esc(
+                str(sections.booking.presskitLabel, "Presskit (PDF)")
+              )}"><span aria-hidden="true">${socialIcon(
+                "presskit",
+                sections.booking.presskitUrl
+              )}</span><span>${esc(
+                str(sections.booking.presskitLabel, "Presskit (PDF)")
+              )}</span></a></li>`
+            : ""
+        }
       </ul>
     </div>`
       : ""
