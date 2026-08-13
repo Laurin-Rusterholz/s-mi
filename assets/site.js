@@ -1184,6 +1184,53 @@
      Gekauft wird ueber den Zahlungslink des Artikels; Adresse und Zahlung
      nimmt Stripe in einem Schritt auf. Der Endpunkt selbst bleibt unberuehrt. */
 
+  /* --------------------------------------------------------------- zaehler */
+  /* Seitenaufrufe zaehlen — ausschliesslich als Summe.
+     Mitgeschickt werden vier Angaben: welche Seite, welche Sprache, Handy oder
+     Rechner, und ob dies der erste Aufruf in diesem Besuch ist. Keine Kennung,
+     kein Cookie, keine Adresse — der Server legt nur Zaehler an (siehe
+     netlify/functions/zaehler.mjs).
+
+     Wer im Browser "Do Not Track" gesetzt hat, wird nicht gezaehlt. Und wenn der
+     Aufruf scheitert, merkt niemand etwas: der Zaehler darf die Seite nicht
+     aufhalten. */
+  try {
+    var dnt = navigator.doNotTrack === "1" || window.doNotTrack === "1" || navigator.msDoNotTrack === "1";
+    if (!dnt) {
+      var neuerBesuch = false;
+      try {
+        // Nur ein Haekchen, keine Kennung — und nur fuer diesen Tab-Besuch.
+        if (!sessionStorage.getItem("sam-besuch")) {
+          sessionStorage.setItem("sam-besuch", "1");
+          neuerBesuch = true;
+        }
+      } catch (e) {
+        /* Speicher gesperrt: dann zaehlt der Aufruf, nicht der Besuch. */
+      }
+      var zaehlDaten = JSON.stringify({
+        pfad: location.pathname,
+        sprache: (document.documentElement.lang || "").slice(0, 2).toLowerCase(),
+        geraet: Math.min(window.innerWidth, window.innerHeight) <= 640 ? "handy" : "rechner",
+        neu: neuerBesuch,
+      });
+      /* sendBeacon geht auch noch raus, wenn die Seite gerade verlassen wird —
+         und blockiert nichts. Ohne sendBeacon ein normaler Aufruf, dem der
+         Fehlerfall bewusst gleichgueltig ist. */
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/zaehler", new Blob([zaehlDaten], { type: "application/json" }));
+      } else {
+        fetch("/api/zaehler", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: zaehlDaten,
+          keepalive: true,
+        }).catch(function () {});
+      }
+    }
+  } catch (e) {
+    /* Nichts. Ein Zaehler ist nie ein Grund, dass eine Seite nicht laeuft. */
+  }
+
   /* ------------------------------------------------------------------ jahr */
   var yr = document.getElementById("yr");
   if (yr) yr.textContent = new Date().getFullYear();

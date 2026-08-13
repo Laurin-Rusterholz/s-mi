@@ -2,7 +2,8 @@
   publish = "."
   command = "node scripts/build.mjs"
 
-# Serverseitige Endpunkte: /api/booking, /api/order, /api/stripe-webhook.
+# Serverseitige Endpunkte: /api/booking, /api/order, /api/stripe-webhook,
+# /api/zaehler (Seitenaufrufe, nur Summen — siehe netlify/functions/zaehler.mjs).
 # Sie nehmen die Formulare entgegen, legen sie im Eingang ab und schicken die
 # E-Mail an info@samsparking.ch. Ohne sie waeren die Formulare Attrappen.
 # Die Adressen stehen als `config.path` in den Dateien selbst.

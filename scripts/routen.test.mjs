@@ -120,6 +120,8 @@ const ERWARTET = [
   ["/api/booking", 200, "/.netlify/functions/booking"],
   ["/api/order", 200, "/.netlify/functions/order"],
   ["/api/stripe-webhook", 200, "/.netlify/functions/stripe-webhook"],
+  // Der Zaehler fuer die Seitenaufrufe (12.08.2026) — dieselbe /api/*-Regel.
+  ["/api/zaehler", 200, "/.netlify/functions/zaehler"],
 
   // Was die Unterseiten zum Funktionieren brauchen.
   ["/assets/site.css", 200, "/assets/site.css"],
