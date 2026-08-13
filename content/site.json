@@ -1501,7 +1501,7 @@
           "name": "Ultrawild Festival"
         },
         {
-          "city": "Appenzell Ausserrhoden",
+          "city": "AR",
           "name": "Maiaiaiparty"
         },
         {
@@ -1509,7 +1509,7 @@
           "name": "Amadeusbar"
         },
         {
-          "city": "Appenzell Innerrhoden",
+          "city": "AI",
           "name": "Fasnacht Oberegg"
         },
         {
@@ -1517,7 +1517,7 @@
           "name": "Party Weekend Sirnach"
         },
         {
-          "city": "Appenzell Ausserrhoden",
+          "city": "AR",
           "name": "Kantonales Musik fest"
         },
         {
@@ -1828,6 +1828,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-13T06:32:42.779Z",
+  "updatedAt": "2026-08-13T07:16:28.028Z",
   "updatedBy": "Verwaltung"
 }
