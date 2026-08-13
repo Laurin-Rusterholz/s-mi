@@ -1097,9 +1097,9 @@
     "referenzen": true,
     "shopAufStart": true,
     "shopInfo": true,
+    "shopSeiteUndEinladung": true,
     "telefon": true,
-    "ware": true,
-    "shopSeiteUndEinladung": true
+    "ware": true
   },
   "pages": [
     {
@@ -1486,7 +1486,7 @@
         },
         {
           "city": "St. Gallen",
-          "name": "IVY"
+          "name": "Eden"
         },
         {
           "city": "Gossau",
@@ -1571,6 +1571,11 @@
         {
           "city": "St. Gallen",
           "name": "Abschlussball Wittenbach"
+        },
+        {
+          "city": "St.Gallen",
+          "name": "Picante",
+          "url": ""
         }
       ],
       "moreLabel": "Also played at",
@@ -1823,6 +1828,6 @@
     "captchaWrong": "That sum is not right yet.",
     "formFine": "* Required · Your details are used only to handle your enquiry."
   },
-  "updatedAt": "2026-08-12T19:11:52.747Z",
+  "updatedAt": "2026-08-13T06:32:42.779Z",
   "updatedBy": "Verwaltung"
 }
