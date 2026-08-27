@@ -278,7 +278,9 @@ Dafür bringt die Website zwei Dinge mit:
 - Hero (Bild **oder** automatisch laufendes Video als Hintergrund), Lauftext-Ticker
 - About mit Fakten-Leiste, Genres, Mixe (Link + optionales Embed)
 - **Shows** — kommende Termine mit Datum, Venue, Ticket-Link und Status
-  („Sold out", **„Gebucht"**); vergangene Termine klappen separat auf.
+  („Sold out", **„Gebucht"**). Vergangene Termine stehen hier **nicht** mehr:
+  sie wandern von selbst zu den *Referenzen* — die Liste unter „Shows" zeigt
+  ausschliesslich, wo Sam als Nächstes spielt.
   Abgelaufene Termine verschwinden automatisch, auch ohne neuen Build.
   Bestätigt jemand in der Verwaltung eine Booking-Anfrage, steht der Termin
   ab dem nächsten Build als **gebucht** im Kalender.

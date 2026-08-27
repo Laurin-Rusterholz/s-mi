@@ -703,7 +703,20 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (medien.some((i) => !i || !i.src)) meckern("ein Galerie-Eintrag ohne Adresse");
   if (!(template.sections.shop.items || []).some((p) => p.paymentLink))
     meckern("der Bezahl-Link am Artikel ist verloren gegangen");
-  if ((template.sections.references.items || []).length !== 25) meckern("die Referenzen sind nicht mehr 25");
+  /* Referenzen: keine feste Zahl mehr. Vergangene Termine wandern von selbst
+     hierher (showsNachReferenzen) — die Liste WAECHST also im Betrieb, und eine
+     harte 25 haette den Test bei der naechsten gespielten Show rot gemacht.
+     Geprueft wird stattdessen, was wirklich gelten muss: der gepflegte
+     Grundstock ist noch da, jeder Eintrag hat einen Namen, und nichts steht
+     doppelt drin. */
+  const refs = template.sections.references.items || [];
+  if (refs.length < 25) meckern(`nur noch ${refs.length} Referenzen (mindestens 25 erwartet)`);
+  if (refs.some((r) => !r || !String(r.name || "").trim()))
+    meckern("eine Referenz ohne Namen");
+  const refKey = (r) =>
+    `${String(r.name || "").trim().toLowerCase()}|${String(r.city || "").trim().toLowerCase()}`;
+  if (new Set(refs.map(refKey)).size !== refs.length)
+    meckern("eine Referenz steht doppelt in der Liste");
   if ((template.sections.contact.socials || []).length !== 4) meckern("es sind nicht mehr vier Kanaele");
   if (template.release?.enabled !== true || template.release?.date !== "2026-08-12")
     meckern("die Release-Sperre wurde veraendert: " + JSON.stringify(template.release));
@@ -948,10 +961,53 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   else process.env.STRIPE_PAYMENT_LINK_URL = vorher;
 }
 
+{
+  /* Vergangene Termine stehen NUR bei den Referenzen — nicht noch einmal unter
+     "Shows" (Kundenwunsch 27.08.2026).
+
+     Bis dahin hing unter der Terminliste ein aufklappbarer Rueckblick
+     ("Already played"), der dieselben Termine ein zweites Mal zeigte. Geprueft
+     wird an den GEBAUTEN Seiten: kein Rueckblick-Block, kein vergangener Tag in
+     der Liste, kein vergangener Tag im Terminblatt — und die vergangenen
+     Termine sind bei den Referenzen angekommen. */
+  const { readFileSync } = await import("node:fs");
+  const heute = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Zurich" }).format(new Date());
+
+  for (const seite of ["index.html", "de/index.html", "fr/index.html"]) {
+    const html = readFileSync(resolve(ROOT, seite), "utf8");
+    if (/class="past-shows|<ul class="show-list past"/.test(html))
+      meckern(`${seite}: der Rueckblick "schon gespielt" steht wieder unter den Shows`);
+
+    const liste = html.match(/<ul class="show-list rv" id="show-list">[\s\S]*?<\/ul>/);
+    const vergangen = liste
+      ? [...liste[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]).filter((d) => d < heute)
+      : [];
+    if (vergangen.length)
+      meckern(`${seite}: vergangene Termine stehen unter den Shows: ${vergangen.join(", ")}`);
+
+    const blatt = html.match(/<script type="application\/json" id="shows-data">([\s\S]*?)<\/script>/);
+    if (blatt) {
+      const alt = JSON.parse(blatt[1]).filter((s2) => String(s2.date) < heute);
+      if (alt.length)
+        meckern(`${seite}: das Terminblatt traegt vergangene Tage: ${alt.map((a) => a.date).join(", ")}`);
+    }
+  }
+
+  /* Und der Gegenbeweis: was vorbei ist, ist bei den Referenzen zu finden. */
+  const html = readFileSync(resolve(ROOT, "index.html"), "utf8");
+  const refs = html.match(/<ul class="venue-list rv" id="venue-list">[\s\S]*?<\/ul>/);
+  for (const sh of template.sections.shows.items || []) {
+    if (!showVorbei(sh, heute) || !String(sh.name || "").trim()) continue;
+    if (!refs || !refs[0].includes(String(sh.name).trim()))
+      meckern(`der vergangene Termin "${sh.name}" fehlt bei den Referenzen`);
+  }
+}
+
 if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
 }
+console.log("Shows: nur kommende Termine — was vorbei ist, steht ausschliesslich bei den Referenzen.");
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
 console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");

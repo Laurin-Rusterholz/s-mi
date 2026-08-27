@@ -297,8 +297,9 @@ export const showVorbei = (show, heute) => {
  *   - Bestehende Referenzen bleiben unberuehrt — Reihenfolge, Schreibweise und
  *     "Gross zeigen" aendert diese Funktion nie. Neues kommt hinten dran, in
  *     der Reihenfolge der Termine (das Aelteste zuerst).
- *   - Der Termin selbst bleibt in der Liste stehen. Er zaehlt weiter zum
- *     Rueckblick ("schon gespielt"), er ist nur nicht mehr kommend.
+ *   - Der Termin selbst bleibt in der Verwaltung stehen — nur auf der Website
+ *     ist er unter "Shows" nicht mehr zu sehen (dort stehen ausschliesslich
+ *     kommende Termine) und erscheint stattdessen bei den Referenzen.
  *
  * Gibt die Namen der uebernommenen Termine zurueck.
  */
@@ -1850,10 +1851,17 @@ function renderShows(n, s) {
   const upcoming = items
     .filter((i) => !isoDate(i.date) || isoDate(i.date) >= t)
     .sort(chronologisch);
-  // Rueckblick andersherum: das Juengste zuerst.
-  const past = items
-    .filter((i) => isoDate(i.date) && isoDate(i.date) < t)
-    .sort((a, b) => -chronologisch(a, b));
+  /* Vergangene Termine stehen hier NICHT mehr.
+
+     Bis zum 27.08.2026 hing unter der Liste ein aufklappbarer Rueckblick
+     ("Already played"). Er zeigte dieselben Termine ein zweites Mal: einmal
+     hier, einmal — ueber showsNachReferenzen — bei den Referenzen. Der
+     Abschnitt "Shows" beantwortet aber genau eine Frage: wo spielt Sam als
+     naechstes. Was vorbei ist, gehoert zu den Orten, an denen er schon
+     gespielt hat, und steht darum ausschliesslich unter "References".
+
+     Die Termine bleiben in der Verwaltung stehen (nichts geht verloren) und
+     wandern von selbst zu den Referenzen. */
 
 
   return `
@@ -1867,16 +1875,6 @@ function renderShows(n, s) {
           : `<div class="empty-state rv"><span class="mono">${esc(UI.calShow)}</span><p>${inline(
               str(s.emptyText, "No dates announced right now.")
             )}</p></div>`
-      }
-      ${
-        past.length
-          ? `<details class="past-shows rv">
-        <summary class="mono">${esc(str(s.pastLabel, "Played before"))} (${past.length})</summary>
-        <ul class="show-list past">
-        ${past.map(showRow).join("\n        ")}
-        </ul>
-      </details>`
-          : ""
       }
     </div>
   </section>`;
@@ -2998,6 +2996,9 @@ const NO_TRANSLATE = new Set([
   "slug", "date", "status", "email", "phone", "country", "createdAt",
   "updatedAt", "updatedBy", "schemaVersion", "type", "view",
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
+  // pastLabel: die Aufschrift des frueheren Rueckblicks unter "Shows". Der
+  // Rueckblick ist weg (siehe renderShows), das Feld wird nicht mehr gelesen.
+  "pastLabel",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
   "name", "venue", "inquiryId", "backgroundImage", "price", "currency", "twint",
   "fit", "focus", "mobileLimit",
@@ -3283,8 +3284,8 @@ function renderPage(c, page, pages, lang, langs) {
   // Shows gehoeren nur dann auf die Seite — und damit ins Menue —, wenn noch
   // ein Termin aussteht. Steht in der Verwaltung nur Vergangenes, fuehrte der
   // Menuepunkt bisher auf eine Seite, die nichts als "keine Termine" sagt.
-  // Der Rueckblick ("Already played") bleibt erhalten, sobald wieder ein
-  // kommender Termin dabei ist.
+  // Vergangene Termine halten den Abschnitt nicht am Leben: sie stehen bei
+  // den Referenzen, nicht unter "Shows".
   const heute = today();
   const hasShows = list(sections.shows?.items).some(
     (item) => str(item?.name) && (!isoDate(item.date) || isoDate(item.date) >= heute)
@@ -3597,13 +3598,16 @@ function renderPage(c, page, pages, lang, langs) {
     return links.length ? links.join("\n") + "\n" : "";
   })();
 
-  // Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf)
+  /* Termine als JSON für die Kalenderansicht (assets/site.js baut sie auf) und
+     für den Booking-Kalender, der belegte Tage sperrt. Vergangene Tage stehen
+     nicht mehr darin: buchen laesst sich ohnehin nur die Zukunft, und was
+     vorbei ist, zeigt die Seite jetzt allein bei den Referenzen. */
   const showsData =
     order.includes("shows")
       ? `
   <script type="application/json" id="shows-data">${jsonScript(
     list(sections.shows.items)
-      .filter((i) => str(i?.name) && isoDate(i.date))
+      .filter((i) => str(i?.name) && isoDate(i.date) && isoDate(i.date) >= heute)
       .map((i) => ({
         date: isoDate(i.date),
         name: str(i.name),

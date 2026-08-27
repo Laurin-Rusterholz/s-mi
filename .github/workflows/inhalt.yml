@@ -2,10 +2,13 @@
 # gebaute Website ein — der Push loest den Netlify-Deploy aus. Damit wirkt
 # "Publizieren" in der Verwaltung auch OHNE hinterlegten Netlify-Build-Hook.
 #
-# Seit dem 12.08.2026 laeuft das alle fuenf Minuten statt stuendlich: eine
-# Stunde Wartezeit war der Grund, warum eine Aenderung in der Verwaltung
-# gefuehlt "nicht publiziert" wurde. Fuenf Minuten ist das kuerzeste Intervall,
-# das GitHub fuer Zeitplaene erlaubt (und es kann sich unter Last verzoegern).
+# Der Zeitplan steht auf fuenf Minuten — das kuerzeste Intervall, das GitHub
+# erlaubt. ACHTUNG, so kommt es nicht an: GitHub laesst geplante Laeufe unter
+# Last einfach aus. Nachgemessen am 27.08.2026 lagen zwischen zwei Laeufen
+# dieses Workflows regelmaessig 30 bis 70 Minuten, an einem Tag sogar elf
+# Stunden (05:42 und 16:50 UTC). Der Zeitplan ist damit ein Netz, aber kein
+# Versprechen: WANN eine Aenderung ohne Build-Hook auf der Website ankommt,
+# steht nicht fest.
 #
 # Das kostet nichts Zusaetzliches: ist der Stand unveraendert, endet der Lauf
 # nach wenigen Sekunden ohne Commit, und Netlify baut nichts. Nur ein wirklich
@@ -18,7 +21,7 @@ name: Inhalt aus der Verwaltung uebernehmen
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # alle fuenf Minuten (GitHub-Minimum)
+    - cron: "*/5 * * * *"   # GitHub-Minimum; laeuft in der Praxis deutlich seltener
   workflow_dispatch: {}     # von Hand: Actions -> Run workflow
 
 permissions:

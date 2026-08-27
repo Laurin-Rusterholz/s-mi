@@ -810,13 +810,6 @@ blockquote.lede footer{
 .cal-legend .lg-booked::before{background:var(--spark);box-shadow:0 0 0 3px rgba(46,107,255,.22);}
 .cal-legend .lg-soldout::before{background:var(--bone-dim);}
 .show.soldout .show-cta .mono{color:var(--spark);}
-.past-shows{margin-top:26px;}
-.past-shows summary{cursor:pointer;padding:16px 20px;list-style:none;background:var(--card);border:1px solid var(--line);min-height:var(--tap);display:flex;align-items:center;}
-.past-shows summary::-webkit-details-marker{display:none;}
-.past-shows summary::before{content:"+ ";color:var(--spark);}
-.past-shows[open] summary::before{content:"– ";}
-.past-shows .show-list{margin-top:10px;opacity:.72;}
-.past-shows .show-date b{font-size:1.4rem;}
 @media(max-width:640px){
   .show-list li{grid-template-columns:68px 1fr;gap:14px;}
   .show-cta{grid-column:2;}
@@ -1925,8 +1918,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 34px;}
 .empty-state a{color:var(--bone);text-decoration:underline;text-decoration-color:var(--spark);text-underline-offset:4px;}
 
 /* Vergangene Shows: Sommer-Zeile reagiert */
-.past-shows summary{transition:color .2s;}
-.past-shows summary:hover{color:var(--spark);}
 
 /* Lightbox-Schliessen dreht leicht ein */
 .lb-close{transition:color .2s,transform .25s;}
