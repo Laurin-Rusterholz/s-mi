@@ -36,6 +36,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CONTENT_API_URL: https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json
+      # Ohne lesbaren Stand aus der Verwaltung soll dieser Lauf ROT werden,
+      # nicht still den alten Schnappschuss einchecken — siehe loadContent()
+      # in scripts/build.mjs. Genau dieser stille Rueckfall hat die Website
+      # vom 13.08. bis zum 01.09.2026 eingefroren (HTTP 401 auf den
+      # oeffentlichen Lesezugriff), waehrend jeder Lauf "success" meldete.
+      CONTENT_API_REQUIRED: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

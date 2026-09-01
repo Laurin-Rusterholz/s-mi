@@ -105,6 +105,12 @@ const isoDate = (v) => {
  * vorbei war. `sv-SE` liefert das Datum von sich aus als JJJJ-MM-TT.
  */
 const ZEITZONE = "Europe/Zurich";
+/* Muss der Build den Stand aus der Verwaltung wirklich bekommen?
+   Gesetzt fuer die echte Website (netlify.toml und .github/workflows/inhalt.yml);
+   ungesetzt fuer Vorschau und Vorfuehrung, die den eingecheckten Stand nehmen
+   duerfen. Siehe loadContent(). */
+const STRENG = /^(1|true|ja|yes|on)$/i.test(String(process.env.CONTENT_API_REQUIRED ?? ""));
+
 const today = () =>
   process.env.BUILD_DATE
     ? String(process.env.BUILD_DATE).slice(0, 10)
@@ -1362,6 +1368,36 @@ async function loadContent() {
           "#  verwendet — evtl. NICHT der aktuellste Inhalt.       #\n" +
           "########################################################\n"
       );
+      /* Der Rueckfall darf nicht still sein.
+
+         Vom 13.08. bis zum 01.09.2026 hat GENAU DAS die Website eingefroren:
+         die Datenbank antwortete auf den oeffentlichen Lesezugriff mit
+         HTTP 401, der Build nahm den eingecheckten Schnappschuss, meldete
+         "success" — und jedes Publizieren in der Verwaltung blieb wirkungslos.
+         Drei Wochen lang stand die Ursache als Warnung in einem Protokoll,
+         das niemand liest.
+
+         Wo der Build fuer die echte Website laeuft (CONTENT_API_REQUIRED=1),
+         bricht er jetzt ab. Ein roter Lauf faellt auf, eine stille Luege
+         nicht. Die zuletzt veroeffentlichte Fassung bleibt dabei online —
+         weder Netlify noch GitHub Pages nehmen eine Seite herunter, nur weil
+         ein Build fehlschlaegt. Fuer Vorschau und Vorfuehrung bleibt der
+         Rueckfall erlaubt (Flag nicht gesetzt). */
+      if (STRENG) {
+        console.error(
+          `[build] ABBRUCH: CONTENT_API_REQUIRED ist gesetzt, aber der Stand aus der\n` +
+            `        Verwaltung ist nicht lesbar (${err.message}).\n` +
+            `        Adresse: ${apiUrl}\n` +
+            `        Bei "HTTP 401": in der Realtime Database darf "samsparking/content"\n` +
+            `        nicht mehr oeffentlich gelesen werden. Die Regeln stehen in\n` +
+            `        verwaltung-djsamsparkling/firebase/database.rules.json — content und\n` +
+            `        media brauchen ".read": true. ACHTUNG: diese Datei wird nirgends\n` +
+            `        automatisch ausgerollt; der Block muss in die Regeln des Projekts\n` +
+            `        (ai-sync/firebase/database.rules.json) und von dort in die Firebase\n` +
+            `        Console. Solange das fehlt, wirkt Publizieren nicht.`
+        );
+        throw new Error(`Inhalt aus der Verwaltung nicht lesbar: ${err.message}`);
+      }
     }
   }
   const raw = await readFile(LOCAL_CONTENT, "utf8");

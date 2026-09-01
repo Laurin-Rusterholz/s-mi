@@ -27,6 +27,19 @@
   # .github/workflows/inhalt.yml. Schreiben kann damit niemand.
   CONTENT_API_URL = "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/content.json"
 
+  # Ist die Adresse oben nicht lesbar, BRICHT der Build ab, statt still den
+  # eingecheckten Schnappschuss zu nehmen.
+  #
+  # Anlass: vom 13.08. bis zum 01.09.2026 antwortete die Datenbank auf den
+  # oeffentlichen Lesezugriff mit HTTP 401 (die Regeln in der Firebase Console
+  # erlauben "samsparking/content" nicht mehr oeffentlich zu lesen). Der Build
+  # nahm jedes Mal den Stand vom 13.08., meldete Erfolg — und Publizieren in
+  # der Verwaltung blieb drei Wochen lang wirkungslos, ohne dass irgendwo ein
+  # Fehler stand. Ein fehlgeschlagener Build nimmt die Website nicht herunter:
+  # der zuletzt erfolgreiche Deploy bleibt online, und Netlify meldet den
+  # Fehlschlag.
+  CONTENT_API_REQUIRED = "1"
+
 # Bild-CDN: Firebase-Storage-Bilder duerfen ueber /.netlify/images verkleinert
 # und als WebP/AVIF ausgeliefert werden (der Generator schreibt diese Adressen).
 [images]
