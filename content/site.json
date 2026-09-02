@@ -1099,7 +1099,8 @@
     "shopInfo": true,
     "shopSeiteUndEinladung": true,
     "telefon": true,
-    "ware": true
+    "ware": true,
+    "texteAusVorlage": true
   },
   "pages": [
     {

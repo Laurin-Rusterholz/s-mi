@@ -1,0 +1,42 @@
+# Die Pruefungen laufen bei jeder Aenderung — vorher liefen sie nur, wenn
+# jemand daran dachte, sie von Hand zu starten.
+#
+# Anlass (02.09.2026): "Neue Show erscheint nicht im Frontend." Die Fehler
+# dahinter sassen im Generator (scripts/build.mjs) und waren durch die Tests
+# nachweisbar — nur hat sie niemand ausgefuehrt. Der Zeitplan-Workflow
+# (inhalt.yml) baut und checkt ein, prueft aber nichts.
+#
+# Bewusst getrennt von inhalt.yml: ein roter Test darf den Inhalts-Abgleich
+# nicht anhalten, und ein Abgleich darf keinen roten Test verstecken.
+name: Tests
+
+on:
+  push:
+    branches: ["**"]
+    # Die Inhalts-Commits des Zeitplans aendern nur Inhalt und gebaute Seiten;
+    # dafuer muss nicht jedes Mal die ganze Pruefung laufen.
+    paths-ignore:
+      - "sitemap.xml"
+      - "content/bildmasse.json"
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Ohne CONTENT_API_URL: die Tests bringen ihre eigene Datenbank mit
+      # (scripts/kette.test.mjs startet dafuer einen kleinen Server auf
+      # 127.0.0.1). Nichts hier geht ins Netz.
+      - name: Alle Pruefungen
+        run: node --test scripts/*.test.mjs
+
+      # Der Bau selbst muss aus dem eingecheckten Stand durchlaufen — sonst
+      # faellt erst in der Veroeffentlichung auf, dass etwas fehlt.
+      - name: Website aus dem eingecheckten Stand bauen
+        run: node scripts/build.mjs

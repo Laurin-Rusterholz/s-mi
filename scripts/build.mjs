@@ -1272,6 +1272,18 @@ async function ladeBildmasse() {
       }
     } catch (err) {
       console.warn("[build] Medienbibliothek nicht lesbar:", err.message);
+      /* Derselbe oeffentliche Lesezugriff wie beim Inhalt — schlaegt er fehl,
+         stimmt etwas an den Firebase-Regeln, und der Build darf das nicht als
+         Erfolg durchwinken (siehe loadContent). */
+      if (STRENG) {
+        console.error(
+          `[build] ABBRUCH: die Medienbibliothek ist nicht lesbar (${err.message}).\n` +
+            `        Adresse: ${api}\n` +
+            `        Bei "HTTP 401": "samsparking/media" braucht in der Realtime\n` +
+            `        Database wieder ".read": true — dieselbe Ursache wie beim Inhalt.`
+        );
+        throw new Error(`Medienbibliothek nicht lesbar: ${err.message}`);
+      }
     }
   }
 
@@ -1328,20 +1340,46 @@ async function loadContent() {
         } catch (e) {
           /* keine Legacy-Datei — dann entscheidet nur die Sprach-Einstellung */
         }
-        // Alter Stand in der Datenbank? Zwei Anzeichen: (a) die Hauptsprache
-        // weicht von der Vorlage ab, oder (b) die Texte sind noch die alten
-        // englischen Werkstexte — auch wenn in der Verwaltung längst
-        // "Deutsch" eingestellt wurde. In beiden Fällen kommen Texte,
-        // Übersetzungen und Seitenaufteilung aus der Vorlage; Bilder, Videos,
-        // Termine und Links bleiben unangetastet.
+        /* Alter Stand in der Datenbank? Zwei Anzeichen: (a) die Hauptsprache
+           weicht von der Vorlage ab, oder (b) die Texte sind noch die alten
+           englischen Werkstexte. In beiden Fällen kommen Texte, Übersetzungen
+           und Seitenaufteilung aus der Vorlage; Bilder, Videos, Termine und
+           Links bleiben unangetastet.
+
+           EINMALIG — und das war der Fehler. Die Umstellung war fuer den
+           Wechsel im August 2026 gedacht, lief aber bei JEDEM Build wieder:
+           die Website ist auf Englisch, also traf sie Wort fuer Wort auf die
+           alten englischen Werkstexte (zuletzt 52 Treffer, noetig sind 10).
+           Damit gewann bei jedem Build die eingecheckte Vorlage gegen die
+           Verwaltung — Texte, Übersetzungen, `ui`, UND `pages`/`layout`.
+
+           Fuer den Kunden sah das aus wie "Publizieren wirkt nicht": ein im
+           Editor geaenderter Text stand nach dem Build wieder auf dem alten
+           Wert. Ueber `pages`/`layout` konnte es sogar einen ganzen Abschnitt
+           von der Seite nehmen, den die Verwaltung dort hingelegt hatte.
+
+           Die Umstellung merkt sich jetzt, dass sie gelaufen ist — als Marke
+           in `migrationen`, wie alle anderen einmaligen Schritte auch (siehe
+           nachziehen). Die Marke steht in der ausgelieferten Vorlage bereits
+           auf true: die Umstellung ist im August passiert und ist vorbei.
+           Danach gilt ausnahmslos: was in der Verwaltung steht, steht auf der
+           Website. */
+        const schonUmgestellt =
+          live.migrationen?.texteAusVorlage === true ||
+          template.migrationen?.texteAusVorlage === true;
         const legacyHits = looksLikeLegacy(live, legacy);
-        if (String(live.site?.lang || "") !== String(template.site?.lang || "") || legacyHits >= 10) {
+        if (
+          !schonUmgestellt &&
+          (String(live.site?.lang || "") !== String(template.site?.lang || "") || legacyHits >= 10)
+        ) {
           console.log(
             `[build] Datenbank trägt noch den alten Stand ` +
               `(Sprache "${live.site?.lang}", ${legacyHits} Werkstexte erkannt) — ` +
-              `Texte, Übersetzungen und Seitenaufteilung aus der Vorlage übernommen.`
+              `Texte, Übersetzungen und Seitenaufteilung aus der Vorlage übernommen. ` +
+              `Einmalig; wird als migrationen.texteAusVorlage vermerkt.`
           );
           adoptTexts(live, template);
+          live.migrationen = { ...(live.migrationen || {}), texteAusVorlage: true };
         }
         const korrigiert = nachziehen(live, KORREKTUREN);
         if (korrigiert.length) {
@@ -3049,6 +3087,19 @@ const looksTechnical = (v) =>
  * Pfade, die technische Schlüssel enthalten (Abschnitts-Namen, keine Texte)
  * oder Eigennamen tragen.
  *
+ * TERMINE gehoeren dazu (sections.shows.items) — seit dem 02.09.2026, und aus
+ * genau demselben Grund wie die Kanaele darunter. Ein Termin ist ein Datensatz,
+ * kein Text: Ort und Knopf-Aufschrift haengen ueber die POSITION in der Liste
+ * am Eintrag. Wer in der Verwaltung einen Termin loescht oder mit ↑ ↓
+ * verschiebt, verschiebt damit auch die Zuordnung — auf /de/ und /fr/ stand
+ * danach der Ort des einen Termins beim anderen. Und ein NEU angelegter Termin
+ * erbte auf denselben Seiten das, was vorher an seiner Stelle stand.
+ *
+ * Dieselbe Position war auch der Weg, auf dem adoptTexts (Werkstexte aus der
+ * Vorlage) in die Termine hineingriff: es laeuft ueber collectStrings, und was
+ * hier gesperrt ist, taucht dort gar nicht erst auf. Ein Termin gehoert der
+ * Verwaltung, Punkt.
+ *
  * Kanäle gehören dazu: "Instagram", "Spotify" und "Mixcloud" heissen in jeder
  * Sprache gleich. Übersetzt man sie trotzdem, zeigt die Übersetzungstabelle
  * über die Position auf den Kanal — und sobald in der Verwaltung ein Kanal
@@ -3065,7 +3116,7 @@ const looksTechnical = (v) =>
    Club den Namen. Genau so hiess "B9" auf /de/ und /fr/ noch "B9
    eventlocation", nachdem die Liste gewachsen war. */
 const NO_TRANSLATE_PATH =
-  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\.|^sections\.references\.items\.|^imprint\./;
+  /^layout\.|^pages\.\d+\.sections\.|^pages\.\d+\.hero$|^sections\.contact\.socials\.|^sections\.references\.items\.|^sections\.shows\.items\.|^imprint\./;
 
 /** Alle übersetzbaren Textstellen als [pfad, text]. */
 export function collectStrings(node, prefix = "", out = []) {
@@ -4257,8 +4308,42 @@ Sitemap: ${base}/sitemap.xml
 `;
 }
 
+/**
+ * Termine, die es nicht auf die Seite schaffen — laut sagen, nicht verschlucken.
+ *
+ * Ein Termin ohne "Event / Club" wird nicht angezeigt: es gibt nichts
+ * anzuschreiben. Das ist richtig, war aber lautlos — in der Verwaltung stand
+ * der Eintrag, auf der Website fehlte er, und niemand konnte sagen warum.
+ * Dasselbe gilt fuer den ganzen Abschnitt: steht nur Vergangenes drin,
+ * verschwindet er samt Menuepunkt (die vergangenen Termine stehen dann bei den
+ * Referenzen).
+ */
+function meldeStilleTermine(content) {
+  const items = list(content?.sections?.shows?.items);
+  const ohneNamen = items.filter((i) => !str(i?.name).trim());
+  if (ohneNamen.length) {
+    const wo = ohneNamen
+      .map((i) => isoDate(i?.date) || str(i?.city) || "(ohne Datum)")
+      .join(", ");
+    console.warn(
+      `[build] ${ohneNamen.length} Termin(e) ohne Namen — sie werden NICHT angezeigt: ${wo}. ` +
+        `In der Verwaltung unter Shows das Feld "Event / Club" ausfuellen.`
+    );
+  }
+  const mitNamen = items.filter((i) => str(i?.name).trim());
+  const heute = today();
+  const kommend = mitNamen.filter((i) => !isoDate(i.date) || isoDate(i.date) >= heute);
+  if (mitNamen.length && !kommend.length) {
+    console.warn(
+      `[build] Kein kommender Termin (${mitNamen.length} vorbei) — der Shows-Abschnitt und sein ` +
+        `Menuepunkt erscheinen nicht. Vergangene Termine stehen bei den Referenzen.`
+    );
+  }
+}
+
 async function main() {
   const content = await loadContent();
+  meldeStilleTermine(content);
   BILDMASSE = await ladeBildmasse();
   if (!content.site || !content.site.domain) {
     throw new Error("content: site.domain fehlt");
