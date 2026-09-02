@@ -746,10 +746,25 @@ for (const [datei, h] of html) {
        Objekt nicht, deshalb sind sie beim Publizieren der Verwaltung von selbst
        weggefallen. Verloren ist dabei kein Medium: alle 44 Adressen sind
        unveraendert. */
+    /* KEINE feste Zahl mehr. Hier stand "genau 44 Eintraege, jeder mit
+       Adresse" — eine Momentaufnahme vom August 2026, festgeschrieben als
+       Pruefung. Sobald der Kunde in der Verwaltung ein Bild loescht oder einen
+       Platz leer laesst, ist sie falsch: am 02.09.2026 sind es 42 Eintraege,
+       5 davon leere Plaetze, und der Prueflauf wurde rot, ohne dass etwas
+       kaputt war. Ein Test, der bei jeder normalen Inhaltsaenderung anschlaegt,
+       wird nach dem dritten Mal ignoriert — und dann faellt der echte Fehler
+       auch nicht mehr auf.
+
+       Leere Plaetze sind erlaubt (die Verwaltung kennt sie, der Generator
+       ueberspringt sie). Geprueft wird, was wirklich gelten muss: die
+       Bilderwand ist nicht leergelaufen, und jedes Bild MIT Adresse hat eine
+       brauchbare. */
     const medien = INHALT.sections?.gallery?.items || [];
-    if (medien.length !== 44) meckern(`${medien.length} Galerie-Eintraege statt 44`);
-    const ohneAdresse = medien.filter((i) => !i || !i.src).length;
-    if (ohneAdresse) meckern(`${ohneAdresse} Galerie-Eintraege ohne Adresse`);
+    const mitBild = medien.filter((i) => i && i.src);
+    if (mitBild.length < 20)
+      meckern(`nur noch ${mitBild.length} Galeriebilder mit Adresse — da ist etwas verloren gegangen`);
+    const krumm = mitBild.filter((i) => !/^https?:\/\//i.test(String(i.src)) && !String(i.src).startsWith("/"));
+    if (krumm.length) meckern(`${krumm.length} Galeriebild(er) mit unbrauchbarer Adresse`);
   }
 
   /* Die Telefonnummer ist von der Website genommen. Das Feld im
