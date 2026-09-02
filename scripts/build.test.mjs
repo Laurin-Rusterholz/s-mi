@@ -698,9 +698,13 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   /* 44 Medien, jedes mit Adresse. Die drei frueheren Leer-Plaetze sind beim
      Publizieren der Verwaltung von selbst weggefallen — die Datenbank speichert
      ein leeres Objekt nicht. Kein Medium ist verloren. */
+  /* Wie in links.test.mjs: keine feste Zahl auf Kundendaten. Wer ein Bild
+     loescht oder einen Platz leer laesst, darf damit keinen roten Prueflauf
+     ausloesen — sonst schaut irgendwann niemand mehr hin. */
   const medien = template.sections.gallery.items || [];
-  if (medien.length !== 44) meckern(`${medien.length} Galerie-Eintraege statt 44`);
-  if (medien.some((i) => !i || !i.src)) meckern("ein Galerie-Eintrag ohne Adresse");
+  const mitBild = medien.filter((i) => i && i.src);
+  if (mitBild.length < 20)
+    meckern(`nur noch ${mitBild.length} Galeriebilder mit Adresse — da ist etwas verloren gegangen`);
   if (!(template.sections.shop.items || []).some((p) => p.paymentLink))
     meckern("der Bezahl-Link am Artikel ist verloren gegangen");
   /* Referenzen: keine feste Zahl mehr. Vergangene Termine wandern von selbst
@@ -717,7 +721,12 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
     `${String(r.name || "").trim().toLowerCase()}|${String(r.city || "").trim().toLowerCase()}`;
   if (new Set(refs.map(refKey)).size !== refs.length)
     meckern("eine Referenz steht doppelt in der Liste");
-  if ((template.sections.contact.socials || []).length !== 4) meckern("es sind nicht mehr vier Kanaele");
+  /* Kanaele pflegt der Kunde ebenfalls selbst — geprueft wird, dass ueberhaupt
+     welche dastehen und jeder eine Aufschrift hat, nicht ihre Anzahl. */
+  const kanaeleJetzt = template.sections.contact.socials || [];
+  if (!kanaeleJetzt.length) meckern("es steht kein einziger Kanal mehr im Inhalt");
+  if (kanaeleJetzt.some((k) => !String(k?.label || "").trim()))
+    meckern("ein Kanal ohne Aufschrift");
   if (template.release?.enabled !== true || template.release?.date !== "2026-08-12")
     meckern("die Release-Sperre wurde veraendert: " + JSON.stringify(template.release));
 }
