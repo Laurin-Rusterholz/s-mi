@@ -2,11 +2,11 @@
   "contentRevision": 2,
   "hero": {
     "ctaHref": "#booking",
-    "ctaLabel": "Book me",
-    "kicker": "DJ & producer — St. Gallen, Switzerland",
+    "ctaLabel": "Book Sam",
+    "kicker": "DJ & Producer — St. Gallen, Switzerland",
     "media": {
-      "alt": "Sam Sparking behind the decks, lasers and crowd in front of the stage",
-      "clipEnd": "20",
+      "alt": "Sam Sparking performing on stage with raised hand, surrounded by colourful club lights.",
+      "clipEnd": "18",
       "clipStart": "0",
       "poster": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW52YSBbEFCtz4nl36%2Fimage00001.jpeg?alt=media&token=4e105099-e206-4e5d-929a-8c9af42691ac",
       "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU6b8KlknJWsJaay2s%2Fultrawild-nicolas.mp4?alt=media&token=d89f8d1b-067a-49e6-a950-0939b27a4b11",
@@ -38,7 +38,6 @@
         "media": {
           "alt": "Sam Sparking am Pult, Laser und Crowd vor der Bühne"
         },
-        "tagline": "Aus Energie wird Euphorie.",
         "stats": {
           "0": {
             "label": "Erstes Set"
@@ -49,7 +48,8 @@
           "2": {
             "label": "BPM Zuhause"
           }
-        }
+        },
+        "tagline": "Aus Energie wird Euphorie."
       },
       "pages": {
         "0": {
@@ -91,6 +91,8 @@
             "3": "Schweiz & Europa"
           },
           "availableKicker": "Verfügbar für",
+          "claim": "Machen wir",
+          "claimAccent": "was Eigenes.",
           "form": {
             "errorText": "Da ist etwas schiefgelaufen. Schreib mir bitte direkt an info@samsparking.ch.",
             "kicker": "Booking-Anfrage",
@@ -98,13 +100,45 @@
             "successText": "Danke — deine Anfrage ist angekommen. Du hörst innerhalb von 48 Stunden von mir.",
             "title": "Erzähl mir von deinem Event"
           },
+          "lead": "Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort.",
           "navLabel": "Booking",
           "presskitLabel": "Presskit (PDF)",
+          "rider": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "meta": "1. Wahl"
+                  },
+                  {
+                    "meta": "2. Wahl"
+                  },
+                  {
+                    "meta": "3. Wahl"
+                  }
+                ],
+                "title": "CDJs — 4× erforderlich"
+              },
+              {
+                "items": [
+                  {
+                    "meta": "1. Wahl"
+                  },
+                  {
+                    "meta": "2. Wahl"
+                  },
+                  {
+                    "meta": "3. Wahl"
+                  }
+                ],
+                "title": "Mixer — eines der folgenden"
+              }
+            ],
+            "kicker": "Bevorzugtes Setup",
+            "note": "Bitte Booth-Monitore mit unabhängiger Lautstärkeregelung bereitstellen — essenziell für sauberes Cueing und Mixing."
+          },
           "title": "Boo",
-          "titleAccent": "king.",
-          "lead": "Club, Festival, private oder Firmen-Feier — schreib mir, was du vorhast, und du hast innert 48 Stunden eine Antwort.",
-          "claim": "Machen wir",
-          "claimAccent": "was Eigenes."
+          "titleAccent": "king."
         },
         "contact": {
           "base": "St. Gallen, Schweiz",
@@ -114,6 +148,7 @@
           "titleAccent": "takt."
         },
         "gallery": {
+          "aftermoviesNote": "Rückblick auf die letzten Shows.",
           "items": {
             "0": {
               "alt": "Sam Sparking live — Crowd mit erhobenen Händen"
@@ -154,30 +189,76 @@
           },
           "navLabel": "Galerie",
           "title": "Gal",
-          "titleAccent": "erie.",
-          "aftermoviesNote": "Rückblick auf die letzten Shows."
+          "titleAccent": "erie."
         },
         "references": {
+          "items": [
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Zürich"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Gossau"
+            },
+            {
+              "city": "Luzern"
+            },
+            {
+              "city": "Herisau"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Herisau"
+            },
+            {
+              "city": "Wittenbach"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Wattwil"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Schaan, FL"
+            },
+            {
+              "city": "Sirnach"
+            },
+            {
+              "city": "Bazenheid"
+            },
+            {
+              "city": "Glarus"
+            }
+          ],
           "navLabel": "Referenzen",
           "note": "Dein Club oder Festival als Nächstes?",
           "noteLinkLabel": "Schreib mir →",
           "title": "Refe",
           "titleAccent": "renzen."
         },
-        "shows": {
-          "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
-          "navLabel": "Shows",
-          "pastLabel": "Schon gespielt",
-          "title": "Sh",
-          "titleAccent": "ows."
-        },
         "shop": {
-          "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
-          "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
           "buyLabel": "Kaufen",
-          "headline": "Sam Sparking Shop",
-          "intro": "Kleine Auflagen, gemacht fürs Konzert. Was hier steht, gibt es — ist ein Stück weg, ist es weg.",
           "ctaLabel": "Zum Katalog",
+          "emptyText": "Der Shop ist bald offen — das erste Merch ist in Arbeit. Folg mir auf den Kanälen unten, dann verpasst du den Start nicht.",
+          "headline": "Sam Sparking Shop",
           "info": {
             "0": {
               "title": "Zahlung",
@@ -191,7 +272,47 @@
               "title": "Fragen",
               "text": "Grösse, Farbe, Verfügbarkeit — schreib an info@samsparking.ch."
             }
-          }
+          },
+          "intro": "Kleine Auflagen, gemacht fürs Konzert. Was hier steht, gibt es — ist ein Stück weg, ist es weg.",
+          "items": [
+            {
+              "alt": "as",
+              "note": "as"
+            }
+          ],
+          "navLabel": "Shop",
+          "note": "Merch von Sam Sparking — jedes Teil hilft, die nächste Produktion zu stemmen.",
+          "title": "Sh",
+          "titleAccent": "op."
+        },
+        "shows": {
+          "emptyText": "Aktuell habe ich keine Termine angekündigt. Neue Shows stehen hier zuerst — oder melde dich und buch mich für dein Event.",
+          "navLabel": "Shows",
+          "pastLabel": "Schon gespielt",
+          "title": "Sh",
+          "titleAccent": "ows."
+        },
+        "sound": {
+          "genres": [
+            {
+              "meta": "Genre"
+            },
+            {
+              "meta": "Genre"
+            }
+          ],
+          "mixes": [
+            {
+              "kicker": "Aktueller Mix",
+              "linkLabel": "Auf Mixcloud hören",
+              "text": "One Take, keine Abkürzungen. So bewegt ein Set von Sam Sparking einen Raum.",
+              "title": "Euphoric & Melodic Hardstyle — Recorded Set"
+            }
+          ],
+          "navLabel": "Sound",
+          "note": "Druckvolle Kicks. Emotionale Melodien. Ich baue Sets, die von Storytelling und Crowd-Energie leben.",
+          "title": "Gen",
+          "titleAccent": "res."
         }
       },
       "site": {
@@ -235,118 +356,398 @@
         }
       },
       "ui": {
-        "skip": "Zum Inhalt springen",
-        "menu": "Menü",
-        "close": "Schliessen",
-        "scroll": "Scrollen ↓",
-        "imageViewer": "Bildansicht",
-        "prevImage": "Vorheriges Bild",
-        "nextImage": "Nächstes Bild",
-        "openImage": "Bild {n} von {total} gross öffnen",
-        "rights": "Alle Rechte vorbehalten",
-        "photography": "Fotografie",
-        "base": "Standort",
-        "tickets": "Tickets",
-        "booked": "Gebucht",
-        "calShow": "Termin",
-        "prevMonth": "Vorheriger Monat",
-        "nextMonth": "Nächster Monat",
-        "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So",
-        "sending": "Wird gesendet …",
-        "formInvalid": "Bitte die markierten Felder prüfen.",
-        "fName": "Name",
-        "fEmail": "E-Mail",
-        "fEvent": "Event / Club",
-        "fCity": "Ort",
-        "fDate": "Datum",
-        "fSetLength": "Set-Länge",
-        "fMessage": "Nachricht",
-        "fSetLengthHint": "z. B. 60 Min.",
-        "fHoneypot": "Bitte leer lassen",
-        "notFoundTitle": "Nichts hier.",
-        "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
-        "notFoundCta": "Zur Startseite",
-        "language": "Sprache",
-        "bookDay": "Diesen Tag anfragen",
-        "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
-        "dayBusy": "Belegt",
-        "toTop": "Nach oben",
-        "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
-        "cookieOk": "Alles klar",
-        "copyMail": "E-Mail kopieren",
-        "copied": "Kopiert ✓",
-        "bookCta": "Booking anfragen",
-        "moreStory": "Ganze Story lesen",
-        "lessStory": "Weniger anzeigen",
-        "showMoreImages": "{n} weitere Bilder",
-        "showLessImages": "Weniger Bilder",
-        "follow": "Kanäle",
-        "phone": "Telefon",
-        "replyNote": "Antwort meist innert 48 Stunden",
         "afterMovies": "After Movies",
         "afterMoviesEmpty": "Die Aftermovies der letzten Shows sind im Schnitt — sie erscheinen hier, sobald sie fertig sind.",
         "allRequired": "Alle Felder sind Pflichtfelder.",
-        "payTitle": "Bezahlen",
+        "base": "Standort",
+        "bookCta": "Booking anfragen",
+        "bookDay": "Diesen Tag anfragen",
+        "booked": "Gebucht",
+        "buy": "Kaufen",
+        "calShow": "Termin",
+        "captcha": "Anti-Spam — bitte lösen",
+        "captchaAria": "Ergebnis der Rechenaufgabe",
+        "captchaWrong": "Die Rechnung stimmt noch nicht.",
+        "close": "Schliessen",
+        "cookieOk": "Alles klar",
+        "cookieText": "Diese Website kommt ohne Tracking und Werbe-Cookies aus. Beim Abschicken einer Anfrage oder Bestellung werden nur die Angaben aus dem Formular gespeichert.",
+        "copied": "Kopiert ✓",
+        "copyMail": "E-Mail kopieren",
+        "dayBusy": "Belegt",
+        "fCity": "Ort",
+        "fDate": "Datum",
+        "fEmail": "E-Mail",
+        "fEvent": "Event / Club",
+        "fHoneypot": "Bitte leer lassen",
+        "fMessage": "Nachricht",
+        "fName": "Dein Name",
+        "fPhone": "Telefon",
+        "fSetLength": "Set-Länge",
+        "fSetLengthHint": "z. B. 60 Min.",
+        "follow": "Kanäle",
+        "formFine": "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet.",
+        "formInvalid": "Bitte die markierten Felder prüfen.",
+        "imageViewer": "Bildansicht",
+        "language": "Sprache",
+        "lessStory": "Weniger anzeigen",
+        "menu": "Menü",
+        "moreStory": "Ganze Story lesen",
+        "nextImage": "Nächstes Bild",
+        "nextMonth": "Nächster Monat",
+        "notFoundCta": "Zur Startseite",
+        "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
+        "notFoundTitle": "Nichts hier.",
+        "openImage": "Bild {n} von {total} gross öffnen",
+        "orderByMail": "Per Mail bestellen",
+        "orderMailBody": "Hoi Sam\n\nIch bestelle: {product}\nLieferadresse:\n\nDanke!",
+        "orderSubject": "Bestellung",
         "payBank": "Banküberweisung",
         "payBankName": "Bank",
         "payHolder": "Empfänger",
         "payNote": "Nach dem Absenden kommt eine Bestätigung mit Betrag und Vermerk. Der Versand geht raus, sobald die Zahlung da ist.",
+        "payPending": "folgt",
         "payQrCaption": "QR-Code scannen und bezahlen",
         "payQrMissing": "QR-Code folgt",
-        "payPending": "folgt",
-        "fPhone": "Telefon",
-        "phName": "Max Muster",
-        "phEmail": "deine@email.ch",
-        "phPhone": "+41 79 123 45 67",
-        "phEvent": "Club, Festival, Firmenfest …",
+        "payTitle": "Bezahlen",
         "phCity": "St. Gallen",
+        "phEmail": "deine@email.ch",
+        "phEvent": "Club, Festival, Firmenfest …",
         "phMessage": "Deine Nachricht …",
-        "captcha": "Anti-Spam — bitte lösen",
-        "captchaAria": "Ergebnis der Rechenaufgabe",
-        "captchaWrong": "Die Rechnung stimmt noch nicht.",
-        "formFine": "* Pflichtfelder · Deine Angaben werden nur für die Bearbeitung deiner Anfrage verwendet."
+        "phName": "Max Muster",
+        "phPhone": "+41 79 123 45 67",
+        "phone": "Telefon",
+        "photography": "Fotografie",
+        "pickDay": "Oder Wunschdatum direkt im Kalender antippen:",
+        "prevImage": "Vorheriges Bild",
+        "prevMonth": "Vorheriger Monat",
+        "replyNote": "Antwort meist innert 48 Stunden",
+        "rights": "Alle Rechte vorbehalten",
+        "scroll": "Scrollen ↓",
+        "sending": "Wird gesendet …",
+        "showLessImages": "Weniger Bilder",
+        "showMoreImages": "{n} weitere Bilder",
+        "skip": "Zum Inhalt springen",
+        "soldOut": "Ausverkauft",
+        "tickets": "Tickets",
+        "toTop": "Nach oben",
+        "twintConfirm": "Bestellung per Mail bestätigen",
+        "twintNote": "Nach der Zahlung kurz per Mail bestätigen und die Lieferadresse angeben — dann geht dein Teil in den Versand.",
+        "twintRef": "Vermerk",
+        "twintSend": "Per TWINT bezahlen an",
+        "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So"
+      }
+    },
+    "en": {
+      "hero": {
+        "ctaLabel": "Book me",
+        "kicker": "DJ & producer — St. Gallen, Switzerland",
+        "media": {
+          "alt": "Sam Sparking behind the decks, lasers and crowd in front of the stage"
+        },
+        "meta": "Euphoric Hardstyle / Melodic Hardstyle",
+        "tagline": "Turning energy into euphoria."
+      },
+      "pages": [
+        {
+          "navLabel": "Home"
+        }
+      ],
+      "sections": {
+        "about": {
+          "lede": "I'm Sam Sparking, 19, a DJ and producer from St. Gallen. My story started long before I first stood behind a DJ setup.",
+          "navLabel": "About",
+          "paragraphs": [
+            "I grew up on festival videos and found my way into hardstyle early. It was a Defqon.1 video that first showed me what music can really do. The energy, the atmosphere, the connection between DJ and crowd — it hit me instantly and never let go. At 15 the fascination turned into a direction: I watched a DJ hold a club dancefloor completely in his hands. From that moment on, producing and playing wasn't a side project any more — it was the only path that made sense to me.",
+            "Four years on, I work on my sound every day, track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, I focus on euphoric hardstyle — hard kicks combined with emotional melodies that pull you in and don't let go.",
+            "The name **Sparking** is no accident. It stands for constant energy, a head full of ideas and an optimism that comes through in every production. My sets are built on emotion, storytelling and crowd energy — they create moments where music and audience truly meet.",
+            "My mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat straight away, that overwhelming feeling that only happens when the music is exactly right."
+          ],
+          "photo": {
+            "alt": "Portrait of Sam Sparking"
+          },
+          "title": "About",
+          "titleAccent": "Me.",
+          "words": [
+            "Emotional",
+            "Powerful",
+            "Euphoric"
+          ]
+        },
+        "booking": {
+          "available": [
+            "Clubs & Venues",
+            "Festivals",
+            "Switzerland & Europe"
+          ],
+          "availableKicker": "Available for",
+          "form": {
+            "errorText": "Something went wrong. Please write to me directly at info@samsparking.ch.",
+            "kicker": "Booking request",
+            "submitLabel": "Send request",
+            "successText": "Thanks — your request arrived. You'll hear from me within 48 hours.",
+            "title": "Tell me about your event"
+          },
+          "navLabel": "Booking",
+          "presskitLabel": "Presskit (PDF)",
+          "rider": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "meta": "1st choice"
+                  },
+                  {
+                    "meta": "2nd choice"
+                  },
+                  {
+                    "meta": "3rd choice"
+                  }
+                ],
+                "title": "CDJs — 4× required"
+              },
+              {
+                "items": [
+                  {
+                    "meta": "1st choice"
+                  },
+                  {
+                    "meta": "2nd choice"
+                  },
+                  {
+                    "meta": "3rd choice"
+                  }
+                ],
+                "title": "Mixer — one of the following"
+              }
+            ],
+            "kicker": "Preferred setup",
+            "note": "Please provide booth monitors with independent volume control — essential for proper cueing and mixing."
+          },
+          "title": "Boo",
+          "titleAccent": "king."
+        },
+        "contact": {
+          "base": "St. Gallen, Switzerland",
+          "kicker": "Booking & enquiries",
+          "navLabel": "Contact",
+          "socials": [
+            {
+              "label": "Mixcloud"
+            }
+          ],
+          "title": "Con",
+          "titleAccent": "tact."
+        },
+        "gallery": {
+          "items": [
+            {
+              "alt": "Sam Sparking live — crowd with hands up"
+            },
+            {
+              "alt": "Sam Sparking mixing on CDJs"
+            },
+            {
+              "alt": "Stage lights during a hardstyle set"
+            },
+            {
+              "alt": "Sam Sparking behind the booth"
+            },
+            {
+              "alt": "Crowd at a Sam Sparking show"
+            },
+            {
+              "alt": "Sam Sparking portrait at the venue"
+            },
+            {
+              "alt": "Hands in the air on the dancefloor"
+            },
+            {
+              "alt": "Sam Sparking during his set"
+            },
+            {
+              "alt": "Light show over the dancefloor"
+            },
+            {
+              "alt": "Sam Sparking on stage"
+            },
+            {
+              "alt": "Booth view over the crowd"
+            },
+            {
+              "alt": "Closing moment of the night"
+            }
+          ],
+          "navLabel": "Gallery",
+          "title": "Gal",
+          "titleAccent": "lery."
+        },
+        "references": {
+          "items": [
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Zurich"
+            },
+            {
+              "city": "Schaan, FL"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "Gossau"
+            },
+            {
+              "city": "St. Gallen"
+            },
+            {
+              "city": "St. Gallen"
+            }
+          ],
+          "navLabel": "References",
+          "note": "Your club or festival next?",
+          "noteLinkLabel": "Write to me →",
+          "title": "Refe",
+          "titleAccent": "rences."
+        },
+        "shop": {
+          "buyLabel": "Buy",
+          "emptyText": "The shop opens soon — the first merch is in the works. Follow the channels below so you don't miss the drop.",
+          "navLabel": "Shop",
+          "note": "Sam Sparking merch — every piece helps fund the next production.",
+          "title": "Sh",
+          "titleAccent": "op."
+        },
+        "shows": {
+          "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
+          "navLabel": "Shows",
+          "pastLabel": "Already played",
+          "title": "Sh",
+          "titleAccent": "ows."
+        },
+        "sound": {
+          "genres": [
+            {
+              "meta": "Genre"
+            },
+            {
+              "meta": "Genre"
+            }
+          ],
+          "mixes": [
+            {
+              "kicker": "Latest Mix",
+              "linkLabel": "Listen on Mixcloud",
+              "text": "One take, no shortcuts. Get a feel for how a Sam Sparking set moves a room.",
+              "title": "Euphoric & Melodic Hardstyle — Recorded Set"
+            }
+          ],
+          "navLabel": "Sound",
+          "note": "Hard kicks. Emotional melodies. I build sets that live on storytelling and crowd energy.",
+          "title": "Gen",
+          "titleAccent": "res."
+        }
+      },
+      "site": {
+        "claim": "Turning energy into euphoria",
+        "description": "I'm Sam Sparking, a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
+        "keywords": [
+          "Sam Sparking",
+          "Hardstyle DJ",
+          "Euphoric Hardstyle",
+          "Melodic Hardstyle",
+          "DJ St. Gallen",
+          "Hardstyle Switzerland",
+          "DJ Booking Switzerland"
+        ],
+        "ogDescription": "Hardstyle DJ and producer from St. Gallen. Hard kicks, emotional melodies. Book me for your club or festival — Switzerland and Europe.",
+        "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
+        "title": "Sam Sparking — Hardstyle DJ & Producer from St. Gallen, Switzerland"
+      },
+      "ticker": {
+        "items": [
+          {
+            "accent": "Energy",
+            "text": "Turning"
+          },
+          {
+            "accent": "Euphoria",
+            "text": "Into"
+          },
+          {
+            "accent": "Hardstyle",
+            "text": "Euphoric"
+          },
+          {
+            "accent": "Hardstyle",
+            "text": "Melodic"
+          },
+          {
+            "accent": "Edition",
+            "text": "2026"
+          }
+        ]
+      },
+      "ui": {
+        "base": "Base",
+        "bookDay": "Request this date",
+        "booked": "Booked",
+        "buy": "Buy",
+        "calShow": "Show",
+        "close": "Close",
+        "fCity": "City",
+        "fDate": "Date",
+        "fEmail": "E-mail",
+        "fEvent": "Event / club",
+        "fHoneypot": "Leave empty",
+        "fMessage": "Message",
+        "fName": "Your name",
+        "fSetLength": "Set length",
+        "fSetLengthHint": "e.g. 60 min",
+        "formInvalid": "Please check the highlighted fields.",
+        "imageViewer": "Image viewer",
+        "language": "Language",
+        "menu": "Menu",
+        "nextImage": "Next image",
+        "nextMonth": "Next month",
+        "notFoundCta": "Back to start",
+        "notFoundText": "This page doesn't exist (any more). Head back to the start — everything current is there.",
+        "notFoundTitle": "Nothing here.",
+        "openImage": "Open image {n} of {total} in full size",
+        "orderByMail": "Order by e-mail",
+        "orderSubject": "Order",
+        "photography": "Photography",
+        "prevImage": "Previous image",
+        "prevMonth": "Previous month",
+        "rights": "All rights reserved",
+        "scroll": "Scroll ↓",
+        "sending": "Sending …",
+        "skip": "Skip to content",
+        "soldOut": "Sold out",
+        "tickets": "Tickets",
+        "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun"
       }
     },
     "fr": {
-      "site": {
-        "title": "Sam Sparking — DJ et producteur hardstyle de Saint-Gall",
-        "description": "Je suis Sam Sparking, DJ et producteur hardstyle de Saint-Gall. Euphoric et melodic hardstyle pour clubs, salles et festivals en Suisse et en Europe.",
-        "keywords": {
-          "0": "Sam Sparking",
-          "1": "DJ hardstyle",
-          "2": "Euphoric Hardstyle",
-          "3": "Melodic Hardstyle",
-          "4": "DJ Saint-Gall",
-          "5": "Hardstyle Suisse",
-          "6": "Booking DJ Suisse"
+      "hero": {
+        "ctaLabel": "Me réserver",
+        "kicker": "DJ & producteur — Saint-Gall, Suisse",
+        "media": {
+          "alt": "Sam Sparking aux platines, lasers et public devant la scène"
         },
-        "ogTitle": "Sam Sparking — L'énergie devient euphorie",
-        "ogDescription": "DJ et producteur hardstyle de Saint-Gall. Des kicks puissants, des mélodies émotionnelles. Réserve-moi pour ton club ou ton festival — Suisse et Europe.",
-        "claim": "L'énergie devient euphorie"
-      },
-      "ticker": {
-        "items": {
+        "stats": {
           "0": {
-            "text": "L'énergie",
-            "accent": "devient"
+            "label": "Premier set"
           },
           "1": {
-            "text": "pure",
-            "accent": "euphorie"
+            "label": "Shows"
           },
           "2": {
-            "text": "Euphoric",
-            "accent": "Hardstyle"
-          },
-          "3": {
-            "text": "Melodic",
-            "accent": "Hardstyle"
-          },
-          "4": {
-            "text": "2026",
-            "accent": "Edition"
+            "label": "BPM de référence"
           }
-        }
+        },
+        "tagline": "L'énergie devient euphorie."
       },
       "pages": {
         "0": {
@@ -361,43 +762,96 @@
       },
       "sections": {
         "about": {
-          "navLabel": "À propos",
-          "title": "À pro",
-          "titleAccent": "pos.",
-          "photo": {
-            "alt": "Portrait de Sam Sparking"
-          },
           "lede": "Je suis Sam Sparking, 19 ans, DJ et producteur de Saint-Gall. Mon histoire a commencé bien avant que je me retrouve derrière des platines.",
+          "navLabel": "À propos",
           "paragraphs": {
             "0": "J'ai grandi avec les vidéos de festivals et je suis arrivé tôt dans le hardstyle. C'est une vidéo de Defqon.1 qui m'a montré pour la première fois ce que la musique peut vraiment faire. L'énergie, l'atmosphère, le lien entre le DJ et le public — ça m'a touché immédiatement et ne m'a plus lâché. À 15 ans, la fascination est devenue une direction : j'ai vu un DJ tenir tout un dancefloor entre ses mains. À partir de ce moment, produire et mixer n'était plus un projet parallèle, mais la seule voie qui avait du sens pour moi.",
             "1": "Quatre ans plus tard, je travaille mon son chaque jour, morceau après morceau. Inspiré par des artistes comme **Sound Rush**, **Sub Zero Project** et **Headhunterz**, je me concentre sur l'euphoric hardstyle — des kicks puissants combinés à des mélodies émotionnelles qui t'attrapent et ne te lâchent plus.",
             "2": "Le nom **Sparking** n'est pas un hasard. Il représente une énergie constante, une tête pleine d'idées et un optimisme qui traverse chaque production. Mes sets reposent sur l'émotion, la narration et l'énergie du public — ils créent des moments où la musique et la foule se rejoignent vraiment.",
             "3": "Ma mission est simple : faire ressentir aux gens quelque chose de vrai. Cette décharge d'énergie positive, cette envie d'appuyer tout de suite sur repeat, ce sentiment irrésistible qui n'arrive que lorsque la musique est exactement juste."
           },
+          "photo": {
+            "alt": "Portrait de Sam Sparking"
+          },
+          "title": "À pro",
+          "titleAccent": "pos.",
           "words": {
             "0": "Émotionnel",
             "1": "Puissant",
             "2": "Euphorique"
           }
         },
-        "shows": {
-          "navLabel": "Dates",
-          "title": "Da",
-          "titleAccent": "tes.",
-          "emptyText": "Je n'ai aucune date annoncée pour l'instant. Les nouveaux shows arrivent ici en premier — ou contacte-moi et réserve-moi pour ton événement.",
-          "pastLabel": "Déjà joué"
+        "booking": {
+          "available": {
+            "0": "Clubs & salles",
+            "1": "Festivals",
+            "2": "Événements privés & d'entreprise",
+            "3": "Suisse & Europe"
+          },
+          "availableKicker": "Disponible pour",
+          "claim": "Créons",
+          "claimAccent": "quelque chose.",
+          "form": {
+            "errorText": "Quelque chose n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
+            "kicker": "Demande de booking",
+            "submitLabel": "Envoyer la demande",
+            "successText": "Merci — ta demande est bien arrivée. Tu auras de mes nouvelles sous 48 heures.",
+            "title": "Parle-moi de ton événement"
+          },
+          "lead": "Club, festival, fête privée ou événement d'entreprise — écris-moi ton projet et tu as une réponse sous 48 heures.",
+          "navLabel": "Booking",
+          "presskitLabel": "Presskit (PDF)",
+          "rider": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "meta": "1er choix"
+                  },
+                  {
+                    "meta": "2e choix"
+                  },
+                  {
+                    "meta": "3e choix"
+                  }
+                ],
+                "title": "CDJ — 4× requis"
+              },
+              {
+                "items": [
+                  {
+                    "meta": "1er choix"
+                  },
+                  {
+                    "meta": "2e choix"
+                  },
+                  {
+                    "meta": "3e choix"
+                  }
+                ],
+                "title": "Mixer — l'un des suivants"
+              }
+            ],
+            "kicker": "Setup souhaité",
+            "note": "Merci de prévoir des retours booth avec réglage de volume indépendant — indispensable pour un cueing et un mix propres."
+          },
+          "title": "Boo",
+          "titleAccent": "king."
         },
-        "references": {
-          "navLabel": "Références",
-          "title": "Réfé",
-          "titleAccent": "rences.",
-          "note": "Ton club ou ton festival ensuite ?",
-          "noteLinkLabel": "Écris-moi →"
+        "contact": {
+          "base": "Saint-Gall, Suisse",
+          "kicker": "Booking & demandes",
+          "navLabel": "Contact",
+          "socials": [
+            {
+              "label": "Mixcloud"
+            }
+          ],
+          "title": "Kon",
+          "titleAccent": "takt."
         },
         "gallery": {
-          "navLabel": "Galerie",
-          "title": "Gal",
-          "titleAccent": "erie.",
+          "aftermoviesNote": "Retour sur les derniers shows.",
           "items": {
             "0": {
               "alt": "Sam Sparking en live — public les mains en l'air"
@@ -436,46 +890,78 @@
               "alt": "Dernier moment de la nuit"
             }
           },
-          "aftermoviesNote": "Retour sur les derniers shows."
+          "navLabel": "Galerie",
+          "title": "Gal",
+          "titleAccent": "erie."
         },
-        "booking": {
-          "navLabel": "Booking",
-          "title": "Boo",
-          "titleAccent": "king.",
-          "availableKicker": "Disponible pour",
-          "available": {
-            "0": "Clubs & salles",
-            "1": "Festivals",
-            "2": "Événements privés & d'entreprise",
-            "3": "Suisse & Europe"
-          },
-          "presskitLabel": "Presskit (PDF)",
-          "form": {
-            "kicker": "Demande de booking",
-            "title": "Parle-moi de ton événement",
-            "successText": "Merci — ta demande est bien arrivée. Tu auras de mes nouvelles sous 48 heures.",
-            "errorText": "Quelque chose n'a pas fonctionné. Écris-moi directement à info@samsparking.ch.",
-            "submitLabel": "Envoyer la demande"
-          },
-          "lead": "Club, festival, fête privée ou événement d'entreprise — écris-moi ton projet et tu as une réponse sous 48 heures.",
-          "claim": "Créons",
-          "claimAccent": "quelque chose."
-        },
-        "contact": {
-          "navLabel": "Contact",
-          "title": "Kon",
-          "titleAccent": "takt.",
-          "kicker": "Booking & demandes",
-          "base": "Saint-Gall, Suisse"
+        "references": {
+          "items": [
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Zurich"
+            },
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Gossau"
+            },
+            {
+              "city": "Lucerne"
+            },
+            {
+              "city": "Herisau"
+            },
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Herisau"
+            },
+            {
+              "city": "Wittenbach"
+            },
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Wattwil"
+            },
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Saint-Gall"
+            },
+            {
+              "city": "Schaan, FL"
+            },
+            {
+              "city": "Sirnach"
+            },
+            {
+              "city": "Bazenheid"
+            },
+            {
+              "city": "Glarus"
+            }
+          ],
+          "navLabel": "Références",
+          "note": "Ton club ou ton festival ensuite ?",
+          "noteLinkLabel": "Écris-moi →",
+          "title": "Réfé",
+          "titleAccent": "rences."
         },
         "shop": {
-          "note": "Du merch de Sam Sparking — chaque pièce aide à financer la prochaine production.",
-          "emptyText": "La boutique ouvre bientôt — le premier merch est en préparation. Suis-moi sur les canaux ci-dessous pour ne pas manquer la sortie.",
           "buyLabel": "Acheter",
-          "navLabel": "Boutique",
-          "headline": "Sam Sparking Shop",
-          "intro": "Petites séries, faites pour la scène. Ce qui est ici existe — une pièce partie ne revient pas.",
           "ctaLabel": "Voir le catalogue",
+          "emptyText": "Le shop ouvre bientôt — le premier merch est en préparation. Suis les canaux ci-dessous pour ne pas rater le lancement.",
+          "headline": "Sam Sparking Shop",
           "info": {
             "0": {
               "title": "Paiement",
@@ -489,99 +975,163 @@
               "title": "Questions",
               "text": "Taille, couleur, disponibilité — écris à info@samsparking.ch."
             }
+          },
+          "intro": "Petites séries, faites pour la scène. Ce qui est ici existe — une pièce partie ne revient pas.",
+          "navLabel": "Shop",
+          "note": "Le merch de Sam Sparking — chaque pièce aide à financer la prochaine production.",
+          "title": "Sh",
+          "titleAccent": "op."
+        },
+        "shows": {
+          "emptyText": "Je n'ai aucune date annoncée pour l'instant. Les nouveaux shows arrivent ici en premier — ou contacte-moi et réserve-moi pour ton événement.",
+          "navLabel": "Dates",
+          "pastLabel": "Déjà joué",
+          "title": "Da",
+          "titleAccent": "tes."
+        },
+        "sound": {
+          "genres": [
+            {
+              "meta": "Genre"
+            },
+            {
+              "meta": "Genre"
+            }
+          ],
+          "mixes": [
+            {
+              "kicker": "Dernier mix",
+              "linkLabel": "Écouter sur Mixcloud",
+              "text": "Une seule prise, sans raccourcis. De quoi sentir comment un set de Sam Sparking soulève une salle.",
+              "title": "Euphoric & Melodic Hardstyle — Recorded Set"
+            }
+          ],
+          "navLabel": "Sound",
+          "note": "Des kicks puissants. Des mélodies émotionnelles. Je construis des sets qui vivent de narration et d'énergie du public.",
+          "title": "Gen",
+          "titleAccent": "res."
+        }
+      },
+      "site": {
+        "claim": "L'énergie devient euphorie",
+        "description": "Je suis Sam Sparking, DJ et producteur hardstyle de Saint-Gall. Euphoric et melodic hardstyle pour clubs, salles et festivals en Suisse et en Europe.",
+        "keywords": {
+          "0": "Sam Sparking",
+          "1": "DJ hardstyle",
+          "2": "Euphoric Hardstyle",
+          "3": "Melodic Hardstyle",
+          "4": "DJ Saint-Gall",
+          "5": "Hardstyle Suisse",
+          "6": "Booking DJ Suisse"
+        },
+        "ogDescription": "DJ et producteur hardstyle de Saint-Gall. Des kicks puissants, des mélodies émotionnelles. Réserve-moi pour ton club ou ton festival — Suisse et Europe.",
+        "ogTitle": "Sam Sparking — L'énergie devient euphorie",
+        "title": "Sam Sparking — DJ et producteur hardstyle de Saint-Gall"
+      },
+      "ticker": {
+        "items": {
+          "0": {
+            "text": "L'énergie",
+            "accent": "devient"
+          },
+          "1": {
+            "text": "pure",
+            "accent": "euphorie"
+          },
+          "2": {
+            "text": "Euphoric",
+            "accent": "Hardstyle"
+          },
+          "3": {
+            "text": "Melodic",
+            "accent": "Hardstyle"
+          },
+          "4": {
+            "text": "2026",
+            "accent": "Edition"
           }
         }
       },
       "ui": {
-        "skip": "Aller au contenu",
-        "menu": "Menu",
-        "close": "Fermer",
-        "scroll": "Défiler ↓",
-        "imageViewer": "Visionneuse",
-        "prevImage": "Image précédente",
-        "nextImage": "Image suivante",
-        "openImage": "Ouvrir l'image {n} sur {total} en grand",
-        "rights": "Tous droits réservés",
-        "photography": "Photographie",
-        "base": "Basé à",
-        "tickets": "Billets",
-        "booked": "Réservé",
-        "prevMonth": "Mois précédent",
-        "nextMonth": "Mois suivant",
-        "weekdays": "Lun,Mar,Mer,Jeu,Ven,Sam,Dim",
-        "sending": "Envoi …",
-        "formInvalid": "Merci de vérifier les champs signalés.",
-        "fName": "Nom",
-        "fEmail": "E-mail",
-        "fEvent": "Événement / club",
-        "fCity": "Ville",
-        "fDate": "Date",
-        "fSetLength": "Durée du set",
-        "fMessage": "Message",
-        "fSetLengthHint": "p. ex. 60 min",
-        "fHoneypot": "Laisser vide",
-        "calShow": "Date",
-        "notFoundTitle": "Rien ici.",
-        "notFoundText": "Cette page n'existe pas (ou plus). Retour à l'accueil — tout ce qui est actuel s'y trouve.",
-        "notFoundCta": "Retour à l'accueil",
-        "language": "Langue",
-        "bookDay": "Demander cette date",
-        "pickDay": "Ou choisis ta date directement dans le calendrier :",
-        "dayBusy": "Occupé",
-        "toTop": "En haut",
-        "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
-        "cookieOk": "Compris",
-        "copyMail": "Copier l’e-mail",
-        "copied": "Copié ✓",
-        "bookCta": "Demander un booking",
-        "moreStory": "Lire toute l’histoire",
-        "lessStory": "Afficher moins",
-        "showMoreImages": "{n} images de plus",
-        "showLessImages": "Afficher moins d’images",
-        "follow": "Réseaux",
-        "phone": "Téléphone",
-        "replyNote": "Réponse en général sous 48 h",
         "afterMovies": "After Movies",
         "afterMoviesEmpty": "Les aftermovies des derniers shows sont au montage — ils arrivent ici dès qu'ils sont prêts.",
         "allRequired": "Tous les champs sont obligatoires.",
-        "payTitle": "Paiement",
+        "base": "Basé à",
+        "bookCta": "Demander un booking",
+        "bookDay": "Demander cette date",
+        "booked": "Réservé",
+        "buy": "Acheter",
+        "calShow": "Date",
+        "captcha": "Anti-spam — à résoudre",
+        "captchaAria": "Résultat du calcul",
+        "captchaWrong": "Le calcul n'est pas encore juste.",
+        "close": "Fermer",
+        "cookieOk": "Compris",
+        "cookieText": "Ce site n'utilise ni traçage ni cookies publicitaires. Lors de l'envoi d'une demande ou d'une commande, seules les informations du formulaire sont enregistrées.",
+        "copied": "Copié ✓",
+        "copyMail": "Copier l’e-mail",
+        "dayBusy": "Occupé",
+        "fCity": "Ville",
+        "fDate": "Date",
+        "fEmail": "E-mail",
+        "fEvent": "Événement / club",
+        "fHoneypot": "Laisser vide",
+        "fMessage": "Message",
+        "fName": "Ton nom",
+        "fPhone": "Téléphone",
+        "fSetLength": "Durée du set",
+        "fSetLengthHint": "p. ex. 60 min",
+        "follow": "Réseaux",
+        "formFine": "* Champs obligatoires · Tes données servent uniquement au traitement de ta demande.",
+        "formInvalid": "Merci de vérifier les champs signalés.",
+        "imageViewer": "Visionneuse",
+        "language": "Langue",
+        "lessStory": "Afficher moins",
+        "menu": "Menu",
+        "moreStory": "Lire toute l’histoire",
+        "nextImage": "Image suivante",
+        "nextMonth": "Mois suivant",
+        "notFoundCta": "Retour à l'accueil",
+        "notFoundText": "Cette page n'existe pas (ou plus). Retour à l'accueil — tout ce qui est actuel s'y trouve.",
+        "notFoundTitle": "Rien ici.",
+        "openImage": "Ouvrir l'image {n} sur {total} en grand",
+        "orderByMail": "Commander par e-mail",
+        "orderMailBody": "Salut Sam\n\nJe commande : {product}\nAdresse de livraison :\n\nMerci !",
+        "orderSubject": "Commande",
         "payBank": "Virement bancaire",
         "payBankName": "Banque",
         "payHolder": "Bénéficiaire",
         "payNote": "Après l'envoi, tu reçois une confirmation avec le montant et la référence. Le colis part dès réception du paiement.",
+        "payPending": "à venir",
         "payQrCaption": "Scanner le code QR pour payer",
         "payQrMissing": "Code QR à venir",
-        "payPending": "à venir",
-        "fPhone": "Téléphone",
-        "phName": "Max Muster",
-        "phEmail": "ton@email.ch",
-        "phPhone": "+41 79 123 45 67",
-        "phEvent": "Club, festival, fête d'entreprise …",
+        "payTitle": "Paiement",
         "phCity": "Saint-Gall",
+        "phEmail": "ton@email.ch",
+        "phEvent": "Club, festival, fête d'entreprise …",
         "phMessage": "Ton message …",
-        "captcha": "Anti-spam — à résoudre",
-        "captchaAria": "Résultat du calcul",
-        "captchaWrong": "Le calcul n'est pas encore juste.",
-        "formFine": "* Champs obligatoires · Tes données servent uniquement au traitement de ta demande."
-      },
-      "hero": {
-        "kicker": "DJ & producteur — Saint-Gall, Suisse",
-        "tagline": "L'énergie devient euphorie.",
-        "ctaLabel": "Me réserver",
-        "media": {
-          "alt": "Sam Sparking aux platines, lasers et public devant la scène"
-        },
-        "stats": {
-          "0": {
-            "label": "Premier set"
-          },
-          "1": {
-            "label": "Shows"
-          },
-          "2": {
-            "label": "BPM de référence"
-          }
-        }
+        "phName": "Max Muster",
+        "phPhone": "+41 79 123 45 67",
+        "phone": "Téléphone",
+        "photography": "Photographie",
+        "pickDay": "Ou choisis ta date directement dans le calendrier :",
+        "prevImage": "Image précédente",
+        "prevMonth": "Mois précédent",
+        "replyNote": "Réponse en général sous 48 h",
+        "rights": "Tous droits réservés",
+        "scroll": "Défiler ↓",
+        "sending": "Envoi …",
+        "showLessImages": "Afficher moins d’images",
+        "showMoreImages": "{n} images de plus",
+        "skip": "Aller au contenu",
+        "soldOut": "Complet",
+        "tickets": "Billets",
+        "toTop": "En haut",
+        "twintConfirm": "Confirmer la commande par e-mail",
+        "twintNote": "Après le paiement, confirme par e-mail avec ton adresse de livraison — ta pièce part ensuite.",
+        "twintRef": "Motif",
+        "twintSend": "Payer par TWINT au",
+        "weekdays": "Lun,Mar,Mer,Jeu,Ven,Sam,Dim"
       }
     }
   },
@@ -594,7 +1144,6 @@
           "alt": "d817e816"
         },
         "meta": "55887dca",
-        "tagline": "e5af84f1",
         "stats": {
           "0": {
             "label": "a58cd7b1"
@@ -605,7 +1154,8 @@
           "2": {
             "label": "6921445a"
           }
-        }
+        },
+        "tagline": "e5af84f1"
       },
       "pages": {
         "0": {
@@ -641,6 +1191,8 @@
             "3": "621ec3a2"
           },
           "availableKicker": "d7599fd7",
+          "claim": "7d9059c0",
+          "claimAccent": "0f51879f",
           "form": {
             "errorText": "7a37cbc4",
             "kicker": "33884b31",
@@ -648,13 +1200,45 @@
             "successText": "29f4405b",
             "title": "d91698c0"
           },
+          "lead": "7d9d8d28",
           "navLabel": "12a938f0",
           "presskitLabel": "d483ae75",
+          "rider": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "meta": "132bae32"
+                  },
+                  {
+                    "meta": "4ac4842e"
+                  },
+                  {
+                    "meta": "0e9aaaff"
+                  }
+                ],
+                "title": "2fc7c7af"
+              },
+              {
+                "items": [
+                  {
+                    "meta": "132bae32"
+                  },
+                  {
+                    "meta": "4ac4842e"
+                  },
+                  {
+                    "meta": "0e9aaaff"
+                  }
+                ],
+                "title": "c13e7aaf"
+              }
+            ],
+            "kicker": "86449877",
+            "note": "0aa5b4c5"
+          },
           "title": "e0cb9023",
-          "titleAccent": "454fdf68",
-          "lead": "7d9d8d28",
-          "claim": "7d9059c0",
-          "claimAccent": "0f51879f"
+          "titleAccent": "454fdf68"
         },
         "contact": {
           "base": "23df4a6c",
@@ -664,6 +1248,7 @@
           "titleAccent": "a26feecd"
         },
         "gallery": {
+          "aftermoviesNote": "766693dd",
           "items": {
             "0": {
               "alt": "00a52ff3"
@@ -704,15 +1289,75 @@
           },
           "navLabel": "d7b54cdd",
           "title": "9ea1a68b",
-          "titleAccent": "2759a437",
-          "aftermoviesNote": "766693dd"
+          "titleAccent": "2759a437"
         },
         "references": {
+          "items": [
+            {
+              "city": "dc81153d"
+            },
+            {
+              "city": "4724fab3"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "2a8d0bbe"
+            },
+            {
+              "city": "2a8d0bbe"
+            },
+            {
+              "city": "b288f8df"
+            },
+            {
+              "city": "08dfc821"
+            },
+            {
+              "city": "0aebc3d7"
+            },
+            {
+              "city": "6f8ae078"
+            },
+            {
+              "city": "fbd73a2f"
+            },
+            {
+              "city": "3e5d36c9"
+            }
+          ],
           "navLabel": "dc0b6beb",
           "note": "4ff8935f",
           "noteLinkLabel": "0d549953",
           "title": "4e18ba45",
           "titleAccent": "1f0cb59f"
+        },
+        "shop": {
+          "buyLabel": "cada780b",
+          "emptyText": "29cb33e6",
+          "items": [
+            {
+              "alt": "5e25208d",
+              "note": "5e25208d"
+            }
+          ],
+          "navLabel": "28742cc9",
+          "note": "9d4f0d9d",
+          "title": "3f025d7e",
+          "titleAccent": "632213cc"
         },
         "shows": {
           "emptyText": "335e234f",
@@ -720,6 +1365,28 @@
           "pastLabel": "dcef0772",
           "title": "3f025d7e",
           "titleAccent": "505289f2"
+        },
+        "sound": {
+          "genres": [
+            {
+              "meta": "1c27eb60"
+            },
+            {
+              "meta": "1c27eb60"
+            }
+          ],
+          "mixes": [
+            {
+              "kicker": "e37c4d5c",
+              "linkLabel": "417850f6",
+              "text": "94891c63",
+              "title": "2bd0b949"
+            }
+          ],
+          "navLabel": "b3ca9a34",
+          "note": "c2ad77e1",
+          "title": "c0974eb5",
+          "titleAccent": "b4bce895"
         }
       },
       "site": {
@@ -763,114 +1430,395 @@
         }
       },
       "ui": {
-        "skip": "c7af44e6",
-        "menu": "00c6075a",
-        "close": "cd86acc3",
-        "scroll": "93fa45b5",
-        "imageViewer": "48459964",
-        "prevImage": "41e27be5",
-        "nextImage": "929cea25",
-        "openImage": "64f1e0ea",
-        "rights": "ca680ca5",
-        "photography": "f7926338",
-        "base": "a4bc2bf8",
-        "tickets": "9241e6c2",
-        "booked": "9bf344d9",
-        "calShow": "29742e5c",
-        "prevMonth": "0d6437b6",
-        "nextMonth": "711101f6",
-        "weekdays": "82a27f69",
-        "sending": "6e848d37",
-        "formInvalid": "18ea1cdc",
-        "fName": "0fe07306",
-        "fEmail": "31bb94b0",
-        "fEvent": "7b0d982e",
-        "fCity": "906b3662",
-        "fDate": "3b527379",
-        "fSetLength": "563785c1",
-        "fMessage": "ae0ed984",
-        "fSetLengthHint": "de3aafdf",
-        "fHoneypot": "8a307af1",
-        "notFoundTitle": "a7006e9a",
-        "notFoundText": "48825a82",
-        "notFoundCta": "4448fb13",
-        "language": "9a73db9b",
-        "bookDay": "aa2f019e",
-        "pickDay": "c2e36ecb",
-        "dayBusy": "d6152dc8",
-        "toTop": "0babbd70",
-        "cookieText": "0252aaa9",
-        "cookieOk": "4c891c6a",
-        "copyMail": "5fa0a1bc",
-        "copied": "32d29144",
-        "bookCta": "5747254e",
-        "follow": "c9409495",
-        "phone": "4930944f",
-        "replyNote": "273c1cf7",
         "afterMovies": "099836b6",
         "afterMoviesEmpty": "cfc1974e",
         "allRequired": "ec33a35e",
-        "payTitle": "20f64111",
+        "base": "a4bc2bf8",
+        "bookCta": "5747254e",
+        "bookDay": "aa2f019e",
+        "booked": "9bf344d9",
+        "buy": "cada780b",
+        "calShow": "29742e5c",
+        "captcha": "074c9046",
+        "captchaAria": "236102a9",
+        "captchaWrong": "bc9de2ce",
+        "close": "cd86acc3",
+        "cookieOk": "4c891c6a",
+        "cookieText": "0252aaa9",
+        "copied": "32d29144",
+        "copyMail": "5fa0a1bc",
+        "dayBusy": "d6152dc8",
+        "fCity": "906b3662",
+        "fDate": "3b527379",
+        "fEmail": "31bb94b0",
+        "fEvent": "7b0d982e",
+        "fHoneypot": "8a307af1",
+        "fMessage": "ae0ed984",
+        "fName": "3a0663bd",
+        "fPhone": "4930944f",
+        "fSetLength": "563785c1",
+        "fSetLengthHint": "de3aafdf",
+        "follow": "c9409495",
+        "formFine": "68fad56e",
+        "formInvalid": "18ea1cdc",
+        "imageViewer": "48459964",
+        "language": "9a73db9b",
+        "menu": "00c6075a",
+        "nextImage": "929cea25",
+        "nextMonth": "711101f6",
+        "notFoundCta": "4448fb13",
+        "notFoundText": "48825a82",
+        "notFoundTitle": "a7006e9a",
+        "openImage": "64f1e0ea",
+        "orderByMail": "62151401",
+        "orderMailBody": "92a8e3b2",
+        "orderSubject": "18e78237",
         "payBank": "1ea07f76",
         "payBankName": "a274c5b7",
         "payHolder": "da952418",
         "payNote": "41dd34b6",
+        "payPending": "ee8061b9",
         "payQrCaption": "24e02222",
         "payQrMissing": "9b2badb5",
-        "payPending": "ee8061b9",
-        "fPhone": "4930944f",
-        "phName": "5445c545",
-        "phEmail": "5a74c80f",
-        "phPhone": "53f14931",
-        "phEvent": "92a3ad52",
+        "payTitle": "20f64111",
         "phCity": "0fcf8f7b",
+        "phEmail": "5a74c80f",
+        "phEvent": "92a3ad52",
         "phMessage": "7e56ae33",
-        "captcha": "074c9046",
-        "captchaAria": "236102a9",
-        "captchaWrong": "bc9de2ce",
-        "formFine": "68fad56e"
+        "phName": "5445c545",
+        "phPhone": "53f14931",
+        "phone": "4930944f",
+        "photography": "f7926338",
+        "pickDay": "c2e36ecb",
+        "prevImage": "41e27be5",
+        "prevMonth": "0d6437b6",
+        "replyNote": "273c1cf7",
+        "rights": "ca680ca5",
+        "scroll": "93fa45b5",
+        "sending": "6e848d37",
+        "skip": "c7af44e6",
+        "soldOut": "0fe973c7",
+        "tickets": "9241e6c2",
+        "toTop": "0babbd70",
+        "twintConfirm": "93393f49",
+        "twintNote": "eb378b74",
+        "twintRef": "adc8c33a",
+        "twintSend": "50680769",
+        "weekdays": "82a27f69"
+      }
+    },
+    "en": {
+      "hero": {
+        "ctaLabel": "9606dc39",
+        "kicker": "00cd226e",
+        "media": {
+          "alt": "db23f124"
+        },
+        "meta": "55887dca",
+        "tagline": "0c6455c2"
+      },
+      "pages": [
+        {
+          "navLabel": "0ae8097f"
+        }
+      ],
+      "sections": {
+        "about": {
+          "lede": "1a3c4d26",
+          "navLabel": "da793f81",
+          "paragraphs": [
+            "a10834fa",
+            "d83ddd4b",
+            "25c1904c",
+            "96b9c205"
+          ],
+          "photo": {
+            "alt": "c4382163"
+          },
+          "title": "d38dce98",
+          "titleAccent": "42ebe702",
+          "words": [
+            "30d2f20f",
+            "c5127c26",
+            "824d46b9"
+          ]
+        },
+        "booking": {
+          "available": [
+            "adcfb620",
+            "d5521852",
+            "8acfb38e"
+          ],
+          "availableKicker": "d18cf06a",
+          "form": {
+            "errorText": "aa9b94fe",
+            "kicker": "d1e4240f",
+            "submitLabel": "1d1affa2",
+            "successText": "8f492a91",
+            "title": "d348396f"
+          },
+          "navLabel": "12a938f0",
+          "presskitLabel": "d483ae75",
+          "rider": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "meta": "cc368ade"
+                  },
+                  {
+                    "meta": "51938e13"
+                  },
+                  {
+                    "meta": "ece0047c"
+                  }
+                ],
+                "title": "36aeb1fb"
+              },
+              {
+                "items": [
+                  {
+                    "meta": "cc368ade"
+                  },
+                  {
+                    "meta": "51938e13"
+                  },
+                  {
+                    "meta": "ece0047c"
+                  }
+                ],
+                "title": "c80c1e91"
+              }
+            ],
+            "kicker": "8db60d54",
+            "note": "f2b4dc99"
+          },
+          "title": "e0cb9023",
+          "titleAccent": "454fdf68"
+        },
+        "contact": {
+          "base": "502d2998",
+          "kicker": "01950b56",
+          "navLabel": "42ec9773",
+          "socials": [
+            {
+              "label": "afc62f32"
+            }
+          ],
+          "title": "dc0148c3",
+          "titleAccent": "0906d5b5"
+        },
+        "gallery": {
+          "items": [
+            {
+              "alt": "4e7acdd3"
+            },
+            {
+              "alt": "d3204535"
+            },
+            {
+              "alt": "0b17a6f0"
+            },
+            {
+              "alt": "c87ea9ee"
+            },
+            {
+              "alt": "d8c8e6d6"
+            },
+            {
+              "alt": "ca9a4c79"
+            },
+            {
+              "alt": "74f2c26c"
+            },
+            {
+              "alt": "31054b9f"
+            },
+            {
+              "alt": "2f2ddb24"
+            },
+            {
+              "alt": "cce10a6d"
+            },
+            {
+              "alt": "7f00ad2e"
+            },
+            {
+              "alt": "d49a29f8"
+            }
+          ],
+          "navLabel": "0909a4e2",
+          "title": "9ea1a68b",
+          "titleAccent": "e7f13642"
+        },
+        "references": {
+          "items": [
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "dc81153d"
+            },
+            {
+              "city": "3e5d36c9"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "fbd73a2f"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            }
+          ],
+          "navLabel": "47c67c63",
+          "note": "aaab869a",
+          "noteLinkLabel": "8e27c459",
+          "title": "4e18ba45",
+          "titleAccent": "3e87bbb7"
+        },
+        "shop": {
+          "buyLabel": "8dcd885d",
+          "emptyText": "2ae6a9a6",
+          "navLabel": "28742cc9",
+          "note": "ed41c0e5",
+          "title": "3f025d7e",
+          "titleAccent": "632213cc"
+        },
+        "shows": {
+          "emptyText": "ef3e21cd",
+          "navLabel": "70e4b3fd",
+          "pastLabel": "c8323a1d",
+          "title": "3f025d7e",
+          "titleAccent": "505289f2"
+        },
+        "sound": {
+          "genres": [
+            {
+              "meta": "1c27eb60"
+            },
+            {
+              "meta": "1c27eb60"
+            }
+          ],
+          "mixes": [
+            {
+              "kicker": "0d6181ac",
+              "linkLabel": "b4d884d1",
+              "text": "4d06cb82",
+              "title": "2bd0b949"
+            }
+          ],
+          "navLabel": "b3ca9a34",
+          "note": "40682156",
+          "title": "c0974eb5",
+          "titleAccent": "b4bce895"
+        }
+      },
+      "site": {
+        "claim": "93bf7458",
+        "description": "e0abdc83",
+        "keywords": [
+          "bc65fc29",
+          "8b3cabbd",
+          "c6bc04e0",
+          "c8cca824",
+          "c128157f",
+          "63873374",
+          "05803f01"
+        ],
+        "ogDescription": "c22007fa",
+        "ogTitle": "6bdea5ee",
+        "title": "1711f493"
+      },
+      "ticker": {
+        "items": [
+          {
+            "accent": "231cfca0",
+            "text": "8cee7058"
+          },
+          {
+            "accent": "0e77ae68",
+            "text": "f459e32b"
+          },
+          {
+            "accent": "e042e611",
+            "text": "1477b7da"
+          },
+          {
+            "accent": "e042e611",
+            "text": "f58f1f7e"
+          },
+          {
+            "accent": "dc839411",
+            "text": "40293d93"
+          }
+        ]
+      },
+      "ui": {
+        "base": "23e68742",
+        "bookDay": "78e97c4b",
+        "booked": "ea398231",
+        "buy": "8dcd885d",
+        "calShow": "12c12fbc",
+        "close": "bcaac78c",
+        "fCity": "0ba89c70",
+        "fDate": "56f3988c",
+        "fEmail": "b463dcd0",
+        "fEvent": "e1ed2f4e",
+        "fHoneypot": "faeb97f1",
+        "fMessage": "b8482d1b",
+        "fName": "010be134",
+        "fSetLength": "bbc1fbd4",
+        "fSetLengthHint": "ed33c8d7",
+        "formInvalid": "033484de",
+        "imageViewer": "6bb611ac",
+        "language": "99efb25b",
+        "menu": "79c6c5d5",
+        "nextImage": "9111dae8",
+        "nextMonth": "030a3fd7",
+        "notFoundCta": "51d280ee",
+        "notFoundText": "4bae6292",
+        "notFoundTitle": "f280d90c",
+        "openImage": "aa0990ee",
+        "orderByMail": "77f6f959",
+        "orderSubject": "b8e896b6",
+        "photography": "5764e2ef",
+        "prevImage": "26f88184",
+        "prevMonth": "52cdb2cb",
+        "rights": "88d76fa2",
+        "scroll": "f0f24e3a",
+        "sending": "18a10094",
+        "skip": "60ca65f1",
+        "soldOut": "0850a5d6",
+        "tickets": "9241e6c2",
+        "weekdays": "f01e28d7"
       }
     },
     "fr": {
-      "site": {
-        "title": "66d3c7ac",
-        "description": "acbb01db",
-        "keywords": {
-          "0": "bc65fc29",
-          "1": "8b3cabbd",
-          "2": "c6bc04e0",
-          "3": "c8cca824",
-          "4": "c128157f",
-          "5": "9b343708",
-          "6": "8248877d"
+      "hero": {
+        "ctaLabel": "9606dc39",
+        "kicker": "00cd226e",
+        "media": {
+          "alt": "db23f124"
         },
-        "ogTitle": "8062eb93",
-        "ogDescription": "0181f30a",
-        "claim": "987181c5"
-      },
-      "ticker": {
-        "items": {
+        "meta": "55887dca",
+        "stats": {
           "0": {
-            "text": "7d57dd66",
-            "accent": "17278db5"
+            "label": "a58cd7b1"
           },
           "1": {
-            "text": "afbdf343",
-            "accent": "1277b4b4"
+            "label": "8172eb91"
           },
           "2": {
-            "text": "1477b7da",
-            "accent": "e042e611"
-          },
-          "3": {
-            "text": "f58f1f7e",
-            "accent": "e042e611"
-          },
-          "4": {
-            "text": "40293d93",
-            "accent": "dc839411"
+            "label": "6921445a"
           }
-        }
+        },
+        "tagline": "0c6455c2"
       },
       "pages": {
         "0": {
@@ -879,43 +1827,96 @@
       },
       "sections": {
         "about": {
-          "navLabel": "58e096de",
-          "title": "58e096de",
-          "titleAccent": "6eb2bfcb",
-          "photo": {
-            "alt": "3306dd01"
-          },
-          "lede": "7a64f0bb",
+          "lede": "1a3c4d26",
+          "navLabel": "da793f81",
           "paragraphs": {
             "0": "b845e5d7",
             "1": "56a1e6c5",
             "2": "7f316316",
             "3": "ef45dd9e"
           },
+          "photo": {
+            "alt": "c4382163"
+          },
+          "title": "d38dce98",
+          "titleAccent": "42ebe702",
           "words": {
             "0": "30d2f20f",
             "1": "056e0df9",
             "2": "1477b7da"
           }
         },
-        "shows": {
-          "navLabel": "70e4b3fd",
-          "title": "3f025d7e",
-          "titleAccent": "505289f2",
-          "emptyText": "335e234f",
-          "pastLabel": "dcef0772"
+        "booking": {
+          "available": {
+            "0": "adcfb620",
+            "1": "d5521852",
+            "2": "bfffef16",
+            "3": "621ec3a2"
+          },
+          "availableKicker": "d18cf06a",
+          "claim": "7d9059c0",
+          "claimAccent": "0f51879f",
+          "form": {
+            "errorText": "aa9b94fe",
+            "kicker": "d1e4240f",
+            "submitLabel": "1d1affa2",
+            "successText": "8f492a91",
+            "title": "d348396f"
+          },
+          "lead": "7d9d8d28",
+          "navLabel": "12a938f0",
+          "presskitLabel": "d483ae75",
+          "rider": {
+            "groups": [
+              {
+                "items": [
+                  {
+                    "meta": "132bae32"
+                  },
+                  {
+                    "meta": "4ac4842e"
+                  },
+                  {
+                    "meta": "0e9aaaff"
+                  }
+                ],
+                "title": "2fc7c7af"
+              },
+              {
+                "items": [
+                  {
+                    "meta": "132bae32"
+                  },
+                  {
+                    "meta": "4ac4842e"
+                  },
+                  {
+                    "meta": "0e9aaaff"
+                  }
+                ],
+                "title": "c13e7aaf"
+              }
+            ],
+            "kicker": "8db60d54",
+            "note": "f2b4dc99"
+          },
+          "title": "e0cb9023",
+          "titleAccent": "454fdf68"
         },
-        "references": {
-          "navLabel": "dc0b6beb",
-          "title": "4e18ba45",
-          "titleAccent": "1f0cb59f",
-          "note": "4ff8935f",
-          "noteLinkLabel": "0d549953"
+        "contact": {
+          "base": "502d2998",
+          "kicker": "01950b56",
+          "navLabel": "42ec9773",
+          "socials": [
+            {
+              "label": "afc62f32"
+            }
+          ],
+          "title": "dc0148c3",
+          "titleAccent": "0906d5b5"
         },
         "gallery": {
-          "navLabel": "d7b54cdd",
-          "title": "9ea1a68b",
-          "titleAccent": "2759a437",
+          "aftermoviesNote": "766693dd",
           "items": {
             "0": {
               "alt": "00a52ff3"
@@ -954,126 +1955,218 @@
               "alt": "8b0c558c"
             }
           },
-          "aftermoviesNote": "766693dd"
+          "navLabel": "0909a4e2",
+          "title": "9ea1a68b",
+          "titleAccent": "e7f13642"
         },
-        "booking": {
-          "navLabel": "12a938f0",
-          "title": "e0cb9023",
-          "titleAccent": "454fdf68",
-          "availableKicker": "d7599fd7",
-          "available": {
-            "0": "adcfb620",
-            "1": "d5521852",
-            "2": "bfffef16",
-            "3": "621ec3a2"
-          },
-          "presskitLabel": "d483ae75",
-          "form": {
-            "kicker": "33884b31",
-            "title": "d91698c0",
-            "successText": "29f4405b",
-            "errorText": "7a37cbc4",
-            "submitLabel": "4a783e3a"
-          },
-          "lead": "7d9d8d28",
-          "claim": "7d9059c0",
-          "claimAccent": "0f51879f"
+        "references": {
+          "items": [
+            {
+              "city": "dc81153d"
+            },
+            {
+              "city": "4724fab3"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "0fcf8f7b"
+            },
+            {
+              "city": "2a8d0bbe"
+            },
+            {
+              "city": "2a8d0bbe"
+            },
+            {
+              "city": "b288f8df"
+            },
+            {
+              "city": "08dfc821"
+            },
+            {
+              "city": "0aebc3d7"
+            },
+            {
+              "city": "6f8ae078"
+            },
+            {
+              "city": "fbd73a2f"
+            },
+            {
+              "city": "3e5d36c9"
+            }
+          ],
+          "navLabel": "47c67c63",
+          "note": "aaab869a",
+          "noteLinkLabel": "8e27c459",
+          "title": "4e18ba45",
+          "titleAccent": "3e87bbb7"
         },
-        "contact": {
-          "navLabel": "73ac94c3",
-          "title": "531868eb",
-          "titleAccent": "a26feecd",
-          "kicker": "c49a5387",
-          "base": "23df4a6c"
+        "shop": {
+          "buyLabel": "8dcd885d",
+          "emptyText": "2ae6a9a6",
+          "navLabel": "28742cc9",
+          "note": "ed41c0e5",
+          "title": "3f025d7e",
+          "titleAccent": "632213cc"
+        },
+        "shows": {
+          "emptyText": "ef3e21cd",
+          "navLabel": "70e4b3fd",
+          "pastLabel": "c8323a1d",
+          "title": "3f025d7e",
+          "titleAccent": "505289f2"
+        },
+        "sound": {
+          "genres": [
+            {
+              "meta": "1c27eb60"
+            },
+            {
+              "meta": "1c27eb60"
+            }
+          ],
+          "mixes": [
+            {
+              "kicker": "e37c4d5c",
+              "linkLabel": "417850f6",
+              "text": "94891c63",
+              "title": "2bd0b949"
+            }
+          ],
+          "navLabel": "b3ca9a34",
+          "note": "40682156",
+          "title": "c0974eb5",
+          "titleAccent": "b4bce895"
+        }
+      },
+      "site": {
+        "claim": "93bf7458",
+        "description": "e0abdc83",
+        "keywords": {
+          "0": "bc65fc29",
+          "1": "8b3cabbd",
+          "2": "c6bc04e0",
+          "3": "c8cca824",
+          "4": "c128157f",
+          "5": "9b343708",
+          "6": "8248877d"
+        },
+        "ogDescription": "c22007fa",
+        "ogTitle": "6bdea5ee",
+        "title": "1711f493"
+      },
+      "ticker": {
+        "items": {
+          "0": {
+            "text": "7d57dd66",
+            "accent": "17278db5"
+          },
+          "1": {
+            "text": "afbdf343",
+            "accent": "1277b4b4"
+          },
+          "2": {
+            "text": "1477b7da",
+            "accent": "e042e611"
+          },
+          "3": {
+            "text": "f58f1f7e",
+            "accent": "e042e611"
+          },
+          "4": {
+            "text": "40293d93",
+            "accent": "dc839411"
+          }
         }
       },
       "ui": {
-        "skip": "c7af44e6",
-        "menu": "00c6075a",
-        "close": "cd86acc3",
-        "scroll": "93fa45b5",
-        "imageViewer": "48459964",
-        "prevImage": "41e27be5",
-        "nextImage": "929cea25",
-        "openImage": "64f1e0ea",
-        "rights": "ca680ca5",
-        "photography": "f7926338",
-        "base": "a4bc2bf8",
-        "tickets": "9241e6c2",
-        "booked": "9bf344d9",
-        "prevMonth": "0d6437b6",
-        "nextMonth": "711101f6",
-        "weekdays": "82a27f69",
-        "sending": "6e848d37",
-        "formInvalid": "18ea1cdc",
-        "fName": "0fe07306",
-        "fEmail": "31bb94b0",
-        "fEvent": "7b0d982e",
-        "fCity": "906b3662",
-        "fDate": "3b527379",
-        "fSetLength": "563785c1",
-        "fMessage": "ae0ed984",
-        "fSetLengthHint": "de3aafdf",
-        "fHoneypot": "8a307af1",
-        "calShow": "29742e5c",
-        "notFoundTitle": "a7006e9a",
-        "notFoundText": "48825a82",
-        "notFoundCta": "4448fb13",
-        "language": "9a73db9b",
-        "bookDay": "aa2f019e",
-        "pickDay": "c2e36ecb",
-        "dayBusy": "d6152dc8",
-        "toTop": "0babbd70",
-        "cookieText": "0252aaa9",
-        "cookieOk": "4c891c6a",
-        "copyMail": "5fa0a1bc",
-        "copied": "32d29144",
-        "bookCta": "5747254e",
-        "follow": "c9409495",
-        "phone": "4930944f",
-        "replyNote": "273c1cf7",
         "afterMovies": "099836b6",
         "afterMoviesEmpty": "cfc1974e",
         "allRequired": "ec33a35e",
-        "payTitle": "20f64111",
+        "base": "23e68742",
+        "bookCta": "5747254e",
+        "bookDay": "78e97c4b",
+        "booked": "ea398231",
+        "buy": "8dcd885d",
+        "calShow": "12c12fbc",
+        "captcha": "074c9046",
+        "captchaAria": "236102a9",
+        "captchaWrong": "bc9de2ce",
+        "close": "bcaac78c",
+        "cookieOk": "4c891c6a",
+        "cookieText": "0252aaa9",
+        "copied": "32d29144",
+        "copyMail": "5fa0a1bc",
+        "dayBusy": "d6152dc8",
+        "fCity": "0ba89c70",
+        "fDate": "56f3988c",
+        "fEmail": "b463dcd0",
+        "fEvent": "e1ed2f4e",
+        "fHoneypot": "faeb97f1",
+        "fMessage": "b8482d1b",
+        "fName": "010be134",
+        "fPhone": "4930944f",
+        "fSetLength": "bbc1fbd4",
+        "fSetLengthHint": "ed33c8d7",
+        "follow": "c9409495",
+        "formFine": "68fad56e",
+        "formInvalid": "033484de",
+        "imageViewer": "6bb611ac",
+        "language": "99efb25b",
+        "menu": "79c6c5d5",
+        "nextImage": "9111dae8",
+        "nextMonth": "030a3fd7",
+        "notFoundCta": "51d280ee",
+        "notFoundText": "4bae6292",
+        "notFoundTitle": "f280d90c",
+        "openImage": "aa0990ee",
+        "orderByMail": "77f6f959",
+        "orderMailBody": "92a8e3b2",
+        "orderSubject": "b8e896b6",
         "payBank": "1ea07f76",
         "payBankName": "a274c5b7",
         "payHolder": "da952418",
         "payNote": "41dd34b6",
+        "payPending": "ee8061b9",
         "payQrCaption": "24e02222",
         "payQrMissing": "9b2badb5",
-        "payPending": "ee8061b9",
-        "fPhone": "4930944f",
-        "phName": "5445c545",
-        "phEmail": "5a74c80f",
-        "phPhone": "53f14931",
-        "phEvent": "92a3ad52",
+        "payTitle": "20f64111",
         "phCity": "0fcf8f7b",
+        "phEmail": "5a74c80f",
+        "phEvent": "92a3ad52",
         "phMessage": "7e56ae33",
-        "captcha": "074c9046",
-        "captchaAria": "236102a9",
-        "captchaWrong": "bc9de2ce",
-        "formFine": "68fad56e"
-      },
-      "hero": {
-        "kicker": "0f636286",
-        "tagline": "e5af84f1",
-        "meta": "55887dca",
-        "ctaLabel": "5747254e",
-        "media": {
-          "alt": "d817e816"
-        },
-        "stats": {
-          "0": {
-            "label": "a58cd7b1"
-          },
-          "1": {
-            "label": "8172eb91"
-          },
-          "2": {
-            "label": "6921445a"
-          }
-        }
+        "phName": "5445c545",
+        "phPhone": "53f14931",
+        "phone": "4930944f",
+        "photography": "5764e2ef",
+        "pickDay": "c2e36ecb",
+        "prevImage": "26f88184",
+        "prevMonth": "52cdb2cb",
+        "replyNote": "273c1cf7",
+        "rights": "88d76fa2",
+        "scroll": "f0f24e3a",
+        "sending": "18a10094",
+        "skip": "60ca65f1",
+        "soldOut": "0850a5d6",
+        "tickets": "9241e6c2",
+        "toTop": "0babbd70",
+        "twintConfirm": "93393f49",
+        "twintNote": "eb378b74",
+        "twintRef": "adc8c33a",
+        "twintSend": "50680769",
+        "weekdays": "f01e28d7"
       }
     }
   },
@@ -1084,13 +2177,14 @@
   "layout": [
     "about",
     "sound",
-    "experience",
-    "booking",
     "shows",
     "references",
     "gallery",
+    "booking",
+    "contact",
     "shop",
-    "contact"
+    "experience",
+    "follow"
   ],
   "migrationen": {
     "kanaele": true,
@@ -1104,46 +2198,80 @@
   },
   "pages": [
     {
-      "slug": "",
-      "navLabel": "Home",
-      "title": "",
-      "hero": "full",
-      "ticker": true,
-      "inNav": true,
       "enabled": true,
+      "hero": "full",
+      "inNav": true,
+      "navLabel": "Home",
       "sections": [
         "about",
-        "shows",
-        "references",
-        "gallery",
-        "shop",
-        "contact"
-      ]
+        "sound",
+        "shop"
+      ],
+      "slug": "",
+      "ticker": true,
+      "title": "Home"
     },
     {
-      "slug": "booking",
-      "navLabel": "Booking",
-      "title": "Booking",
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
       "enabled": true,
+      "hero": "compact",
+      "inNav": true,
+      "navLabel": "Shows",
+      "sections": [
+        "shows",
+        "references"
+      ],
+      "seo": {
+        "description": "Upcoming hardstyle shows and past gigs of Sam Sparking — clubs and festivals in Switzerland and Europe.",
+        "title": "Shows & Tour Dates — Sam Sparking"
+      },
+      "slug": "shows",
+      "ticker": false,
+      "title": "Shows"
+    },
+    {
+      "enabled": true,
+      "hero": "compact",
+      "inNav": true,
+      "navLabel": "Gallery",
+      "sections": [
+        "gallery"
+      ],
+      "seo": {
+        "description": "Live photos of Sam Sparking behind the decks — clubs and festivals, shot by Sarto Photography.",
+        "title": "Gallery — Sam Sparking live"
+      },
+      "slug": "gallery",
+      "ticker": false,
+      "title": "Gallery"
+    },
+    {
+      "enabled": true,
+      "hero": "compact",
+      "inNav": true,
+      "navLabel": "Booking",
       "sections": [
         "booking",
         "contact"
-      ]
+      ],
+      "seo": {
+        "description": "Book Sam Sparking for your club or festival. Technical rider, presskit and booking request form.",
+        "title": "Booking — Sam Sparking, Hardstyle DJ"
+      },
+      "slug": "booking",
+      "ticker": false,
+      "title": "Booking"
     },
     {
-      "slug": "shop",
-      "navLabel": "Shop",
-      "title": "Shop",
-      "hero": "compact",
-      "ticker": false,
-      "inNav": true,
       "enabled": true,
+      "hero": "compact",
+      "inNav": true,
+      "navLabel": "Shop",
       "sections": [
         "shop"
-      ]
+      ],
+      "slug": "shop",
+      "ticker": false,
+      "title": "Shop"
     }
   ],
   "release": {
@@ -1161,16 +2289,16 @@
     "about": {
       "enabled": true,
       "facts": [],
-      "lede": "I'm Sam Sparking, 19, a DJ and producer from St. Gallen. My story started long before I first stood behind a DJ setup.",
+      "lede": "Sam Sparking is a 19-year-old DJ and producer from St. Gallen, Switzerland. His story began long before he ever stood behind a DJ setup.",
       "navLabel": "About",
       "paragraphs": [
-        "I grew up on festival videos and found my way into hardstyle early. It was a Defqon.1 video that first showed me what music can really do. The energy, the atmosphere, the connection between DJ and crowd — it hit me instantly and never let go. At 15 the fascination turned into a direction: I watched a DJ hold a club dancefloor completely in his hands. From that moment on, producing and playing wasn't a side project any more — it was the only path that made sense to me.",
-        "Four years on, I work on my sound every day, track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, I focus on euphoric hardstyle — hard kicks combined with emotional melodies that pull you in and don't let go.",
-        "The name **Sparking** is no accident. It stands for constant energy, a head full of ideas and an optimism that comes through in every production. My sets are built on emotion, storytelling and crowd energy — they create moments where music and audience truly meet.",
-        "My mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat straight away, that overwhelming feeling that only happens when the music is exactly right."
+        "Growing up watching festival videos and discovering the world of hardstyle at a young age, it was a Defqon.1 video that first showed him what music could really do. The energy, the atmosphere, the connection between DJ and crowd — it hit him immediately and never let go. At 15, seeing a DJ own a dancefloor in a live club setting turned fascination into direction. From that moment, producing and performing wasn't a side project. It was the only path that made sense.",
+        "Four years later, Sam is grinding daily, sharpening his sound track by track. Inspired by artists like **Sound Rush**, **Sub Zero Project** and **Headhunterz**, he focuses on euphoric hardstyle — powerful kicks combined with emotional melodies that pull you in and keep you there.",
+        "The name **Sparking** is no coincidence. It stands for constant energy, a head full of ideas and an optimism that bleeds into every production. His sets are built on emotion, storytelling and crowd energy, creating moments where music and audience truly connect.",
+        "His mission is simple: make people feel something real. That rush of pure positive energy, that urge to hit repeat, that overwhelming feeling you only get when the music is exactly right."
       ],
       "photo": {
-        "alt": "Portrait of Sam Sparking",
+        "alt": "Portrait of Sam Sparking, DJ and producer.",
         "src": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzmWLYk2xT0zQqO0ooU%2Fsartophotography-dsc04165-print.jpg?alt=media&token=37cba043-2e02-4de8-abdb-7350c6f03b1c"
       },
       "title": "About",
@@ -1193,10 +2321,10 @@
       "enabled": true,
       "form": {
         "enabled": true,
-        "errorText": "Something went wrong. Please write to me directly at info@samsparking.ch.",
+        "errorText": "Something went wrong. Please write directly to info@samsparking.ch.",
         "kicker": "Booking request",
         "submitLabel": "Send request",
-        "successText": "Thanks — your request arrived. You'll hear from me within 48 hours.",
+        "successText": "Thanks — your request landed. You'll hear back within 48 hours.",
         "title": "Tell me about your event"
       },
       "lead": "Club, festival, private or corporate event — tell me what you have in mind and you get an answer within 48 hours.",
@@ -1254,7 +2382,7 @@
       "base": "St. Gallen, Switzerland",
       "email": "info@samsparking.ch",
       "enabled": true,
-      "kicker": "Booking & enquiries",
+      "kicker": "Bookings & inquiries",
       "navLabel": "Contact",
       "socials": [
         {
@@ -1277,8 +2405,8 @@
           "url": "https://open.spotify.com/artist/318V87QIgd2VmokY52zP6S"
         }
       ],
-      "title": "Con",
-      "titleAccent": "tact."
+      "title": "Contact",
+      "titleAccent": "Me."
     },
     "experience": {
       "embedLabel": "Aftermovie",
@@ -1585,12 +2713,12 @@
       "moreLabel": "Also played at",
       "navLabel": "References",
       "note": "Your club or festival next?",
-      "noteLinkLabel": "Write to me →",
+      "noteLinkLabel": "Get in touch →",
       "title": "Refe",
       "titleAccent": "rences."
     },
     "shop": {
-      "buyLabel": "Buy",
+      "buyLabel": "Kaufen",
       "ctaLabel": "Browse the drop",
       "currency": "CHF ",
       "emptyText": "The shop opens soon — the first merch is in the works. Follow me on the channels below so you don't miss the drop.",
@@ -1637,12 +2765,12 @@
       ],
       "kicker": "MERCH",
       "navLabel": "Shop",
-      "note": "Merch from Sam Sparking — every piece helps fund the next production.",
+      "note": " ",
       "title": "Sh",
       "titleAccent": "op."
     },
     "shows": {
-      "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
+      "emptyText": "No dates announced right now. New shows land here first — or get in touch to book one.",
       "enabled": true,
       "items": [
         {
@@ -1704,7 +2832,7 @@
     "backgroundImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OzW4e3Y6YTa6zJklnO4%2Fdsc00389-verbessert-rr.jpg?alt=media&token=24cc6380-f841-4b19-a437-358805f25892",
     "bookingApi": "https://jupidu-36804-default-rtdb.europe-west1.firebasedatabase.app/samsparking/inquiries.json",
     "claim": "Turning energy into euphoria",
-    "description": "I'm Sam Sparking, a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle for clubs, venues and festivals across Europe.",
+    "description": "Sam Sparking is a hardstyle DJ and producer from St. Gallen, Switzerland. Euphoric and melodic hardstyle — available for clubs, venues and festivals across Switzerland and Europe. Booking: info@samsparking.ch",
     "domain": "https://djsamsparkling.netlify.app",
     "keywords": [
       "Sam Sparking",
@@ -1712,17 +2840,17 @@
       "Euphoric Hardstyle",
       "Melodic Hardstyle",
       "DJ St. Gallen",
-      "Hardstyle Switzerland",
+      "Hardstyle Schweiz",
       "DJ Booking Switzerland"
     ],
-    "lang": "en",
+    "lang": "de",
     "languages": [
-      "en",
       "de",
+      "en",
       "fr"
     ],
     "logoText": "Sam Sparking",
-    "ogDescription": "Hardstyle DJ and producer from St. Gallen. Hard kicks, emotional melodies. Book me for your club or festival — Switzerland and Europe.",
+    "ogDescription": "Hardstyle DJ & producer from St. Gallen, Switzerland. Euphoric kicks, emotional melodies. Booking for clubs & festivals in Switzerland & Europe.",
     "ogImage": "https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-OyU22YSQPvv3Hryifbq%2Fdsc01427.jpg?alt=media&token=10d04104-b473-49a4-8f33-9af9ca5f3171",
     "ogTitle": "Sam Sparking — Turning Energy Into Euphoria",
     "themeColor": "#05070e",
@@ -1754,76 +2882,85 @@
     ]
   },
   "ui": {
-    "skip": "Skip to content",
-    "menu": "Menu",
-    "close": "Close",
-    "scroll": "Scroll ↓",
-    "imageViewer": "Image viewer",
-    "prevImage": "Previous image",
-    "nextImage": "Next image",
-    "openImage": "Open image {n} of {total} in full size",
-    "rights": "All rights reserved",
-    "photography": "Photography",
-    "phone": "Phone",
-    "base": "Base",
-    "tickets": "Tickets",
-    "booked": "Booked",
-    "calShow": "Show",
-    "prevMonth": "Previous month",
-    "nextMonth": "Next month",
-    "weekdays": "Mon,Tue,Wed,Thu,Fri,Sat,Sun",
-    "sending": "Sending …",
-    "formInvalid": "Please check the highlighted fields.",
-    "fName": "Name",
-    "fEmail": "E-mail",
-    "fEvent": "Event / club",
-    "fCity": "City",
-    "fDate": "Date",
-    "fSetLength": "Set length",
-    "fMessage": "Message",
-    "fSetLengthHint": "e.g. 60 min",
-    "fHoneypot": "Leave empty",
-    "notFoundTitle": "Nothing here.",
-    "notFoundText": "This page doesn't exist (any more). Head back to the start — everything current is there.",
-    "notFoundCta": "Back to start",
-    "language": "Language",
-    "bookDay": "Request this date",
-    "pickDay": "Or tap your preferred date right in the calendar:",
-    "dayBusy": "Taken",
-    "toTop": "Back to top",
-    "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
-    "cookieOk": "Got it",
-    "copyMail": "Copy e-mail",
-    "copied": "Copied ✓",
-    "bookCta": "Start booking",
-    "moreStory": "Read the full story",
-    "lessStory": "Show less",
-    "showMoreImages": "Show {n} more",
-    "showLessImages": "Show fewer images",
-    "follow": "Channels",
-    "replyNote": "I usually reply within 48 hours",
     "afterMovies": "After Movies",
     "afterMoviesEmpty": "The aftermovies of the latest shows are still in the edit — they land here as soon as they are done.",
     "allRequired": "All fields are required.",
-    "payTitle": "Payment",
+    "base": "Standort",
+    "bookCta": "Start booking",
+    "bookDay": "Diesen Tag anfragen",
+    "booked": "Gebucht",
+    "buy": "Kaufen",
+    "calShow": "Termin",
+    "captcha": "Anti-spam — please solve",
+    "captchaAria": "Result of the sum",
+    "captchaWrong": "That sum is not right yet.",
+    "close": "Schliessen",
+    "cookieOk": "Got it",
+    "cookieText": "This website uses no tracking or advertising cookies. When you send a request or order, only the details from the form are stored.",
+    "copied": "Copied ✓",
+    "copyMail": "Copy e-mail",
+    "dayBusy": "Taken",
+    "fCity": "Ort",
+    "fDate": "Datum",
+    "fEmail": "E-Mail",
+    "fEvent": "Event / Club",
+    "fHoneypot": "Bitte leer lassen",
+    "fMessage": "Nachricht",
+    "fName": "Dein Name",
+    "fPhone": "Phone",
+    "fSetLength": "Set-Länge",
+    "fSetLengthHint": "z. B. 60 Min.",
+    "follow": "Channels",
+    "formFine": "* Required · Your details are used only to handle your enquiry.",
+    "formInvalid": "Bitte die markierten Felder prüfen.",
+    "imageViewer": "Bildansicht",
+    "language": "Sprache",
+    "lessStory": "Show less",
+    "menu": "Menü",
+    "moreStory": "Read the full story",
+    "nextImage": "Nächstes Bild",
+    "nextMonth": "Nächster Monat",
+    "notFoundCta": "Zur Startseite",
+    "notFoundText": "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
+    "notFoundTitle": "Nichts hier.",
+    "openImage": "Bild {n} von {total} gross öffnen",
+    "orderByMail": "Per Mail bestellen",
+    "orderMailBody": "Hi Sam\n\nI'd like to order: {product}\nShipping address:\n\nThanks!",
+    "orderSubject": "Bestellung",
     "payBank": "Bank transfer",
     "payBankName": "Bank",
     "payHolder": "Recipient",
     "payNote": "You get a confirmation with the amount and reference right after ordering. Your parcel ships as soon as the payment arrives.",
+    "payPending": "follows",
     "payQrCaption": "Scan the QR code to pay",
     "payQrMissing": "QR code follows",
-    "payPending": "follows",
-    "fPhone": "Phone",
-    "phName": "Max Muster",
-    "phEmail": "your@email.ch",
-    "phPhone": "+41 79 123 45 67",
-    "phEvent": "Club, festival, corporate party …",
+    "payTitle": "Payment",
     "phCity": "St. Gallen",
+    "phEmail": "your@email.ch",
+    "phEvent": "Club, festival, corporate party …",
     "phMessage": "Your message …",
-    "captcha": "Anti-spam — please solve",
-    "captchaAria": "Result of the sum",
-    "captchaWrong": "That sum is not right yet.",
-    "formFine": "* Required · Your details are used only to handle your enquiry."
+    "phName": "Max Muster",
+    "phPhone": "+41 79 123 45 67",
+    "phone": "Telefon",
+    "photography": "Fotografie",
+    "pickDay": "Or tap your preferred date right in the calendar:",
+    "prevImage": "Vorheriges Bild",
+    "prevMonth": "Vorheriger Monat",
+    "replyNote": "I usually reply within 48 hours",
+    "rights": "Alle Rechte vorbehalten",
+    "scroll": "Scrollen ↓",
+    "sending": "Wird gesendet …",
+    "showLessImages": "Show fewer images",
+    "showMoreImages": "Show {n} more",
+    "skip": "Zum Inhalt springen",
+    "soldOut": "Ausverkauft",
+    "tickets": "Tickets",
+    "toTop": "Back to top",
+    "twintConfirm": "Confirm order by e-mail",
+    "twintNote": "After paying, confirm briefly by e-mail with your shipping address — then your piece ships.",
+    "twintRef": "Reference",
+    "twintSend": "Pay by TWINT to",
+    "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So"
   },
   "updatedAt": "2026-09-01T08:24:13.171Z",
   "updatedBy": "Verwaltung"

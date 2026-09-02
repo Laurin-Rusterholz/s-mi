@@ -2,12 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://djsamsparkling.netlify.app/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/shows/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/shows/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/shows/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shows/"/>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/gallery/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/gallery/"/>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
     <image:image>
       <image:loc>https://firebasestorage.googleapis.com/v0/b/jupidu-36804.firebasestorage.app/o/samsparking%2Fmedia%2F-Ozm-tur4TDlZqWghnwV%2Fsartophotography-dsc4119-web.jpg?alt=media&amp;token=39b02f5b-3072-4207-a0c9-87c64025044e</image:loc>
       <image:title>Sam Sparking performing with a raised hand amid colourful stage lights.</image:title>
@@ -119,8 +137,8 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/booking/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/booking/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/booking/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
@@ -128,18 +146,36 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/shop/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/shop/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://djsamsparkling.netlify.app/de/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
+    <loc>https://djsamsparkling.netlify.app/en/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/"/>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/en/shows/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/shows/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/shows/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shows/"/>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/en/gallery/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/gallery/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -253,18 +289,18 @@
     </image:image>
   </url>
   <url>
-    <loc>https://djsamsparkling.netlify.app/de/booking/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
+    <loc>https://djsamsparkling.netlify.app/en/booking/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/booking/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/booking/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://djsamsparkling.netlify.app/de/shop/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+    <loc>https://djsamsparkling.netlify.app/en/shop/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/shop/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
@@ -272,9 +308,27 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/fr/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/"/>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/fr/shows/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/shows/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/shows/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shows/"/>
+    <lastmod>2026-09-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://djsamsparkling.netlify.app/fr/gallery/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/gallery/"/>
+      <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/gallery/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -389,8 +443,8 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/fr/booking/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/booking/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/booking/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/booking/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/booking/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/booking/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
@@ -398,8 +452,8 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/fr/shop/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/shop/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/shop/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/shop/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/shop/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/shop/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
@@ -407,17 +461,17 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/impressum/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/impressum/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/impressum/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/impressum/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://djsamsparkling.netlify.app/de/impressum/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/impressum/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/impressum/"/>
+    <loc>https://djsamsparkling.netlify.app/en/impressum/</loc>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/impressum/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/impressum/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>yearly</changefreq>
@@ -425,8 +479,8 @@
   </url>
   <url>
     <loc>https://djsamsparkling.netlify.app/fr/impressum/</loc>
-      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/impressum/"/>
-      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/de/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="de" href="https://djsamsparkling.netlify.app/impressum/"/>
+      <xhtml:link rel="alternate" hreflang="en" href="https://djsamsparkling.netlify.app/en/impressum/"/>
       <xhtml:link rel="alternate" hreflang="fr" href="https://djsamsparkling.netlify.app/fr/impressum/"/>
     <lastmod>2026-09-02</lastmod>
     <changefreq>yearly</changefreq>
