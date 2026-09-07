@@ -10,6 +10,7 @@
  */
 
 import { readFile } from "node:fs/promises";
+import * as nodeFs from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -57,6 +58,35 @@ const ORTE = {
   BBC: "Gossau",
   B9: "St. Gallen",
 };
+
+/**
+ * Alle gebauten Seiten, die den Shows-Abschnitt tragen — je Sprache eine.
+ * Gesucht statt behauptet: ob die Shows auf der Startseite stehen oder auf
+ * einer eigenen Seite (/shows/), entscheidet der Kunde in der Verwaltung.
+ */
+function seitenMitShows() {
+  const { readdirSync, readFileSync, existsSync, statSync } = nodeFs;
+  const ueberspringen = new Set([
+    "node_modules", "scripts", "content", "media", "img", "assets", "presskit", "netlify",
+  ]);
+  const gefunden = [];
+  const suche = (rel, tiefe) => {
+    const abs = rel ? resolve(ROOT, rel) : ROOT;
+    const datei = resolve(abs, "index.html");
+    if (existsSync(datei) && statSync(datei).isFile()) {
+      const html = readFileSync(datei, "utf8");
+      if (html.includes('id="shows"')) gefunden.push([rel ? `${rel}/index.html` : "index.html", html]);
+    }
+    if (tiefe <= 0) return;
+    for (const eintrag of readdirSync(abs, { withFileTypes: true })) {
+      if (!eintrag.isDirectory()) continue;
+      if (ueberspringen.has(eintrag.name) || eintrag.name.startsWith(".")) continue;
+      suche(rel ? `${rel}/${eintrag.name}` : eintrag.name, tiefe - 1);
+    }
+  };
+  suche("", 2);
+  return gefunden;
+}
 
 let fehler = 0;
 const meckern = (text) => {
@@ -971,52 +1001,94 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* Vergangene Termine stehen NUR bei den Referenzen — nicht noch einmal unter
-     "Shows" (Kundenwunsch 27.08.2026).
+  /* Was publiziert wurde, bleibt sichtbar — auch nach dem Datum.
 
-     Bis dahin hing unter der Terminliste ein aufklappbarer Rueckblick
-     ("Already played"), der dieselben Termine ein zweites Mal zeigte. Geprueft
-     wird an den GEBAUTEN Seiten: kein Rueckblick-Block, kein vergangener Tag in
-     der Liste, kein vergangener Tag im Terminblatt — und die vergangenen
-     Termine sind bei den Referenzen angekommen. */
+     Am 27.08.2026 war der aufklappbare Rueckblick unter den Shows entfernt
+     worden, weil vergangene Termine ueber showsNachReferenzen ohnehin bei den
+     Referenzen landen. Die Abnahme am 07.09.2026 hat gezeigt, was das
+     tatsaechlich heisst: als der letzte Termin vorbei war, verschwand der
+     ganze Abschnitt samt Menuepunkt, und keine der publizierten Shows war im
+     Frontend noch zu finden.
+
+     Die Regel lautet jetzt: kommende Termine oben, vergangene darunter im
+     Rueckblick — offen sichtbar, nicht zugeklappt —, und der Abschnitt steht,
+     solange ueberhaupt ein Termin mit Namen da ist.
+
+     Geprueft an den GEBAUTEN Seiten. Welche Seite die Shows traegt, entscheidet
+     der Kunde in der Verwaltung (Einseiter oder eigene Seite) — die Pruefung
+     sucht sie deshalb, statt einen Pfad zu behaupten. */
   const { readFileSync } = await import("node:fs");
   const heute = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Zurich" }).format(new Date());
+  const termine = (template.sections.shows.items || []).filter((i) => String(i?.name || "").trim());
+  const vergangene = termine.filter((i) => showVorbei(i, heute));
+  const kommende = termine.filter((i) => !showVorbei(i, heute));
 
-  for (const seite of ["index.html", "de/index.html", "fr/index.html"]) {
-    const html = readFileSync(resolve(ROOT, seite), "utf8");
-    if (/class="past-shows|<ul class="show-list past"/.test(html))
-      meckern(`${seite}: der Rueckblick "schon gespielt" steht wieder unter den Shows`);
+  const showSeiten = seitenMitShows();
+  if (termine.length && !showSeiten.length)
+    meckern("keine einzige gebaute Seite traegt den Shows-Abschnitt");
 
-    const liste = html.match(/<ul class="show-list rv" id="show-list">[\s\S]*?<\/ul>/);
-    const vergangen = liste
-      ? [...liste[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]).filter((d) => d < heute)
+  for (const [datei, html] of showSeiten) {
+    /* Jeder vergangene Termin steht im Rueckblick — mit Namen. */
+    const rueckblick = html.match(/<ul class="show-list past" id="past-show-list">[\s\S]*?<\/ul>/);
+    if (vergangene.length && !rueckblick)
+      meckern(`${datei}: der Rueckblick auf vergangene Shows fehlt`);
+    for (const sh of vergangene) {
+      if (!rueckblick || !rueckblick[0].includes(String(sh.name).trim()))
+        meckern(`${datei}: der vergangene Termin "${sh.name}" fehlt im Rueckblick`);
+    }
+    if (vergangene.length && /id="past-shows"[^>]*\shidden/.test(html))
+      meckern(`${datei}: der Rueckblick ist versteckt, obwohl vergangene Termine da sind`);
+
+    /* Und er steht NUR dort — nicht zusaetzlich unter den kommenden. */
+    const oben = html.match(/<ul class="show-list rv" id="show-list">[\s\S]*?<\/ul>/);
+    const obenVergangen = oben
+      ? [...oben[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]).filter((d) => d < heute)
       : [];
-    if (vergangen.length)
-      meckern(`${seite}: vergangene Termine stehen unter den Shows: ${vergangen.join(", ")}`);
+    if (obenVergangen.length)
+      meckern(`${datei}: vergangene Termine stehen unter den kommenden: ${obenVergangen.join(", ")}`);
 
+    /* Beide Listen chronologisch: oben aufsteigend, im Rueckblick absteigend. */
+    const daten = (block) =>
+      block ? [...block[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]) : [];
+    const obenDaten = daten(oben);
+    if (obenDaten.join(",") !== [...obenDaten].sort().join(","))
+      meckern(`${datei}: kommende Termine nicht aufsteigend: ${obenDaten.join(", ")}`);
+    const untenDaten = daten(rueckblick);
+    if (untenDaten.join(",") !== [...untenDaten].sort().reverse().join(","))
+      meckern(`${datei}: vergangene Termine nicht absteigend: ${untenDaten.join(", ")}`);
+
+    /* Kein Ticket-Knopf an einem Termin, der vorbei ist. */
+    for (const zeile of rueckblick ? rueckblick[0].split("<li ").slice(1) : []) {
+      if (/<a class="btn btn-sm"/.test(zeile))
+        meckern(`${datei}: ein vergangener Termin traegt noch einen Ticket-Knopf`);
+    }
+
+    /* Das Terminblatt speist den Booking-Kalender — dort gehoert nur die
+       Zukunft hinein, buchen laesst sich nichts Vergangenes. */
     const blatt = html.match(/<script type="application\/json" id="shows-data">([\s\S]*?)<\/script>/);
     if (blatt) {
       const alt = JSON.parse(blatt[1]).filter((s2) => String(s2.date) < heute);
       if (alt.length)
-        meckern(`${seite}: das Terminblatt traegt vergangene Tage: ${alt.map((a) => a.date).join(", ")}`);
+        meckern(`${datei}: das Terminblatt traegt vergangene Tage: ${alt.map((a) => a.date).join(", ")}`);
     }
   }
 
-  /* Und der Gegenbeweis: was vorbei ist, ist bei den Referenzen zu finden. */
-  const html = readFileSync(resolve(ROOT, "index.html"), "utf8");
-  const refs = html.match(/<ul class="venue-list rv" id="venue-list">[\s\S]*?<\/ul>/);
-  for (const sh of template.sections.shows.items || []) {
-    if (!showVorbei(sh, heute) || !String(sh.name || "").trim()) continue;
-    if (!refs || !refs[0].includes(String(sh.name).trim()))
-      meckern(`der vergangene Termin "${sh.name}" fehlt bei den Referenzen`);
+  /* Der Menuepunkt fuehrt zu den Shows, solange es Termine gibt — auch wenn
+     alle vorbei sind. Genau daran ist es am 07.09.2026 gescheitert. */
+  if (termine.length) {
+    const start = readFileSync(resolve(ROOT, "index.html"), "utf8");
+    if (!/href="[^"]*(#shows|\/shows\/)"/.test(start))
+      meckern("die Startseite verlinkt die Shows nicht mehr im Menue");
   }
+  if (!kommende.length && !vergangene.length && showSeiten.length)
+    meckern("der Shows-Abschnitt steht da, obwohl es gar keine Termine gibt");
 }
 
 if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
 }
-console.log("Shows: nur kommende Termine — was vorbei ist, steht ausschliesslich bei den Referenzen.");
+console.log("Shows: kommende Termine oben (aufsteigend), vergangene darunter im offenen Rueckblick\n       (absteigend, ohne Ticket-Knopf) — der Abschnitt bleibt, solange es Termine gibt.");
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
 console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");

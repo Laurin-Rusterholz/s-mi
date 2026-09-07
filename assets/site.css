@@ -810,10 +810,28 @@ blockquote.lede footer{
 .cal-legend .lg-booked::before{background:var(--spark);box-shadow:0 0 0 3px rgba(46,107,255,.22);}
 .cal-legend .lg-soldout::before{background:var(--bone-dim);}
 .show.soldout .show-cta .mono{color:var(--spark);}
+
+/* Rueckblick: offen sichtbar, aber ruhiger als die kommenden Termine. Kein
+   Aufklapper mehr (bis 27.08.2026 ein <details>) — was publiziert wurde, soll
+   man sehen, ohne erst darauf zu klicken. */
+.past-shows{margin-top:38px;}
+.past-title{
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--bone-dim);
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;font-weight:normal;
+}
+.past-title::after{content:"";flex:1;height:1px;background:var(--line);}
+.past-shows .show-list{gap:10px;}
+.past-shows .show-list li{padding:14px 20px;opacity:.72;}
+.past-shows .show-list li:hover{transform:none;border-color:var(--line);opacity:.9;}
+.show.vorbei .show-date b{font-size:1.5rem;}
+.show.vorbei .show-name{font-size:clamp(1rem,2vw,1.35rem);}
 @media(max-width:640px){
   .show-list li{grid-template-columns:68px 1fr;gap:14px;}
   .show-cta{grid-column:2;}
   .show-date b{font-size:1.6rem;}
+  .past-shows{margin-top:28px;}
+  .past-shows .show-list li{padding:12px 16px;}
+  .show.vorbei .show-date b{font-size:1.3rem;}
 }
 
 /* ---------- REFERENCES ----------

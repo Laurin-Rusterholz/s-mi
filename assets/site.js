@@ -1034,19 +1034,60 @@
     bcal.hidden = false;
   } catch (e) { /* Kalender ist Komfort — das Datumsfeld bleibt benutzbar */ }
 
-  /* ------------------------------------------------- Shows: abgelaufene weg */
-  // Die Seite ist statisch generiert. Falls seit dem letzten Build Termine
-  // verstrichen sind, werden sie hier clientseitig ausgeblendet.
+  /* --------------------------------- Shows: abgelaufene in den Rueckblick */
+  /* Die Seite ist statisch gebaut. Verstreicht ein Termin zwischen zwei Builds,
+     stand er bis zum 07.09.2026 weiter unter "kommend" — und wurde deshalb hier
+     AUSGEBLENDET. Damit war er im Frontend weg, bis irgendwann neu gebaut wurde.
+
+     Er wandert jetzt stattdessen in den Rueckblick: dieselbe Zeile, nur eine
+     Liste tiefer, oben eingefuegt (dort steht das Juengste zuerst). Der Kasten
+     dafuer steht immer im HTML — leer und `hidden`, bis hier etwas hineinkommt.
+
+     Tageswechsel in der Zeitzone der Website (Europe/Zurich), wie im Generator.
+     Vorher stand hier die UTC-Zeit: zwischen Mitternacht und 02:00 Ortszeit war
+     "heute" noch der Vortag. */
   var showList = document.getElementById("show-list");
+  var pastBox = document.getElementById("past-shows");
+  var pastList = document.getElementById("past-show-list");
   if (showList) {
-    var todayStr = new Date().toISOString().slice(0, 10);
+    var todayStr;
+    try {
+      todayStr = new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Zurich" }).format(new Date());
+    } catch (e) {
+      todayStr = new Date().toISOString().slice(0, 10);
+    }
     var visible = 0;
     Array.prototype.slice.call(showList.children).forEach(function (li) {
       var d = li.getAttribute("data-date");
-      if (d && d < todayStr) li.hidden = true;
-      else visible++;
+      if (!d || d >= todayStr) {
+        visible++;
+        return;
+      }
+      if (pastList) {
+        li.classList.add("vorbei");
+        li.classList.remove("booked", "soldout");
+        var cta = li.querySelector(".show-cta");
+        if (cta) cta.textContent = ""; // abgelaufener Ticket-Link fuehrt ins Leere
+        // Einsortieren: das Juengste zuerst, also vor den aelteren Zeilen.
+        var davor = null;
+        Array.prototype.slice.call(pastList.children).forEach(function (alt) {
+          if (davor) return;
+          var ad = alt.getAttribute("data-date") || "";
+          if (ad < d) davor = alt;
+        });
+        pastList.insertBefore(li, davor);
+        if (pastBox) pastBox.hidden = false;
+      } else {
+        // Kein Rueckblick auf dieser Seite: dann lieber stehen lassen als
+        // verschwinden — sichtbar ist besser als spurlos.
+        visible++;
+      }
     });
-    if (!visible) showList.hidden = true;
+    if (!visible) {
+      showList.hidden = true;
+      var leer = document.getElementById("show-empty");
+      if (leer) leer.hidden = false;
+    }
   }
 
   /* --------------------------------------------------------- booking form */

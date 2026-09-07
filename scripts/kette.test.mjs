@@ -21,7 +21,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { readFile, mkdtemp, cp, rm, mkdir } from "node:fs/promises";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -119,13 +119,67 @@ function baue(dir, env) {
 
 const lies = (dir, datei) => readFileSync(join(dir, datei), "utf8");
 
-test("eine neu erfasste Show steht nach dem Bauen auf allen Sprachseiten", async (t) => {
+/**
+ * Die gebauten Seiten, die den Shows-Abschnitt tragen — je Sprache eine.
+ *
+ * Bewusst gesucht statt behauptet: ob die Shows auf der Startseite stehen oder
+ * auf einer eigenen Seite (/shows/), und welche Sprache an der Wurzel liegt,
+ * entscheidet der Kunde in der Verwaltung. Am 07.09.2026 hat er beides
+ * umgestellt — Deutsch an die Wurzel, Shows auf eine eigene Seite — und dieser
+ * Test suchte weiter unter "de/index.html".
+ */
+function seitenMitShows(dir) {
+  const gefunden = [];
+  const suche = (rel, tiefe) => {
+    const abs = rel ? join(dir, rel) : dir;
+    const datei = join(abs, "index.html");
+    if (existsSync(datei)) {
+      const html = readFileSync(datei, "utf8");
+      if (html.includes('id="shows"')) gefunden.push([rel ? `${rel}/index.html` : "index.html", html]);
+    }
+    if (tiefe <= 0) return;
+    for (const eintrag of readdirSync(abs, { withFileTypes: true })) {
+      if (!eintrag.isDirectory()) continue;
+      if (["scripts", "content", "media", "img", "assets", "presskit", "netlify"].includes(eintrag.name)) continue;
+      if (eintrag.name.startsWith(".")) continue;
+      suche(rel ? `${rel}/${eintrag.name}` : eintrag.name, tiefe - 1);
+    }
+  };
+  suche("", 2);
+  return gefunden;
+}
+
+/** Die Zeilen einer Liste, als [datum, html] — in der Reihenfolge der Seite. */
+function zeilen(html, listenId) {
+  const liste = html.match(new RegExp(`<ul class="[^"]*" id="${listenId}">[\\s\\S]*?<\\/ul>`));
+  if (!liste) return null;
+  return [...liste[0].matchAll(/<li [\s\S]*?<\/li>/g)].map((m) => [
+    (m[0].match(/data-date="([^"]*)"/) || [])[1] || "",
+    m[0],
+  ]);
+}
+
+const VERGANGENER_TERMIN = {
+  date: "2026-07-04",
+  name: "Sommerfest Rueckblick",
+  city: "Herisau",
+  country: "CH",
+  status: "confirmed",
+  ticketLabel: "Tickets",
+  ticketUrl: "https://tickets.example/sommerfest",
+};
+
+test("kommende und vergangene Shows stehen auf allen Sprachseiten", async (t) => {
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
 
-  /* So sieht der Stand aus, nachdem jemand in der Verwaltung einen Termin
-     angelegt und einen Text geaendert hat. Der Termin kommt ans Ende der
-     Liste — genau so legt die Verwaltung ihn an ("Termin hinzufuegen"). */
-  stand.sections.shows.items = [...stand.sections.shows.items, { ...NEUER_TERMIN }];
+  /* So sieht der Stand aus, nachdem jemand in der Verwaltung zwei Termine
+     angelegt und einen Text geaendert hat — einer kommt, einer ist vorbei.
+     Beide ans Ende der Liste, genau so legt die Verwaltung sie an. */
+  stand.sections.shows.items = [
+    ...stand.sections.shows.items,
+    { ...NEUER_TERMIN },
+    { ...VERGANGENER_TERMIN },
+  ];
   stand.hero.tagline = "Aus der Verwaltung, nicht aus der Vorlage.";
 
   const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
@@ -135,10 +189,7 @@ test("eine neu erfasste Show steht nach dem Bauen auf allen Sprachseiten", async
     await rm(dir, { recursive: true, force: true });
   });
 
-  const lauf = await baue(dir, {
-    CONTENT_API_URL: db.contentUrl,
-    CONTENT_API_REQUIRED: "1",
-  });
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
 
   assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
   assert.match(
@@ -147,51 +198,74 @@ test("eine neu erfasste Show steht nach dem Bauen auf allen Sprachseiten", async
     "Der Build ist auf den eingecheckten Stand zurueckgefallen, statt die Verwaltung zu lesen"
   );
 
-  for (const seite of ["index.html", "de/index.html", "fr/index.html"]) {
-    const html = lies(dir, seite);
-    assert.ok(
-      html.includes(NEUER_TERMIN.name),
-      `${seite}: der neue Termin "${NEUER_TERMIN.name}" fehlt`
-    );
-    assert.ok(html.includes(NEUER_TERMIN.city), `${seite}: der Ort des neuen Termins fehlt`);
-    assert.ok(
-      html.includes(`data-date="${NEUER_TERMIN.date}"`),
-      `${seite}: der neue Termin steht nicht als Zeile in der Liste`
-    );
-    assert.ok(html.includes('id="shows"'), `${seite}: der Shows-Abschnitt fehlt ganz`);
-    assert.ok(html.includes('href="#shows"'), `${seite}: der Menuepunkt zu den Shows fehlt`);
+  const seiten = seitenMitShows(dir);
+  assert.ok(seiten.length >= 3, `Nicht jede Sprache traegt die Shows: ${seiten.map(([d]) => d).join(", ")}`);
 
-    /* Der Ort gehoert zum Termin, nicht zu seiner Position: auf /de/ und /fr/
-       darf keine alte Uebersetzung eines anderen Termins an seiner Stelle
-       stehen (sections.shows.items ist darum in NO_TRANSLATE_PATH). */
-    const zeile = html.match(
-      new RegExp(`data-date="${NEUER_TERMIN.date}"[\\s\\S]*?</li>`)
+  for (const [seite, html] of seiten) {
+    /* Der kommende Termin steht oben, mit Ort und Ticket-Knopf. */
+    const oben = zeilen(html, "show-list");
+    assert.ok(oben, `${seite}: die Liste der kommenden Termine fehlt`);
+    const kommend = oben.find(([d]) => d === NEUER_TERMIN.date);
+    assert.ok(kommend, `${seite}: der kommende Termin "${NEUER_TERMIN.name}" fehlt`);
+    assert.ok(kommend[1].includes(NEUER_TERMIN.name), `${seite}: der Name des kommenden Termins fehlt`);
+    assert.ok(kommend[1].includes(NEUER_TERMIN.city), `${seite}: beim kommenden Termin steht ein fremder Ort`);
+    assert.match(kommend[1], /<a class="btn btn-sm"/, `${seite}: der Ticket-Knopf fehlt am kommenden Termin`);
+
+    /* Der vergangene Termin steht im Rueckblick — sichtbar, nicht zugeklappt,
+       und ohne Ticket-Knopf. Das ist die Anforderung vom 07.09.2026: was
+       publiziert wurde, bleibt sichtbar. */
+    const unten = zeilen(html, "past-show-list");
+    assert.ok(unten, `${seite}: der Rueckblick auf vergangene Shows fehlt`);
+    const vorbei = unten.find(([d]) => d === VERGANGENER_TERMIN.date);
+    assert.ok(vorbei, `${seite}: der vergangene Termin "${VERGANGENER_TERMIN.name}" fehlt im Rueckblick`);
+    assert.ok(vorbei[1].includes(VERGANGENER_TERMIN.name), `${seite}: der Name des vergangenen Termins fehlt`);
+    assert.ok(vorbei[1].includes(VERGANGENER_TERMIN.city), `${seite}: beim vergangenen Termin steht ein fremder Ort`);
+    assert.doesNotMatch(vorbei[1], /<a class="btn btn-sm"/, `${seite}: vergangener Termin mit Ticket-Knopf`);
+    assert.doesNotMatch(
+      html,
+      /id="past-shows"[^>]*\shidden/,
+      `${seite}: der Rueckblick ist versteckt, obwohl vergangene Termine da sind`
     );
-    assert.ok(zeile, `${seite}: die Zeile des neuen Termins ist nicht zu finden`);
+    assert.doesNotMatch(html, /<details[^>]*class="[^"]*past-shows/, `${seite}: der Rueckblick ist wieder zugeklappt`);
+
+    /* Keine Vermischung, beide Listen chronologisch: oben aufsteigend, unten
+       das Juengste zuerst. */
+    const obenDaten = oben.map(([d]) => d).filter(Boolean);
     assert.ok(
-      zeile[0].includes(NEUER_TERMIN.city),
-      `${seite}: beim neuen Termin steht ein fremder Ort — ${zeile[0]}`
+      obenDaten.every((d) => d >= HEUTE),
+      `${seite}: unter den kommenden Terminen steht Vergangenes: ${obenDaten.join(", ")}`
     );
+    assert.deepEqual(obenDaten, [...obenDaten].sort(), `${seite}: kommende Termine nicht aufsteigend`);
+    const untenDaten = unten.map(([d]) => d).filter(Boolean);
+    assert.ok(
+      untenDaten.every((d) => d < HEUTE),
+      `${seite}: im Rueckblick steht Kommendes: ${untenDaten.join(", ")}`
+    );
+    assert.deepEqual(untenDaten, [...untenDaten].sort().reverse(), `${seite}: Rueckblick nicht absteigend`);
+
+    assert.ok(html.includes('id="shows"'), `${seite}: der Shows-Abschnitt fehlt ganz`);
   }
 
-  /* Das Terminblatt speist den Booking-Kalender: der neue Tag muss als belegt
-     erkennbar sein, sonst laesst sich der Termin doppelt buchen. */
-  const blatt = lies(dir, "index.html").match(
-    /<script type="application\/json" id="shows-data">([\s\S]*?)<\/script>/
-  );
-  assert.ok(blatt, "Das Terminblatt (shows-data) fehlt auf der Startseite");
+  /* Das Terminblatt speist den Booking-Kalender: der kommende Tag muss als
+     belegt erkennbar sein, der vergangene gehoert nicht hinein. */
+  const [, ersteSeite] = seiten[0];
+  const blatt = ersteSeite.match(/<script type="application\/json" id="shows-data">([\s\S]*?)<\/script>/);
+  assert.ok(blatt, "Das Terminblatt (shows-data) fehlt");
   const termine = JSON.parse(blatt[1]);
   assert.ok(
     termine.some((s) => s.date === NEUER_TERMIN.date && s.name === NEUER_TERMIN.name),
-    "Der neue Termin fehlt im Terminblatt"
+    "Der kommende Termin fehlt im Terminblatt"
+  );
+  assert.ok(
+    !termine.some((s) => s.date === VERGANGENER_TERMIN.date),
+    "Ein vergangener Tag steht im Terminblatt — buchen laesst sich da nichts mehr"
   );
 
-  /* Und die Gegenprobe zur zweiten Ursache: ein in der Verwaltung geaenderter
-     Text darf nicht von der eingecheckten Vorlage ueberschrieben werden.
-     Bis zum 02.09.2026 lief adoptTexts bei JEDEM Build und holte Texte,
-     Uebersetzungen, `ui` und sogar `pages`/`layout` aus der Vorlage zurueck. */
+  /* Die Gegenprobe zur zweiten Ursache: ein in der Verwaltung geaenderter Text
+     darf nicht von der eingecheckten Vorlage ueberschrieben werden. */
+  const irgendwo = [...seiten.map(([, h]) => h), lies(dir, "index.html")];
   assert.ok(
-    lies(dir, "index.html").includes("Aus der Verwaltung, nicht aus der Vorlage."),
+    irgendwo.some((h) => h.includes("Aus der Verwaltung, nicht aus der Vorlage.")),
     "Der Text aus der Verwaltung wurde von der Vorlage ueberschrieben"
   );
   assert.doesNotMatch(
@@ -199,6 +273,80 @@ test("eine neu erfasste Show steht nach dem Bauen auf allen Sprachseiten", async
     /Datenbank trägt noch den alten Stand/,
     "Die einmalige Text-Umstellung ist wieder gelaufen"
   );
+});
+
+test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", async (t) => {
+  /* Das ist der Befund der Abnahme vom 07.09.2026, eins zu eins: Nox Club
+     (05.09.) und Aftersun (29.08.) waren vorbei — und damit verschwanden der
+     ganze Shows-Bereich und sein Menuepunkt. Publizierte Shows waren im
+     Frontend nirgends mehr zu finden. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [
+    { ...VERGANGENER_TERMIN },
+    { ...VERGANGENER_TERMIN, date: "2026-08-29", name: "Aftersun Rueckblick", city: "Luzern" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const seiten = seitenMitShows(dir);
+  assert.ok(
+    seiten.length >= 3,
+    "Ohne kommenden Termin verschwindet der Shows-Abschnitt — genau der Fehler vom 07.09.2026"
+  );
+
+  for (const [seite, html] of seiten) {
+    const unten = zeilen(html, "past-show-list");
+    assert.ok(unten && unten.length === 2, `${seite}: nicht beide vergangenen Termine im Rueckblick`);
+    for (const name of [VERGANGENER_TERMIN.name, "Aftersun Rueckblick"])
+      assert.ok(html.includes(name), `${seite}: "${name}" fehlt`);
+    /* Und der Hinweis, dass gerade nichts ansteht, statt einer leeren Liste. */
+    assert.doesNotMatch(html, /id="show-empty"[^>]*\shidden/, `${seite}: der Hinweis "keine Termine" fehlt`);
+  }
+
+  /* Der Menuepunkt fuehrt weiterhin zu den Shows. */
+  const start = lies(dir, "index.html");
+  assert.match(
+    start,
+    /href="[^"]*(#shows|\/shows\/)"/,
+    "Die Startseite verlinkt die Shows nicht mehr im Menue"
+  );
+});
+
+test("der Rueckblick-Kasten steht auch leer im HTML", async (t) => {
+  /* Der Vertrag, auf den sich assets/site.js stuetzt: verstreicht ein Termin
+     zwischen zwei Builds, schiebt der Browser ihn aus der oberen Liste in den
+     Rueckblick — dafuer muss es den Kasten geben, auch wenn beim Bauen noch
+     nichts drin war. Dasselbe fuer den Hinweis "keine Termine": er wird
+     eingeblendet, sobald der letzte kommende Termin weggerutscht ist.
+
+     Ohne diese beiden Huellen faellt site.js auf seinen alten Weg zurueck und
+     blendet den Termin einfach aus — dann ist er wieder verschwunden. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [{ ...NEUER_TERMIN }];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  for (const [seite, html] of seitenMitShows(dir)) {
+    assert.match(html, /id="past-shows"[^>]*\shidden/, `${seite}: der leere Rueckblick fehlt oder ist nicht versteckt`);
+    assert.match(html, /id="past-show-list"/, `${seite}: die Liste im Rueckblick fehlt`);
+    assert.match(html, /id="show-empty"[^>]*\shidden/, `${seite}: der versteckte Hinweis "keine Termine" fehlt`);
+  }
 });
 
 test("ein Termin ohne Namen faellt auf, statt still zu verschwinden", async (t) => {

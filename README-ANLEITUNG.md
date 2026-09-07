@@ -278,10 +278,12 @@ Dafür bringt die Website zwei Dinge mit:
 - Hero (Bild **oder** automatisch laufendes Video als Hintergrund), Lauftext-Ticker
 - About mit Fakten-Leiste, Genres, Mixe (Link + optionales Embed)
 - **Shows** — kommende Termine mit Datum, Venue, Ticket-Link und Status
-  („Sold out", **„Gebucht"**). Vergangene Termine stehen hier **nicht** mehr:
-  sie wandern von selbst zu den *Referenzen* — die Liste unter „Shows" zeigt
-  ausschliesslich, wo Sam als Nächstes spielt.
-  Abgelaufene Termine verschwinden automatisch, auch ohne neuen Build.
+  („Sold out", **„Gebucht"**). Darunter der **Rückblick**: vergangene Termine
+  bleiben sichtbar, offen und ohne Ticket-Knopf, das Jüngste zuerst. Die
+  Überschrift dazu steht in der Verwaltung unter *Shows → Rückblick*.
+  Der Abschnitt bleibt, solange überhaupt ein Termin eingetragen ist — auch
+  wenn alle vorbei sind. Verstreicht ein Termin zwischen zwei Builds, rutscht
+  er im Browser von selbst in den Rückblick, statt zu verschwinden.
   Bestätigt jemand in der Verwaltung eine Booking-Anfrage, steht der Termin
   ab dem nächsten Build als **gebucht** im Kalender.
 - **Einseiter** — ausgeliefert wird alles auf einer Seite, das Menü springt zu
