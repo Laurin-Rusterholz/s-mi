@@ -320,6 +320,35 @@ test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", asy
   );
 });
 
+test("der Rueckblick-Kasten steht auch leer im HTML", async (t) => {
+  /* Der Vertrag, auf den sich assets/site.js stuetzt: verstreicht ein Termin
+     zwischen zwei Builds, schiebt der Browser ihn aus der oberen Liste in den
+     Rueckblick — dafuer muss es den Kasten geben, auch wenn beim Bauen noch
+     nichts drin war. Dasselbe fuer den Hinweis "keine Termine": er wird
+     eingeblendet, sobald der letzte kommende Termin weggerutscht ist.
+
+     Ohne diese beiden Huellen faellt site.js auf seinen alten Weg zurueck und
+     blendet den Termin einfach aus — dann ist er wieder verschwunden. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [{ ...NEUER_TERMIN }];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  for (const [seite, html] of seitenMitShows(dir)) {
+    assert.match(html, /id="past-shows"[^>]*\shidden/, `${seite}: der leere Rueckblick fehlt oder ist nicht versteckt`);
+    assert.match(html, /id="past-show-list"/, `${seite}: die Liste im Rueckblick fehlt`);
+    assert.match(html, /id="show-empty"[^>]*\shidden/, `${seite}: der versteckte Hinweis "keine Termine" fehlt`);
+  }
+});
+
 test("ein Termin ohne Namen faellt auf, statt still zu verschwinden", async (t) => {
   /* Die Website zeigt nur Termine mit Namen — ohne "Event / Club" gibt es
      nichts anzuschreiben. Das ist in Ordnung, darf aber nicht lautlos
