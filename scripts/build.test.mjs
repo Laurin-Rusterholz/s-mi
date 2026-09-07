@@ -15,9 +15,9 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   adoptTexts,
+  gespielteShows,
   releaseZeitpunkt,
   showVorbei,
-  showsNachReferenzen,
   collectStrings,
   istPaymentLink,
   istStripeAdresse,
@@ -295,8 +295,11 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 
   if (db.hero.stats[1].label !== "Shows")
     meckern('Kennzahl heisst weiter "' + db.hero.stats[1].label + '" statt "Shows"');
-  if (db.hero.stats[1].value !== korr.heroShows.wert)
-    meckern("Kennzahl Shows steht auf " + db.hero.stats[1].value + " statt " + korr.heroShows.wert);
+  if (db.hero.stats[1].value !== String(gespielteShows(db)))
+    meckern(
+      `Kennzahl Shows steht auf ${db.hero.stats[1].value} statt ${gespielteShows(db)} ` +
+        "(gezaehlt wird NACH allen Regeln, die Listen ergaenzen)"
+    );
   if (db.hero.meta) meckern("Genre-Zeile im Hero nicht geraeumt");
   if (db.sections.shows.items[0].city !== "Luzern")
     meckern("Aftersun steht weiter in " + db.sections.shows.items[0].city);
@@ -597,49 +600,31 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   if (showVorbei({ date: "2026-08-13" }, HEUTE) !== false) meckern("Morgen gilt als vorbei");
   if (showVorbei({ date: "" }, HEUTE) !== false) meckern("Ein Termin ohne Datum gilt als vorbei");
 
+  /* Vergangene Shows wandern NICHT mehr automatisch in die Referenzen.
+
+     Bis zum 07.09.2026 legte showsNachReferenzen fuer jeden vergangenen Termin
+     einen Referenz-Eintrag an. Seit die Termine im Rueckblick stehen, war das
+     eine Doppelnennung auf ein und derselben Seite. Die Funktion ist weg —
+     geprueft wird, dass sie nicht durch die Hintertuer zurueckkommt: der
+     Generator laesst die Referenzliste in Ruhe. */
   const db = JSON.parse(JSON.stringify(template));
   db.sections.references.items = [
     { name: "Kugl", city: "St. Gallen", highlight: true },
     { name: "Sektor 11", city: "Zürich", highlight: true },
   ];
   db.sections.shows.items = [
-    { name: "Nox club", city: "Chur", date: "2026-08-13" },   // kommend
-    { name: "Altes Fest", city: "Wil", date: "2026-07-04" },  // vorbei
-    { name: "Kugl", city: "St. Gallen", date: "2026-06-01" }, // vorbei, gibt es schon
-    { name: "Ohne Datum", city: "Zug" },                      // nie vorbei
+    { name: "Nox club", city: "Chur", date: "2026-08-13" },
+    { name: "Altes Fest", city: "Wil", date: "2026-07-04" },
+    { name: "Ohne Datum", city: "Zug" },
   ];
-  const dazu = showsNachReferenzen(db, HEUTE);
-  const namen = db.sections.references.items.map((r) => `${r.name} — ${r.city}`);
-
-  if (!namen.includes("Altes Fest — Wil"))
-    meckern("Die vergangene Show wurde nicht zur Referenz: " + namen.join(", "));
-  if (namen.filter((x) => x === "Kugl — St. Gallen").length !== 1)
-    meckern("Dublette angelegt: " + namen.join(", "));
-  if (namen.includes("Nox club — Chur")) meckern("Ein kommender Termin wurde zur Referenz");
-  if (namen.includes("Ohne Datum — Zug")) meckern("Ein Termin ohne Datum wurde zur Referenz");
-  if (dazu.join(" | ") !== "Altes Fest — Wil") meckern("Falsch gemeldet: " + dazu.join(", "));
-
-  /* Die bestehenden Favoriten bleiben unangetastet, und der neue Eintrag ist
-     selbst keiner — was gross steht, entscheidet allein die Verwaltung. */
-  const gross = db.sections.references.items.filter((r) => r.highlight === true).map((r) => r.name);
-  if (gross.join(" | ") !== "Kugl | Sektor 11") meckern('"Gross zeigen" veraendert: ' + gross.join(", "));
-  const neuerEintrag = db.sections.references.items.find((r) => r.name === "Altes Fest");
-  if (neuerEintrag?.highlight) meckern("Der uebernommene Eintrag wurde automatisch gross gestellt");
-  if (db.sections.references.items[0].name !== "Kugl") meckern("Die Reihenfolge wurde umgeworfen");
-  // Der Termin selbst bleibt stehen — er zaehlt weiter zum Rueckblick.
-  if (db.sections.shows.items.length !== 4) meckern("Ein Termin wurde geloescht");
-
-  // Zweimal aufgerufen aendert nichts mehr.
-  const nochmal = showsNachReferenzen(db, HEUTE);
-  if (nochmal.length) meckern("Beim zweiten Lauf erneut uebernommen: " + nochmal.join(", "));
-
-  // Gross/Klein und Bindestriche zaehlen nicht als Unterschied.
-  const db2 = JSON.parse(JSON.stringify(template));
-  db2.sections.references.items = [{ name: "kugl", city: "st. gallen" }];
-  db2.sections.shows.items = [{ name: "Kugl", city: "St. Gallen", date: "2026-06-01" }];
-  showsNachReferenzen(db2, HEUTE);
-  if (db2.sections.references.items.length !== 1)
-    meckern("Dublette trotz gleicher Schreibweise: " + JSON.stringify(db2.sections.references.items));
+  const refsVorher = JSON.stringify(db.sections.references.items);
+  nachziehen(db, korr);
+  if (JSON.stringify(db.sections.references.items) !== refsVorher)
+    meckern(
+      "Der Generator hat die Referenzliste veraendert: " +
+        JSON.stringify(db.sections.references.items)
+    );
+  if (db.sections.shows.items.length !== 3) meckern("Ein Termin wurde geloescht");
 }
 
 {
@@ -816,48 +801,72 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* Die Zahl neben "Shows" wird immer gesetzt — genau darum geht es: in der
-     Datenbank stand 2, die Seite zeigte "2+ SHOWS". Geprueft wird beides,
-     der Weg ueber die Aufschrift und der ueber den Platz in der Liste. */
-  const db = JSON.parse(JSON.stringify(template));
-  db.hero.stats = [
-    { value: "2021", label: "First set" },
-    { value: "2", label: "Shows" },
-    { value: "150", label: "BPM home base" },
-  ];
-  nachziehen(db, korr);
-  if (db.hero.stats[1].value !== "30")
-    meckern('Kennzahl Shows steht auf "' + db.hero.stats[1].value + '" statt "30"');
-  if (db.hero.stats[0].value !== "2021" || db.hero.stats[2].value !== "150")
+  /* Die Zahl neben "Shows" wird GEZAEHLT, nicht hingeschrieben.
+     (Vorher stand sie als feste 30 in der Korrekturdatei — nach jeder neuen
+     Show waere sie falsch gewesen, und angefasst haette sie nie wieder jemand.)
+
+     Gezaehlt werden die Auftritte, die die Website kennt: Termine unter "Shows"
+     und Referenzen, ohne Dubletten. Der Mindestwert aus der Korrekturdatei ist
+     der vom Kunden bestaetigte Gesamtstand und greift nur, solange die Daten
+     weniger hergeben. */
+  const zaehlDb = (refs, shows) => {
+    const db = JSON.parse(JSON.stringify(template));
+    db.sections.references.items = refs;
+    db.sections.shows.items = shows;
+    db.hero.stats = [
+      { value: "2021", label: "First set" },
+      { value: "2", label: "Shows" },
+      { value: "150", label: "BPM home base" },
+    ];
+    nachziehen(db, korr);
+    return db;
+  };
+  const mindestens = Number(korr.heroShows?.mindestens) || 0;
+  if (!mindestens) meckern("heroShows.mindestens fehlt in der Korrekturdatei");
+
+  // Wenig Daten: der bestaetigte Mindestwert steht da.
+  const wenig = zaehlDb([{ name: "Kugl", city: "St. Gallen" }], [{ name: "Nox", city: "Chur", date: "2026-01-01" }]);
+  if (wenig.hero.stats[1].value !== String(mindestens))
+    meckern(`Bei wenig Daten steht "${wenig.hero.stats[1].value}" statt dem Mindestwert ${mindestens}`);
+  if (wenig.hero.stats[0].value !== "2021" || wenig.hero.stats[2].value !== "150")
     meckern("Die anderen Kennzahlen wurden mitveraendert");
 
+  // Mehr Auftritte als der Mindestwert: die Zahl folgt den Daten.
+  const viele = Array.from({ length: mindestens + 5 }, (_, i) => ({ name: `Club ${i}`, city: "St. Gallen" }));
+  const gross = zaehlDb(viele, []);
+  if (gross.hero.stats[1].value !== String(mindestens + 5))
+    meckern(
+      `Die Kennzahl folgt den Daten nicht: "${gross.hero.stats[1].value}" statt ${mindestens + 5}`
+    );
+
+  // Derselbe Auftritt in beiden Listen zaehlt einmal — auch mit anderer
+  // Schreibweise und Leerzeichen ("Nox Club " in den Referenzen).
+  const doppelt = zaehlDb(
+    [...viele, { name: "Nox Club ", city: "Chur" }],
+    [{ name: "nox club", city: "CHUR", date: "2026-01-01" }]
+  );
+  if (doppelt.hero.stats[1].value !== String(mindestens + 6))
+    meckern(`Dublette doppelt gezaehlt: "${doppelt.hero.stats[1].value}" statt ${mindestens + 6}`);
+
+  // Gleicher Name, anderer Ort ist ein anderer Auftritt.
+  const zweiOrte = zaehlDb(
+    [...viele, { name: "Jugendopenair", city: "St. Gallen" }, { name: "Jugendopenair", city: "Wattwil" }],
+    []
+  );
+  if (zweiOrte.hero.stats[1].value !== String(mindestens + 7))
+    meckern(`Gleicher Name an zwei Orten falsch gezaehlt: "${zweiOrte.hero.stats[1].value}"`);
+
+  // Gefunden wird die Kennzahl ueber die Aufschrift, nicht ueber den Platz —
+  // auch mit der alten Aufschrift, falls die Umbenennung nicht mehr greift.
   const verschoben = JSON.parse(JSON.stringify(template));
-  verschoben.hero.stats = [
-    { value: "2", label: "Shows" },
-    { value: "2021", label: "First set" },
-  ];
+  verschoben.hero.stats = [{ value: "2", label: "Shows" }, { value: "2021", label: "First set" }];
   nachziehen(verschoben, korr);
-  if (verschoben.hero.stats[0].value !== "30")
+  if (verschoben.hero.stats[0].value === "2")
     meckern("Kennzahl an anderer Stelle nicht ueber die Aufschrift gefunden");
-
-  // Auch mit der alten Aufschrift, falls die Umbenennung nicht mehr greift.
-  const alt = JSON.parse(JSON.stringify(template));
-  alt.hero.stats = [{ value: "2", label: "Clubs & Festivals" }];
-  nachziehen(alt, korr);
-  if (alt.hero.stats[0].value !== "30")
-    meckern("Kennzahl mit alter Aufschrift nicht gefunden");
-
-  // Eine fremde Kennzahl an derselben Stelle bleibt unberuehrt — kein
-  // Rueckfall auf den Platz in der Liste.
-  const fremd = JSON.parse(JSON.stringify(template));
-  fremd.hero.stats = [
-    { value: "2021", label: "First set" },
-    { value: "9", label: "Eigene Zahl" },
-    { value: "150", label: "BPM home base" },
-  ];
-  nachziehen(fremd, korr);
-  if (fremd.hero.stats[1].value !== "9")
-    meckern("Fremde Kennzahl an Platz 2 wurde ueberschrieben");
+  const altLabel = JSON.parse(JSON.stringify(template));
+  altLabel.hero.stats = [{ value: "2", label: "Clubs & Festivals" }];
+  nachziehen(altLabel, korr);
+  if (altLabel.hero.stats[0].value === "2") meckern("Kennzahl mit alter Aufschrift nicht gefunden");
 }
 
 {

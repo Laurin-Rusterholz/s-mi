@@ -244,7 +244,24 @@ for (const [datei, h] of html) {
     const istRef = [...refBlock.matchAll(
       /<li[^>]*><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
     )].map((m) => `${m[1]} — ${m[2]}`.trim().replace(/ —$/, ""));
-    const sollRef = refImInhalt.map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
+    /* Steht auf derselben Seite der Rueckblick der Shows, kommt ein Auftritt
+       dort nur einmal vor: die Referenz zu einem Termin, der oben schon steht,
+       wird beim Rendern uebersprungen (siehe renderReferences). Geloescht ist
+       sie nicht — sie steht weiter in der Verwaltung und in INHALT. */
+    const schluessel = (name, city) =>
+      `${String(name ?? "").trim().toLowerCase()}|${String(city ?? "").trim().toLowerCase()}`
+        .replace(/[\s–—-]+/g, " ")
+        .replace(/\s+/g, " ");
+    const showsHier = new Set(
+      (refHtml || "").includes('id="shows"')
+        ? (INHALT.sections?.shows?.items || [])
+            .filter((i) => String(i?.name || "").trim())
+            .map((i) => schluessel(i.name, i.city))
+        : []
+    );
+    const sollRef = refImInhalt
+      .filter((r) => !showsHier.has(schluessel(r.name, r.city)))
+      .map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
     if (istRef.join(" | ") !== sollRef.join(" | "))
       meckern(
         `${refDatei || rel}: Referenzen weichen ab\n           Verwaltung: ${sollRef.join(" | ")}` +
