@@ -20,6 +20,7 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LEGAL_SLUG } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -94,28 +95,40 @@ if (!regeln.length) {
   process.exit(1);
 }
 
-/* Die Vorgabe, Adresse fuer Adresse. */
-const ERWARTET = [
-  /* Die Startseiten sind seit dem Launch offen — in jeder Sprache und auch als
-     Datei. Bis dahin standen hier 503-Regeln auf coming-soon.html. */
-  ["/", 200, "/index.html"],
-  ["/index.html", 200, "/index.html"],
-  ["/de/", 200, "/de/index.html"],
-  ["/de/index.html", 200, "/de/index.html"],
-  ["/fr/", 200, "/fr/index.html"],
-  ["/fr/index.html", 200, "/fr/index.html"],
+/* Die Vorgabe, Adresse fuer Adresse — hergeleitet, nicht behauptet.
 
-  // Die Unterseiten sind offen.
-  ["/booking/", 200, "/booking/index.html"],
-  ["/de/booking/", 200, "/de/booking/index.html"],
-  ["/fr/booking/", 200, "/fr/booking/index.html"],
-  /* Der Shop hat seine eigene Seite — dort steht der Katalog. Auf der Startseite
-     steht nur die Einladung (der helle Block) mit einem Knopf hierher; das war
-     am 12.08.2026 zwischenzeitlich anders geloest und ist zurueckgedreht. */
-  ["/shop/", 200, "/shop/index.html"],
-  ["/de/shop/", 200, "/de/shop/index.html"],
-  ["/fr/shop/", 200, "/fr/shop/index.html"],
+   Bis zum 07.09.2026 stand hier eine feste Liste mit /de/, /legal/ und den
+   Seiten von damals. Dann hat der Kunde in der Verwaltung die Hauptsprache auf
+   Deutsch umgestellt und die Seiten neu aufgeteilt: Deutsch liegt seither an
+   der Wurzel, Englisch unter /en/, und es gibt eine eigene /shows/-Seite. Die
+   Pruefung wurde rot, obwohl alles richtig war — und verdeckte damit die
+   echten Fehler.
 
+   Sprachen und Seiten entscheidet die Verwaltung. Die Pruefung liest sie
+   deshalb aus dem Inhalt und rechnet die Adressen daraus aus; fest bleibt nur,
+   was wirklich fest ist: die Endpunkte, die Dateien, die Sperren. */
+const INHALT_ROUTEN = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+const SPRACHEN = (INHALT_ROUTEN.site?.languages || [INHALT_ROUTEN.site?.lang || "de"]).filter(Boolean);
+const MASTER = SPRACHEN[0];
+const praefix = (lang) => (lang === MASTER ? "" : `/${lang}`);
+const SEITEN = (INHALT_ROUTEN.pages || []).map((p) => String(p.slug || ""));
+
+const ERWARTET = [];
+for (const lang of SPRACHEN) {
+  const p = praefix(lang);
+  // Startseite, als Adresse und als Datei.
+  ERWARTET.push([`${p}/`, 200, `${p}/index.html`]);
+  ERWARTET.push([`${p}/index.html`, 200, `${p}/index.html`]);
+  // Jede weitere Seite aus der Verwaltung.
+  for (const slug of SEITEN) {
+    if (!slug) continue;
+    ERWARTET.push([`${p}/${slug}/`, 200, `${p}/${slug}/index.html`]);
+  }
+  // Rechtliches und Impressum baut der Generator je Sprache dazu.
+  ERWARTET.push([`${p}/${LEGAL_SLUG[lang] || "legal"}/`, 200, `${p}/${LEGAL_SLUG[lang] || "legal"}/index.html`]);
+  ERWARTET.push([`${p}/impressum/`, 200, `${p}/impressum/index.html`]);
+}
+ERWARTET.push(
   // Die Endpunkte.
   ["/api/booking", 200, "/.netlify/functions/booking"],
   ["/api/order", 200, "/.netlify/functions/order"],
@@ -123,15 +136,9 @@ const ERWARTET = [
   // Der Zaehler fuer die Seitenaufrufe (12.08.2026) — dieselbe /api/*-Regel.
   ["/api/zaehler", 200, "/.netlify/functions/zaehler"],
 
-  // Was die Unterseiten zum Funktionieren brauchen.
+  // Was die Seiten zum Funktionieren brauchen.
   ["/assets/site.css", 200, "/assets/site.css"],
   ["/assets/site.js", 200, "/assets/site.js"],
-  ["/legal/", 200, "/legal/index.html"],
-  ["/de/rechtliches/", 200, "/de/rechtliches/index.html"],
-  // Das Impressum: in jeder Sprache unter derselben Adresse.
-  ["/impressum/", 200, "/impressum/index.html"],
-  ["/de/impressum/", 200, "/de/impressum/index.html"],
-  ["/fr/impressum/", 200, "/fr/impressum/index.html"],
   ["/presskit/sam-sparking-presskit-2026.pdf", 200, "/presskit/sam-sparking-presskit-2026.pdf"],
 
   // Suchmaschinen.
@@ -140,9 +147,8 @@ const ERWARTET = [
 
   // Der Quelltext des Generators und der Inhalts-Schnappschuss bleiben zu.
   ["/scripts/build.mjs", 404, "/404.html"],
-  ["/content/site.json", 404, "/404.html"],
-];
-
+  ["/content/site.json", 404, "/404.html"]
+);
 for (const [pfad, status, ziel] of ERWARTET) {
   const a = antwort(regeln, pfad);
   if (a.status !== status) {
@@ -155,7 +161,8 @@ for (const [pfad, status, ziel] of ERWARTET) {
 /* Seit dem Launch die umgekehrte Sorge: KEINE Adresse darf noch in der
    Wartungsregel haengen. Ein uebersehener Rest waere eine Seite, die weiter
    "Coming soon" zeigt, waehrend alles andere live ist. */
-const STARTSEITEN = ["/", "/index.html", "/de/", "/de/index.html", "/fr/", "/fr/index.html"];
+/* Auch hier aus dem Inhalt, nicht aus dem Gedaechtnis (siehe ERWARTET). */
+const STARTSEITEN = SPRACHEN.flatMap((lang) => [`${praefix(lang)}/`, `${praefix(lang)}/index.html`]);
 for (const pfad of [...STARTSEITEN, "/booking/", "/shop/", "/api/booking"]) {
   const a = antwort(regeln, pfad);
   if (a.ziel === "/coming-soon.html") meckern(`${pfad} landet noch in der Wartungsregel`);
@@ -164,17 +171,16 @@ for (const pfad of [...STARTSEITEN, "/booking/", "/shop/", "/api/booking"]) {
 
 /* Die Startseiten muessen ihren eigenen Inhalt liefern — nicht den einer
    anderen Sprache und nicht die Wartungsseite. */
-for (const [pfad, datei] of [
-  ["/", "/index.html"],
-  ["/de/", "/de/index.html"],
-  ["/fr/", "/fr/index.html"],
-]) {
+for (const [pfad, datei] of SPRACHEN.map((lang) => [
+  `${praefix(lang)}/`,
+  `${praefix(lang)}/index.html`,
+])) {
   const a = antwort(regeln, pfad);
   if (a.ziel !== datei) meckern(`${pfad} liefert ${a.ziel} statt ${datei}`);
 }
 
 /* Die Video-Seite ist zurueckgenommen — es darf keine Route dorthin geben. */
-for (const pfad of ["/videos/", "/de/videos/", "/fr/videos/"]) {
+for (const pfad of SPRACHEN.map((lang) => `${praefix(lang)}/videos/`)) {
   const a = antwort(regeln, pfad);
   if (a.status === 200) meckern(`${pfad} ist wieder erreichbar — die Video-Seite sollte weg sein`);
 }
@@ -197,7 +203,7 @@ if (fehler) {
 }
 console.log(
   `Routen: ${ERWARTET.length} Adressen gegen netlify.toml geprueft.\n` +
-    `  offen (200):                  /, /de/, /fr/ samt index.html — die Website ist live,\n` +
+    `  offen (200):                  ${SPRACHEN.map((l) => praefix(l) + "/").join(", ")} samt index.html,\n` +
     `                                /booking/ und /shop/ in allen drei Sprachen,\n` +
     `                                /api/booking, /api/order, /api/stripe-webhook,\n` +
     `                                Impressum, CSS/JS, Presskit, robots, sitemap\n` +

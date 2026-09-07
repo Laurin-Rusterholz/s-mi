@@ -613,6 +613,48 @@ const gleicheNamen = (items, namen) => {
 const nurGefuellt = (o) =>
   Object.fromEntries(Object.entries(o).filter(([, v]) => v !== "" && v !== undefined && v !== null));
 
+/**
+ * Uebersetzungen wegraeumen, die es gar nicht geben darf.
+ *
+ * Was in NO_TRANSLATE_PATH steht, wird nie uebersetzt — Clubs, Kanaele,
+ * Termine, das Impressum, die Seitenaufteilung. Aeltere Staende in der
+ * Datenbank tragen dafuer trotzdem noch Eintraege, aus der Zeit vor der Sperre.
+ * Gelesen werden sie nicht mehr, aber sie sind keine harmlose Altlast: sie
+ * haengen am PLATZ in der Liste. Wird die Sperre je gelockert oder ein Pfad
+ * umbenannt, faengt das Verrutschen sofort wieder an ("Luzern" auf
+ * "Sektor 11", "Instagram" auf dem Mixcloud-Link).
+ *
+ * Geraeumt wird im Stand, aus dem gebaut wird. Die Verwaltung bleibt
+ * unberuehrt; sie bietet diese Felder ohnehin nicht mehr zum Uebersetzen an.
+ */
+function toteUebersetzungenRaeumen(live) {
+  let weg = 0;
+  for (const root of ["i18n", "i18nHash"]) {
+    const tabellen = live?.[root];
+    if (!tabellen || typeof tabellen !== "object") continue;
+    for (const tabelle of Object.values(tabellen)) {
+      if (!tabelle || typeof tabelle !== "object") continue;
+      const gehe = (knoten, pfad) => {
+        if (!knoten || typeof knoten !== "object") return;
+        for (const schluessel of Object.keys(knoten)) {
+          const hier = pfad ? `${pfad}.${schluessel}` : schluessel;
+          /* Der Punkt am Ende: NO_TRANSLATE_PATH prueft Pfade MIT Position
+             (…items.0.city). Ein Knoten heisst nur "…items" — mit dem Punkt
+             trifft die Sperre auch ihn. */
+          if (NO_TRANSLATE_PATH.test(`${hier}.`)) {
+            delete knoten[schluessel];
+            weg++;
+            continue;
+          }
+          gehe(knoten[schluessel], hier);
+        }
+      };
+      gehe(tabelle, "");
+    }
+  }
+  return weg;
+}
+
 export function nachziehen(live, korr) {
   const getan = [];
   if (!live || typeof live !== "object") return getan;
@@ -621,6 +663,9 @@ export function nachziehen(live, korr) {
   const vorher = JSON.stringify(live);
   schreibweiseTief(live);
   if (JSON.stringify(live) !== vorher) getan.push("Schreibweise");
+
+  const totePfade = toteUebersetzungenRaeumen(live);
+  if (totePfade) getan.push(`${totePfade} tote Uebersetzung(en) geraeumt`);
 
   if (!korr || typeof korr !== "object") return getan;
 
@@ -1847,7 +1892,7 @@ function renderExperience(n, s) {
   </section>`;
 }
 
-function showRow(sh, idx) {
+function showRow(sh, idx, vorbei = false) {
   const date = isoDate(sh.date);
   const booked = sh.status === "booked";
   const d = date ? new Date(date + "T12:00:00Z") : null;
@@ -1873,11 +1918,16 @@ function showRow(sh, idx) {
      dort, was zutrifft: "Ausverkauft", ein freier Hinweis aus dem Ticket-Feld
      ("DM for friendlist") oder — wenn es nichts zu sagen gibt — nichts. Eine
      leere Beschriftung stand vorher als leeres Feld in der Zeile. */
-  const kasse = safeUrl(sh.ticketUrl) && !soldOut;
+  /* Vorbei heisst: nichts mehr zu holen. Ein "Tickets"-Knopf an einem Termin
+     von letzter Woche fuehrt ins Leere und macht den Rueckblick unglaubwuerdig
+     — dort steht darum nur, was war. */
+  const kasse = !vorbei && safeUrl(sh.ticketUrl) && !soldOut;
   const freierHinweis = !safeUrl(sh.ticketUrl) ? str(sh.ticketUrl).trim() : "";
   const label = soldOut ? UI.soldOut : str(sh.ticketLabel, UI.tickets);
-  const hinweis = soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
-  return `<li class="show${soldOut ? " soldout" : ""}${booked ? " booked" : ""}"${date ? ` data-date="${esc(date)}"` : ""}>
+  const hinweis = vorbei ? "" : soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
+  return `<li class="show${vorbei ? " vorbei" : ""}${soldOut && !vorbei ? " soldout" : ""}${
+    booked && !vorbei ? " booked" : ""
+  }"${date ? ` data-date="${esc(date)}"` : ""}>
           <span class="show-date"><b>${esc(day)}</b><span class="mono">${esc(month)} ${esc(
     year
   )}</span></span>
@@ -1925,31 +1975,55 @@ function renderShows(n, s) {
   const upcoming = items
     .filter((i) => !isoDate(i.date) || isoDate(i.date) >= t)
     .sort(chronologisch);
-  /* Vergangene Termine stehen hier NICHT mehr.
+  /* Vergangene Termine stehen wieder da — und zwar hier, unter "Shows".
 
-     Bis zum 27.08.2026 hing unter der Liste ein aufklappbarer Rueckblick
-     ("Already played"). Er zeigte dieselben Termine ein zweites Mal: einmal
-     hier, einmal — ueber showsNachReferenzen — bei den Referenzen. Der
-     Abschnitt "Shows" beantwortet aber genau eine Frage: wo spielt Sam als
-     naechstes. Was vorbei ist, gehoert zu den Orten, an denen er schon
-     gespielt hat, und steht darum ausschliesslich unter "References".
+     Kurze Geschichte, damit das nicht ein drittes Mal hin und her geht:
+     bis zum 27.08.2026 hing unter der Liste ein AUFKLAPPBARER Rueckblick. Der
+     war zugeklappt und zeigte dieselben Termine, die ueber showsNachReferenzen
+     auch bei den Referenzen stehen — er wurde darum entfernt. Am 07.09.2026
+     fiel bei der Abnahme auf, was das wirklich bedeutet: sobald der letzte
+     Termin vorbei ist, verschwindet der ganze Abschnitt samt Menuepunkt, und
+     eine in der Verwaltung publizierte Show ist im Frontend nirgends mehr zu
+     sehen. Das ist die Anforderung, die zaehlt: was publiziert wurde, bleibt
+     sichtbar.
 
-     Die Termine bleiben in der Verwaltung stehen (nichts geht verloren) und
-     wandern von selbst zu den Referenzen. */
+     Also: zwei getrennte Listen, beide chronologisch. Oben, was kommt
+     (aufsteigend — der naechste Termin zuerst). Darunter, offen sichtbar und
+     mit eigener Ueberschrift, was war (absteigend — das Juengste zuerst).
+     Nicht mehr zugeklappt: ein Rueckblick, den man erst aufklappen muss, ist
+     fuer den Besucher dasselbe wie keiner. */
+  const past = items
+    .filter((i) => isoDate(i.date) && isoDate(i.date) < t)
+    .sort((a, b) => -chronologisch(a, b));
 
+  /* Die Aufschrift kommt aus der Verwaltung (uebersetzbar), sonst aus den
+     Oberflaechentexten der jeweiligen Sprache. */
+  const pastTitel = str(s.pastLabel, UI.pastShows);
 
+  /* Der Rueckblick-Kasten steht IMMER im HTML, auch leer (dann `hidden`).
+     Grund: die Seite ist statisch gebaut. Verstreicht ein Termin zwischen zwei
+     Builds, schiebt assets/site.js ihn im Browser aus der oberen Liste hierher
+     — dafuer muss es hier etwas zum Hineinschieben geben. Frueher wurde er
+     schlicht ausgeblendet und war bis zum naechsten Build weg. */
   return `
   <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
     <div class="wrap">${sectionHead(n, s, "shows")}
       ${
         upcoming.length
           ? `<ul class="show-list rv" id="show-list">
-        ${upcoming.map(showRow).join("\n        ")}
+        ${upcoming.map((sh) => showRow(sh)).join("\n        ")}
       </ul>`
-          : `<div class="empty-state rv"><span class="mono">${esc(UI.calShow)}</span><p>${inline(
-              str(s.emptyText, "No dates announced right now.")
-            )}</p></div>`
+          : ""
       }
+      <div class="empty-state rv" id="show-empty"${upcoming.length ? " hidden" : ""}><span class="mono">${esc(
+        UI.calShow
+      )}</span><p>${inline(str(s.emptyText, "No dates announced right now."))}</p></div>
+      <div class="past-shows rv" id="past-shows"${past.length ? "" : " hidden"}>
+        <h3 class="past-title mono" id="past-shows-h">${esc(pastTitel)}</h3>
+        <ul class="show-list past" id="past-show-list">
+        ${past.map((sh) => showRow(sh, 0, true)).join("\n        ")}
+        </ul>
+      </div>
     </div>
   </section>`;
 }
@@ -2899,6 +2973,7 @@ const UI_DEFAULTS = {
   soldOut: "Ausverkauft",
   booked: "Gebucht",
   calShow: "Termin",
+  pastShows: "Vergangene Shows",
   language: "Sprache",
   buy: "Kaufen",
   bookDay: "Diesen Tag anfragen",
@@ -2985,6 +3060,7 @@ const UI_DEFAULTS = {
 const UI_SPRACHE = {
   en: {
     buy: "Buy",
+    pastShows: "Past shows",
     orderByMail: "Order by e-mail",
     showMoreVenues: "Show {n} more",
     showLessVenues: "Show less",
@@ -3013,6 +3089,7 @@ const UI_SPRACHE = {
   },
   fr: {
     buy: "Acheter",
+    pastShows: "Concerts passés",
     orderByMail: "Commander par e-mail",
     showMoreVenues: "Afficher {n} de plus",
     showLessVenues: "Afficher moins",
@@ -3070,9 +3147,6 @@ const NO_TRANSLATE = new Set([
   "slug", "date", "status", "email", "phone", "country", "createdAt",
   "updatedAt", "updatedBy", "schemaVersion", "type", "view",
   "value", "logoText", "artist", "languages", "nameSpaced", "nameMain",
-  // pastLabel: die Aufschrift des frueheren Rueckblicks unter "Shows". Der
-  // Rueckblick ist weg (siehe renderShows), das Feld wird nicht mehr gelesen.
-  "pastLabel",
   // Eigennamen: Clubs, Festivals, Geräte, Genre-Bezeichnungen
   "name", "venue", "inquiryId", "backgroundImage", "price", "currency", "twint",
   "fit", "focus", "mobileLimit",
@@ -3371,12 +3445,14 @@ function renderPage(c, page, pages, lang, langs) {
   // Shows gehoeren nur dann auf die Seite — und damit ins Menue —, wenn noch
   // ein Termin aussteht. Steht in der Verwaltung nur Vergangenes, fuehrte der
   // Menuepunkt bisher auf eine Seite, die nichts als "keine Termine" sagt.
-  // Vergangene Termine halten den Abschnitt nicht am Leben: sie stehen bei
-  // den Referenzen, nicht unter "Shows".
+
   const heute = today();
-  const hasShows = list(sections.shows?.items).some(
-    (item) => str(item?.name) && (!isoDate(item.date) || isoDate(item.date) >= heute)
-  );
+  /* Der Abschnitt steht, sobald ueberhaupt EIN Termin mit Namen da ist — auch
+     wenn alle vorbei sind. Bis zum 07.09.2026 verlangte diese Stelle einen
+     KOMMENDEN Termin; als der letzte verstrichen war, verschwanden Abschnitt
+     und Menuepunkt, und alles je Publizierte war im Frontend weg. Was vorbei
+     ist, steht jetzt im Rueckblick (siehe renderShows). */
+  const hasShows = list(sections.shows?.items).some((item) => str(item?.name));
   /* Welche Abschnitte eine Seite wirklich baut. Als Funktion, weil das Menue
      dieselbe Rechnung fuer die STARTSEITE braucht — nicht nur fuer die Seite,
      auf der man gerade steht. */
@@ -3964,7 +4040,7 @@ const LEGAL_LABEL = { de: "Impressum & Datenschutz", en: "Legal & privacy", fr: 
    heisst im Fuss deshalb nur noch nach ihrem zweiten Teil; die Seite selbst
    behaelt Titel und Inhalt unveraendert. */
 const LEGAL_FUSS = { de: "Datenschutz", en: "Privacy", fr: "Protection des données" };
-const LEGAL_SLUG = { de: "rechtliches", en: "legal", fr: "mentions-legales" };
+export const LEGAL_SLUG = { de: "rechtliches", en: "legal", fr: "mentions-legales" };
 
 const LEGAL_TEXT = {
   de: {

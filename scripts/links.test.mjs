@@ -174,7 +174,27 @@ for (const [datei, h] of html) {
     const p = resolve(ROOT, rel);
     return existsSync(p) ? await readFile(p, "utf8") : null;
   };
-  const startseiten = ["index.html", "de/index.html", "fr/index.html"];
+  /* Sprachen und Seitenaufteilung entscheidet die Verwaltung, nicht dieser
+     Test. Bis zum 07.09.2026 stand hier fest "index.html, de/…, fr/…" — dann
+     wurde die Hauptsprache auf Deutsch umgestellt (Deutsch an die Wurzel,
+     Englisch nach /en/) und die Abschnitte auf eigene Seiten verteilt. Die
+     Pruefung wurde rot, obwohl alles stimmte, und verdeckte damit echte
+     Fehler. Also: herleiten. */
+  const sprachen = (INHALT.site?.languages || [INHALT.site?.lang || "de"]).filter(Boolean);
+  const masterSprache = sprachen[0];
+  const vorsatz = (lang) => (lang === masterSprache ? "" : `${lang}/`);
+  const startseiten = sprachen.map((lang) => `${vorsatz(lang)}index.html`);
+  /* Die gebaute Seite, die einen Abschnitt traegt — je Sprache. Ob das die
+     Startseite ist oder eine eigene Seite, steht in der Verwaltung. */
+  const seiteMit = (id, lang) => {
+    const vor = vorsatz(lang);
+    for (const [datei, inhalt] of html) {
+      if (vor ? !datei.startsWith(vor) : sprachen.some((l) => l !== masterSprache && datei.startsWith(`${l}/`)))
+        continue;
+      if (new RegExp(`id="${id}"`).test(inhalt)) return [datei, inhalt];
+    }
+    return [null, null];
+  };
 
   const refImInhalt = (INHALT.sections?.references?.items || []).filter((r) => r && r.name);
   const kanaeleImInhalt = (INHALT.sections?.contact?.socials || []).filter((x) => x && x.label);
@@ -187,12 +207,17 @@ for (const [datei, h] of html) {
           stillgelegt; der Kunde hat das am selben Tag zurueckgenommen. Geprueft
           wird die Aufschrift in der Sprache der Route zusammen mit "2021" —
           eine leere Kennzahlen-Leiste faellt damit auf. */
-    const kennzahl = { "index.html": "First set", "de/index.html": "Erstes Set", "fr/index.html": "Premier set" }[rel];
+    /* Geprueft wird, dass die Leiste da und gefuellt ist — nicht, wie die
+       Aufschriften heissen. Die pflegt der Kunde in der Verwaltung, samt
+       Uebersetzung; eine Tabelle davon im Test schreibt ihm vor, was dort
+       stehen darf, und wurde nach der Sprachumstellung prompt rot. */
     const leiste = h.match(/<div class="hero-stats">[\s\S]*?<\/div>\s*<\/div>/);
     if (!leiste) meckern(`${rel}: keine Kennzahlen-Leiste im Hero`);
     else {
-      if (!leiste[0].includes(kennzahl))
-        meckern(`${rel}: Kennzahl "${kennzahl}" fehlt im Hero`);
+      const aufschriften = [...leiste[0].matchAll(/<span class="hstat-label">([^<]*)<\/span>/g)]
+        .map((m) => m[1].trim())
+        .filter(Boolean);
+      if (!aufschriften.length) meckern(`${rel}: die Kennzahlen-Leiste ist leer`);
       if (!leiste[0].includes(">2021<")) meckern(`${rel}: die Jahreszahl 2021 fehlt im Hero`);
     }
     /* Die Faktenzeile unten in "Ueber mich" ist dagegen GANZ weg — kein <dl>,
@@ -211,14 +236,18 @@ for (const [datei, h] of html) {
        darunter, hinter der Zeile "Also played at", den kleinen Rest — eine
        zweite Rangfolge, die in der Verwaltung nicht zu sehen war. Jetzt zaehlt
        allein die Reihenfolge dort. */
-    const refBlock = (h.match(/<section class="pad" id="references"[\s\S]*?<\/section>/) || [""])[0];
+    /* Die Referenzen stehen dort, wo die Verwaltung sie hingelegt hat — auf
+       der Startseite oder auf einer eigenen Seite. */
+    const [refDatei, refHtml] = seiteMit("references", rel.split("/")[0] === "index.html" ? masterSprache : rel.split("/")[0]);
+    const refBlock = ((refHtml || "").match(/<section class="pad" id="references"[\s\S]*?<\/section>/) || [""])[0];
+    if (refImInhalt.length && !refDatei) meckern(`${rel}: keine Seite traegt die Referenzen`);
     const istRef = [...refBlock.matchAll(
       /<li[^>]*><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
     )].map((m) => `${m[1]} — ${m[2]}`.trim().replace(/ —$/, ""));
     const sollRef = refImInhalt.map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
     if (istRef.join(" | ") !== sollRef.join(" | "))
       meckern(
-        `${rel}: Referenzen weichen ab\n           Verwaltung: ${sollRef.join(" | ")}` +
+        `${refDatei || rel}: Referenzen weichen ab\n           Verwaltung: ${sollRef.join(" | ")}` +
           `\n           Seite:      ${istRef.join(" | ")}`
       );
     // Keine zweite Stufe mehr: keine grossen Karten, keine Zwischenzeile.
@@ -334,8 +363,17 @@ for (const [datei, h] of html) {
       );
       if (shopEintraege.length > 1)
         meckern(`${rel}: ${shopEintraege.length}× Shop im Kopf: ${shopEintraege.map((m) => m[1]).join(", ")}`);
-      // Der Kontakt bleibt als Sprungmarke — er steht auch auf der Booking-Seite.
-      if (!/href="[^"]*#contact"/.test(kopf[0])) meckern(`${rel}: kein Weg zum Kontakt im Kopf`);
+      /* Ein Weg zum Kontakt muss im Kopf stehen — als Sprungmarke auf derselben
+         Seite ODER als Verweis auf die Seite, die den Kontakt traegt (seit der
+         Neuaufteilung ist das die Booking-Seite). Was zaehlt, ist die
+         Erreichbarkeit, nicht die Form der Adresse. */
+      const lang = rel.includes("/") ? rel.split("/")[0] : masterSprache;
+      const [kontaktDatei] = seiteMit("contact", lang);
+      const kontaktZiel = kontaktDatei ? "/" + kontaktDatei.replace(/index\.html$/, "") : null;
+      const wegDa =
+        /href="[^"]*#contact"/.test(kopf[0]) ||
+        (kontaktZiel && kopf[0].includes(`href="${BASE}${kontaktZiel}`));
+      if (kontaktDatei && !wegDa) meckern(`${rel}: kein Weg zum Kontakt im Kopf`);
     }
   }
 
@@ -400,8 +438,8 @@ for (const [datei, h] of html) {
      eigene Kachel mit Play-Zeichen. Die eigene Video-SEITE ist zurueckgenommen
      (11.08.2026) — es darf keine Datei und kein Verweis dorthin mehr geben. */
   {
-    for (const rel of startseiten) {
-      const h = await seite(rel);
+    for (const lang of sprachen) {
+      const [rel, h] = seiteMit("gal", lang);
       if (!h) continue;
       const gal = h.match(/<div class="gal rv" id="gal">[\s\S]*?\n      <\/div>/);
       if (!gal) {
@@ -528,11 +566,28 @@ for (const [datei, h] of html) {
   const NUR_DEUTSCH = ["Zum Katalog", "Kleine Auflagen", "Versand", "Kaufen", "ist bald offen"];
   const NUR_FRANZOESISCH = ["Voir le catalogue", "Petites séries", "Expédition", "Acheter", "bientôt"];
   const NUR_ENGLISCH = ["Browse the drop", "Small runs", "Shipping", "opens soon"];
-  const SPRACHPROBE = {
-    "shop/index.html": { erlaubt: NUR_ENGLISCH, verboten: [...NUR_DEUTSCH, ...NUR_FRANZOESISCH] },
-    "de/shop/index.html": { erlaubt: NUR_DEUTSCH, verboten: [...NUR_ENGLISCH, ...NUR_FRANZOESISCH] },
-    "fr/shop/index.html": { erlaubt: NUR_FRANZOESISCH, verboten: [...NUR_ENGLISCH, ...NUR_DEUTSCH] },
-  };
+  /* Welche Sprache an welcher Adresse liegt, entscheidet die Verwaltung — die
+     Hauptsprache an der Wurzel, die anderen unter ihrem Kuerzel. Bis zum
+     07.09.2026 stand hier fest "shop/ ist englisch"; nach der Umstellung auf
+     Deutsch als Hauptsprache meldete die Pruefung das richtige "Kaufen" als
+     Fehler. */
+  const WOERTER = { de: NUR_DEUTSCH, en: NUR_ENGLISCH, fr: NUR_FRANZOESISCH };
+  /* Nur die UEBERSETZTEN Sprachen. Der Text der Hauptsprache ist wortwoertlich
+     das, was in der Verwaltung steht — schreibt der Kunde dort "Shipping",
+     ist das seine Entscheidung und kein Fehler des Generators. Geprueft wird,
+     was der Generator zu verantworten hat: dass er beim Uebersetzen nicht
+     Sprachen mischt. */
+  const SPRACHPROBE = Object.fromEntries(
+    sprachen
+      .filter((lang) => WOERTER[lang] && lang !== masterSprache)
+      .map((lang) => [
+        `${vorsatz(lang)}shop/index.html`,
+        {
+          erlaubt: WOERTER[lang],
+          verboten: sprachen.filter((l) => l !== lang && WOERTER[l]).flatMap((l) => WOERTER[l]),
+        },
+      ])
+  );
   for (const [rel, probe] of Object.entries(SPRACHPROBE)) {
     const h = await seite(rel);
     if (!h) continue;
@@ -864,7 +919,10 @@ for (const [datei, h] of html) {
   /* Das Impressum: eigene Seite je Sprache, im Fuss jeder Seite verlinkt, und
      bewusst knapp. Kundenwunsch vom 11.08.2026. */
   {
-    const impressumSeiten = ["impressum/index.html", "de/impressum/index.html", "fr/impressum/index.html"];
+    /* Je Sprache eine Impressum-Seite — an der Wurzel die Hauptsprache, die
+       anderen unter ihrem Kuerzel. Welche Sprache wo liegt, entscheidet die
+       Verwaltung (siehe oben). */
+    const impressumSeiten = sprachen.map((lang) => `${vorsatz(lang)}impressum/index.html`);
     const email = String(INHALT.imprint?.email || INHALT.sections?.contact?.email || "");
     for (const rel of impressumSeiten) {
       const h = await seite(rel);
@@ -883,7 +941,7 @@ for (const [datei, h] of html) {
         if (h.includes(wort)) meckern(`${rel}: "${wort}" steht auf der Seite — nicht bekannt`);
       if (/\b\+41\s?\d/.test(h)) meckern(`${rel}: eine Telefonnummer steht im Impressum`);
       // Und die Sprachen zeigen aufeinander.
-      for (const ziel of ["/impressum/", "/de/impressum/", "/fr/impressum/"])
+      for (const ziel of sprachen.map((lang) => `/${vorsatz(lang)}impressum/`))
         if (!h.includes(`href="${BASE}${ziel}"`)) meckern(`${rel}: kein Weg nach ${ziel}`);
     }
     // Sichtbarer Weg dorthin: im Fuss jeder gebauten Seite.
@@ -898,7 +956,7 @@ for (const [datei, h] of html) {
     // In der Sitemap steht es auch — anders als "Impressum & Datenschutz".
     const sitemap = await seite("sitemap.xml");
     if (sitemap)
-      for (const ziel of ["/impressum/", "/de/impressum/", "/fr/impressum/"])
+      for (const ziel of sprachen.map((lang) => `/${vorsatz(lang)}impressum/`))
         if (!sitemap.includes(ziel)) meckern(`sitemap.xml: ${ziel} fehlt`);
   }
 
@@ -920,10 +978,10 @@ for (const [datei, h] of html) {
   }
 }
 
-if (fehler) {
-  console.error(`\n${fehler} Fehler.`);
-  process.exit(1);
-}
+/* Die Auswertung stand bis zum 07.09.2026 HIER — mitten in der Datei. Alles,
+   was darunter geprueft wurde (Ticket-Knoepfe, Presskit-Karte), meldete seine
+   Fehler zwar, aber der Lauf endete trotzdem mit 0: gruen trotz Fehlern. Sie
+   steht jetzt ganz unten. */
 console.log(
   `Wuensche: "First set 2021" weg, Club Eden statt IVY, Jugendopenair SG+Wattwil,\n` +
     `          vier Kanaele genannt und nur echte verlinkt, kein Zeichen im Kopf,\n` +
@@ -990,8 +1048,11 @@ console.log(
     }
   }
   // Und im Kontakt-Abschnitt als Karte.
-  for (const rel of ["index.html", "de/index.html", "fr/index.html"]) {
-    const h = html.get(rel);
+  /* Die Karte steht im Kontakt-Abschnitt — und der liegt dort, wo die
+     Verwaltung ihn hingelegt hat (seit der Neuaufteilung auf der
+     Booking-Seite), nicht zwangslaeufig auf der Startseite. */
+  const kontaktSeiten = [...html].filter(([, h]) => h.includes('<div class="social-cards">'));
+  for (const [rel, h] of kontaktSeiten) {
     if (!h || !pk) continue;
     const karten = (h.match(/<div class="social-cards">[\s\S]*?<\/div>/) || [""])[0];
     if (!/class="scard scard-file"/.test(karten))
@@ -999,4 +1060,9 @@ console.log(
     if (!karten.includes("/" + pk.replace(/^\/+/, "")))
       meckern(`${rel}: die Presskit-Karte zeigt nicht auf die Datei`);
   }
+}
+
+if (fehler) {
+  console.error(`\n${fehler} Fehler.`);
+  process.exit(1);
 }
