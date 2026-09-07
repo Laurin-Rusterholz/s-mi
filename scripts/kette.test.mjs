@@ -320,6 +320,119 @@ test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", asy
   );
 });
 
+test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
+  /* Abnahme 07.09.2026: "Aftersun Festival" stand im Rueckblick der Shows und
+     zwei Bloecke tiefer noch einmal bei den Referenzen. Zwei Ursachen:
+     der Generator trug vergangene Termine automatisch in die Referenzliste ein
+     (weg seit 07.09.), und der Kunde pflegt manche Auftritte selbst in BEIDEN
+     Listen — "Nox Club " steht als Referenz, "Nox Club" als Termin.
+
+     Geloescht wird deshalb nichts: die Referenz bleibt in der Verwaltung, sie
+     wird nur nicht ein zweites Mal auf dieselbe Seite gedruckt. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN }];
+  stand.sections.references.items = [
+    { city: "St. Gallen", name: "Kugl" },
+    // Derselbe Auftritt wie der Termin oben — andere Schreibweise, Leerzeichen.
+    { city: "Herisau", name: "Sommerfest Rueckblick " },
+    // Gleicher Name, anderer Ort: ein anderer Auftritt, der bleiben muss.
+    { city: "Wattwil", name: "Sommerfest Rueckblick" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  for (const [seite, html] of seitenMitShows(dir)) {
+    const refBlock = (html.match(/<ul class="venue-list rv" id="venue-list">[\s\S]*?<\/ul>/) || [""])[0];
+    if (!refBlock) continue; // Referenzen stehen auf dieser Seite nicht
+    const rueckblick = (html.match(/<ul class="show-list past" id="past-show-list">[\s\S]*?<\/ul>/) || [""])[0];
+
+    assert.ok(
+      rueckblick.includes(VERGANGENER_TERMIN.name),
+      `${seite}: der vergangene Termin fehlt im Rueckblick`
+    );
+    /* Herisau steht oben als Termin — nicht noch einmal als Referenz. */
+    assert.ok(
+      !/Herisau/.test(refBlock),
+      `${seite}: der Auftritt steht doppelt — im Rueckblick und bei den Referenzen`
+    );
+    /* Wattwil ist ein anderer Auftritt und bleibt. */
+    assert.ok(refBlock.includes("Wattwil"), `${seite}: eine echte Referenz wurde mit weggeraeumt`);
+    assert.ok(refBlock.includes("Kugl"), `${seite}: eine manuelle Referenz fehlt`);
+  }
+
+  /* Und der Generator hat die Liste in der Datenquelle NICHT angefasst — nur
+     die Anzeige. Der Schnappschuss ist der Beweis. */
+  const schnappschuss = JSON.parse(readFileSync(join(dir, "content/site.json"), "utf8"));
+  const namen = (schnappschuss.sections.references.items || []).map((r) => String(r.name).trim());
+  assert.deepEqual(
+    namen,
+    ["Kugl", "Sommerfest Rueckblick", "Sommerfest Rueckblick"],
+    "Die Referenzliste in den Daten wurde veraendert"
+  );
+  assert.doesNotMatch(
+    lauf.stdout,
+    /jetzt Referenz/,
+    "Vergangene Termine wandern wieder automatisch in die Referenzen"
+  );
+});
+
+test("die Kennzahl \"Shows\" wird aus den Daten gezaehlt", async (t) => {
+  /* Sie stand als feste 30 in der Korrekturdatei — nach jeder neuen Show waere
+     sie falsch gewesen. Jetzt zaehlt sie Termine und Referenzen ohne Dubletten;
+     der bestaetigte Gesamtstand aus der Korrekturdatei ist nur noch ein
+     Mindestwert, solange die Daten weniger hergeben. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json"), "utf8"));
+  const mindestens = Number(korr.heroShows?.mindestens) || 0;
+  assert.ok(mindestens > 0, "heroShows.mindestens fehlt");
+
+  // Mehr Auftritte als der Mindestwert: die Zahl folgt den Daten.
+  stand.sections.references.items = Array.from({ length: mindestens + 4 }, (_, i) => ({
+    city: "St. Gallen",
+    name: `Club ${i}`,
+  }));
+  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN }, { ...NEUER_TERMIN }];
+  stand.hero.stats = [
+    { value: "2021", label: "First set" },
+    { value: "2", label: "Shows" },
+    { value: "150", label: "BPM home base" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const erwartet = String(mindestens + 4 + 2); // Referenzen + zwei Termine
+  for (const seite of ["index.html", "en/index.html", "fr/index.html"]) {
+    const html = lies(dir, seite);
+    const leiste = html.match(/<div class="hero-stats">[\s\S]*?<\/div>\s*<\/div>/);
+    assert.ok(leiste, `${seite}: keine Kennzahlen-Leiste`);
+    const shows = leiste[0].match(
+      /data-to="(\d+)"[^>]*>[^<]*<\/strong>\s*<span class="hstat-label">(?:Shows|Concerts)</
+    );
+    assert.ok(shows, `${seite}: die Kennzahl "Shows" ist nicht zu finden`);
+    assert.equal(
+      shows[1],
+      erwartet,
+      `${seite}: die Kennzahl zaehlt nicht mit — ${shows[1]} statt ${erwartet}`
+    );
+  }
+});
+
 test("der Rueckblick-Kasten steht auch leer im HTML", async (t) => {
   /* Der Vertrag, auf den sich assets/site.js stuetzt: verstreicht ein Termin
      zwischen zwei Builds, schiebt der Browser ihn aus der oberen Liste in den

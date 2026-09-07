@@ -276,6 +276,35 @@ const refSchluessel = (name, city) =>
     .replace(/\s+/g, " ");
 
 /**
+ * Wie viele Auftritte kennt die Website?
+ *
+ * Gezaehlt wird, was der Kunde in der Verwaltung pflegt — die Termine unter
+ * "Shows" UND die Referenzen —, ohne Dubletten. Beides sind Auftritte: ein
+ * Termin, der vorbei ist, steht im Rueckblick; aeltere stehen (wenn ueberhaupt)
+ * nur noch als Referenz. "Nox Club — Chur" in beiden Listen ist derselbe
+ * Auftritt und zaehlt einmal.
+ *
+ * Unterschieden wird ueber Name UND Ort, nicht ueber den Namen allein:
+ * "Jugendopenair" gibt es in St. Gallen und in Wattwil, das sind zwei
+ * Auftritte. Preis dafuer: derselbe Auftritt einmal mit und einmal ohne Ort
+ * zaehlt doppelt — dagegen hilft nur ein gepflegter Ort, nicht Raterei.
+ *
+ * Warum ueberhaupt gezaehlt statt hingeschrieben: die Zahl im Hero stand als
+ * feste 30 in der Korrekturdatei und waere nach jeder neuen Show falsch
+ * gewesen — sie haette nie wieder jemand angefasst.
+ */
+export function gespielteShows(content) {
+  const gesehen = new Set();
+  const dazu = (name, city) => {
+    const n = str(name).trim();
+    if (n) gesehen.add(refSchluessel(n, city));
+  };
+  list(content?.sections?.references?.items).forEach((r) => dazu(r?.name, r?.city));
+  list(content?.sections?.shows?.items).forEach((sh) => dazu(sh?.name, sh?.city));
+  return gesehen.size;
+}
+
+/**
  * Ist dieser Termin vorbei?
  *
  * "Vorbei" heisst: der Tag des Termins ist ganz herum. Ein Termin am heutigen
@@ -289,51 +318,23 @@ export const showVorbei = (show, heute) => {
   return !!d && d < String(heute);
 };
 
-/**
- * Vergangene Shows werden zu Referenzen — Name und Ort wandern hinueber.
- *
- * Der Kunde pflegt einen Termin einmal unter "Shows". Ist er vorbei, gehoert er
- * nicht mehr unter "kommende Shows", sondern zu den Orten, an denen Sam schon
- * gespielt hat. Das passiert von selbst, ohne Nachpflege.
- *
- * Regeln, die dabei gelten:
- *   - Keine Dubletten: gibt es die Referenz schon (Name und Ort, unabhaengig
- *     von Gross/Klein und Bindestrichen), passiert nichts.
- *   - Nie automatisch gross: ein uebernommener Eintrag traegt kein `highlight`.
- *   - Bestehende Referenzen bleiben unberuehrt — Reihenfolge, Schreibweise und
- *     "Gross zeigen" aendert diese Funktion nie. Neues kommt hinten dran, in
- *     der Reihenfolge der Termine (das Aelteste zuerst).
- *   - Der Termin selbst bleibt in der Verwaltung stehen — nur auf der Website
- *     ist er unter "Shows" nicht mehr zu sehen (dort stehen ausschliesslich
- *     kommende Termine) und erscheint stattdessen bei den Referenzen.
- *
- * Gibt die Namen der uebernommenen Termine zurueck.
- */
-export function showsNachReferenzen(content, heute) {
-  const shows = content?.sections?.shows;
-  const refs = content?.sections?.references;
-  if (!refs || !Array.isArray(shows?.items)) return [];
-  if (!Array.isArray(refs.items)) refs.items = [];
+/* Vergangene Shows wandern NICHT mehr automatisch in die Referenzen.
+   (showsNachReferenzen, 07.09.2026 entfernt.)
 
-  const bekannt = new Set(refs.items.map((r) => refSchluessel(r?.name, r?.city)));
-  const uebernommen = [];
-  const vorbei = shows.items
-    .filter((i) => str(i?.name) && showVorbei(i, heute))
-    .sort((a, b) => (isoDate(a.date) < isoDate(b.date) ? -1 : 1));
+   Die Regel stammt aus der Zeit, als vergangene Termine unter "Shows"
+   verschwanden: dann war die Referenzliste der einzige Ort, an dem noch stand,
+   wo Sam gespielt hat. Seit dem Rueckblick (siehe renderShows) stehen sie
+   wieder unter "Shows" — und die automatische Uebernahme machte daraus eine
+   Doppelnennung auf ein und derselben Seite: "Aftersun Festival" einmal im
+   Rueckblick, zwei Bloecke tiefer noch einmal bei den Referenzen.
 
-  for (const show of vorbei) {
-    const name = str(show.name).trim();
-    const city = str(show.city).trim();
-    const key = refSchluessel(name, city);
-    if (bekannt.has(key)) continue;
-    // Ohne highlight: automatisch uebernommene Eintraege stehen unten mit den
-    // anderen. Was gross steht, entscheidet der Kunde in der Verwaltung.
-    refs.items.push(city ? { name, city } : { name });
-    bekannt.add(key);
-    uebernommen.push(city ? `${name} — ${city}` : name);
-  }
-  return uebernommen;
-}
+   Was der Kunde in der Verwaltung an Referenzen pflegt, bleibt unberuehrt —
+   die Liste kommt jetzt ausschliesslich von dort. Verloren geht nichts: die
+   automatisch ergaenzten Eintraege standen nie in der Datenbank, sie entstanden
+   bei jedem Build neu. Wer ein vergangenes Event ZUSAETZLICH als Referenz will,
+   traegt es in der Verwaltung ein.
+
+   showVorbei() bleibt: es entscheidet, was in den Rueckblick gehoert. */
 
 /**
  * Fehlendes aus der Vorlage ergänzen — der Stand aus der Verwaltung gewinnt,
@@ -721,24 +722,9 @@ export function nachziehen(live, korr) {
      sonst waere die Zahl beim naechsten Speichern wieder eine andere. Wer sie
      dort wieder selbst setzen will, loescht `heroShows` aus der
      Korrekturdatei. */
-  const hs = korr.heroShows;
-  if (hs && str(hs.wert)) {
-    // Nur ueber die Aufschrift, bewusst ohne Rueckfall auf den Platz in der
-    // Liste: stuende dort eine ganz eigene Kennzahl, wuerde ein Rueckfall
-    // ausgerechnet die ueberschreiben. Erkannt werden die heutige Aufschrift
-    // und die alte, falls die Umbenennung oben nicht mehr gegriffen hat.
-    const namen = [str(hs.label, "Shows"), ...list(hs.auchLabel).map(str)]
-      .filter(Boolean)
-      .map((n) => n.toLowerCase());
-    const ziel = list(live.hero?.stats).find((s) =>
-      namen.includes(str(s?.label).toLowerCase())
-    );
-    if (ziel && str(ziel.value) !== str(hs.wert)) {
-      ziel.value = str(hs.wert);
-      getan.push(`Kennzahl ${str(ziel.label)} = ${str(hs.wert)}`);
-    }
-  }
-
+  /* Die Kennzahl "Shows" wird ganz am Ende gesetzt — sie zaehlt die
+     Referenzen, und die koennen weiter unten noch ergaenzt werden
+     (referenzenNachtragen). Frueher gerechnet waere zu frueh gerechnet. */
   // Die Genre-Zeile im Hero ist weg (siehe renderPage). Der Wert bleibt in der
   // Datenbank stehen und wird nur nicht mehr gelesen — hier wird er auch aus
   // dem Schnappschuss geraeumt, damit niemand ihn dort noch pflegt.
@@ -1282,6 +1268,44 @@ export function nachziehen(live, korr) {
     getan.push(`${weg} Fakt(en) aus "Ueber mich" entfernt`);
   }
 
+  /* Zum Schluss: die Kennzahl "Shows". Sie zaehlt Termine und Referenzen —
+     also erst, wenn beide Listen endgueltig sind. */
+  const hs = korr.heroShows;
+  if (hs) {
+    // Nur ueber die Aufschrift, bewusst ohne Rueckfall auf den Platz in der
+    // Liste: stuende dort eine ganz eigene Kennzahl, wuerde ein Rueckfall
+    // ausgerechnet die ueberschreiben. Erkannt werden die heutige Aufschrift
+    // und die alte, falls die Umbenennung oben nicht mehr gegriffen hat.
+    const namen = [str(hs.label, "Shows"), ...list(hs.auchLabel).map(str)]
+      .filter(Boolean)
+      .map((n) => n.toLowerCase());
+    const ziel = list(live.hero?.stats).find((s) =>
+      namen.includes(str(s?.label).toLowerCase())
+    );
+    if (ziel) {
+      const gezaehlt = gespielteShows(live);
+      const mindestens = Number(hs.mindestens) || 0;
+      const wert = String(Math.max(gezaehlt, mindestens));
+      if (str(ziel.value) !== wert) {
+        ziel.value = wert;
+        getan.push(
+          `Kennzahl ${str(ziel.label)} = ${wert}` +
+            (mindestens > gezaehlt
+              ? ` (${gezaehlt} in den Daten, Mindestwert ${mindestens})`
+              : " (aus den Daten gezaehlt)")
+        );
+      }
+      if (mindestens > gezaehlt) {
+        console.warn(
+          `[build] Die Kennzahl "${str(ziel.label)}" steht auf ${wert}, in den Daten stehen aber nur ` +
+            `${gezaehlt} Auftritte. Die Luecke von ${mindestens - gezaehlt} schliesst sich, sobald die ` +
+            `fehlenden Termine oder Referenzen in der Verwaltung stehen — dann faellt der Mindestwert ` +
+            `(heroShows.mindestens in content/korrekturen.json) von selbst weg.`
+        );
+      }
+    }
+  }
+
   return getan;
 }
 
@@ -1434,9 +1458,6 @@ async function loadContent() {
       } catch (e) {
         console.warn("[build] Vorlage content/site.json nicht lesbar:", e.message);
       }
-      const gerutscht = showsNachReferenzen(content, today());
-      if (gerutscht.length)
-        console.log(`[build] vorbei, jetzt Referenz: ${gerutscht.join(", ")}`);
       console.log(`[build] Inhalt von der Verwaltung geladen: ${apiUrl}`);
       // Snapshot mitschreiben, damit der Build ohne API reproduzierbar bleibt.
       await writeFile(LOCAL_CONTENT, JSON.stringify(content, null, 2) + "\n");
@@ -1489,8 +1510,6 @@ async function loadContent() {
   // und traegt darum dieselben alten Stellen. Ohne diesen Schritt haette die
   // Vorschau ohne API einen anderen Inhalt als die Website.
   const korrigiert = nachziehen(lokal, KORREKTUREN);
-  const gerutschtLokal = showsNachReferenzen(lokal, today());
-  if (gerutschtLokal.length) korrigiert.push(`vorbei, jetzt Referenz: ${gerutschtLokal.join(", ")}`);
   console.log(
     "[build] Inhalt aus content/site.json geladen" +
       (korrigiert.length ? ` — nachgezogen: ${korrigiert.join(", ")}` : "")
@@ -2046,7 +2065,22 @@ function renderShows(n, s) {
  * buendelt nichts mehr — eine Liste bleibt eine Liste.
  */
 function renderReferences(n, s, bookingTarget) {
-  const items = list(s.items).filter((i) => str(i?.name));
+  /* Was schon im Rueckblick der Shows auf DERSELBEN Seite steht, kommt hier
+     nicht ein zweites Mal.
+
+     Anlass (07.09.2026): "Nox Club" stand als Termin im Rueckblick und zwei
+     Bloecke tiefer noch einmal bei den Referenzen — der Kunde pflegt beides,
+     und beides ist richtig. Geloescht wird darum NICHTS: der Eintrag bleibt in
+     der Verwaltung und taucht wieder auf, sobald die Shows nicht mehr auf
+     derselben Seite stehen. Nur die Doppelnennung auf einer Seite faellt weg.
+
+     Verglichen wird ueber Name UND Ort (refSchluessel, unabhaengig von
+     Gross/Klein und Leerzeichen — die Referenz heisst "Nox Club " mit
+     Leerzeichen am Ende). Gleicher Name an einem anderen Ort ist ein anderer
+     Auftritt und bleibt stehen. */
+  const items = list(s.items)
+    .filter((i) => str(i?.name))
+    .filter((i) => !SHOWS_AUF_SEITE.has(refSchluessel(i.name, i.city)));
 
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
@@ -3355,6 +3389,11 @@ const slugify = (v) =>
    anderen Seite liegt, und damit Links in der Sprache bleiben. */
 let CTX = { page: null, pages: [], prefix: "" };
 
+/* Die Auftritte, die auf DER GERADE GEBAUTEN SEITE unter "Shows" stehen —
+   damit die Referenzen darunter sie nicht wiederholen (siehe
+   renderReferences). Wird je Seite in renderPage gesetzt. */
+let SHOWS_AUF_SEITE = new Set();
+
 /** Adresse einer Seite in der aktuellen Sprache: "/", "/shows/", "/en/shows/" */
 const pagePath = (slug) => `${CTX.prefix}${slug ? `/${slug}/` : "/"}`;
 
@@ -3467,6 +3506,17 @@ function renderPage(c, page, pages, lang, langs) {
   const order = baubareAbschnitte(page);
   const effectivePage = { ...page, sections: order };
   CTX = { page: effectivePage, pages, hideHead: null, prefix: navPrefix(lang, master) };
+  /* Stehen Shows und Referenzen auf derselben Seite, gehoert jeder Auftritt nur
+     einmal darauf. Auf einer Seite ohne Shows bleibt die Referenzliste
+     vollstaendig. */
+  SHOWS_AUF_SEITE =
+    order.includes("shows") && order.includes("references")
+      ? new Set(
+          list(sections.shows?.items)
+            .filter((i) => str(i?.name).trim())
+            .map((i) => refSchluessel(i.name, i.city))
+        )
+      : new Set();
   // Das Formular haengt nicht mehr an einer in der Verwaltung hinterlegten
   // Adresse: es sendet immer an den eigenen Endpunkt /api/booking. Abschalten
   // laesst es sich weiterhin in der Verwaltung (form.enabled).
@@ -4410,9 +4460,12 @@ function meldeStilleTermine(content) {
   const heute = today();
   const kommend = mitNamen.filter((i) => !isoDate(i.date) || isoDate(i.date) >= heute);
   if (mitNamen.length && !kommend.length) {
-    console.warn(
-      `[build] Kein kommender Termin (${mitNamen.length} vorbei) — der Shows-Abschnitt und sein ` +
-        `Menuepunkt erscheinen nicht. Vergangene Termine stehen bei den Referenzen.`
+    /* Kein Grund zur Sorge mehr, aber ein Hinweis: seit dem 07.09.2026 bleiben
+       Abschnitt und Menuepunkt stehen, die Termine stehen im Rueckblick. Wo
+       frueher alles verschwand, steht jetzt der Hinweis "keine Termine". */
+    console.log(
+      `[build] Kein kommender Termin (${mitNamen.length} im Rueckblick) — unter den Shows steht ` +
+        `der Hinweis, dass gerade nichts ansteht. Abschnitt und Menuepunkt bleiben.`
     );
   }
 }

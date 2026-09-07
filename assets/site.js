@@ -200,11 +200,18 @@
     // eine feste Zahl SCHRITTE die Strecke fest: je groesser das Ziel, desto
     // hoeher faengt es an. Kleine Zahlen zaehlen einfach ab 1.
     var SCHRITTE = 40;
+    /* Und nie mehr als vier Zehntel unter dem Ziel. Ohne diese Grenze faengt
+       jede Zahl unter 41 bei 1 an: die "30 Shows" lief also 1, 2, 3 … 30 und
+       zeigte anderthalb Sekunden lang irgendetwas. Genau so kam die Meldung
+       "die Startseite zeigt 14 SHOWS" zustande (07.09.2026) — die Zahl war
+       richtig, man sah sie nur unterwegs. Jetzt startet sie bei 18: die
+       Bewegung bleibt, der Zwischenstand ist nie mehr grob falsch. */
+    var MIN_ANTEIL = 0.6;
     var zaehlen = function (node) {
       if (node._counted) return;
       node._counted = true;
       var to = parseInt(node.getAttribute("data-to"), 10);
-      var from = Math.max(1, to - SCHRITTE);
+      var from = Math.max(1, to - SCHRITTE, Math.floor(to * MIN_ANTEIL));
       var pre = node.getAttribute("data-pre") || "";
       var post = node.getAttribute("data-post") || "";
       if (!isFinite(from) || !isFinite(to) || to <= from) return;

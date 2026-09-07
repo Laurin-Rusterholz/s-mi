@@ -166,23 +166,24 @@
   ],
   "heroShows": {
     "_warum": [
-      "Vorgabe: die Kennzahl im Hero nennt die Gesamtzahl der Shows, und die",
-      "ist 30. In der Datenbank stand zuletzt 2 — die Praesentation zeigte",
-      "darum '2+ SHOWS'.",
+      "Die Kennzahl im Hero nennt die Gesamtzahl der Auftritte. Sie wird GEZAEHLT,",
+      "nicht hingeschrieben: aus den Terminen unter 'Shows' und den Referenzen der",
+      "Verwaltung, ohne Dubletten (siehe gespielteShows in scripts/build.mjs).",
+      "So bleibt sie nach jeder neuen Show von selbst richtig.",
       "",
-      "Warum das hier steht und nicht im Schnappschuss: content/site.json wird",
-      "bei jedem Build aus der Datenbank ueberschrieben. Ein dort geaenderter",
-      "Wert waere beim naechsten Build wieder weg.",
+      "'mindestens' ist der vom Kunden bestaetigte Gesamtstand (Quantus-Vorgabe:",
+      "30 Shows). Er greift nur, solange die Daten WENIGER hergeben — am",
+      "07.09.2026 waren das 28 Auftritte, es fehlen also zwei in der Verwaltung.",
+      "Der Build sagt das bei jedem Lauf. Sobald die fehlenden Termine oder",
+      "Referenzen eingetragen sind, zaehlt die Website von selbst hoeher und der",
+      "Mindestwert ist gegenstandslos — dann kann er hier weg.",
       "",
       "Gefunden wird die Kennzahl ueber ihre Aufschrift, nicht ueber ihren Platz",
       "in der Liste — sonst traefe die Regel eine fremde Kennzahl, sobald jemand",
-      "die Reihenfolge aendert.",
-      "ACHTUNG: Diese Regel setzt den Wert IMMER — wie shop.sichtbar",
-      "ueberstimmt sie damit das Feld in der Verwaltung. Soll die Verwaltung",
-      "die Zahl wieder selbst bestimmen: diesen Block loeschen."
+      "die Reihenfolge aendert."
     ],
     "label": "Shows",
-    "wert": "30",
+    "mindestens": 30,
     "auchLabel": [
       "Clubs & Festivals"
     ]
