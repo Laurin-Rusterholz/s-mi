@@ -1921,8 +1921,8 @@
     "shopInfo": true,
     "shopSeiteUndEinladung": true,
     "telefon": true,
-    "ware": true,
-    "texteAusVorlage": true
+    "texteAusVorlage": true,
+    "ware": true
   },
   "pages": [
     {
@@ -1932,6 +1932,8 @@
       "navLabel": "Home",
       "sections": [
         "about",
+        "shows",
+        "references",
         "sound",
         "shop"
       ],
@@ -2686,6 +2688,6 @@
     "twintSend": "Pay by TWINT to",
     "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So"
   },
-  "updatedAt": "2026-09-01T08:24:13.171Z",
+  "updatedAt": "2026-09-13T19:37:46.949Z",
   "updatedBy": "Verwaltung"
 }
