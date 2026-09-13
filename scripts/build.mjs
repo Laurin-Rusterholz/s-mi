@@ -4444,6 +4444,60 @@ Sitemap: ${base}/sitemap.xml
  * verschwindet er samt Menuepunkt (die vergangenen Termine stehen dann bei den
  * Referenzen).
  */
+/**
+ * Die Startseite ohne Auftritte — laut sagen, nicht stumm bauen.
+ *
+ * BEFUND (Kunde, 13.09.2026): Auf der Startseite ging es von „Ueber mich"
+ * direkt zum Shop. Nichts war geloescht — Shows und Referenzen standen
+ * vollstaendig auf /shows/ und auf der Startseite gar nicht. Bis zum
+ * 02.09.2026 hatte die eingecheckte Vorlage die Seitenaufteilung bei JEDEM
+ * Bauen ueberschrieben und die Startseite damit immer wieder bestueckt; seit
+ * #29 gilt — richtig so — die Aufteilung aus der Verwaltung. Damit wurde
+ * sichtbar, was dort gespeichert war.
+ *
+ * Hier wird deshalb NICHTS erzwungen: waere die Vorlage wieder staerker als
+ * die Verwaltung, waere der Schalter dort erneut eine Attrappe. Korrigiert
+ * wird in der Verwaltung (ein Klick, „Auf die Startseite holen"). Der Build
+ * sagt nur, was ist — damit dieselbe Lage nie wieder unbemerkt bleibt.
+ */
+function meldeStartseiteOhneAuftritte(content) {
+  const seiten = list(content?.pages);
+  const start = seiten.find((p) => str(p?.slug) === "");
+  if (!start) return;
+  const sections = content?.sections || {};
+  const hatInhalt = (key) => list(sections[key]?.items).some((i) => str(i?.name).trim());
+  const drauf = new Set(list(start.sections));
+  const fehlen = ["shows", "references"].filter(
+    (key) => BAUBAR.has(key) && sections[key] && sections[key].enabled !== false && hatInhalt(key) && !drauf.has(key)
+  );
+  if (fehlen.length) {
+    const wo = fehlen.map((key) => {
+      const seite = seiten.find((p) => list(p?.sections).includes(key));
+      return `${key} → ${seite ? "/" + str(seite.slug) + "/" : "nirgends"}`;
+    });
+    console.warn(
+      `[build] Die Startseite zeigt ${fehlen.join(" und ")} nicht (${wo.join(", ")}). ` +
+        `Die Eintraege sind da, sie stehen nur woanders. In der Verwaltung unter ` +
+        `"Abschnitte" steht der Hinweis samt Knopf "Auf die Startseite holen". ` +
+        `Der Generator traegt das NICHT von selbst nach — sonst waere die Zuordnung ` +
+        `in der Verwaltung wirkungslos.`
+    );
+  }
+  /* Ein Abschnitt, den der Generator nicht baut, macht eine Seite in der
+     Verwaltung voller, als sie wird. Genau das verdeckte den Befund: auf der
+     Startseite stand "sound". */
+  const tot = [];
+  for (const p of seiten) {
+    for (const key of list(p?.sections)) if (!BAUBAR.has(key)) tot.push(`${key} (${str(p.slug) ? "/" + str(p.slug) + "/" : "Startseite"})`);
+  }
+  if (tot.length) {
+    console.warn(
+      `[build] Eingeplant, aber nicht baubar: ${tot.join(", ")} — diese Abschnitte ` +
+        `erscheinen nicht und zaehlen auf ihrer Seite nicht mit.`
+    );
+  }
+}
+
 function meldeStilleTermine(content) {
   const items = list(content?.sections?.shows?.items);
   const ohneNamen = items.filter((i) => !str(i?.name).trim());
@@ -4473,6 +4527,7 @@ function meldeStilleTermine(content) {
 async function main() {
   const content = await loadContent();
   meldeStilleTermine(content);
+  meldeStartseiteOhneAuftritte(content);
   BILDMASSE = await ladeBildmasse();
   if (!content.site || !content.site.domain) {
     throw new Error("content: site.domain fehlt");

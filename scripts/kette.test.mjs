@@ -538,3 +538,113 @@ test("die echte Website baut streng — das Kennzeichen ist gesetzt", async () =
   assert.match(workflow, /CONTENT_API_REQUIRED:\s*"1"/, "Der Zeitplan-Workflow baut nicht streng");
   assert.ok(existsSync(resolve(ROOT, "content/site.json")), "Der Schnappschuss fehlt");
 });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Die Startseite ohne Auftritte — Kundenbefund vom 13.09.2026
+
+   Auf der Startseite ging es von „Ueber mich" direkt zum Shop; Shows und
+   Referenzen fehlten. Nichts war geloescht: beide standen vollstaendig auf
+   /shows/ und auf der Startseite gar nicht. Bis zum 02.09.2026 hatte die
+   eingecheckte Vorlage die Seitenaufteilung bei JEDEM Bauen ueberschrieben und
+   die Startseite damit immer wieder bestueckt; seit #29 gilt die Aufteilung
+   aus der Verwaltung — und damit wurde sichtbar, was dort gespeichert war.
+
+   Geprueft wird beides, am echten Generator:
+     · der Generator traegt NICHTS von selbst nach (sonst waere die Zuordnung
+       in der Verwaltung wieder eine Attrappe — genau der Fehler von #29) —
+       er sagt es aber laut;
+     · steht die Zuordnung richtig, stehen Shows UND Referenzen auf der
+       Startseite, mit ihren Eintraegen, und /shows/ behaelt sie ebenfalls.
+   ══════════════════════════════════════════════════════════════════════════ */
+function standMitEigenerShowSeite(vorlage) {
+  const stand = JSON.parse(JSON.stringify(vorlage));
+  stand.pages = [
+    { slug: "", navLabel: "Home", title: "", hero: "full", ticker: true, inNav: true, enabled: true,
+      sections: ["about", "sound", "shop"] },
+    { slug: "shows", navLabel: "Shows", title: "Shows", hero: "compact", ticker: false, inNav: true, enabled: true,
+      sections: ["shows", "references"] },
+    { slug: "booking", navLabel: "Booking", title: "Booking", hero: "compact", ticker: false, inNav: true, enabled: true,
+      sections: ["booking", "contact"] },
+    { slug: "shop", navLabel: "Shop", title: "Shop", hero: "compact", ticker: false, inNav: true, enabled: true,
+      sections: ["shop"] },
+  ];
+  stand.sections.shows.items = [{ ...NEUER_TERMIN }, { ...VERGANGENER_TERMIN }];
+  stand.sections.references.items = [
+    { name: "Beispielhalle", city: "Beispielstadt" },
+    { name: "Beispielclub", city: "Zweitstadt" },
+  ];
+  return stand;
+}
+
+test("Startseite ohne Auftritte: der Generator sagt es, erzwingt aber nichts", async (t) => {
+  const vorlage = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  const stand = standMitEigenerShowSeite(vorlage);
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const start = lies(dir, "index.html");
+  assert.ok(!start.includes('id="shows"'), "Der Generator hat die Shows von selbst auf die Startseite geholt");
+  assert.ok(!start.includes('id="references"'), "Der Generator hat die Referenzen von selbst auf die Startseite geholt");
+
+  // Und er sagt genau das — samt Weg zur Korrektur in der Verwaltung.
+  const protokoll = lauf.stdout + lauf.stderr;
+  assert.match(protokoll, /Startseite zeigt shows und references nicht/,
+    "Der Build meldet die leere Startseite nicht");
+  assert.match(protokoll, /shows → \/shows\//, "Der Build sagt nicht, wo die Abschnitte stattdessen stehen");
+  assert.match(protokoll, /Auf die Startseite holen/, "Der Build nennt den Weg zur Korrektur nicht");
+  assert.match(protokoll, /nicht baubar: sound \(Startseite\)/,
+    "Ein nicht baubarer Abschnitt auf der Startseite wird nicht gemeldet");
+
+  // Die Eintraege sind da — auf ihrer Seite.
+  const showsSeite = lies(dir, "shows/index.html");
+  assert.ok(showsSeite.includes("Testhalle Regressionsfest"), "Der kommende Termin fehlt auf /shows/");
+  assert.ok(showsSeite.includes("Beispielhalle"), "Die Referenzen fehlen auf /shows/");
+});
+
+test("mit richtiger Zuordnung stehen Auftritte auf der Startseite UND auf /shows/", async (t) => {
+  const vorlage = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  const stand = standMitEigenerShowSeite(vorlage);
+  /* Genau das, was der Knopf „Auf die Startseite holen" in der Verwaltung
+     schreibt: hinter „about", ohne die eigene Seite anzutasten. */
+  stand.pages[0].sections = ["about", "shows", "references", "sound", "shop"];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const start = lies(dir, "index.html");
+  assert.ok(start.includes('id="shows"'), "Die Shows stehen trotz Zuordnung nicht auf der Startseite");
+  assert.ok(start.includes('id="references"'), "Die Referenzen stehen trotz Zuordnung nicht auf der Startseite");
+  assert.ok(start.includes("Testhalle Regressionsfest"), "Der kommende Termin fehlt auf der Startseite");
+  assert.ok(start.includes("Sommerfest Rueckblick"), "Der Rueckblick fehlt auf der Startseite");
+  assert.ok(start.includes("Beispielhalle"), "Die Referenzen fehlen auf der Startseite");
+  assert.ok(
+    start.indexOf('id="shows"') < start.indexOf('id="shop"'),
+    "Die Auftritte stehen hinter dem Shop statt davor"
+  );
+
+  // Die eigene Seite bleibt, wie sie war.
+  const showsSeite = lies(dir, "shows/index.html");
+  assert.ok(showsSeite.includes('id="shows"') && showsSeite.includes('id="references"'),
+    "/shows/ hat seine Abschnitte verloren");
+
+  // Und jetzt schweigt der Build darueber.
+  assert.ok(
+    !/Startseite zeigt shows/.test(lauf.stdout + lauf.stderr),
+    "Der Build meldet eine leere Startseite, obwohl die Abschnitte darauf stehen"
+  );
+});
