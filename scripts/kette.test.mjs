@@ -648,3 +648,132 @@ test("mit richtiger Zuordnung stehen Auftritte auf der Startseite UND auf /shows
     "Der Build meldet eine leere Startseite, obwohl die Abschnitte darauf stehen"
   );
 });
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Was nicht ankommt, wird gesagt — und welcher Stand live ist, steht fest
+
+   Rueckmeldungen des Kunden (15.09.2026): „Fotos aus der Verwaltung erscheinen
+   nicht zuverlaessig" und „Aenderungen erscheinen nicht zuverlaessig". Am
+   veroeffentlichten Stand nachgemessen waren es zwei verschiedene Dinge —
+   Bilder ohne Datei und Texte, die seit dem Sprachwechsel vom 07.09.2026 noch
+   in der alten Hauptsprache stehen, obwohl die deutsche Fassung im Inhalt
+   liegt. Beides geschah stumm. Dazu die Stand-Datei, mit der sich von aussen
+   pruefen laesst, WELCHER Inhalt gerade live ist.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+test("stand.json sagt, aus welchem Inhalt gebaut wurde", async (t) => {
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.updatedAt = "2026-09-15T08:30:00.000Z";
+  stand.contentRevision = 7;
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => { await db.stop(); await rm(dir, { recursive: true, force: true }); });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const datei = JSON.parse(lies(dir, "stand.json"));
+  assert.equal(datei.inhaltVon, "2026-09-15T08:30:00.000Z", "stand.json nennt den Inhalt nicht");
+  assert.equal(datei.inhaltVersion, 7, "die Version des Inhalts fehlt");
+  assert.equal(datei.quelle, "verwaltung", "stand.json verschweigt, woher der Inhalt kam");
+  assert.ok(Date.parse(datei.gebautAm) > 0, "der Bauzeitpunkt fehlt");
+
+  /* Die Verwaltung liegt auf einer anderen Adresse — ohne CORS kann sie die
+     Datei nicht lesen, und „live bestaetigt" bliebe eine Behauptung. */
+  const toml = await readFile(resolve(ROOT, "netlify.toml"), "utf8");
+  const block = toml.slice(toml.indexOf('for = "/stand.json"'));
+  assert.match(block.slice(0, 220), /Access-Control-Allow-Origin\s*=\s*"\*"/, "stand.json ist fuer die Verwaltung nicht lesbar");
+  assert.match(block.slice(0, 220), /Cache-Control\s*=\s*"no-store"/, "stand.json darf nicht zwischengespeichert werden");
+});
+
+test("Bilder ohne Datei werden benannt, nicht stumm uebersprungen", async (t) => {
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.gallery.items = [
+    { src: "https://firebasestorage.googleapis.com/v0/b/beispiel/o/eins.jpg?alt=media", alt: "Eins" },
+    { src: "", alt: "Zweites Bild ohne Datei" },
+    { src: "   ", alt: "" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => { await db.stop(); await rm(dir, { recursive: true, force: true }); });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+  const protokoll = lauf.stdout + lauf.stderr;
+  assert.match(protokoll, /Bild\(er\) ohne Datei/, "leere Bildeintraege werden nicht gemeldet");
+  assert.match(protokoll, /Galerie #2/, "der leere Eintrag wird nicht benannt");
+  assert.match(protokoll, /erscheinen NICHT auf der Website/, "die Folge wird nicht gesagt");
+  // Und sie werden trotzdem nicht geloescht: das Bild MIT Datei steht da.
+  assert.ok(lies(dir, "gallery/index.html").includes("eins.jpg"), "das vorhandene Bild fehlt");
+});
+
+test("Texte in der alten Hauptsprache werden gemeldet — und nicht umgeschrieben", async (t) => {
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.site.lang = "de";
+  stand.hero.tagline = "Turning energy into euphoria.";         // Grundtext englisch
+  stand.i18n = stand.i18n || {};
+  stand.i18n.de = { hero: { tagline: "Aus Energie wird Euphorie." } };
+  stand.i18n.en = { hero: { tagline: "Turning energy into euphoria." } };
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => { await db.stop(); await rm(dir, { recursive: true, force: true }); });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+  const protokoll = lauf.stdout + lauf.stderr;
+  assert.match(protokoll, /in der alten Hauptsprache/, "der Sprachstand wird nicht gemeldet");
+  assert.match(protokoll, /hero\.tagline/, "die betroffene Stelle wird nicht benannt");
+  assert.match(protokoll, /der Generator schreibt hier nichts um/, "es fehlt die Zusage, nichts zu ueberschreiben");
+
+  /* Und genau daran haelt er sich: auf der Seite steht weiterhin der
+     Grundtext aus der Verwaltung, nicht die Uebersetzung. */
+  const start = lies(dir, "index.html");
+  assert.ok(start.includes("Turning energy into euphoria."), "der Generator hat den Grundtext ersetzt");
+  assert.ok(!start.includes("Aus Energie wird Euphorie."), "der Generator hat die Uebersetzung eingesetzt");
+});
+
+test("die Referenzen stehen in der Reihenfolge der Verwaltung — auf jeder Breite", async (t) => {
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  /* Beispielnamen, keine Kundendaten. Die Reihenfolge ist die Zusage: was in
+     der Verwaltung oben steht, steht auf der Seite oben — und auf dem Handy
+     sind es die OBERSTEN vier, nicht irgendwelche. */
+  stand.sections.references.items = [
+    { name: "Erste Referenz", city: "Beispielstadt" },
+    { name: "Zweite Referenz", city: "Beispielstadt" },
+    { name: "Dritte Referenz", city: "Beispielstadt" },
+    { name: "Vierte Referenz", city: "Beispielstadt" },
+    { name: "Fuenfte Referenz", city: "Beispielstadt" },
+    { name: "Sechste Referenz", city: "Beispielstadt" },
+  ];
+  stand.sections.shows.items = [];           // keine Dubletten im Spiel
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => { await db.stop(); await rm(dir, { recursive: true, force: true }); });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const html = lies(dir, "index.html");
+  const liste = html.slice(html.indexOf('id="venue-list"'), html.indexOf("</ul>", html.indexOf('id="venue-list"')));
+  const namen = Array.from(liste.matchAll(/class="venue-name">([^<]+)</g)).map((m) => m[1]);
+  assert.deepEqual(
+    namen,
+    ["Erste Referenz", "Zweite Referenz", "Dritte Referenz", "Vierte Referenz", "Fuenfte Referenz", "Sechste Referenz"],
+    "die Reihenfolge auf der Seite ist nicht die der Verwaltung"
+  );
+
+  /* Auf dem Handy zeigt die Seite die ersten vier; der Rest haengt an
+     data-extra und kommt ueber den Knopf. Entscheidend: es sind die ERSTEN
+     vier der Verwaltung, und die Reihenfolge bleibt auch dahinter. */
+  const zeilen = Array.from(liste.matchAll(/<li([^>]*)>[\s\S]*?class="venue-name">([^<]+)</g));
+  const vorschau = zeilen.filter(([, attr]) => !/data-extra/.test(attr)).map(([, , name]) => name);
+  const rest = zeilen.filter(([, attr]) => /data-extra/.test(attr)).map(([, , name]) => name);
+  assert.deepEqual(vorschau, ["Erste Referenz", "Zweite Referenz", "Dritte Referenz", "Vierte Referenz"],
+    "auf dem Handy stehen nicht die obersten vier der Verwaltung");
+  assert.deepEqual(rest, ["Fuenfte Referenz", "Sechste Referenz"], "der Rest steht nicht in der Reihenfolge der Verwaltung");
+  assert.match(html, /data-more="2 weitere anzeigen"/, "der Knopf nennt die Zahl der verborgenen Referenzen nicht");
+});
