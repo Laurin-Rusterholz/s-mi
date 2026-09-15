@@ -63,6 +63,18 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
 
+# Die Stand-Datei sagt, WELCHER Inhalt gerade live ist (Zeitstempel aus der
+# Verwaltung). Die Verwaltung liegt auf einer anderen Adresse und muss sie
+# lesen duerfen — deshalb hier ausdruecklich CORS, und nur fuer diese eine
+# Datei. Sie enthaelt nichts Geheimes: derselbe Zeitstempel steht im ohnehin
+# oeffentlich lesbaren Inhalt. Nicht zwischenspeichern, sonst bestaetigt sie
+# einen Stand, der laengst ueberholt ist.
+[[headers]]
+  for = "/stand.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Cache-Control = "no-store"
+
 [[headers]]
   for = "/img/*"
   [headers.values]

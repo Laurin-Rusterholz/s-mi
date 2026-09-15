@@ -1459,6 +1459,7 @@ async function loadContent() {
         console.warn("[build] Vorlage content/site.json nicht lesbar:", e.message);
       }
       console.log(`[build] Inhalt von der Verwaltung geladen: ${apiUrl}`);
+      AUS_DER_DATENBANK = true;
       // Snapshot mitschreiben, damit der Build ohne API reproduzierbar bleibt.
       await writeFile(LOCAL_CONTENT, JSON.stringify(content, null, 2) + "\n");
       return content;
@@ -1560,6 +1561,11 @@ function cdnUrl(src, w) {
  * sich wie bisher.
  */
 let BILDMASSE = new Map();
+
+/* Kam der Inhalt dieses Laufes aus der Verwaltung oder aus dem eingecheckten
+   Schnappschuss? Steht in stand.json, damit von aussen nachvollziehbar ist,
+   WAS die Seite gerade zeigt. */
+let AUS_DER_DATENBANK = false;
 
 /** Masse eines Bildes: erst am Inhalt, sonst aus der Medienbibliothek. */
 function masseVon(media, raw) {
@@ -3248,6 +3254,11 @@ export function collectStrings(node, prefix = "", out = []) {
   return out;
 }
 
+/** Wert an einem Punkt-Pfad lesen — Gegenstueck zu setDeep. */
+function getDeep(obj, path) {
+  return String(path).split(".").reduce((o, k) => (o == null ? o : o[k]), obj);
+}
+
 function setDeep(obj, path, value) {
   const keys = path.split(".");
   let cur = obj;
@@ -4460,6 +4471,93 @@ Sitemap: ${base}/sitemap.xml
  * wird in der Verwaltung (ein Klick, „Auf die Startseite holen"). Der Build
  * sagt nur, was ist — damit dieselbe Lage nie wieder unbemerkt bleibt.
  */
+/**
+ * Bilder, die in der Verwaltung stehen und auf der Website fehlen.
+ *
+ * BEFUND (Kunde, 15.09.2026): „Fotos aus der Verwaltung erscheinen nicht
+ * zuverlaessig." Nachgemessen am veroeffentlichten Stand: in der Galerie
+ * standen 42 Eintraege, 5 davon OHNE Bilddatei (`src` leer). Der Generator
+ * ueberspringt sie stumm — in der Verwaltung ist der Eintrag da, auf der
+ * Website nicht, und niemand erfaehrt warum. Dasselbe gilt fuer die einzelnen
+ * Bildfelder (Ueber mich, Booking, Hero).
+ *
+ * Geloescht wird hier NICHTS: ein leerer Eintrag kann ein halb angelegter
+ * sein, der gleich ein Bild bekommt. Er wird nur benannt.
+ */
+function meldeBilderOhneDatei(content) {
+  const sections = content?.sections || {};
+  const luecken = [];
+  list(sections.gallery?.items).forEach((bild, i) => {
+    if (!str(bild?.src).trim()) luecken.push(`Galerie #${i + 1}${str(bild?.alt) ? ` („${str(bild.alt).slice(0, 40)}")` : ""}`);
+  });
+  for (const [wo, feld] of [
+    ["Ueber mich", sections.about?.photo],
+    ["Booking", sections.booking?.photo],
+    ["Hero", content?.hero?.media],
+  ]) {
+    if (feld && Object.keys(feld).length && !str(feld.src).trim()) luecken.push(`${wo} (Bildfeld ohne Datei)`);
+  }
+  if (!luecken.length) return;
+  console.warn(
+    `[build] ${luecken.length} Bild(er) ohne Datei — sie erscheinen NICHT auf der Website: ` +
+      `${luecken.slice(0, 8).join(", ")}${luecken.length > 8 ? " …" : ""}. ` +
+      `In der Verwaltung unter Medien ein Bild zuweisen oder den Eintrag loeschen.`
+  );
+}
+
+/**
+ * Texte, die auf der Website in der falschen Sprache stehen.
+ *
+ * BEFUND (15.09.2026): Auf der deutschen Startseite stand der Shop-Hinweis
+ * englisch („Payment — How to pay is shown on the item itself …"), obwohl im
+ * Inhalt eine deutsche Fassung liegt: unter i18n.de. Das ist kein Zufall,
+ * sondern die Folge des Sprachwechsels vom 07.09.2026: bis dahin war Englisch
+ * die gepflegte Sprache und Deutsch die Uebersetzung; seitdem ist Deutsch die
+ * gepflegte Sprache — und `localize` setzt fuer sie nichts mehr ein (sie IST
+ * der Grundtext). Was damals nicht ins Deutsche uebertragen wurde, steht bis
+ * heute englisch da, waehrend die deutsche Fassung ungenutzt daneben liegt.
+ *
+ * Hier wird NICHT umgeschrieben: die Uebersetzungstabelle kann veraltet sein,
+ * und der Grundtext gehoert der Verwaltung. Gemeldet wird, wo beides
+ * auseinanderlaeuft — uebernommen wird es dort, mit einem Klick.
+ */
+function meldeTexteInFremderSprache(content) {
+  const master = str(content?.site?.lang) || "de";
+  const eigen = flattenI18n((content?.i18n && content.i18n[master]) || {});
+  if (!Object.keys(eigen).length) return;
+  /* Nur dort, wo der Grundtext noch WOERTLICH die alte Hauptsprache traegt:
+     stimmt er mit der englischen Uebersetzung ueberein, ist er nie ins
+     Deutsche gewechselt. Alles andere ist gepflegter Grundtext und bleibt. */
+  const alt = flattenI18n((content?.i18n && content.i18n.en) || {});
+  const sicher = [];      // Grundtext ist WOERTLICH die alte Hauptsprache
+  const fraglich = [];    // weicht ab, laesst sich aber nicht beweisen
+  for (const [pfad, deutsch] of Object.entries(eigen)) {
+    if (NO_TRANSLATE_PATH.test(pfad)) continue;
+    const jetzt = getDeep(content, pfad);
+    if (typeof jetzt !== "string" || !jetzt.trim()) continue;
+    if (typeof deutsch !== "string" || !deutsch.trim()) continue;
+    if (jetzt.trim() === deutsch.trim()) continue;          // steht schon deutsch da
+    if (str(alt[pfad]).trim() && str(alt[pfad]).trim() === jetzt.trim()) sicher.push(pfad);
+    else fraglich.push(pfad);
+  }
+  if (!sicher.length && !fraglich.length) return;
+  if (sicher.length) {
+    console.warn(
+      `[build] ${sicher.length} Text(e) stehen auf der Website noch in der alten Hauptsprache, ` +
+        `obwohl eine ${master}-Fassung im Inhalt liegt: ${sicher.slice(0, 6).join(", ")}` +
+        `${sicher.length > 6 ? " …" : ""}. In der Verwaltung unter Sprache uebernehmen ` +
+        `("${master === "de" ? "Deutsche" : master} Fassung uebernehmen") — der Generator schreibt hier nichts um.`
+    );
+  }
+  if (fraglich.length) {
+    console.warn(
+      `[build] ${fraglich.length} weitere(r) Text(e) weichen von der ${master}-Fassung im Inhalt ab ` +
+        `(z. B. ${fraglich.slice(0, 3).join(", ")}). Das kann eine veraltete Uebersetzung sein — ` +
+        `pruefen, nicht blind uebernehmen.`
+    );
+  }
+}
+
 function meldeStartseiteOhneAuftritte(content) {
   const seiten = list(content?.pages);
   const start = seiten.find((p) => str(p?.slug) === "");
@@ -4528,6 +4626,8 @@ async function main() {
   const content = await loadContent();
   meldeStilleTermine(content);
   meldeStartseiteOhneAuftritte(content);
+  meldeBilderOhneDatei(content);
+  meldeTexteInFremderSprache(content);
   BILDMASSE = await ladeBildmasse();
   if (!content.site || !content.site.domain) {
     throw new Error("content: site.domain fehlt");
@@ -4608,6 +4708,30 @@ async function main() {
   await writeFile(resolve(ROOT, "robots.txt"), renderRobots(content));
   await writeFile(resolve(ROOT, "404.html"), render404(content, langs));
   console.log("[build] sitemap.xml, robots.txt, 404.html");
+
+  /* WELCHER STAND IST LIVE? — /stand.json
+     Anlass (13.09.2026): Der Build-Hook wird per no-cors gerufen; seine Antwort
+     ist im Browser nicht lesbar. Die Verwaltung konnte deshalb nur sagen "der
+     Aufruf ging raus" — ob die Aenderung wirklich oben ist, wusste niemand.
+     Diese kleine Datei sagt es: sie traegt den Zeitstempel des Inhalts, aus dem
+     die Seite gebaut wurde. Die Verwaltung liest sie nach dem Publizieren und
+     vergleicht mit dem, was sie eben gespeichert hat.
+     Nichts Geheimes: derselbe Zeitstempel steht ohnehin im ausgelieferten
+     Inhalt (content.json ist oeffentlich lesbar). */
+  await writeFile(
+    resolve(ROOT, "stand.json"),
+    JSON.stringify(
+      {
+        inhaltVon: str(content.updatedAt) || null,
+        inhaltVersion: Number(content.contentRevision) || null,
+        gebautAm: new Date().toISOString(),
+        quelle: AUS_DER_DATENBANK ? "verwaltung" : "schnappschuss",
+      },
+      null,
+      2
+    ) + "\n"
+  );
+  console.log("[build] stand.json (Inhalt vom " + (str(content.updatedAt) || "?") + ")");
 
   // Verzeichnisse aufräumen, die zu keiner Seite mehr gehören
   const wanted = new Set(written.map((r) => r.split("/")[0]).filter((d) => d !== "index.html"));

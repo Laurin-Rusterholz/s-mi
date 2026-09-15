@@ -394,15 +394,21 @@ for (const [datei, h] of html) {
     }
   }
 
-  // 2) Shows stehen nur da, wenn ein Termin aussteht — sonst gar nicht.
-  //    Eine Seite mit "keine Termine" ist schlechter als keine Section.
+  /* 2) Der Shows-Abschnitt darf nicht LEER dastehen.
+        Bis zum 07.09.2026 hiess das: ohne kommenden Termin gehoert er ganz
+        weg. Das ist seit #30 anders — verschwindet der Abschnitt, ist alles je
+        Veroeffentlichte im Frontend weg; vergangene Termine stehen jetzt im
+        Rueckblick, und der Hinweis "gerade nichts angekuendigt" steht darueber.
+        Geprueft wird deshalb, was wirklich schlecht waere: ein Abschnitt, der
+        WEDER einen kommenden Termin NOCH einen Rueckblick zeigt. */
   for (const rel of startseiten) {
     const h = await seite(rel);
     if (!h) continue;
     const hatSection = h.includes('id="shows"');
     const hatLeermeldung = h.includes("empty-state");
-    if (hatSection && hatLeermeldung)
-      meckern(`${rel}: Shows-Section steht leer da — ohne Termin gehoert sie ganz weg`);
+    const hatRueckblick = /id="past-shows"(?![^>]*\shidden)/.test(h);
+    if (hatSection && hatLeermeldung && !hatRueckblick)
+      meckern(`${rel}: Shows-Section steht voellig leer da — ohne Termin und ohne Rueckblick gehoert sie weg`);
     if (!hatSection && /href="#shows"/.test(h))
       meckern(`${rel}: Menuepunkt Shows fuehrt ins Leere`);
   }
@@ -1022,7 +1028,12 @@ console.log(
   for (const rel of START) {
     const h = html.get(rel);
     if (!h) continue;
-    const zeilen = [...h.matchAll(/<li class="show[^"]*"[\s\S]*?<\/li>/g)].map((m) => m[0]);
+    /* Nur die KOMMENDEN Termine. Der Rueckblick darunter zeigt bewusst keine
+       Ticket-Knoepfe mehr — ein Ticket fuer einen vergangenen Abend waere ein
+       toter Link. Frueher lief diese Pruefung ueber beide Listen und verlangte
+       fuer jeden vergangenen Termin mit Ticket-Adresse einen Knopf. */
+    const obenOhneRueckblick = h.split(/<div class="past-shows/)[0];
+    const zeilen = [...obenOhneRueckblick.matchAll(/<li class="show[^"]*"[\s\S]*?<\/li>/g)].map((m) => m[0]);
     for (const sh of shows) {
       const zeile = zeilen.find((z) => z.includes(`>${sh.name}<`));
       if (!zeile) continue; // vergangene Termine stehen woanders
