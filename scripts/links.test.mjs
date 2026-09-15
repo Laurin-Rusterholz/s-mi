@@ -18,7 +18,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { istStripeAdresse, releaseZeitpunkt } from "./build.mjs";
+import { istStripeAdresse, releaseZeitpunkt, showVorbei } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -244,23 +244,36 @@ for (const [datei, h] of html) {
     const istRef = [...refBlock.matchAll(
       /<li[^>]*><a[^>]*><span class="venue-name">([^<]*)<\/span><span class="venue-city">([^<]*)</g
     )].map((m) => `${m[1]} — ${m[2]}`.trim().replace(/ —$/, ""));
-    /* Steht auf derselben Seite der Rueckblick der Shows, kommt ein Auftritt
-       dort nur einmal vor: die Referenz zu einem Termin, der oben schon steht,
-       wird beim Rendern uebersprungen (siehe renderReferences). Geloescht ist
-       sie nicht — sie steht weiter in der Verwaltung und in INHALT. */
+    /* Steht auf derselben Seite ein KOMMENDER Termin, wird er nicht zusaetzlich
+       als Referenz gedruckt — sonst kuendigt die Seite denselben Abend zweimal
+       an. Ein VERGANGENER Termin kuerzt die Referenzliste dagegen nicht mehr
+       (Kundenbefund 15.09.2026): der Rueckblick ist eine Zeitangabe, die
+       Referenzliste eine gepflegte Auswahl, und "Nox Club" verschwand dort,
+       obwohl er ausdruecklich gepflegt ist. Eine echte Dublette INNERHALB der
+       Liste erscheint einmal; der erste Platz gilt. Geloescht ist nie etwas —
+       alles steht weiter in der Verwaltung und in INHALT. */
     const schluessel = (name, city) =>
       `${String(name ?? "").trim().toLowerCase()}|${String(city ?? "").trim().toLowerCase()}`
         .replace(/[\s–—-]+/g, " ")
         .replace(/\s+/g, " ");
+    const heute = (process.env.BUILD_DATE || new Date().toISOString().slice(0, 10)).slice(0, 10);
     const showsHier = new Set(
       (refHtml || "").includes('id="shows"')
         ? (INHALT.sections?.shows?.items || [])
             .filter((i) => String(i?.name || "").trim())
+            .filter((i) => !showVorbei(i, heute))
             .map((i) => schluessel(i.name, i.city))
         : []
     );
+    const schonGesehen = new Set();
     const sollRef = refImInhalt
       .filter((r) => !showsHier.has(schluessel(r.name, r.city)))
+      .filter((r) => {
+        const key = schluessel(r.name, r.city);
+        if (schonGesehen.has(key)) return false;
+        schonGesehen.add(key);
+        return true;
+      })
       .map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
     if (istRef.join(" | ") !== sollRef.join(" | "))
       meckern(

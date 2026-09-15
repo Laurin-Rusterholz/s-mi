@@ -320,23 +320,36 @@ test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", asy
   );
 });
 
-test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
-  /* Abnahme 07.09.2026: "Aftersun Festival" stand im Rueckblick der Shows und
-     zwei Bloecke tiefer noch einmal bei den Referenzen. Zwei Ursachen:
-     der Generator trug vergangene Termine automatisch in die Referenzliste ein
-     (weg seit 07.09.), und der Kunde pflegt manche Auftritte selbst in BEIDEN
-     Listen — "Nox Club " steht als Referenz, "Nox Club" als Termin.
+test("eine gepflegte Referenz bleibt — auch wenn der Abend vorbei ist", async (t) => {
+  /* ABNAHME 07.09.2026: "Aftersun Festival" stand im Rueckblick der Shows und
+     zwei Bloecke tiefer noch einmal bei den Referenzen. Daraufhin liess der
+     Generator jeden Auftritt weg, der auf derselben Seite schon als Termin
+     stand — auch als VERGANGENER.
 
-     Geloescht wird deshalb nichts: die Referenz bleibt in der Verwaltung, sie
-     wird nur nicht ein zweites Mal auf dieselbe Seite gedruckt. */
+     KUNDENBEFUND 15.09.2026: Genau das nimmt eine gepflegte Referenz weg.
+     "Nox Club" steht in der Verwaltung an dritter Stelle; weil derselbe Abend
+     im Rueckblick auftaucht, verschwand er aus der Liste — und auf dem Handy,
+     wo nur die obersten vier stehen, rutschte ein anderer Club an seinen Platz.
+     Der Rueckblick ist eine Zeitangabe, die Referenzliste eine Auswahl: ein
+     vergangener Termin darf sie nicht kuerzen.
+
+     Was bleibt: ein KOMMENDER Termin wird nicht zusaetzlich als Referenz
+     gedruckt (sonst kuendigt die Seite denselben Abend zweimal an), und eine
+     echte Dublette INNERHALB der Referenzliste erscheint einmal. */
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
-  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN }];
+  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN }, { ...NEUER_TERMIN }];
   stand.sections.references.items = [
     { city: "St. Gallen", name: "Kugl" },
-    // Derselbe Auftritt wie der Termin oben — andere Schreibweise, Leerzeichen.
+    { city: "Zurich", name: "Sektor 11" },
+    // Derselbe Abend wie der VERGANGENE Termin — andere Schreibweise, Leerzeichen.
     { city: "Herisau", name: "Sommerfest Rueckblick " },
+    { city: "St. Gallen", name: "Eden" },
     // Gleicher Name, anderer Ort: ein anderer Auftritt, der bleiben muss.
     { city: "Wattwil", name: "Sommerfest Rueckblick" },
+    // Derselbe Abend wie der KOMMENDE Termin — der gehoert nicht zweimal hin.
+    { city: "Winterthur", name: "Testhalle Regressionsfest" },
+    // Echte Dublette in DIESER Liste: einmal drucken, erster Platz gilt.
+    { city: "St. Gallen", name: "Kugl" },
   ];
 
   const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
@@ -353,19 +366,28 @@ test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
     const refBlock = (html.match(/<ul class="venue-list rv" id="venue-list">[\s\S]*?<\/ul>/) || [""])[0];
     if (!refBlock) continue; // Referenzen stehen auf dieser Seite nicht
     const rueckblick = (html.match(/<ul class="show-list past" id="past-show-list">[\s\S]*?<\/ul>/) || [""])[0];
+    const namen = Array.from(refBlock.matchAll(/class="venue-name">([^<]+)</g)).map((m) => m[1].trim());
 
-    assert.ok(
-      rueckblick.includes(VERGANGENER_TERMIN.name),
-      `${seite}: der vergangene Termin fehlt im Rueckblick`
+    assert.ok(rueckblick.includes(VERGANGENER_TERMIN.name), `${seite}: der vergangene Termin fehlt im Rueckblick`);
+
+    /* DER BEFUND: der vergangene Abend steht im Rueckblick UND die gepflegte
+       Referenz bleibt an ihrem Platz. */
+    assert.ok(/Herisau/.test(refBlock),
+      `${seite}: eine gepflegte Referenz verschwindet, weil der Abend vorbei ist`);
+    assert.deepEqual(
+      namen,
+      ["Kugl", "Sektor 11", "Sommerfest Rueckblick", "Eden", "Sommerfest Rueckblick"],
+      `${seite}: die Referenzen stehen nicht in der Reihenfolge der Verwaltung`
     );
-    /* Herisau steht oben als Termin — nicht noch einmal als Referenz. */
-    assert.ok(
-      !/Herisau/.test(refBlock),
-      `${seite}: der Auftritt steht doppelt — im Rueckblick und bei den Referenzen`
-    );
-    /* Wattwil ist ein anderer Auftritt und bleibt. */
+    // Die dritte Stelle gehoert dem Eintrag, der in der Verwaltung dritter ist.
+    assert.equal(namen[2], "Sommerfest Rueckblick", `${seite}: der dritte Eintrag ist nicht der dritte der Verwaltung`);
+
+    /* Ein KOMMENDER Termin wird nicht zusaetzlich als Referenz gedruckt. */
+    assert.ok(!/Winterthur/.test(refBlock),
+      `${seite}: ein kommender Termin steht zusaetzlich in der Referenzliste`);
+    /* Und die echte Dublette erscheint genau einmal. */
+    assert.equal(namen.filter((n) => n === "Kugl").length, 1, `${seite}: dieselbe Referenz steht zweimal da`);
     assert.ok(refBlock.includes("Wattwil"), `${seite}: eine echte Referenz wurde mit weggeraeumt`);
-    assert.ok(refBlock.includes("Kugl"), `${seite}: eine manuelle Referenz fehlt`);
   }
 
   /* Und der Generator hat die Liste in der Datenquelle NICHT angefasst — nur
@@ -374,7 +396,7 @@ test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
   const namen = (schnappschuss.sections.references.items || []).map((r) => String(r.name).trim());
   assert.deepEqual(
     namen,
-    ["Kugl", "Sommerfest Rueckblick", "Sommerfest Rueckblick"],
+    ["Kugl", "Sektor 11", "Sommerfest Rueckblick", "Eden", "Sommerfest Rueckblick", "Testhalle Regressionsfest", "Kugl"],
     "Die Referenzliste in den Daten wurde veraendert"
   );
   assert.doesNotMatch(

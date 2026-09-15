@@ -2084,9 +2084,19 @@ function renderReferences(n, s, bookingTarget) {
      Gross/Klein und Leerzeichen — die Referenz heisst "Nox Club " mit
      Leerzeichen am Ende). Gleicher Name an einem anderen Ort ist ein anderer
      Auftritt und bleibt stehen. */
+  const gesehen = new Set();
   const items = list(s.items)
     .filter((i) => str(i?.name))
-    .filter((i) => !SHOWS_AUF_SEITE.has(refSchluessel(i.name, i.city)));
+    .filter((i) => !SHOWS_AUF_SEITE.has(refSchluessel(i.name, i.city)))
+    /* Steht derselbe Auftritt zweimal in DIESER Liste, erscheint er einmal —
+       der erste Platz gilt, die Reihenfolge bleibt. Angefasst wird dabei
+       nichts: in der Verwaltung stehen weiterhin beide Eintraege. */
+    .filter((i) => {
+      const key = refSchluessel(i.name, i.city);
+      if (gesehen.has(key)) return false;
+      gesehen.add(key);
+      return true;
+    });
 
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
@@ -3517,14 +3527,23 @@ function renderPage(c, page, pages, lang, langs) {
   const order = baubareAbschnitte(page);
   const effectivePage = { ...page, sections: order };
   CTX = { page: effectivePage, pages, hideHead: null, prefix: navPrefix(lang, master) };
-  /* Stehen Shows und Referenzen auf derselben Seite, gehoert jeder Auftritt nur
-     einmal darauf. Auf einer Seite ohne Shows bleibt die Referenzliste
-     vollstaendig. */
+  /* Stehen Shows und Referenzen auf derselben Seite, steht ein KOMMENDER Termin
+     nicht zusaetzlich in der Referenzliste — sonst kuendigt die Seite denselben
+     Abend zweimal an.
+
+     VERGANGENE Termine zaehlen hier NICHT mehr (Kundenbefund 15.09.2026): Der
+     Rueckblick ist eine Zeitangabe, die Referenzliste eine gepflegte Auswahl.
+     Bis heute nahm der Rueckblick "Nox Club" aus den Referenzen heraus, obwohl
+     der Eintrag dort ausdruecklich gepflegt ist — und auf dem Handy, wo nur die
+     obersten vier stehen, rutschte damit ein anderer Club an seinen Platz.
+     Ein vom Kunden gepflegter Eintrag verschwindet nicht, weil ein Abend
+     vorbei ist. */
   SHOWS_AUF_SEITE =
     order.includes("shows") && order.includes("references")
       ? new Set(
           list(sections.shows?.items)
             .filter((i) => str(i?.name).trim())
+            .filter((i) => !showVorbei(i, today()))
             .map((i) => refSchluessel(i.name, i.city))
         )
       : new Set();
