@@ -2042,7 +2042,9 @@ function showRow(sh) {
   const hinweis = soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
   return `<li class="show${soldOut ? " soldout" : ""}${
     booked ? " booked" : ""
-  }"${date ? ` data-date="${esc(date)}"` : ""}>
+  }"${date ? ` data-date="${esc(date)}"` : ""} data-name="${esc(str(sh.name).trim())}" data-city="${esc(
+    str(sh.city).trim()
+  )}"${sh.nichtAlsReferenz === true ? ' data-ref="nein"' : ""}>
           <span class="show-date"><b>${esc(day)}</b><span class="mono">${esc(month)} ${esc(
     year
   )}</span></span>
@@ -2147,7 +2149,56 @@ function renderShows(n, s) {
  * verloren), hat auf die Darstellung aber keine Wirkung mehr. Auch `group`
  * buendelt nichts mehr — eine Liste bleibt eine Liste.
  */
-function renderReferences(n, s, bookingTarget) {
+/**
+ * Vergangene Auftritte, die noch nicht in der Referenzliste stehen.
+ *
+ * WUNSCH AUS DEM VIDEO (25.08.2026, Sek. 29–50): Saemi moechte, dass
+ * vergangene Auftritte automatisch bei den Referenzen landen — er ging davon
+ * aus, dass es schon so sei.
+ *
+ * Das stimmte einmal: `showsNachReferenzen` tat genau das. Am 07.09.2026 wurde
+ * es entfernt, WEIL es unter "Shows" einen Rueckblick gab und derselbe Abend
+ * sonst zweimal auf derselben Seite stand. Am 15.09.2026 ist der Rueckblick auf
+ * ausdruecklichen Wunsch verschwunden — und damit war die Begruendung weg,
+ * aber der Schritt nicht nachgezogen. Seither faellt ein Termin, dessen Datum
+ * verstreicht, ersatzlos von der Seite.
+ *
+ * Die Regeln, unter denen das zurueckkommt:
+ *
+ *   ANGEHAENGT, NIE EINSORTIERT. Die gepflegte Liste bleibt Zeichen fuer
+ *   Zeichen, wie sie ist — die ersten vier (auf dem Handy die einzigen
+ *   sichtbaren) ruehrt niemand an. Automatisches kommt hinten dran, das
+ *   Juengste zuerst.
+ *
+ *   NUR ANZEIGE. In die Verwaltung wird nichts geschrieben. Wer die Liste dort
+ *   oeffnet, sieht genau das, was er selbst gepflegt hat.
+ *
+ *   KEINE DUBLETTEN. Verglichen wird ueber Name UND Ort (refSchluessel) —
+ *   gegen die gepflegte Liste und untereinander.
+ *
+ *   ABWAEHLBAR. Ein Termin mit `nichtAlsReferenz: true` bleibt draussen. Das
+ *   ist der Ersatz fuer "loeschen": ein automatischer Eintrag steht in keiner
+ *   Liste, man kann ihn also nicht entfernen — abwaehlen schon. Die Verwaltung
+ *   setzt das Haekchen auch dann, wenn jemand die passende Referenz von Hand
+ *   loescht; sonst kaeme sie beim naechsten Bau als automatische zurueck.
+ */
+export function vergangeneAlsReferenz(shows, schonDa, heute) {
+  const gesehen = new Set(schonDa);
+  return list(shows?.items)
+    .filter((i) => str(i?.name).trim())
+    .filter((i) => i?.nichtAlsReferenz !== true)
+    .filter((i) => showVorbei(i, heute))
+    .sort((a, b) => String(isoDate(b.date) || "").localeCompare(String(isoDate(a.date) || "")))
+    .filter((i) => {
+      const key = refSchluessel(i.name, i.city);
+      if (gesehen.has(key)) return false;
+      gesehen.add(key);
+      return true;
+    })
+    .map((i) => ({ name: str(i.name).trim(), city: str(i.city).trim(), ausShow: isoDate(i.date) || "" }));
+}
+
+function renderReferences(n, s, bookingTarget, shows) {
   /* Hier wird NICHTS gegen die Termine gefiltert (Kundenentscheid 15.09.2026):
      der Shows-Abschnitt zeigt nur Kommendes, die Referenzen sind die gepflegte
      Auswahl des Gewesenen. Ein erneuter Auftritt im selben Club nimmt die
@@ -2173,6 +2224,12 @@ function renderReferences(n, s, bookingTarget) {
       return true;
     });
 
+  /* Und hinten dran, was Saemi gespielt hat und noch nicht in der Liste steht
+     (siehe vergangeneAlsReferenz). Die gepflegte Reihenfolge davor bleibt
+     unberuehrt — auch die ersten vier, die auf dem Handy allein zu sehen sind. */
+  const nachgetragen = vergangeneAlsReferenz(shows, gesehen, today());
+  const alle = [...items, ...nachgetragen];
+
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
     const ext = /^https?:/i.test(url) ? ' target="_blank" rel="noopener noreferrer"' : "";
@@ -2189,14 +2246,17 @@ function renderReferences(n, s, bookingTarget) {
      ausschliesslich per CSS und nur in der schmalen Breite — wer kein
      JavaScript hat, sieht die vollstaendige Liste (`html.js` fehlt dann). */
   const MOBIL_SICHTBAR = 4;
-  const versteckt = Math.max(0, items.length - MOBIL_SICHTBAR);
-  const liste = items.length
-    ? `<ul class="venue-list rv" id="venue-list">
-        ${items
+  const versteckt = Math.max(0, alle.length - MOBIL_SICHTBAR);
+  const liste = alle.length
+    ? `<ul class="venue-list rv" id="venue-list" data-mobil="${MOBIL_SICHTBAR}">
+        ${alle
           .map((v, i) => {
             const { url, ext } = linkOf(v);
             const extra = i >= MOBIL_SICHTBAR ? ' data-extra="true"' : "";
-            return `<li${extra}><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
+            /* Woher der Eintrag kommt, steht am Element: assets/site.js traegt
+               zwischen zwei Builds weitere nach und darf dabei nichts doppeln. */
+            const her = v.ausShow ? ` data-aus-show="${esc(v.ausShow)}"` : "";
+            return `<li${extra}${her}><a href="${esc(url)}"${ext}><span class="venue-name">${esc(
               v.name
             )}</span><span class="venue-city">${esc(str(v.city))}</span></a></li>`;
           })
@@ -3713,7 +3773,7 @@ function renderPage(c, page, pages, lang, langs) {
     sound: renderSound,
     experience: renderExperience,
     shows: renderShows,
-    references: (n, s) => renderReferences(n, s, bookingTarget),
+    references: (n, s) => renderReferences(n, s, bookingTarget, sections.shows),
     gallery: renderGallery,
     /* Traegt mehr als eine Seite den Shop, zeigt die erste die Einladung und die
        letzte den Katalog. Traegt ihn nur eine, steht dort beides. So gibt es

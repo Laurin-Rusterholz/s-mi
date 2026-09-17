@@ -267,6 +267,23 @@ for (const [datei, h] of html) {
         return true;
       })
       .map((r) => `${r.name} — ${r.city || ""}`.trim().replace(/ —$/, ""));
+
+    /* Und hinten dran, was Saemi gespielt hat und noch nicht in der Liste steht
+       (Wunsch aus dem Video 25.08.2026, umgesetzt in vergangeneAlsReferenz).
+       Dieselben Regeln: nur Vergangenes, nicht abgewaehlt, keine Dubletten
+       ueber Name UND Ort, das Juengste zuerst — und immer HINTEN, damit die
+       gepflegten ersten vier bleiben, wo sie sind. */
+    const heute = (process.env.BUILD_DATE || new Date().toISOString().slice(0, 10)).slice(0, 10);
+    for (const sh of (INHALT.sections?.shows?.items || [])
+      .filter((i) => String(i?.name || "").trim())
+      .filter((i) => i?.nichtAlsReferenz !== true)
+      .filter((i) => showVorbei(i, heute))
+      .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))) {
+      const key = schluessel(sh.name, sh.city);
+      if (schonGesehen.has(key)) continue;
+      schonGesehen.add(key);
+      sollRef.push(`${String(sh.name).trim()} — ${String(sh.city || "").trim()}`.trim().replace(/ —$/, ""));
+    }
     if (istRef.join(" | ") !== sollRef.join(" | "))
       meckern(
         `${refDatei || rel}: Referenzen weichen ab\n           Verwaltung: ${sollRef.join(" | ")}` +
@@ -281,8 +298,12 @@ for (const [datei, h] of html) {
        weitere traegt data-extra, und der Knopf steht genau dann da, wenn es
        etwas aufzuklappen gibt. Die Reihenfolge ist oben schon geprueft — sie
        aendert sich dadurch nicht, es geht nur um sichtbar/verborgen. */
-    const offen = [...refBlock.matchAll(/<li(?! data-extra)[^>]*><a/g)].length;
-    const weitere = [...refBlock.matchAll(/<li data-extra="true">/g)].length;
+    /* Die Attribute stehen nicht mehr allein: ein nachgetragener Eintrag traegt
+       zusaetzlich `data-aus-show`. Gezaehlt wird deshalb ueber die Anwesenheit
+       von `data-extra`, nicht ueber eine feste Schreibweise. */
+    const zeilen = [...refBlock.matchAll(/<li([^>]*)><a/g)].map((m) => m[1]);
+    const offen = zeilen.filter((attr) => !/\bdata-extra\b/.test(attr)).length;
+    const weitere = zeilen.filter((attr) => /\bdata-extra\b/.test(attr)).length;
     const hatKnopf = /class="venue-more btn"/.test(refBlock);
     if (istRef.length) {
       if (offen !== Math.min(4, istRef.length))
