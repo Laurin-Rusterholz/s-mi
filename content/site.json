@@ -396,8 +396,7 @@
       },
       "pages": [
         {
-          "navLabel": "Home",
-          "slug": ""
+          "navLabel": "Home"
         }
       ],
       "sections": {
@@ -2360,6 +2359,11 @@
           "url": ""
         },
         {
+          "city": "Luzern",
+          "name": "Aftersun Festival",
+          "url": ""
+        },
+        {
           "city": "St. Gallen",
           "name": "Eden"
         },
@@ -2374,10 +2378,6 @@
         {
           "city": "St. Gallen",
           "name": "Ultrawild Festival"
-        },
-        {
-          "city": "Schaan, FL",
-          "name": "The Q"
         },
         {
           "city": "AR",
@@ -2455,6 +2455,10 @@
           "city": "St.Gallen",
           "name": "Picante",
           "url": ""
+        },
+        {
+          "city": "Schaan, FL",
+          "name": "The Q"
         }
       ],
       "moreLabel": "Also played at",
@@ -2709,6 +2713,6 @@
     "twintSend": "Pay by TWINT to",
     "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So"
   },
-  "updatedAt": "2026-09-15T03:58:52.024Z",
+  "updatedAt": "2026-09-17T12:22:43.752Z",
   "updatedBy": "Verwaltung"
 }
