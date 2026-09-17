@@ -1058,6 +1058,121 @@
      ein Termin von HEUTE gilt den ganzen Tag als kommend und verschwindet nicht
      um Mitternacht UTC. Vorher stand hier die UTC-Zeit — zwischen Mitternacht
      und 02:00 Ortszeit war "heute" noch der Vortag. */
+  /* ── Ein vorbeigezogener Termin wandert zu den Referenzen ───────────────
+     Der Generator haengt vergangene Auftritte an die Referenzliste an
+     (vergangeneAlsReferenz in scripts/build.mjs). Verstreicht ein Datum
+     ZWISCHEN zwei Builds, gibt es keinen Generator, der das nachholt — und der
+     Auftritt waere bis zum naechsten Bau nirgends mehr zu sehen.
+
+     Dieselben Regeln wie dort, damit die Seite vor und nach einem Bau gleich
+     aussieht:
+       · angehaengt, nie einsortiert — die gepflegten ersten vier bleiben,
+       · keine Dubletten (Name UND Ort, unabhaengig von Gross/Klein),
+       · abgewaehlte Termine (`data-ref="nein"`) bleiben draussen,
+       · geschrieben wird nichts: das hier lebt nur in dieser Seitenansicht.
+
+     Der Knopf "N weitere anzeigen" bekommt die neue Zahl, sonst zaehlt er
+     falsch. */
+  function refSchluesselJS(name, ort) {
+    return (String(name || "").trim().toLowerCase() + "|" + String(ort || "").trim().toLowerCase())
+      .replace(/[\s\u2013\u2014-]+/g, " ")
+      .replace(/\s+/g, " ");
+  }
+
+  function alsReferenzNachtragen(zeile) {
+    try {
+      if (zeile.getAttribute("data-ref") === "nein") return;
+      var name = (zeile.getAttribute("data-name") || "").trim();
+      if (!name) return;
+      var ort = (zeile.getAttribute("data-city") || "").trim();
+      var datum = zeile.getAttribute("data-date") || "";
+      var liste = document.getElementById("venue-list");
+      if (!liste) return;
+
+      var schluessel = refSchluesselJS(name, ort);
+      var schonDa = false;
+      Array.prototype.slice.call(liste.children).forEach(function (vorhanden) {
+        var n = vorhanden.querySelector(".venue-name");
+        var o = vorhanden.querySelector(".venue-city");
+        if (n && refSchluesselJS(n.textContent, o ? o.textContent : "") === schluessel) schonDa = true;
+      });
+      if (schonDa) return;
+
+      /* DAS ZIEL STEHT AM BEHAELTER, nicht beim Nachbarn.
+         Bis zum Review am 17.09.2026 wurde hier die Adresse des ERSTEN
+         Eintrags abgeschrieben. Die kann die eigene Website eines fremden
+         Clubs sein — ein neuer Auftritt haette dorthin verlinkt. Der Generator
+         gibt deshalb `data-booking` mit: dasselbe Ziel, das er selbst fuer
+         einen Eintrag ohne eigene Adresse nimmt. */
+      var ziel = liste.getAttribute("data-booking") || "#booking";
+
+      var li = document.createElement("li");
+      li.setAttribute("data-aus-show", datum);
+      var a = document.createElement("a");
+      a.setAttribute("href", ziel);
+      var sn = document.createElement("span");
+      sn.className = "venue-name";
+      sn.textContent = name;
+      var so = document.createElement("span");
+      so.className = "venue-city";
+      so.textContent = ort;
+      a.appendChild(sn);
+      a.appendChild(so);
+      li.appendChild(a);
+
+      /* EINSORTIERT, NICHT ANGEHAENGT — aber nur unter den automatischen.
+         Der Generator reiht die nachgetragenen Auftritte nach Datum, das
+         Juengste zuerst. Wer hier einfach anhaengt, stellt einen frischen
+         Auftritt hinter aeltere automatische; nach dem naechsten Bau saesse er
+         woanders. Die GEPFLEGTEN Eintraege bleiben unberuehrt: gesucht wird
+         nur unter denen mit `data-aus-show`. */
+      var davor = null;
+      Array.prototype.slice.call(liste.children).forEach(function (vorhanden) {
+        if (davor) return;
+        var d = vorhanden.getAttribute("data-aus-show");
+        if (d !== null && String(d) < datum) davor = vorhanden;
+      });
+      if (davor) liste.insertBefore(li, davor);
+      else liste.appendChild(li);
+
+      /* Die Liste steht leer und `hidden` im HTML (siehe renderReferences) —
+         jetzt hat sie etwas zu zeigen. */
+      if (liste.hasAttribute("hidden")) liste.removeAttribute("hidden");
+
+      /* DIE HANDY-STUFE: alles ab dem fuenften Eintrag traegt `data-extra` und
+         ist auf schmalen Bildschirmen verborgen — sichtbar wird es erst ueber
+         den Knopf "N weitere anzeigen".
+
+         REVIEW-BEFUND 17.09.2026: Stehen zunaechst hoechstens vier Referenzen
+         da, gibt es diesen Knopf GAR NICHT. Ein hier nachgetragener fuenfter
+         Eintrag waere dann auf dem Handy verborgen, ohne dass ihn irgendetwas
+         wieder hervorholen koennte. Deshalb: Verbergen nur, wenn es den Knopf
+         wirklich gibt. Ohne Knopf bleibt der Eintrag sichtbar — eine Zeile
+         mehr ist kein Schaden, ein unsichtbarer Auftritt schon.
+
+         Neu beschriften laesst sich der Knopf hier, weil seine Aufschrift eine
+         Zahl enthaelt; einen neuen Knopf baut der Browser NICHT: dessen
+         Beschriftung steht in der Sprache der Seite und gehoert dem Generator. */
+      var knopf = document.querySelector(".venue-more");
+      if (knopf) {
+        var stufe = Number(liste.getAttribute("data-mobil") || 4);
+        Array.prototype.slice.call(liste.children).forEach(function (kind, i) {
+          if (i >= stufe) kind.setAttribute("data-extra", "true");
+          else kind.removeAttribute("data-extra");
+        });
+        var verborgen = liste.querySelectorAll("li[data-extra]").length;
+        var vorlage = knopf.getAttribute("data-more") || "";
+        var neuText = vorlage.replace(/\d+/, String(verborgen));
+        knopf.setAttribute("data-more", neuText);
+        if (knopf.getAttribute("aria-expanded") !== "true") knopf.textContent = neuText;
+      }
+    } catch (e) {
+      /* Ein nachgetragener Eintrag ist Beiwerk — er darf die Seite nie
+         aufhalten. Der Termin ist dann bis zum naechsten Bau nicht zu sehen,
+         und der kommt ohnehin. */
+    }
+  }
+
   var showList = document.getElementById("show-list");
   if (showList) {
     var todayStr;
@@ -1074,6 +1189,11 @@
         visible++;
         return;
       }
+      /* Der Abend ist vorbei — und gehoert jetzt zu den Referenzen.
+         Der Generator haengt vergangene Auftritte dort an; zwischen zwei Builds
+         muss das hier passieren, sonst faellt ein Termin am Tag nach dem
+         Auftritt ersatzlos von der Seite (Wunsch aus dem Video 25.08.2026). */
+      alsReferenzNachtragen(li);
       li.remove();
     });
     if (!visible) {
