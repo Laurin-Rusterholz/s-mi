@@ -277,6 +277,18 @@ test("die Anleitung trennt Gemessenes von Vermutetem — und sagt nicht mehr „
     "der Vorschlag liest sich, als wäre er schon umgesetzt");
   assert.match(audit, /erneuern/, "die Erneuerung fehlt im Vorschlag");
 
+  /* REVIEW 17.09.2026: eine zweite Datenbank-Instanz im SELBEN Projekt ist
+     keine Grenze — IAM wirkt projektweit, und dieselbe Firebase-Anmeldung
+     liefert dieselben Identitäten. Sauber ist nur ein eigenes Projekt, oder
+     eine Instanz-Abgrenzung mit nachgewiesenem IAM- und Regelmodell. */
+  assert.match(audit, /Eigenes Firebase-\/GCP-Projekt/,
+    "der saubere Weg ist nicht als eigenes Projekt benannt");
+  assert.match(audit, /IAM-Rollen wirken projektweit/,
+    "es steht nicht da, warum eine zweite Instanz allein nicht genügt");
+  assert.match(audit, /nachgewiesen/, "die Instanz-Abgrenzung wird ohne Nachweis zugelassen");
+  assert.ok(!/ist der einzige, der/.test(audit),
+    "ein Weg wird wieder als „der einzige“ ausgegeben");
+
   /* KEIN Geheimnis im Dokument — weder echt noch als Beispiel. */
   assert.ok(!/AIza[0-9A-Za-z_-]{20,}/.test(audit), "in AUDIT.md steht ein Schlüssel");
   assert.ok(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(audit), "in AUDIT.md steht ein privater Schlüssel");

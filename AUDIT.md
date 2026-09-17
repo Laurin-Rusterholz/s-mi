@@ -397,7 +397,7 @@ gesetzt“ werden kann.
 |---|---|---|---|
 | **1 · Eigene Dienst-Identität** (Custom Token → ID-Token) | ja | **nein**, solange die Nachbarregeln `auth != null` lauten | Schlüssel eines Dienstkontos, Code zum Signieren und Eintauschen, **und** eine Verschärfung der Nachbarregeln |
 | **2 · Dienstkonto per OAuth2** (`Authorization: Bearer`) | ja | **nein** — Regeln gelten für ein solches Konto gar nicht, und IAM greift auf Projekt- bzw. Datenbankebene, nicht auf einzelne Pfade | Schlüssel eines Dienstkontos, Code für den Token-Tausch |
-| **3 · Eigene Datenbank für `samsparking`** | ja (dann ist Weg 2 sauber) | **ja** — die Grenze ist dann die Instanz, nicht eine Regel | Umzug der Daten, neue Adressen in `CONTENT_API_URL`/`INBOX_API_URL` und in der Verwaltung |
+| **3 · Eigenes Firebase-/GCP-Projekt für `samsparking`** | ja | **ja, wenn es ein eigenes Projekt ist** — dann hat es eigene IAM-Rollen und eine eigene Anmeldung. Eine zusätzliche Datenbank-Instanz im **selben** Projekt genügt dafür **nicht** ohne Nachweis (siehe unten) | Umzug der Daten, neues Projekt, neue Adressen in `CONTENT_API_URL`/`INBOX_API_URL` und in der Verwaltung |
 | **4 · Weniger Schreibwege** | entfällt teilweise | verkleinert nur die Fläche | Zähler und Stripe-Vermerk woanders ablegen; die Verwaltung müsste die Statistik von dort lesen |
 
 **Weg 2 erfüllt die Anforderung nicht** und steht hier nur, damit er nicht
@@ -411,8 +411,22 @@ die Nachbarbereiche müssten von „irgendwer ist angemeldet“ auf „diese Ide
 darf“ umgestellt werden. Das ist eine Änderung an fremden Bereichen und
 **nicht** von hier aus zu entscheiden.
 
-**Weg 3** ist der einzige, der „ausschliesslich `samsparking`“ ohne fremde
-Regeländerung erreicht, weil die Grenze dann die Datenbank selbst ist.
+**Weg 3** kommt ohne eine Änderung an fremden Regeln aus — aber nur in der
+Fassung „**eigenes Projekt**“. Dort gelten eigene IAM-Rollen und eine eigene
+Firebase-Anmeldung; was dort zugelassen ist, kann die Bereiche des heutigen
+Projekts gar nicht erreichen.
+
+> **Nicht verwechseln (Review-Hinweis 17.09.2026):** eine zusätzliche
+> **Datenbank-Instanz im selben Projekt** ist **keine** Grenze für sich.
+> IAM-Rollen wirken projektweit und können mehrere Instanzen umfassen, und
+> dieselbe Firebase-Anmeldung liefert dieselben Identitäten. Eine Abgrenzung
+> auf Instanz-Ebene zählt erst, wenn ein konkretes IAM- und Regelmodell dafür
+> **nachgewiesen** ist — hier ist es das nicht.
+
+Ob Weg 3 der beste ist, ist damit **nicht** entschieden, und „der einzige Weg“
+ist er auch nicht: Weg 1 führt ebenfalls zum Ziel, wenn die Nachbarbereiche
+mitziehen. Was hier steht, sind die Kosten — die Wahl trifft, wem das Projekt
+gehört.
 
 **Weg 4** ist kein Ersatz, aber er verkleinert die Frage: von den drei Pfaden
 muss nur der **Eingang** dort liegen, wo die Verwaltung ihn liest. Zähler und
