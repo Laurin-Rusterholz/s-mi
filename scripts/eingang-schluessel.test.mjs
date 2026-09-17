@@ -268,6 +268,15 @@ test("die Anleitung trennt Gemessenes von Vermutetem — und sagt nicht mehr „
   assert.match(audit, /ohne\s+ausdrückliche Freigabe|ausdrückliche Freigabe/,
     "es steht nicht da, dass das eine Freigabe braucht");
 
+  /* Der ausgearbeitete Vorschlag (17.09.2026) — drei Sätze daraus dürfen nicht
+     verloren gehen, weil ohne sie der bequemste Weg gewählt würde. */
+  assert.match(audit, /Vorschlag: dauerhaft erneuerter Serverzugriff/, "der Vorschlag fehlt");
+  assert.match(audit, /erfüllt die Anforderung nicht/,
+    "es steht nicht da, dass der bequemste Weg die Anforderung verfehlt");
+  assert.match(audit, /Nichts davon ist\s+umgesetzt|Nichts davon ist umgesetzt/,
+    "der Vorschlag liest sich, als wäre er schon umgesetzt");
+  assert.match(audit, /erneuern/, "die Erneuerung fehlt im Vorschlag");
+
   /* KEIN Geheimnis im Dokument — weder echt noch als Beispiel. */
   assert.ok(!/AIza[0-9A-Za-z_-]{20,}/.test(audit), "in AUDIT.md steht ein Schlüssel");
   assert.ok(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(audit), "in AUDIT.md steht ein privater Schlüssel");

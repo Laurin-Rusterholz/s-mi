@@ -361,6 +361,99 @@ eine E-Mail-Adresse und `createdAt` verlangt. Der Stripe-Beleg füllt `name` und
 leerer Text und der Eintrag fiele durch. Live gibt es diese Prüfung **nicht** —
 vermerkt, damit es beim Ausrollen nicht übersehen wird.
 
+### Vorschlag: dauerhaft erneuerter Serverzugriff, ausschliesslich auf `samsparking`
+
+Ausgearbeitet am 17.09.2026 auf Bitte des Betreibers. **Nichts davon ist
+umgesetzt**, und nichts davon lässt sich ohne ausdrückliche Freigabe umsetzen:
+es wurden keine Zugangsdaten erzeugt oder gelesen, keine Rechte vergeben und
+keine Regel geändert.
+
+**Was erreicht werden soll:** die drei Server-Schreibwege (`inquiries`,
+`stats`, `stripeEvents`) sollen dauerhaft funktionieren, das Anmeldemerkmal
+soll sich von selbst erneuern, und der Zugriff soll **ausschliesslich**
+`samsparking` erreichen — nicht die übrigen Bereiche des gemeinsamen
+Firebase-Projekts.
+
+#### Die Sperre, die zuerst entschieden werden muss
+
+Die beiden Teilziele hängen an verschiedenen Stellen:
+
+* **Erneuern** ist eine Frage des Codes (siehe „Implementierungslücke“) und
+  lässt sich hier lösen.
+* **Beschränken** ist es **nicht.** Die Nachbarbereiche desselben Projekts
+  stehen auf `auth != null`. Diese Bedingung erfüllt **jede** angemeldete
+  Identität — auch eine neue, eigens für die Website angelegte. Eine Identität
+  allein kann sich also nicht auf `samsparking` beschränken; die Beschränkung
+  müsste dort stehen, wo die Nachbarbereiche beschrieben sind.
+
+Solange das so ist, gilt: **jeder funktionierende Serverzugang erreicht heute
+mehr als `samsparking`.** Das ist keine Eigenschaft des gewählten Verfahrens,
+sondern des Regelstands — und es ist der Grund, warum hier nichts „schnell
+gesetzt“ werden kann.
+
+#### Vier Wege, mit ihren Kosten
+
+| Weg | erneuert sich | erreicht **nur** `samsparking` | was es braucht |
+|---|---|---|---|
+| **1 · Eigene Dienst-Identität** (Custom Token → ID-Token) | ja | **nein**, solange die Nachbarregeln `auth != null` lauten | Schlüssel eines Dienstkontos, Code zum Signieren und Eintauschen, **und** eine Verschärfung der Nachbarregeln |
+| **2 · Dienstkonto per OAuth2** (`Authorization: Bearer`) | ja | **nein** — Regeln gelten für ein solches Konto gar nicht, und IAM greift auf Projekt- bzw. Datenbankebene, nicht auf einzelne Pfade | Schlüssel eines Dienstkontos, Code für den Token-Tausch |
+| **3 · Eigene Datenbank für `samsparking`** | ja (dann ist Weg 2 sauber) | **ja** — die Grenze ist dann die Instanz, nicht eine Regel | Umzug der Daten, neue Adressen in `CONTENT_API_URL`/`INBOX_API_URL` und in der Verwaltung |
+| **4 · Weniger Schreibwege** | entfällt teilweise | verkleinert nur die Fläche | Zähler und Stripe-Vermerk woanders ablegen; die Verwaltung müsste die Statistik von dort lesen |
+
+**Weg 2 erfüllt die Anforderung nicht** und steht hier nur, damit er nicht
+versehentlich als die einfache Lösung gewählt wird: ein Dienstkonto mit
+Datenbankrechten geht an den Regeln vorbei und ist pfadblind.
+
+**Weg 1** ist der technisch saubere, wenn die Daten im gemeinsamen Projekt
+bleiben sollen: die Identität bekommt eine feste `uid`, und die Regeln können
+ihr genau die drei Pfade erlauben. Sie löst die Sperre aber nicht von selbst —
+die Nachbarbereiche müssten von „irgendwer ist angemeldet“ auf „diese Identität
+darf“ umgestellt werden. Das ist eine Änderung an fremden Bereichen und
+**nicht** von hier aus zu entscheiden.
+
+**Weg 3** ist der einzige, der „ausschliesslich `samsparking`“ ohne fremde
+Regeländerung erreicht, weil die Grenze dann die Datenbank selbst ist.
+
+**Weg 4** ist kein Ersatz, aber er verkleinert die Frage: von den drei Pfaden
+muss nur der **Eingang** dort liegen, wo die Verwaltung ihn liest. Zähler und
+Stripe-Vermerk sind Betriebsdaten der Website.
+
+#### Was der Code in jedem Fall lernen muss
+
+Unabhängig vom gewählten Weg fehlt dieselbe Mechanik. Sie gehört in
+`netlify/functions/_lib.mjs`, wo heute nur `?auth=<fester Wert>` steht:
+
+1. **Beschaffen:** aus dem hinterlegten Schlüssel ein kurzlebiges Merkmal
+   erzeugen (signieren und eintauschen) — nicht bei jedem Aufruf neu, sondern
+2. **halten:** im Speicher der Function-Instanz, mit dem Ablaufzeitpunkt,
+3. **erneuern:** kurz **vor** Ablauf (z. B. ab einer Restlaufzeit von fünf
+   Minuten), damit kein Aufruf in einen abgelaufenen Zustand läuft,
+4. **nachfassen:** antwortet die Datenbank trotzdem mit 401, **einmal** neu
+   beschaffen und den Schreibzugriff wiederholen — danach aufgeben und
+   protokollieren.
+
+Dazu drei Regeln, die nicht verhandelbar sind:
+
+* Der Schlüssel und das Merkmal gehören **nie** ins Protokoll, nie in eine
+  Antwort und nie in `zustand()`. Dort steht weiterhin nur ja/nein.
+* Fällt die Beschaffung aus, verhält sich alles wie heute: die Seite läuft
+  weiter, der Zähler antwortet 202, eine Anfrage gilt als angekommen, sobald
+  **ein** Weg geklappt hat.
+* Der Mailweg bleibt unberührt — er hängt an `RESEND_API_KEY` und hat mit der
+  Datenbank nichts zu tun.
+
+#### Reihenfolge
+
+1. Entscheiden, welcher der vier Wege gegangen wird — **das ist eine
+   Eigentümer-Entscheidung über ein gemeinsames Projekt**, keine technische.
+2. Erst danach: Regeln bzw. Instanz einrichten.
+3. Erst danach: die Mechanik oben bauen, mit Tests gegen einen abgelaufenen und
+   einen abgewiesenen Zustand.
+4. Erst danach: die Variable in der Produktion setzen.
+
+Wird die Reihenfolge umgedreht, entsteht genau das, was hier vermieden werden
+soll: ein Zugang, der funktioniert und dabei zu viel erreicht.
+
 ### Provider-Setup
 
 **Resend** (E-Mail): Konto anlegen → Domain `samsparking.ch` hinzufügen → die
