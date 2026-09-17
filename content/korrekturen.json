@@ -63,13 +63,16 @@
       },
       "seiten": {
         "0": {
-          "navLabel": "Start"
+          "navLabel": "Start",
+          "slug": ""
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Booking",
+          "slug": "booking"
         },
         "2": {
-          "navLabel": "Shop"
+          "navLabel": "Shop",
+          "slug": "shop"
         }
       }
     },
@@ -87,13 +90,16 @@
       },
       "seiten": {
         "0": {
-          "navLabel": "Accueil"
+          "navLabel": "Accueil",
+          "slug": ""
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Booking",
+          "slug": "booking"
         },
         "2": {
-          "navLabel": "Boutique"
+          "navLabel": "Boutique",
+          "slug": "shop"
         }
       },
       "kontaktNavLabel": "Contact",
@@ -102,7 +108,27 @@
         "Uebersetzung des Abschnitts hatte den deutschen Wert geerbt.",
         "Gesetzt wird nur, solange dort genau 'Kontakt' steht."
       ]
-    }
+    },
+    "_warum_seiten": [
+      "DIE SEITEN-UEBERSETZUNGEN TRAGEN IHREN SLUG (Live-Befund 17.09.2026).",
+      "",
+      "Auf /fr/ standen die Menuepunkte an den falschen Seiten:",
+      "   ACCUEIL | BOOKING -> /fr/shows/ | BOUTIQUE -> /fr/gallery/ |",
+      "   BOOKING -> /fr/booking/ | SHOP -> /fr/shop/",
+      "",
+      "'seiten' haengt am PLATZ in der Liste. Als diese Eintraege entstanden, hatte",
+      "die Website DREI Seiten: 0='' 1='booking' 2='shop'. Heute sind es fuenf",
+      "('', shows, gallery, booking, shop) — die alten Nummern zeigten seither",
+      "daneben, und zwei Seiten bekamen gar keine Uebersetzung mehr.",
+      "",
+      "Jeder Eintrag traegt deshalb jetzt seinen SLUG. localize() ordnet darueber",
+      "zu, nicht mehr ueber den Platz; eine weitere Umsortierung kann nichts mehr",
+      "verschieben. Die Nummern bleiben nur als Schluessel stehen — sie bedeuten",
+      "nichts mehr.",
+      "",
+      "Gibt es einen Slug heute nicht mehr, faellt genau diese Uebersetzung weg,",
+      "statt irgendwo anders zu landen."
+    ]
   },
   "alteHeroStats": [
     "First set",

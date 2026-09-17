@@ -53,13 +53,16 @@
       },
       "pages": {
         "0": {
-          "navLabel": "Start"
+          "navLabel": "Start",
+          "slug": ""
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Booking",
+          "slug": "booking"
         },
         "2": {
-          "navLabel": "Shop"
+          "navLabel": "Shop",
+          "slug": "shop"
         }
       },
       "sections": {
@@ -393,7 +396,8 @@
       },
       "pages": [
         {
-          "navLabel": "Home"
+          "navLabel": "Home",
+          "slug": ""
         }
       ],
       "sections": {
@@ -667,13 +671,16 @@
       },
       "pages": {
         "0": {
-          "navLabel": "Accueil"
+          "navLabel": "Accueil",
+          "slug": ""
         },
         "1": {
-          "navLabel": "Booking"
+          "navLabel": "Booking",
+          "slug": "booking"
         },
         "2": {
-          "navLabel": "Boutique"
+          "navLabel": "Boutique",
+          "slug": "shop"
         }
       },
       "sections": {
