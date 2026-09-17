@@ -14,7 +14,7 @@
  */
 
 import { readFile, writeFile, mkdir, readdir, rm } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -1964,7 +1964,12 @@ function showRow(sh) {
               .join(" · ")}</span>
           </span>
           ${
-            kasse
+            /* In der VORFÜHRUNG führt auch der Ticket-Knopf nicht hinaus: am
+               anderen Ende steht ein echter Ticketverkauf. Gezeigt wird, dass
+               dort ein Knopf steht — angeklickt werden kann er nicht. */
+            kasse && VORFUEHRUNG
+              ? `<span class="show-cta"><span class="mono shop-demo">${esc(UI.shopDemo)}</span></span>`
+              : kasse
               ? `<span class="show-cta"><a class="btn btn-sm" href="${href(
                   sh.ticketUrl
                 )}" target="_blank" rel="noopener noreferrer">${esc(label)}</a></span>`
@@ -2431,8 +2436,17 @@ function renderShop(n, s, site, kontaktMail = "", modus = "alles", katalogZiel =
       const perMail = mail
         ? `mailto:${mail}?subject=${encodeURIComponent(`${UI.orderSubject}: ${str(p.name)}`)}`
         : "";
+      /* In der VORFÜHRUNG führt hier kein Weg nach draussen: weder in die
+         echte Stripe-Kasse noch in eine echte Bestellmail. Stattdessen steht
+         da, was hier gälte — sichtbar als Vorführung gekennzeichnet. Preis,
+         Zustand und Abzeichen bleiben, damit die Vorführung zeigt, wie der
+         Shop wirklich aussieht. */
       const cta = sold
         ? `<span class="mono sold-mark">${esc(UI.soldOut)}</span>`
+        : VORFUEHRUNG
+        ? (kasse || perMail
+            ? `<span class="mono shop-demo" data-product="${esc(p.name)}">${esc(UI.shopDemo)}</span>`
+            : "")
         : kasse
         ? `<a class="btn sm solid buy-now" href="${esc(kasse)}" target="_blank" rel="noopener noreferrer"
               data-product="${esc(p.name)}">${esc(buy)}</a>`
@@ -2964,8 +2978,11 @@ function structuredData(c, sections, page, pages) {
         },
       },
       performer: { "@id": `${base}/#artist` },
-      url: safeUrl(sh.ticketUrl) || `${base}${page ? pagePath(page.slug) : "/"}#shows`,
-      ...(safeUrl(sh.ticketUrl)
+      /* In der VORFÜHRUNG steht auch in den strukturierten Daten keine
+         Ticket-Adresse: sie ist maschinenlesbar und führt in einen echten
+         Verkauf. Stattdessen zeigt sie auf den Abschnitt der Seite selbst. */
+      url: (!VORFUEHRUNG && safeUrl(sh.ticketUrl)) || `${base}${page ? pagePath(page.slug) : "/"}#shows`,
+      ...(!VORFUEHRUNG && safeUrl(sh.ticketUrl)
         ? {
             offers: {
               "@type": "Offer",
@@ -3042,6 +3059,7 @@ const UI_DEFAULTS = {
   orderByMail: "Per E-Mail bestellen",
   orderSubject: "Bestellung",
   formDemo: "Vorführ-Fassung: dieses Formular sendet nichts.",
+  shopDemo: "Vorführung — hier ginge es zur Kasse",
   follow: "Kanäle",
   notFoundTitle: "Nichts hier.",
   notFoundText: "Diese Seite gibt es nicht (mehr). Zurück zum Start — dort steht alles Aktuelle.",
@@ -3113,6 +3131,7 @@ const UI_SPRACHE = {
     payStripeNote:
       "Payment happens after you submit, via Stripe — card, Apple Pay, Google Pay or TWINT. Your order ships as soon as the payment is confirmed.",
     formDemo: "Demo version: this form does not send anything.",
+    shopDemo: "Demo — checkout would open here",
     channelSoon: "follows",
   },
   fr: {
@@ -3141,6 +3160,7 @@ const UI_SPRACHE = {
     payStripeNote:
       "Le paiement se fait après l'envoi, via Stripe — carte, Apple Pay, Google Pay ou TWINT. L'expédition part dès que le paiement est confirmé.",
     formDemo: "Version de démonstration : ce formulaire n'envoie rien.",
+    shopDemo: "Démonstration — la caisse s'ouvrirait ici",
     channelSoon: "à venir",
   },
 };
@@ -3454,12 +3474,30 @@ const BOOKING_ENDPOINT = "/api/booking";
 const ORDER_ENDPOINT = "/api/order";
 
 /**
- * Vorführ-Fassung (Beispiel-Sami): dort liegt nur die gebaute Website, ohne
- * die Funktionen dahinter. Ein Formular, das dann ins Leere sendet, sähe
- * funktionsfähig aus und wäre es nicht — deshalb sagen die Formulare dort
- * offen, dass sie nichts verschicken, und senden gar nicht erst.
+ * VORFÜHR-FASSUNG (Repo Beispiel-Sami).
+ *
+ * Dort liegt dieselbe Website noch einmal, zum Herzeigen — ohne die Funktionen
+ * dahinter. Zwei Dinge dürfen dabei NICHT echt sein:
+ *
+ *   1. FORMULARE. Ein Formular, das ins Leere sendet, sähe funktionsfähig aus
+ *      und wäre es nicht. Und stünden die Funktionen doch bereit, legte eine
+ *      Vorführung echte Booking-Anfragen in der Datenbank an. Die Formulare
+ *      sagen deshalb offen, dass sie nichts verschicken, und senden gar nicht
+ *      erst (assets/site.js liest `data-demo`).
+ *
+ *   2. DIE KASSE. Befund vom 17.09.2026: Der Kauf-Knopf der Vorführung zeigte
+ *      auf DENSELBEN Stripe Payment Link wie die echte Website
+ *      (`buy.stripe.com/…`). Wer in der Vorführung darauf klickte, stand in
+ *      einer ECHTEN Kasse und hätte echt bezahlen können. Eine Vorführung darf
+ *      kein Geld einnehmen. Auch der Ersatzweg „per E-Mail bestellen" ist hier
+ *      falsch: er schriebe an die echte Adresse. Dasselbe gilt für den
+ *      Ticket-Knopf unter „Shows" — am anderen Ende steht ein echter Verkauf.
+ *
+ * Ein Schalter für alles, damit die Vorführung nicht die Hälfte vergisst.
+ * `FORMS_DEMO=1` bleibt als bisheriger Name gültig.
  */
-const FORMS_DEMO = process.env.FORMS_DEMO === "1";
+const VORFUEHRUNG = process.env.VORFUEHRUNG === "1" || process.env.FORMS_DEMO === "1";
+const FORMS_DEMO = VORFUEHRUNG;
 const formDemoAttr = FORMS_DEMO ? ' data-demo="true"' : "";
 const formDemoNote = () =>
   FORMS_DEMO ? `<p class="bform-demo mono">${esc(UI.formDemo)}</p>` : "";
@@ -3816,7 +3854,10 @@ function renderPage(c, page, pages, lang, langs) {
         name: str(i.name),
         venue: str(i.venue),
         city: str(i.city),
-        url: safeUrl(i.ticketUrl),
+        /* In der VORFÜHRUNG steht hier keine Ticket-Adresse: der Kalender
+           macht daraus einen anklickbaren Tag, und am anderen Ende steht ein
+           echter Verkauf. */
+        url: VORFUEHRUNG ? "" : safeUrl(i.ticketUrl),
         status: str(i.status, "confirmed"),
       }))
   )}</script>`
@@ -4759,9 +4800,38 @@ async function main() {
   if (missing) console.log(`[build] Übersetzungen: ${missing}`);
 }
 
-// Nur bauen, wenn die Datei direkt aufgerufen wurde — beim Importieren aus
-// einem Test soll nichts geschrieben werden.
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+/* Nur bauen, wenn die Datei direkt aufgerufen wurde — beim Importieren aus
+   einem Test soll nichts geschrieben werden.
+
+   VERGLICHEN WIRD DER ECHTE PFAD, nicht der geschriebene.
+
+   BEFUND vom Mac (17.09.2026): Der Prüflauf meldete dort 15 Fehler, die keine
+   waren, und ging erst mit `TMPDIR=/private/tmp` durch. Die Ursache sass genau
+   hier. Die beiden Seiten des Vergleichs entstehen unterschiedlich:
+
+     process.argv[1]              der Pfad, wie er auf der Kommandozeile stand
+     fileURLToPath(import.meta.url)  der Pfad, den Node beim Laden AUFGELÖST hat
+
+   Node löst beim Laden eines Moduls Symlinks auf. Auf macOS liefert
+   `mkdtemp(tmpdir())` aber `/var/folders/…`, und `/var` ist eine Verknüpfung
+   auf `/private/var`. Der Testlauf startete also
+   `node /var/folders/…/scripts/build.mjs`, während Node drinnen
+   `/private/var/folders/…/scripts/build.mjs` sah — zwei Namen für dieselbe
+   Datei. Der Vergleich schlug fehl, `main()` lief nie, es wurde NICHTS gebaut,
+   und jede Prüfung, die eine gebaute Seite lesen wollte, fiel um.
+
+   `realpathSync` bringt beide Seiten auf denselben Namen. Wo es keinen Symlink
+   gibt, kommt derselbe Pfad zurück — die Prüfung wird also nirgends lockerer.
+   Kann der Pfad nicht aufgelöst werden (Datei weg, Rechte), bleibt es beim
+   bisherigen Vergleich, statt den Bau mit einer Ausnahme abzubrechen. */
+const echterPfad = (pfad) => {
+  try {
+    return realpathSync(resolve(pfad));
+  } catch {
+    return resolve(pfad);
+  }
+};
+if (process.argv[1] && echterPfad(process.argv[1]) === echterPfad(fileURLToPath(import.meta.url))) {
   main().catch((err) => {
     console.error("[build] FEHLER:", err.message);
     process.exit(1);
