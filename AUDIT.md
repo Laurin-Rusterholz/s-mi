@@ -223,7 +223,7 @@ zusammenbringt.
 | `STRIPE_PAYMENT_LINK_URL` | **ja** für Bezahlung | der echte Payment Link, siehe unten |
 | `STRIPE_WEBHOOK_SECRET` | **ja** für Zahlungsbestätigung | `whsec_…` aus dem Stripe-Dashboard |
 | `INBOX_API_URL` | nein | Eingang, Vorgabe ist der bisherige `…/samsparking/inquiries.json` |
-| `INBOX_API_TOKEN` | **ja** für Zähler und Stripe-Vermerk | Anmeldung der Server-Schreibzugriffe (`?auth=…`). Fehlt er, antwortet die Datenbank mit **HTTP 401** — siehe „Server-Zugang zur Datenbank“ unten. Die Angabe „nein“ stand hier bis zum 17.09.2026 und war falsch |
+| `INBOX_API_TOKEN` | **offen — nicht „nein“** | die einzige Anmeldung, die der Server-Code kennt (`?auth=…`); ohne ihn ist der Schreibzugriff nicht angemeldet. Der **Zähler** wird live mit **HTTP 401** abgewiesen; für die übrigen Pfade liegt keine Messung vor. Was wirklich zu tun ist, steht unter „Server-Zugang zur Datenbank“ — mit ihm allein ist es nicht getan. Die Angabe „nein“ stand hier bis zum 17.09.2026 und war falsch |
 | `CONTENT_API_URL` | schon gesetzt | Inhaltsquelle für den Build (steht in `netlify.toml`) |
 
 ### Server-Zugang zur Datenbank — Stand 17.09.2026
@@ -238,69 +238,128 @@ zusammenbringt.
 
 Der Aufruf kam an; abgewiesen hat die Realtime Database.
 
-**Welche Anmeldung die Endpunkte heute benutzen.** `netlify/functions/_lib.mjs`,
-`zaehler.mjs` und `stripe-webhook.mjs` hängen den Wert aus `INBOX_API_TOKEN`
-unverändert als `?auth=…` an die REST-Adresse. Die REST-Schnittstelle der
-Realtime Database nimmt dort dreierlei an:
+**Der Livestand der Regeln** (Firebase Console, 17.09.2026, nur **gelesen**,
+nichts geändert). Unter `samsparking` steht:
 
-| Was | Lebensdauer | Rechte |
-|---|---|---|
-| Legacy-Datenbankgeheimnis | dauerhaft | **alles** — hebelt sämtliche Regeln aus; von Google als veraltet geführt |
-| Firebase-ID-Token (Browser-Sitzung) | rund eine Stunde | die des angemeldeten Kontos |
-| OAuth2-Zugriffstoken eines Dienstkontos | rund eine Stunde | die des Dienstkontos |
+```
+samsparking
+  .read   "auth != null"
+  .write  "auth != null"
+  content   { .read: true }
+  media     { .read: true }
+```
 
-Der Code schickt einen **festen** Wert aus der Umgebung und erneuert nichts.
-Dauerhaft funktioniert davon nur die erste Zeile — also ausgerechnet die mit
-allen Rechten. **Ein korrekter, dauerhafter Dienstzugang mit kleinsten Rechten
-ist im heutigen Stand nicht vorgesehen.** Ein Browser-ID-Token ist dafür keine
-Lösung: es läuft nach einer Stunde ab.
+Mehr nicht — **keine** Unterregeln für `inquiries`, `stats` oder
+`stripeEvents`, **keine** `.validate`. In der Realtime Database gilt eine Regel
+für den ganzen Teilbaum darunter; Kinder können sie nicht zurücknehmen. Damit
+gilt `auth != null` für **alle** diese Pfade.
 
-**Wohin der Server schreibt — und was die Regeln dazu sagen.** Die Regeldatei
-`verwaltung-djsamsparkling/firebase/database.rules.json` (sie wird **nicht**
-automatisch ausgerollt, der Live-Stand kann abweichen) kennt `content`,
-`media`, `versions`, `config` und `inquiries`:
+> **Die Regeldatei im Repository beschreibt den Livezustand NICHT.**
+> `verwaltung-djsamsparkling/firebase/database.rules.json` ist eine Vorlage, die
+> laut ihrem eigenen Kommentar von Hand ausgerollt werden muss — das ist nicht
+> geschehen. Alles, was dort an Feinheiten steht (Sitzungsnachweis je Pfad,
+> `.validate`, Anlegen ohne Anmeldung), gilt live **nicht**.
 
-| Pfad | wer schreibt | Regel vorhanden |
-|---|---|---|
-| `samsparking/inquiries/<id>` | `_lib.mjs` (Anfrage, Bestellung, Zahlung) | ja — **Anlegen ohne Anmeldung erlaubt** (`!data.exists()`), dazu eine `.validate` |
-| `samsparking/stats` | `zaehler.mjs` | **nein** — kein Knoten, also standardmässig verboten |
-| `samsparking/stripeEvents/<id>` | `stripe-webhook.mjs` (lesen und schreiben) | **nein** — dasselbe |
+**Was daraus folgt — belegt, nicht gefolgert.** Unsere Functions schicken ohne
+`INBOX_API_TOKEN` gar keine Anmeldung mit. `auth` ist dann `null`, und die
+Live-Regel verlangt `auth != null`:
 
-Der 401 des Zählers passt genau dazu: für `stats` gibt es keine Regel, und
-daran ändert auch ein gesetzter Token nichts — es sei denn, er ist das
-Legacy-Geheimnis mit allen Rechten.
+| Aussage | Stand |
+|---|---|
+| Der Server schreibt **unangemeldet** | **belegt** — der Code hängt nur `?auth=` an, und zwar nur, wenn die Variable gesetzt ist |
+| Die Live-Regel verlangt eine Anmeldung für `inquiries`, `stats`, `stripeEvents` | **belegt** — Konsolenstand oben |
+| Der **Zähler** wird abgewiesen, HTTP 401 | **gemessen** — die drei Protokollzeilen oben |
+| Ein unangemeldeter Schreibzugriff auf `stats` wird abgelehnt | **in der Regelsimulation belegt** — siehe unten |
+| Ein unangemeldeter Schreibzugriff auf `inquiries` wird abgelehnt | **in der Regelsimulation belegt** — auch mit vollständigem Eintrag |
+| Anfragen und Bestellungen scheitern **in der Produktion** | **nicht gemessen.** Die Regel lässt nichts anderes zu, ein Protokoll dazu gibt es aber nicht |
+| Es geht eine **E-Mail** raus | **nicht belegt.** `RESEND_API_KEY` und `MAIL_FROM` sind gesetzt und der Weg ist im Mock geprüft — ein echter Versand wurde bis heute nicht ausgelöst |
+| Eine **Zahlung** läuft durch | **nicht belegt.** Es wurde keine ausgelöst |
 
-**Nötige Schritte, kleinste Rechte zuerst** (nichts davon lässt sich aus
-diesem Repository erledigen):
+**Regelsimulation** (Firebase Rules Playground, 17.09.2026 — reine Simulation,
+es wurde **kein** Datensatz angelegt):
 
-1. **Eine Server-Identität festlegen.** Sauber ist ein eigenes Dienstkonto im
-   Firebase-Projekt, dessen kurzlebiges OAuth2-Zugriffstoken die Function bei
-   jedem Aufruf selbst erzeugt (Signatur mit dem privaten Schlüssel des
-   Dienstkontos; in Node ohne zusätzliche Pakete machbar). Das ist eine
-   **Code-Änderung** und braucht eine eigene Umgebungsvariable.
-2. **Die Regeln um die beiden fehlenden Knoten ergänzen** — `stats` und
-   `stripeEvents`, Schreibrecht ausschliesslich für diese Identität, Lesen von
-   `stats` nur mit Sitzung. Öffentlich beschreibbar darf keiner der beiden
-   werden. Ausgerollt wird von Hand über die vollständige Regeldatei des
-   Projekts.
-3. **Die Variable nur in der Produktion setzen** (Netlify → Environment
+```
+set /samsparking/stats/__codex_rules_simulation__          ohne Anmeldung
+  → Simulated write denied   (Regel Zeile 70: /samsparking  .write  auth != null)
+
+set /samsparking/inquiries/__codex_rules_simulation__      ohne Anmeldung,
+    mit name / email / createdAt
+  → Simulated write denied
+```
+
+Damit ist die fehlende Anmeldung **auch für die Anfragen-Ablage** an den heute
+geltenden Regeln belegt — nicht nur für den Zähler. Was damit weiterhin **nicht**
+belegt ist: ein echter Mailversand und eine echte Zahlung.
+
+**Welche Anmeldung die REST-Schnittstelle kennt.** Laut
+[Firebase-Doku](https://firebase.google.com/docs/database/rest/auth) sind das
+zwei verschiedene Wege — der Code kennt nur den ersten:
+
+| Weg | wie mitgegeben | was hineingehört | Lebensdauer |
+|---|---|---|---|
+| `?auth=…` | Adresszeile | ein **Firebase-ID-Token** oder ein **Legacy-Datenbankgeheimnis** | ID-Token rund eine Stunde; Geheimnis dauerhaft |
+| OAuth2-Zugriffstoken | `Authorization: Bearer …` **oder** `?access_token=…` | Zugriffstoken eines **Dienstkontos** | rund eine Stunde |
+
+Ein Dienstkonto-Token gehört **nicht** in `?auth=`.
+
+**Die Implementierungslücke.** `netlify/functions/_lib.mjs`, `zaehler.mjs` und
+`stripe-webhook.mjs` hängen einen **festen** Wert aus der Umgebung an und haben
+keinerlei Mechanismus, ein kurzlebiges Anmeldemerkmal zu beschaffen oder zu
+erneuern. Beide brauchbaren Merkmale laufen aber nach rund einer Stunde ab. Ein
+dauerhaft laufender Betrieb muss also **erneuern** — sonst funktioniert eine
+einmal eingetragene Variable höchstens bis zum nächsten Ablauf.
+
+Dauerhaft überdauert in `?auth=` nur das Legacy-Datenbankgeheimnis. Das ist
+hier die schlechteste aller Möglichkeiten: es hat **alle** Rechte am ganzen
+Projekt und hebelt jede Regel aus.
+
+Das ist **nicht bloss Konfiguration.** Solange dieser Mechanismus fehlt, lässt
+sich ein tragfähiger Serverzugang gar nicht einrichten. Die Lücke sitzt im
+Code; sie zu schliessen braucht Code — zusätzlich zu den Entscheidungen, die
+ausserhalb dieses Repositorys fallen.
+
+**Warum hier nichts blind gesetzt werden darf — gemeinsames Projekt.** Die
+Datenbank gehört nicht allein zu dieser Website. Weitere **private Bereiche
+desselben Projekts** stehen ebenfalls auf `auth != null`. Eine gewöhnliche
+Firebase-Server-Identität erfüllt diese Bedingung überall — sie käme damit an
+**mehr als Sämis Daten**. Ein Token einzutragen, „damit der Zähler wieder
+läuft“, vergrössert also den Zugriff weit über diese Website hinaus.
+
+**IAM und Sicherheitsregeln sind zweierlei.** Ein Dienstkonto, das sich per
+OAuth2 anmeldet, wird **nicht** automatisch durch die Regeln der Realtime
+Database beschränkt. Was es darf, entscheidet seine **IAM-Rolle**; mit
+Datenbank-Administrationsrechten geht der Zugriff an den Regeln vorbei — wie
+beim Admin-SDK. Ein Regelentwurf ist deshalb **kein Zugangsschutz**, solange
+das Identitätsmodell nicht dazu passt.
+
+**Was zu klären ist — in dieser Reihenfolge, und nichts davon ohne
+ausdrückliche Freigabe:**
+
+1. **Rechtemodell entscheiden, bevor irgendetwas gesetzt wird.** Welche
+   Identität darf was, und wie wird sie auf `samsparking` begrenzt, ohne die
+   übrigen Bereiche des gemeinsamen Projekts zu öffnen? Ohne diese Antwort ist
+   jeder Token zu weitreichend.
+2. **Erst danach** die passenden Regeln formulieren und von Hand ausrollen
+   (vollständige Regeldatei des Projekts). Öffentlich beschreibbar darf keiner
+   der Pfade werden.
+3. **Den Code um Beschaffung und Erneuerung des Anmeldemerkmals ergänzen** —
+   siehe „Implementierungslücke“. Ein einmal eingetragener Wert genügt nicht.
+4. **Die Variable nur in der Produktion setzen** (Netlify → Environment
    variables), nicht in Vorschau-Deploys.
-4. **Nachsehen:** `GET /api/booking` meldet `eingangSchluesselGesetzt` als
+5. **Nachsehen:** `GET /api/booking` meldet `eingangSchluesselGesetzt` als
    ja/nein — nie einen Wert.
 
-Solange Schritt 1 und 2 offen sind, bleibt es dabei: E-Mails gehen raus (sie
-hängen an `RESEND_API_KEY`), Zähler und Stripe-Vermerk nicht. Das ist ein
-**Konfigurations- und Regel-Thema, kein Fehler im Code der Endpunkte** — mit
-der einen Ausnahme, dass die Tabelle oben den Token bis zum 17.09.2026 als
-„nein“ führte.
+**Kein neuer weitreichender Zugang ist freigegeben, und Regeländerungen sind es
+ebenfalls nicht.** Bis Punkt 1 und 2 entschieden sind, bleibt der Zustand, wie
+er ist: der Zähler zählt nicht, und für die übrigen Ablagen gilt dieselbe
+Regel.
 
-**Noch offen, hier nur vermerkt:** der Stripe-Beleg legt einen Eintrag mit
-`name` und `email` aus `customer_details` im Eingang ab. Liefert Stripe keinen
-Namen (Namensabfrage im Payment Link nicht aktiviert), steht dort ein leerer
-Text — die `.validate` des Eingangs verlangt aber mindestens zwei Zeichen und
-eine E-Mail-Adresse. Der Beleg fiele dann auch mit gültigem Zugang durch. Live
-belegt ist das nicht (es gab noch keine echte Zahlung); die Lösung gehört mit
-Schritt 1 und 2 zusammen entschieden und ist deshalb hier nicht vorweggenommen.
+**Was die Vorlage zusätzlich enthielte, falls sie je ausgerollt wird:** eine
+`.validate` am Eingang, die für jeden Eintrag `name` (mindestens zwei Zeichen),
+eine E-Mail-Adresse und `createdAt` verlangt. Der Stripe-Beleg füllt `name` und
+`email` aus `customer_details`; liefert Stripe keinen Namen, stünde dort ein
+leerer Text und der Eintrag fiele durch. Live gibt es diese Prüfung **nicht** —
+vermerkt, damit es beim Ausrollen nicht übersehen wird.
 
 ### Provider-Setup
 

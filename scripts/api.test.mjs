@@ -16,10 +16,13 @@ import { createHmac } from "node:crypto";
 import assert from "node:assert/strict";
 
 process.env.MAIL_TO = "info@samsparking.ch";
-/* Der Absender, wie er in der Produktion steht (Netlify, Stand 17.09.2026).
-   Ohne diese Zeile griffe die Vorgabe `onboarding@resend.dev` — dann pruefte
-   der Test etwas, das live gar nicht verschickt wird. */
-process.env.MAIL_FROM = "Sam Sparking Website <info@samsparking.ch>";
+/* Der Absender, wie ihn der Betreiber am 17.09.2026 in Netlify gesetzt hat
+   (uebernommen mit dem naechsten Deploy). Ohne diese Zeile griffe die Vorgabe
+   `onboarding@resend.dev` — dann pruefte der Test etwas, das live gar nicht
+   verschickt wird. Geprueft wird die FORM „Name <adresse>", nicht der genaue
+   Name: die Adresse allein waere im Postfach nicht von einer Mail zu
+   unterscheiden, die Saemi selbst geschrieben hat. */
+process.env.MAIL_FROM = "Sam Sparking <info@samsparking.ch>";
 process.env.RESEND_API_KEY = "re_test";
 process.env.INBOX_API_URL = "https://beispiel.example/samsparking/inquiries.json";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
@@ -432,7 +435,7 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   await booking(post(BOOKING_OK));
   const anfrage = JSON.parse(mails()[0].body);
 
-  assert.equal(anfrage.from, "Sam Sparking Website <info@samsparking.ch>",
+  assert.equal(anfrage.from, "Sam Sparking <info@samsparking.ch>",
     "der Absender kommt nicht aus MAIL_FROM");
   /* Ein ANZEIGENAME gehoert dazu. Steht dort nur die nackte Adresse, sieht die
      automatische Mail im Postfach genauso aus wie eine, die Saemi selbst
@@ -454,7 +457,7 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   zurücksetzen();
   await order(post(BESTELLUNG_OK));
   const bestellung = JSON.parse(mails()[0].body);
-  assert.equal(bestellung.from, "Sam Sparking Website <info@samsparking.ch>",
+  assert.equal(bestellung.from, "Sam Sparking <info@samsparking.ch>",
     "die Bestellmail hat einen anderen Absender als die Anfrage");
   assert.deepEqual(bestellung.to, ["info@samsparking.ch"], "die Bestellmail geht woandershin");
   assert.equal(bestellung.reply_to, "lea@example.ch",
