@@ -2036,15 +2036,36 @@ function showRow(sh) {
   /* Seit dem 15.09.2026 kommt hier nur noch Kommendes an (renderShows filtert
      Vergangenes heraus) — einen Sonderfall "vorbei" mit abgeschaltetem
      Ticket-Knopf braucht diese Zeile darum nicht mehr. */
-  const kasse = safeUrl(sh.ticketUrl) && !soldOut;
+  /* ABGESAGT ist kein Verkaufsgrund — weder hier noch im Kalender.
+
+     Befund 17.09.2026, beim Nachgehen der Kundenmeldung vom 12.08.: "gebucht"
+     war laengst geklaert (siehe oben), "abgesagt" aber nie angesehen. Der
+     Status gibt es in der Verwaltung, in den strukturierten Daten steht dafuer
+     brav `EventCancelled` — die sichtbare Zeile bot trotzdem einen
+     Ticket-Knopf an. Wer darauf klickt, kauft fuer einen Abend, den es nicht
+     gibt.
+
+     Der Link bleibt im Inhalt stehen; gezeigt wird er nicht. Erfunden wird
+     auch nichts: die Aufschrift kommt aus der Oberflaeche, nicht aus dem
+     Ticket-Feld. */
+  const abgesagt = sh.status === "cancelled";
+  const kasse = safeUrl(sh.ticketUrl) && !soldOut && !abgesagt;
   const freierHinweis = !safeUrl(sh.ticketUrl) ? str(sh.ticketUrl).trim() : "";
   const label = soldOut ? UI.soldOut : str(sh.ticketLabel, UI.tickets);
-  const hinweis = soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
-  return `<li class="show${soldOut ? " soldout" : ""}${
+  const hinweis = abgesagt
+    ? UI.cancelled
+    : soldOut
+    ? UI.soldOut
+    : freierHinweis || (booked ? UI.booked : "");
+  return `<li class="show${soldOut ? " soldout" : ""}${abgesagt ? " cancelled" : ""}${
     booked ? " booked" : ""
   }"${date ? ` data-date="${esc(date)}"` : ""} data-name="${esc(str(sh.name).trim())}" data-city="${esc(
     str(sh.city).trim()
-  )}"${sh.nichtAlsReferenz === true ? ' data-ref="nein"' : ""}>
+  )}"${
+    /* Auch der Nachtrag im Browser (assets/site.js) darf einen abgesagten
+       Abend nicht als Referenz uebernehmen — er sieht nur diese Zeile. */
+    sh.nichtAlsReferenz === true || abgesagt ? ' data-ref="nein"' : ""
+  }>
           <span class="show-date"><b>${esc(day)}</b><span class="mono">${esc(month)} ${esc(
     year
   )}</span></span>
@@ -2187,6 +2208,12 @@ export function vergangeneAlsReferenz(shows, schonDa, heute) {
   return list(shows?.items)
     .filter((i) => str(i?.name).trim())
     .filter((i) => i?.nichtAlsReferenz !== true)
+    /* ABGESAGT hat NICHT STATTGEFUNDEN — auch wenn das Datum vorbei ist.
+       `showVorbei` sieht nur aufs Datum; eine Referenz behauptet aber, Sam habe
+       dort gespielt. Das Abwaehlen von Hand reicht dafuer nicht: niemand denkt
+       daran, an einem abgesagten Abend noch ein Haekchen zu setzen.
+       (Review-Befund 17.09.2026.) */
+    .filter((i) => i?.status !== "cancelled")
     .filter((i) => showVorbei(i, heute))
     .sort((a, b) => String(isoDate(b.date) || "").localeCompare(String(isoDate(a.date) || "")))
     .filter((i) => {
@@ -3147,7 +3174,9 @@ function structuredData(c, sections, page, pages) {
          Ticket-Adresse: sie ist maschinenlesbar und führt in einen echten
          Verkauf. Stattdessen zeigt sie auf den Abschnitt der Seite selbst. */
       url: (!VORFUEHRUNG && safeUrl(sh.ticketUrl)) || `${base}${page ? pagePath(page.slug) : "/"}#shows`,
-      ...(!VORFUEHRUNG && safeUrl(sh.ticketUrl)
+      /* Ein `Offer` zu einem abgesagten Abend widerspricht dem `EventCancelled`
+         direkt darueber — und Suchmaschinen zeigen daraus einen Kauf an. */
+      ...(!VORFUEHRUNG && safeUrl(sh.ticketUrl) && sh.status !== "cancelled"
         ? {
             offers: {
               "@type": "Offer",
@@ -3184,6 +3213,10 @@ const UI_DEFAULTS = {
   tickets: "Tickets",
   soldOut: "Ausverkauft",
   booked: "Gebucht",
+  /* Steht NICHT im Inhalt (content.ui) — und das mit Absicht: was dort steht,
+     gilt in allen Sprachen unuebersetzt. So greift je Seite die Tabelle
+     unten. */
+  cancelled: "Abgesagt",
   calShow: "Termin",
   language: "Sprache",
   buy: "Kaufen",
@@ -3277,6 +3310,7 @@ const UI_SPRACHE = {
     showLessVenues: "Show less",
     orderSubject: "Order",
     soldOut: "Sold out",
+    cancelled: "Cancelled",
     onThisPage: "On this page",
     shopKicker: "MERCH",
     shopCta: "Browse the drop",
@@ -3306,6 +3340,7 @@ const UI_SPRACHE = {
     showLessVenues: "Afficher moins",
     orderSubject: "Commande",
     soldOut: "Épuisé",
+    cancelled: "Annulé",
     onThisPage: "Sur cette page",
     shopKicker: "MERCH",
     shopCta: "Voir le catalogue",
@@ -4070,8 +4105,17 @@ function renderPage(c, page, pages, lang, langs) {
         city: str(i.city),
         /* In der VORFÜHRUNG steht hier keine Ticket-Adresse: der Kalender
            macht daraus einen anklickbaren Tag, und am anderen Ende steht ein
-           echter Verkauf. */
-        url: VORFUEHRUNG ? "" : safeUrl(i.ticketUrl),
+           echter Verkauf.
+
+           Aus demselben Grund steht hier nichts bei ABGESAGT und AUSVERKAUFT:
+           der Kalender macht aus `url` einen Link in den Verkauf, ganz ohne
+           Ruecksicht auf den Status — die Zeile darueber zeigt bei beiden
+           laengst keinen Knopf mehr. Ohne Adresse bleibt der Tag ein
+           gewoehnlicher Tag; der Termin selbst steht weiterhin da. */
+        url:
+          VORFUEHRUNG || i.status === "cancelled" || i.status === "soldout"
+            ? ""
+            : safeUrl(i.ticketUrl),
         status: str(i.status, "confirmed"),
       }))
   )}</script>`

@@ -795,6 +795,11 @@ blockquote.lede footer{
 .show-name{font-size:clamp(1.15rem,2.6vw,1.8rem);text-transform:uppercase;font-variation-settings:'wdth' 116,'wght' 700;line-height:1.05;}
 .show-where{font-size:.66rem;}
 .show.soldout{opacity:.55;}
+/* Abgesagt: die Zeile bleibt lesbar, aber nichts daran laedt zum Kauf ein —
+   der Ticket-Knopf steht dort gar nicht mehr (siehe showRow in build.mjs). */
+.show.cancelled{opacity:.5;}
+.show.cancelled .show-name{text-decoration:line-through;text-decoration-thickness:1px;}
+.show.cancelled .show-cta .mono{color:var(--bone-dim);}
 .show.booked{border-color:rgba(46,107,255,.55);}
 .show.booked .show-cta .mono{color:var(--spark);}
 .cal-day.booked{background:rgba(46,107,255,.16);}
