@@ -1027,7 +1027,18 @@ for (const [datei, h] of html) {
    Fehler zwar, aber der Lauf endete trotzdem mit 0: gruen trotz Fehlern. Sie
    steht jetzt ganz unten. */
 console.log(
-  `Wuensche: "First set 2021" weg, Club Eden statt IVY, Jugendopenair SG+Wattwil,\n` +
+  /* ACHTUNG, DIESE ZEILE HAT EINMAL IN DIE IRRE GEFUEHRT (Abnahme 17.09.2026):
+     Hier stand bis dahin `"First set 2021" weg` — der Stand vom Vormittag des
+     10.08.2026. Der Kunde hat das noch am selben Tag zurueckgenommen: die
+     Jahreszahl im Hero soll bleiben, weg ist nur die Faktenzeile unten in
+     "Ueber mich" (siehe build.mjs, Block "Die Kennzahl 'First set 2021'…").
+     Geprueft hat dieser Test das laengst richtig — Zeile 221 verlangt
+     ausdruecklich, dass "2021" im Hero STEHT. Nur die Zusammenfassung log das
+     Gegenteil, und danach sah es aus, als greife eine Korrektur live nicht.
+     Ein Statustext, der etwas anderes sagt als die Pruefung darunter, ist
+     schlimmer als keiner. */
+  `Wuensche: "First set 2021" BLEIBT im Hero (Ruecknahme 10.08.2026), weg ist nur\n` +
+    `          die Faktenzeile in "Ueber mich"; Club Eden statt IVY, Jugendopenair SG+Wattwil,\n` +
     `          vier Kanaele genannt und nur echte verlinkt, kein Zeichen im Kopf,\n` +
     `          kein Rider, keine erfundene Bezahladresse, Schreibweise "Sparking".\n` +
   `Wege: ${dateien.length} gebaute Seiten, alle Menuepunkte und Sprungmarken fuehren irgendwohin.\n` +

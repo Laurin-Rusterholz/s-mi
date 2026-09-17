@@ -206,11 +206,11 @@
           "info": {
             "0": {
               "title": "Zahlung",
-              "text": "Wie bezahlt wird, steht am Artikel. Ist kein Zahlungslink hinterlegt, kommt die Bestellung über das Formular und wird persönlich bestätigt."
+              "text": "Wie bezahlt wird, steht beim jeweiligen Artikel. Bei Fragen: info@samsparking.ch."
             },
             "1": {
               "title": "Versand",
-              "text": "Der Versand wird nach der Bestellung persönlich abgesprochen. Vorher geht nichts raus."
+              "text": "Die Versandbedingungen stehen beim jeweiligen Artikel. Bei Fragen: info@samsparking.ch."
             },
             "2": {
               "title": "Fragen",
@@ -533,7 +533,21 @@
           "navLabel": "Shop",
           "note": "Sam Sparking merch — every piece helps fund the next production.",
           "title": "Sh",
-          "titleAccent": "op."
+          "titleAccent": "op.",
+          "info": {
+            "0": {
+              "title": "Payment",
+              "text": "How to pay is shown on the item itself. Questions: info@samsparking.ch."
+            },
+            "1": {
+              "title": "Shipping",
+              "text": "Shipping terms are shown on the item itself. Questions: info@samsparking.ch."
+            },
+            "2": {
+              "title": "Questions",
+              "text": "Size, colour, availability — write to info@samsparking.ch."
+            }
+          }
         },
         "shows": {
           "emptyText": "I haven't announced any dates right now. New shows land here first — or get in touch and book me for your event.",
@@ -820,11 +834,11 @@
           "info": {
             "0": {
               "title": "Paiement",
-              "text": "Le mode de paiement est indiqué sur l'article. Sans lien de paiement, la commande passe par le formulaire et est confirmée personnellement."
+              "text": "Le mode de paiement est indiqué sur l'article. Questions : info@samsparking.ch."
             },
             "1": {
               "title": "Expédition",
-              "text": "L'expédition est convenue personnellement après la commande. Rien ne part avant."
+              "text": "Les conditions d'expédition sont indiquées sur l'article. Questions : info@samsparking.ch."
             },
             "2": {
               "title": "Questions",
@@ -2453,18 +2467,18 @@
       "info": [
         {
           "icon": "zahlung",
-          "text": "How to pay is shown on the item itself. If no payment link is set, the order comes in through the form and is confirmed personally.",
-          "title": "Payment"
+          "text": "Wie bezahlt wird, steht beim jeweiligen Artikel. Bei Fragen: info@samsparking.ch.",
+          "title": "Zahlung"
         },
         {
           "icon": "versand",
-          "text": "Shipping is agreed personally after the order. Nothing is sent before that is settled.",
-          "title": "Shipping"
+          "text": "Die Versandbedingungen stehen beim jeweiligen Artikel. Bei Fragen: info@samsparking.ch.",
+          "title": "Versand"
         },
         {
           "icon": "fragen",
-          "text": "Size, colour, availability — write to info@samsparking.ch.",
-          "title": "Questions"
+          "text": "Grösse, Farbe, Verfügbarkeit — schreib an info@samsparking.ch.",
+          "title": "Fragen"
         }
       ],
       "intro": "Small runs, made to be worn at the show. What you see here is what exists — when a piece is gone, it is gone.",

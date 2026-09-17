@@ -1076,6 +1076,91 @@ export function nachziehen(live, korr) {
     if (n) getan.push(`${n} Shop-Angabe(n) ergaenzt`);
   }
 
+  /* DER WIDERSPRUCH IM SHOP-STREIFEN (Kundenbefund 15.09., Entscheid 17.09.2026)
+
+     Unter dem Katalog stand: „Der Versand wird nach der Bestellung persoenlich
+     abgesprochen." Die beiden Artikel des Kunden sagen daneben ausdruecklich
+     „Gratis Versand innerhalb der Schweiz!", und der Stripe-Checkout fuehrt
+     dasselbe. Der Streifen widersprach also der Ware, auf die er sich bezieht.
+     Beim Punkt „Zahlung" dasselbe: er verwies auf ein Bestellformular, das am
+     12.08.2026 entfernt wurde.
+
+     NEUE BEDINGUNGEN WERDEN HIER NICHT ERFUNDEN. Der Streifen ist der
+     GENERISCHE Hinweis und verweist ab jetzt neutral auf die Angaben beim
+     Artikel. Was der Kunde am Artikel und im Checkout hinterlegt hat, bleibt
+     unangetastet — das ist die Quelle.
+
+     ERSETZT WIRD NUR, WAS WOERTLICH EINEM DER BEKANNTEN ALTEN TEXTE ENTSPRICHT
+     (korr.shopHinweise.alt). Schreibt der Kunde selbst etwas hin, trifft der
+     Vergleich nicht mehr und hier passiert nichts — fuer immer.
+
+     UND ES GEHT UM ALLE DREI SPRACHEN: Grundsprache ist Deutsch
+     (site.lang = "de"), und der Generator zeigt auf der Hauptseite den
+     GRUNDTEXT. Der stand hier auf Englisch — die deutsche Seite zeigte also
+     den englischen Streifen, waehrend die deutsche Fassung ungenutzt unter
+     i18n.de lag. Deutsch wandert deshalb in den Grundtext, Englisch nach
+     i18n.en. Danach sagen de, en und fr dasselbe. */
+  if (!erledigt("shopHinweise") && korr.shopHinweise) {
+    const kh = korr.shopHinweise;
+    const stellen = list(kh.stellen).map((x) => Number(x)).filter((x) => Number.isInteger(x) && x >= 0);
+    const bekannt = new Set(list(kh.alt).map((t) => str(t).trim()));
+    const passt = (wert) => bekannt.has(str(wert).trim());
+    /* Schon umgestellt? Dann ist nichts zu tun — und vor allem NICHTS zu
+       melden. Ohne diese Frage schriebe der Punkt „Fragen" bei jedem Bau
+       erneut: sein Wortlaut ist vorher und nachher derselbe, er wechselt nur
+       den Platz, und `passt` traefe deshalb fuer immer zu. */
+    const schonSo = (wert, ziel) =>
+      !!wert && str(wert.title).trim() === str(ziel.title).trim()
+             && str(wert.text).trim() === str(ziel.text).trim();
+    let n = 0;
+    const steheneGelassen = [];
+
+    /* Der Grundtext — das ist, was die deutsche Seite zeigt. */
+    const grund = list(ls.shop?.info);
+    stellen.forEach((i, platz) => {
+      const eintrag = grund[i];
+      const neuText = list(kh.grund)[platz];
+      if (!eintrag || !neuText) return;
+      if (schonSo(eintrag, neuText)) return;
+      if (!passt(eintrag.text)) { steheneGelassen.push(`Grundtext ${i}`); return; }
+      eintrag.title = neuText.title;
+      eintrag.text = neuText.text;
+      n++;
+    });
+
+    /* Und jede Uebersetzung. Sie haengen am PLATZ in der Liste, nicht am
+       Namen — deshalb wird ueber denselben Index geschrieben. */
+    for (const [lang, texte] of Object.entries(kh.i18n || {})) {
+      const dort = (live.i18n || (live.i18n = {}))[lang] || ((live.i18n[lang] = {}));
+      const abschnitte = dort.sections || (dort.sections = {});
+      const shop = abschnitte.shop || (abschnitte.shop = {});
+      const info = shop.info || (shop.info = {});
+      stellen.forEach((i, platz) => {
+        const neuText = list(texte)[platz];
+        if (!neuText) return;
+        const vorhanden = info[String(i)];
+        if (schonSo(vorhanden, neuText)) return;
+        /* Noch gar keine Uebersetzung an dieser Stelle (so steht es bei en):
+           dann ist nichts zu ueberschreiben, es wird ergaenzt. */
+        if (vorhanden && str(vorhanden.text) && !passt(vorhanden.text)) {
+          steheneGelassen.push(`${lang} ${i}`);
+          return;
+        }
+        info[String(i)] = { ...(vorhanden || {}), title: neuText.title, text: neuText.text };
+        n++;
+      });
+    }
+
+    if (n) getan.push(`${n} Shop-Hinweis(e) auf die Angaben am Artikel umgestellt`);
+    if (steheneGelassen.length) {
+      console.log(
+        "[build] Shop-Streifen: " + steheneGelassen.length + " Stelle(n) unveraendert gelassen, "
+          + "weil dort etwas anderes steht als der bekannte alte Text (" + steheneGelassen.join(", ") + "). "
+          + "Das ist Absicht: was der Kunde selbst hineinschreibt, gewinnt."
+      );
+    }
+  }
+
   /* Zwei Ansichten des Shops (12.08.2026, zweiter Anlauf).
 
      Erst hatte der Shop nur eine eigene Seite /shop/ — der Kunde suchte sein
