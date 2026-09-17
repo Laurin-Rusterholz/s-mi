@@ -21,7 +21,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
 import { readFile, mkdtemp, cp, rm, mkdir } from "node:fs/promises";
-import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync, realpathSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -44,9 +44,23 @@ const NEUER_TERMIN = {
   ticketUrl: "https://tickets.example/regressionsfest",
 };
 
+/* Der echte Pfad, nicht der geliehene.
+ *
+ * BEFUND vom Mac (17.09.2026): Dort musste `TMPDIR=/private/tmp` gesetzt
+ * werden, sonst meldete der Lauf 15 Fehler, die keine waren. Grund ist ein
+ * Symlink: `mkdtemp(tmpdir())` liefert auf macOS `/var/folders/…`, und `/var`
+ * ist eine Verknuepfung auf `/private/var`. Node loest Symlinks beim Laden
+ * eines Moduls UND bei `process.cwd()` auf — der Generator rechnet drinnen
+ * also mit `/private/var/…`, waehrend der Test draussen `/var/…` festhaelt.
+ * Zwei Namen fuer dasselbe Verzeichnis, und jeder Vergleich der beiden geht
+ * schief.
+ *
+ * `realpathSync` macht daraus wieder einen Namen — auf jedem System, auch da,
+ * wo es gar keinen Symlink gibt (dann kommt derselbe Pfad zurueck). Damit
+ * braucht es auf dem Mac kein TMPDIR mehr. */
 /** Eine Kopie des Repos, in der gebaut werden darf. Ohne media/ (7 MB Video). */
 async function repoKopie() {
-  const dir = await mkdtemp(join(tmpdir(), "s-mi-kette-"));
+  const dir = realpathSync(await mkdtemp(join(tmpdir(), "s-mi-kette-")));
   await cp(ROOT, dir, {
     recursive: true,
     filter: (quelle) => !/(^|\/)(\.git|media|node_modules)(\/|$)/.test(quelle.slice(ROOT.length)),

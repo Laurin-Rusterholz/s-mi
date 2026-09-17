@@ -811,6 +811,15 @@ blockquote.lede footer{
 .cal-legend .lg-soldout::before{background:var(--bone-dim);}
 .show.soldout .show-cta .mono{color:var(--spark);}
 
+/* Vorführ-Fassung: wo sonst ein Kauf- oder Ticket-Knopf steht, steht dort ein
+   Vermerk. Er soll erkennbar an der Stelle des Knopfes sitzen, aber nicht wie
+   einer aussehen, den man drücken kann — gestrichelter Rahmen, gedämpfte
+   Farbe. */
+.shop-demo{
+  display:inline-block;border:1px dashed var(--line);border-radius:6px;
+  padding:6px 12px;color:var(--bone-dim);font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;white-space:nowrap;
+}
 @media(max-width:640px){
   .show-list li{grid-template-columns:68px 1fr;gap:14px;}
   .show-cta{grid-column:2;}
