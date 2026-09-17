@@ -223,8 +223,84 @@ zusammenbringt.
 | `STRIPE_PAYMENT_LINK_URL` | **ja** für Bezahlung | der echte Payment Link, siehe unten |
 | `STRIPE_WEBHOOK_SECRET` | **ja** für Zahlungsbestätigung | `whsec_…` aus dem Stripe-Dashboard |
 | `INBOX_API_URL` | nein | Eingang, Vorgabe ist der bisherige `…/samsparking/inquiries.json` |
-| `INBOX_API_TOKEN` | nein | falls der Eingang später nicht mehr öffentlich beschreibbar sein soll |
+| `INBOX_API_TOKEN` | **ja** für Zähler und Stripe-Vermerk | Anmeldung der Server-Schreibzugriffe (`?auth=…`). Fehlt er, antwortet die Datenbank mit **HTTP 401** — siehe „Server-Zugang zur Datenbank“ unten. Die Angabe „nein“ stand hier bis zum 17.09.2026 und war falsch |
 | `CONTENT_API_URL` | schon gesetzt | Inhaltsquelle für den Build (steht in `netlify.toml`) |
+
+### Server-Zugang zur Datenbank — Stand 17.09.2026
+
+**Befund (Netlify, Production, Functions/zaehler, 17.09.2026):**
+
+```
+14:46:15  ERROR  [zaehler] nicht gezaehlt: HTTP 401
+14:48:10  ERROR  [zaehler] nicht gezaehlt: HTTP 401
+14:48:23  ERROR  [zaehler] nicht gezaehlt: HTTP 401
+```
+
+Der Aufruf kam an; abgewiesen hat die Realtime Database.
+
+**Welche Anmeldung die Endpunkte heute benutzen.** `netlify/functions/_lib.mjs`,
+`zaehler.mjs` und `stripe-webhook.mjs` hängen den Wert aus `INBOX_API_TOKEN`
+unverändert als `?auth=…` an die REST-Adresse. Die REST-Schnittstelle der
+Realtime Database nimmt dort dreierlei an:
+
+| Was | Lebensdauer | Rechte |
+|---|---|---|
+| Legacy-Datenbankgeheimnis | dauerhaft | **alles** — hebelt sämtliche Regeln aus; von Google als veraltet geführt |
+| Firebase-ID-Token (Browser-Sitzung) | rund eine Stunde | die des angemeldeten Kontos |
+| OAuth2-Zugriffstoken eines Dienstkontos | rund eine Stunde | die des Dienstkontos |
+
+Der Code schickt einen **festen** Wert aus der Umgebung und erneuert nichts.
+Dauerhaft funktioniert davon nur die erste Zeile — also ausgerechnet die mit
+allen Rechten. **Ein korrekter, dauerhafter Dienstzugang mit kleinsten Rechten
+ist im heutigen Stand nicht vorgesehen.** Ein Browser-ID-Token ist dafür keine
+Lösung: es läuft nach einer Stunde ab.
+
+**Wohin der Server schreibt — und was die Regeln dazu sagen.** Die Regeldatei
+`verwaltung-djsamsparkling/firebase/database.rules.json` (sie wird **nicht**
+automatisch ausgerollt, der Live-Stand kann abweichen) kennt `content`,
+`media`, `versions`, `config` und `inquiries`:
+
+| Pfad | wer schreibt | Regel vorhanden |
+|---|---|---|
+| `samsparking/inquiries/<id>` | `_lib.mjs` (Anfrage, Bestellung, Zahlung) | ja — **Anlegen ohne Anmeldung erlaubt** (`!data.exists()`), dazu eine `.validate` |
+| `samsparking/stats` | `zaehler.mjs` | **nein** — kein Knoten, also standardmässig verboten |
+| `samsparking/stripeEvents/<id>` | `stripe-webhook.mjs` (lesen und schreiben) | **nein** — dasselbe |
+
+Der 401 des Zählers passt genau dazu: für `stats` gibt es keine Regel, und
+daran ändert auch ein gesetzter Token nichts — es sei denn, er ist das
+Legacy-Geheimnis mit allen Rechten.
+
+**Nötige Schritte, kleinste Rechte zuerst** (nichts davon lässt sich aus
+diesem Repository erledigen):
+
+1. **Eine Server-Identität festlegen.** Sauber ist ein eigenes Dienstkonto im
+   Firebase-Projekt, dessen kurzlebiges OAuth2-Zugriffstoken die Function bei
+   jedem Aufruf selbst erzeugt (Signatur mit dem privaten Schlüssel des
+   Dienstkontos; in Node ohne zusätzliche Pakete machbar). Das ist eine
+   **Code-Änderung** und braucht eine eigene Umgebungsvariable.
+2. **Die Regeln um die beiden fehlenden Knoten ergänzen** — `stats` und
+   `stripeEvents`, Schreibrecht ausschliesslich für diese Identität, Lesen von
+   `stats` nur mit Sitzung. Öffentlich beschreibbar darf keiner der beiden
+   werden. Ausgerollt wird von Hand über die vollständige Regeldatei des
+   Projekts.
+3. **Die Variable nur in der Produktion setzen** (Netlify → Environment
+   variables), nicht in Vorschau-Deploys.
+4. **Nachsehen:** `GET /api/booking` meldet `eingangSchluesselGesetzt` als
+   ja/nein — nie einen Wert.
+
+Solange Schritt 1 und 2 offen sind, bleibt es dabei: E-Mails gehen raus (sie
+hängen an `RESEND_API_KEY`), Zähler und Stripe-Vermerk nicht. Das ist ein
+**Konfigurations- und Regel-Thema, kein Fehler im Code der Endpunkte** — mit
+der einen Ausnahme, dass die Tabelle oben den Token bis zum 17.09.2026 als
+„nein“ führte.
+
+**Noch offen, hier nur vermerkt:** der Stripe-Beleg legt einen Eintrag mit
+`name` und `email` aus `customer_details` im Eingang ab. Liefert Stripe keinen
+Namen (Namensabfrage im Payment Link nicht aktiviert), steht dort ein leerer
+Text — die `.validate` des Eingangs verlangt aber mindestens zwei Zeichen und
+eine E-Mail-Adresse. Der Beleg fiele dann auch mit gültigem Zugang durch. Live
+belegt ist das nicht (es gab noch keine echte Zahlung); die Lösung gehört mit
+Schritt 1 und 2 zusammen entschieden und ist deshalb hier nicht vorweggenommen.
 
 ### Provider-Setup
 

@@ -16,6 +16,10 @@ import { createHmac } from "node:crypto";
 import assert from "node:assert/strict";
 
 process.env.MAIL_TO = "info@samsparking.ch";
+/* Der Absender, wie er in der Produktion steht (Netlify, Stand 17.09.2026).
+   Ohne diese Zeile griffe die Vorgabe `onboarding@resend.dev` — dann pruefte
+   der Test etwas, das live gar nicht verschickt wird. */
+process.env.MAIL_FROM = "Sam Sparking Website <info@samsparking.ch>";
 process.env.RESEND_API_KEY = "re_test";
 process.env.INBOX_API_URL = "https://beispiel.example/samsparking/inquiries.json";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
@@ -405,6 +409,88 @@ process.env.STRIPE_WEBHOOK_SECRET = "whsec_test";
   const kaputt = await zaehler(post({ pfad: "/", sprache: "en", geraet: "rechner" }));
   assert.equal(kaputt.status, 202);
   assert.equal((await kaputt.json()).ok, false);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   DIE AUTOMATISCHEN MAILS — Absender, Antwortadresse, Erkennbarkeit
+
+   RESTABNAHME 17.09.2026. Geprueft wurde bisher, DASS eine E-Mail rausgeht und
+   an wen. Drei Dinge standen in keinem Test:
+
+     · der ABSENDER (`from`) — er entscheidet, was im Postfach steht;
+     · die Antwortadresse der BESTELLUNG (die der Anfrage war geprueft);
+     · ob eine automatische Mail als solche zu ERKENNEN ist. Saemi schreibt
+       aus demselben Postfach von Hand, mit der Outlook-Signatur
+       (verwaltung-djsamsparkling/signatur/). Beides landet unter
+       info@samsparking.ch — auseinanderzuhalten sein muss es trotzdem.
+
+   Verschickt wird hier nichts: `fetch` ist abgefangen, es gibt keinen echten
+   Schluessel und keine echte Adresse.
+   ══════════════════════════════════════════════════════════════════════════ */
+{
+  zurücksetzen();
+  await booking(post(BOOKING_OK));
+  const anfrage = JSON.parse(mails()[0].body);
+
+  assert.equal(anfrage.from, "Sam Sparking Website <info@samsparking.ch>",
+    "der Absender kommt nicht aus MAIL_FROM");
+  /* Ein ANZEIGENAME gehoert dazu. Steht dort nur die nackte Adresse, sieht die
+     automatische Mail im Postfach genauso aus wie eine, die Saemi selbst
+     geschrieben hat — dieselbe Adresse, derselbe Name. */
+  assert.match(anfrage.from, /^[^<]+<[^>]+>$/,
+    "der Absender hat keinen Anzeigenamen — im Postfach nicht von einer Hand-Mail zu unterscheiden");
+
+  /* Und die Mail sagt im Betreff UND im ersten Satz, woher sie kommt. */
+  assert.match(anfrage.subject, /^Booking-Anfrage: /, "der Betreff nennt die Art der Meldung nicht");
+  assert.match(anfrage.text, /^Neue Booking-Anfrage über die Website\./,
+    "der Text sagt im ersten Satz nicht, dass die Meldung von der Website kommt");
+
+  /* Eine automatische Mail traegt KEINE persoenliche Signatur — sonst laege
+     unter einem Maschinentext eine Unterschrift, die niemand geschrieben hat. */
+  for (const teil of ["Hardstyle DJ & Producer", "Mixcloud", "Freundliche Grüsse", "Liebe Grüsse"]) {
+    assert.ok(!anfrage.text.includes(teil), `die automatische Mail traegt Signatur-Teile („${teil}")`);
+  }
+
+  zurücksetzen();
+  await order(post(BESTELLUNG_OK));
+  const bestellung = JSON.parse(mails()[0].body);
+  assert.equal(bestellung.from, "Sam Sparking Website <info@samsparking.ch>",
+    "die Bestellmail hat einen anderen Absender als die Anfrage");
+  assert.deepEqual(bestellung.to, ["info@samsparking.ch"], "die Bestellmail geht woandershin");
+  assert.equal(bestellung.reply_to, "lea@example.ch",
+    "eine Antwort auf die Bestellmail ginge nicht an die bestellende Person");
+  assert.match(bestellung.subject, /^Bestellung BE-/, "der Betreff nennt die Bestellnummer nicht");
+
+  /* GEGENPROBE: ohne MAIL_FROM greift die Vorgabe — die ist zum Ausprobieren
+     da und darf im Postfach sofort auffallen. */
+  const echt = process.env.MAIL_FROM;
+  delete process.env.MAIL_FROM;
+  zurücksetzen();
+  await booking(post(BOOKING_OK));
+  assert.match(JSON.parse(mails()[0].body).from, /onboarding@resend\.dev/,
+    "ohne MAIL_FROM wird nicht die Vorgabe benutzt");
+  process.env.MAIL_FROM = echt;
+
+  /* Die Zahlungsmeldung geht an uns, nicht an die Kundschaft — dort waere eine
+     Antwortadresse falsch. */
+  zurücksetzen();
+  const roh = JSON.stringify({
+    id: "evt_1", type: "checkout.session.completed",
+    data: { object: { id: "cs_1", amount_total: 3500, currency: "chf", client_reference_id: "BE-1",
+      customer_details: { name: "Lea Muster", email: "lea@example.ch" } } },
+  });
+  const t = Math.floor(Date.now() / 1000);
+  const sig = createHmac("sha256", "whsec_test").update(`${t}.${roh}`).digest("hex");
+  antwort = (url, init) =>
+    /stripeEvents/.test(url) && (init.method || "GET") === "GET"
+      ? { ok: true, status: 200, json: async () => null, text: async () => "" }
+      : { ok: true, status: 200, json: async () => ({ name: "-Abc" }), text: async () => "" };
+  await webhook(new Request("https://samsparking.ch/api/stripe-webhook", {
+    method: "POST", headers: { "stripe-signature": `t=${t},v1=${sig}` }, body: roh,
+  }));
+  const zahlung = JSON.parse(mails()[0].body);
+  assert.equal(zahlung.reply_to, undefined, "die Zahlungsmeldung traegt eine Antwortadresse");
+  assert.match(zahlung.subject, /^Zahlung eingegangen: /, "der Betreff der Zahlungsmeldung stimmt nicht");
 }
 
 console.log(`booking:  vollstaendig → Eingang + E-Mail an ${process.env.MAIL_TO}; unvollstaendig → 422;

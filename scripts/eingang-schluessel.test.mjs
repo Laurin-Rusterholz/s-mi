@@ -182,3 +182,35 @@ test("gezählt wird weiterhin nur, was gezählt werden darf", () => {
   assert.ok(!/localStorage|document\.cookie|kennung|userId/i.test(block),
     "es wird mehr mitgeschickt als die vier Angaben");
 });
+
+test("die Anleitung sagt, dass der Schlüssel Pflicht ist — nicht 'nein'", () => {
+  /* RESTABNAHME 17.09.2026: In AUDIT.md stand `INBOX_API_TOKEN` in der Spalte
+     „Pflicht" auf **nein**, mit der Begründung „falls der Eingang später nicht
+     mehr öffentlich beschreibbar sein soll". Genau das ist er aber längst
+     nicht mehr — die Datenbank weist seit dem 13.08./01.09.2026 jeden nicht
+     angemeldeten Schreibzugriff ab. Wer nach dem 401 in dieser Tabelle
+     nachsah, las das Gegenteil dessen, was der Code meldet.
+
+     Geprüft wird die Zeile, nicht die Wortwahl drumherum. */
+  const audit = readFileSync(join(ROOT, "AUDIT.md"), "utf8");
+  const zeile = audit.split("\n").find((z) => z.startsWith("| `INBOX_API_TOKEN`"));
+  assert.ok(zeile, "die Zeile zu INBOX_API_TOKEN fehlt in AUDIT.md");
+
+  const spalten = zeile.split("|").map((x) => x.trim());
+  assert.match(spalten[2], /ja/i, "AUDIT.md führt INBOX_API_TOKEN weiter als nicht nötig");
+  assert.ok(!/^nein$/i.test(spalten[2]), "die Pflicht-Spalte steht wieder auf „nein“");
+  assert.match(zeile, /401/, "die Zeile nennt die Folge (HTTP 401) nicht");
+
+  /* Und die Frage, die beim 401 wirklich zu klären ist, steht im Dokument:
+     welches Anmeldeverfahren überhaupt unterstützt wird — und dass ein
+     dauerhafter Dienstzugang mit kleinsten Rechten heute NICHT vorgesehen
+     ist. Ohne diesen Absatz endet die Suche wieder bei „Token setzen". */
+  assert.match(audit, /Server-Zugang zur Datenbank/, "der Abschnitt zum Server-Zugang fehlt");
+  assert.match(audit, /nicht vorgesehen/, "es steht nicht da, dass ein Dienstzugang heute fehlt");
+  assert.match(audit, /Legacy-Datenbankgeheimnis/, "die Anmeldeverfahren sind nicht benannt");
+  assert.match(audit, /`samsparking\/stats`/, "der Pfad ohne Regel wird nicht genannt");
+
+  /* KEIN Geheimnis im Dokument — weder echt noch als Beispiel. */
+  assert.ok(!/AIza[0-9A-Za-z_-]{20,}/.test(audit), "in AUDIT.md steht ein Schlüssel");
+  assert.ok(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(audit), "in AUDIT.md steht ein privater Schlüssel");
+});
