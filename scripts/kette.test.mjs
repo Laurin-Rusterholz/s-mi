@@ -934,6 +934,75 @@ test("Texte in der alten Hauptsprache werden gemeldet — und nicht umgeschriebe
   assert.ok(!start.includes("Aus Energie wird Euphorie."), "der Generator hat die Uebersetzung eingesetzt");
 });
 
+test("ein vergangener Auftritt darf als Referenz unter den ersten vier stehen", async (t) => {
+  /* VIDEO-ABNAHME (WhatsApp 30.08.2026, ca. Sek. 84): Saemi zeigt auf die
+     letzte Referenz — „AFTERSUN / LUZERN" — und sagt, die muesse unter die
+     ersten vier; „THE Q" dafuer nach unten.
+
+     Das ist eine REDAKTIONELLE Entscheidung: die Reihenfolge pflegt er in der
+     Verwaltung. Was der Generator dabei zusagen muss, ist dieses eine: er darf
+     ihm nicht dazwischenfunken. „Aftersun Festival" ist zugleich ein
+     VERGANGENER Termin (29.08.2026) — bis zum 15.09.2026 nahm der Generator
+     genau deshalb den Eintrag aus der Referenzliste, und auf dem Handy, wo nur
+     vier stehen, rutschte ein anderer Club auf seinen Platz. Der Wunsch waere
+     also gar nicht erfuellbar gewesen, so oft man ihn auch einsortiert.
+
+     Geprueft wird hier der Fall aus dem Video, mit dem Termin im Spiel: die
+     Referenz steht an der Stelle, an die sie gesetzt wurde — auf der Seite und
+     in den ersten vier des Handys. Umdatiert wird dabei nichts: der vergangene
+     Termin bleibt unveraendert in den Daten stehen. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN, name: "Aftersun Festival", city: "Luzern" }];
+  stand.sections.references.items = [
+    { name: "Kugl", city: "St. Gallen" },
+    { name: "Sektor 11", city: "Zurich" },
+    { name: "Nox Club", city: "Chur" },
+    // Auf den vierten Platz gesetzt — und zugleich ein vergangener Termin.
+    { name: "Aftersun Festival", city: "Luzern" },
+    // Vorher hier oben, jetzt darunter.
+    { name: "The Q", city: "St. Gallen" },
+    { name: "Eden", city: "St. Gallen" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => { await db.stop(); await rm(dir, { recursive: true, force: true }); });
+
+  const lauf = await baue(dir, { CONTENT_API_URL: db.contentUrl, CONTENT_API_REQUIRED: "1" });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  for (const [seite, html] of seitenMitShows(dir)) {
+    const anfang = html.indexOf('id="venue-list"');
+    if (anfang < 0) continue;   // diese Seite traegt die Referenzen nicht
+    const liste = html.slice(anfang, html.indexOf("</ul>", anfang));
+    const zeilen = Array.from(liste.matchAll(/<li([^>]*)>[\s\S]*?class="venue-name">([^<]+)</g));
+    const namen = zeilen.map(([, , n]) => n.trim());
+    const vorschau = zeilen.filter(([, a]) => !/data-extra/.test(a)).map(([, , n]) => n.trim());
+
+    assert.deepEqual(
+      namen,
+      ["Kugl", "Sektor 11", "Nox Club", "Aftersun Festival", "The Q", "Eden"],
+      `${seite}: die Referenzen stehen nicht in der Reihenfolge der Verwaltung`
+    );
+    assert.equal(namen[3], "Aftersun Festival", `${seite}: Aftersun steht nicht an vierter Stelle`);
+    assert.ok(vorschau.includes("Aftersun Festival"),
+      `${seite}: Aftersun fehlt in den ersten vier — auf dem Handy waere der Wunsch nicht erfuellt`);
+    assert.ok(!vorschau.includes("The Q"), `${seite}: The Q steht immer noch unter den ersten vier`);
+
+    /* Und unter „Shows" taucht der vergangene Abend nicht auf. */
+    assert.ok(!showsAbschnitt(html).includes("Aftersun Festival"),
+      `${seite}: der vergangene Termin steht unter „Shows"`);
+  }
+
+  /* Die Daten sind unberuehrt — der Termin behaelt sein Datum. */
+  const schnappschuss = JSON.parse(readFileSync(join(dir, "content/site.json"), "utf8"));
+  assert.deepEqual(
+    (schnappschuss.sections.shows.items || []).map((i) => `${String(i.name).trim()} ${i.date}`),
+    [`Aftersun Festival ${VERGANGENER_TERMIN.date}`],
+    "der vergangene Termin wurde umdatiert oder entfernt"
+  );
+});
+
 test("die Referenzen stehen in der Reihenfolge der Verwaltung — auf jeder Breite", async (t) => {
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
   /* Beispielnamen, keine Kundendaten. Die Reihenfolge ist die Zusage: was in
