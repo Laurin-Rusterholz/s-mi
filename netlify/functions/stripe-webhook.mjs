@@ -24,7 +24,7 @@
  *   ein Stapel gleicher E-Mails.
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { json, inEingang, sendeMail, zeilen, INBOX_URL } from "./_lib.mjs";
+import { json, inEingang, sendeMail, zeilen, INBOX_URL, dbFehler } from "./_lib.mjs";
 
 /** Wie alt eine Meldung hoechstens sein darf (Sekunden). Stripe empfiehlt 300. */
 const TOLERANZ = 300;
@@ -86,13 +86,22 @@ async function schonVerarbeitet(id) {
 
 async function vermerken(id, daten) {
   try {
-    await fetch(vermerkUrl(id), {
+    const res = await fetch(vermerkUrl(id), {
       method: "PUT",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ ...daten, at: new Date().toISOString() }),
     });
+    /* BEFUND 17.09.2026: Hier wurde die Antwort gar nicht angesehen. Weist die
+       Datenbank den Schreibzugriff ab (HTTP 401, weil kein INBOX_API_TOKEN
+       gesetzt ist), entstand der Vermerk nicht — und still. Der Vermerk ist
+       aber genau das, was eine WIEDERHOLTE Stripe-Meldung davon abhaelt, ein
+       zweites Mal verarbeitet zu werden. Ein stummer Fehlschlag ist hier also
+       teurer als anderswo. */
+    if (!res.ok) {
+      throw new Error(dbFehler(res.status, (process.env.INBOX_API_TOKEN || "").trim()));
+    }
   } catch (err) {
-    console.error("[stripe] Vermerk nicht geschrieben:", err.message);
+    console.error("[stripe] Vermerk nicht geschrieben (eine wiederholte Meldung waere damit nicht erkennbar):", err.message);
   }
 }
 

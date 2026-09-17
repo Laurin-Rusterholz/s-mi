@@ -23,7 +23,7 @@
  * sich nicht gegenseitig ueberschreiben (ein Lesen-Rechnen-Schreiben von hier
  * aus koennte das).
  */
-import { json, INBOX_URL } from "./_lib.mjs";
+import { json, INBOX_URL, dbFehler } from "./_lib.mjs";
 
 const ZEITZONE = "Europe/Zurich";
 
@@ -105,7 +105,7 @@ export default async (req) => {
       headers: { "content-type": "application/json" },
       body: JSON.stringify(patch),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) throw new Error(dbFehler(res.status, (process.env.INBOX_API_TOKEN || "").trim()));
   } catch (err) {
     /* Ein verlorener Zaehler ist kein Grund, den Besucher etwas zu merken zu
        lassen. Der Fehler steht im Protokoll der Funktion. */
