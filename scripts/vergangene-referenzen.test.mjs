@@ -238,7 +238,20 @@ test("vergangeneAlsReferenz: die Regeln einzeln", () => {
    Geprüft wird die echte Funktion aus der Datei, ausgeführt gegen ein
    Stub-DOM: derselbe Weg, den die übrigen Prüfungen dieses Repos gehen.
    ══════════════════════════════════════════════════════════════════════════ */
-function stubDom() {
+/* Ein Stub-DOM, gerade gross genug fuer das, was die Funktion wirklich fragt.
+
+   `anzahl`      — so viele GEPFLEGTE Referenzen stehen schon da (ohne
+                   `data-aus-show`; die erste traegt absichtlich die Adresse
+                   eines FREMDEN Clubs, siehe die Pruefung dazu).
+   `mitKnopf`    — gibt es den Knopf „N weitere anzeigen"? Bei hoechstens vier
+                   Referenzen baut der Generator ihn NICHT.
+   `automatisch` — bereits nachgetragene Auftritte (mit `data-aus-show`).
+   `leerVerborgen` — die leere Liste steht `hidden` im HTML. */
+function stubDom(opt = {}) {
+  const anzahl = opt.anzahl === undefined ? 5 : opt.anzahl;
+  const mitKnopf = opt.mitKnopf === undefined ? anzahl > 4 : opt.mitKnopf;
+  const automatisch = opt.automatisch || [];
+
   const mk = (tag) => ({
     tagName: String(tag).toUpperCase(),
     children: [],
@@ -247,7 +260,15 @@ function stubDom() {
     textContent: "",
     setAttribute(k, v) { this.attrs[k] = String(v); },
     getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; },
+    hasAttribute(k) { return k in this.attrs; },
+    removeAttribute(k) { delete this.attrs[k]; },
     appendChild(k) { this.children.push(k); return k; },
+    insertBefore(k, davor) {
+      const i = this.children.indexOf(davor);
+      if (i < 0) this.children.push(k);
+      else this.children.splice(i, 0, k);
+      return k;
+    },
     remove() {},
     querySelector(sel) {
       /* Genug für das, was die Funktion wirklich fragt: ".klasse", "tag" und
@@ -279,22 +300,46 @@ function stubDom() {
 
   const liste = mk("ul");
   liste.setAttribute("data-mobil", "4");
-  for (let i = 1; i <= 5; i++) {
+  /* Das Ziel steht am Behälter — genau so, wie der Generator es ausgibt. */
+  liste.setAttribute("data-booking", "/booking/#booking-form");
+
+  const eintrag = (name, ort, adresse, ausShow) => {
     const li = mk("li");
-    if (i > 4) li.setAttribute("data-extra", "true");
+    if (ausShow) li.setAttribute("data-aus-show", ausShow);
     const a = mk("a");
-    a.setAttribute("href", "/booking/#booking-form");
-    const n = mk("span"); n.className = "venue-name"; n.textContent = `Referenz ${i}`;
-    const o = mk("span"); o.className = "venue-city"; o.textContent = "Beispielstadt";
+    a.setAttribute("href", adresse);
+    const n = mk("span"); n.className = "venue-name"; n.textContent = name;
+    const o = mk("span"); o.className = "venue-city"; o.textContent = ort;
     a.appendChild(n); a.appendChild(o); li.appendChild(a);
     liste.appendChild(li);
-  }
-  const knopf = mk("button");
-  knopf.className = "venue-more";
-  knopf.setAttribute("data-more", "1 weitere anzeigen");
-  knopf.setAttribute("aria-expanded", "false");
-  knopf.textContent = "1 weitere anzeigen";
+    return li;
+  };
 
+  for (let i = 1; i <= anzahl; i++) {
+    /* Die ERSTE gepflegte Referenz verlinkt auf die Website eines fremden
+       Clubs. Genau diese Adresse hat das Nachtragen bis zum Review vom
+       17.09.2026 abgeschrieben. */
+    eintrag(`Referenz ${i}`, "Beispielstadt",
+      i === 1 ? "https://fremder-club.example/programm" : "/booking/#booking-form");
+  }
+  automatisch.forEach((t) => eintrag(t.name, t.city, "/booking/#booking-form", t.date));
+
+  if (mitKnopf) {
+    const versteckt = Math.max(0, liste.children.length - 4);
+    liste.children.forEach((li, i) => { if (i >= 4) li.setAttribute("data-extra", "true"); });
+    const knopf = mk("button");
+    knopf.className = "venue-more";
+    knopf.setAttribute("data-more", `${versteckt} weitere anzeigen`);
+    knopf.setAttribute("data-less", "Weniger anzeigen");
+    knopf.setAttribute("aria-expanded", "false");
+    knopf.textContent = `${versteckt} weitere anzeigen`;
+    return dom(liste, knopf, mk, opt);
+  }
+  return dom(liste, null, mk, opt);
+}
+
+function dom(liste, knopf, mk, opt) {
+  if (opt.leerVerborgen) liste.setAttribute("hidden", "");
   return {
     liste,
     knopf,
@@ -365,4 +410,164 @@ test("ohne neuen Build: ohne Referenzliste passiert einfach nichts", (t) => {
   const fn = nachtragen(dom);
   assert.doesNotThrow(() => fn(zeile({ "data-name": "Gestern", "data-city": "Chur", "data-date": "2026-09-16" })),
     "ohne Referenzliste wirft das Nachtragen");
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   6. DIE DREI REVIEW-BEFUNDE VOM 17.09.2026
+
+   Alle drei betreffen nur den Nachtrag im Browser — also genau die Minuten
+   zwischen dem Verstreichen eines Datums und dem nächsten Bau.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+test("Befund 1: der nachgetragene Auftritt verlinkt NIE zum falschen Club", (t) => {
+  /* Die erste gepflegte Referenz im Stub zeigt auf die Website eines fremden
+     Clubs — bis zum Review wurde genau diese Adresse abgeschrieben. Ein
+     Auftritt in Herisau hätte dann auf das Programm eines anderen Hauses
+     verlinkt. Falsch ist schlimmer als gar nichts. */
+  const dom = stubDom();
+  assert.equal(dom.liste.children[0].querySelector("a").getAttribute("href"),
+    "https://fremder-club.example/programm", "der Stub prüft den Fall gar nicht mehr");
+
+  nachtragen(dom)(zeile({ "data-name": "Gestern Abend", "data-city": "Herisau", "data-date": "2026-09-16" }));
+
+  const neu = dom.liste.children[dom.liste.children.length - 1];
+  assert.equal(neu.querySelector("a").getAttribute("href"), "/booking/#booking-form",
+    "der nachgetragene Auftritt zeigt auf eine fremde Adresse");
+
+  /* Und ohne Angabe am Behälter lieber der Anker auf der eigenen Seite als
+     irgendetwas Geratenes. */
+  const ohne = stubDom();
+  ohne.liste.removeAttribute("data-booking");
+  nachtragen(ohne)(zeile({ "data-name": "Gestern Abend", "data-city": "Herisau", "data-date": "2026-09-16" }));
+  assert.equal(ohne.liste.children[ohne.liste.children.length - 1].querySelector("a").getAttribute("href"),
+    "#booking", "ohne data-booking wird wieder beim Nachbarn abgeschrieben");
+});
+
+test("Befund 2: der Nachtrag wird einsortiert — gepflegte Einträge bleiben, wo sie sind", (t) => {
+  /* Der Generator reiht die automatischen nach Datum, das Jüngste zuerst.
+     Wer im Browser anhängt, stellt einen frischen Auftritt hinter ältere
+     automatische — nach dem nächsten Bau sässe er plötzlich woanders. */
+  const dom = stubDom({
+    anzahl: 3,
+    mitKnopf: true,
+    automatisch: [
+      { name: "Alt Neun", city: "Chur", date: "2026-09-10" },
+      { name: "Alt August", city: "Chur", date: "2026-08-01" },
+    ],
+  });
+  const fn = nachtragen(dom);
+  const namen = () => dom.liste.children.map((li) => li.querySelector(".venue-name").textContent);
+
+  fn(zeile({ "data-name": "Frisch", "data-city": "Herisau", "data-date": "2026-09-16" }));
+  fn(zeile({ "data-name": "Aeltest", "data-city": "Wattwil", "data-date": "2026-07-01" }));
+  fn(zeile({ "data-name": "Mitte", "data-city": "Uzwil", "data-date": "2026-08-20" }));
+
+  assert.deepEqual(namen(), [
+    "Referenz 1", "Referenz 2", "Referenz 3",        // gepflegt, unverändert
+    "Frisch", "Alt Neun", "Mitte", "Alt August", "Aeltest",
+  ], "der Nachtrag steht nicht in derselben Reihenfolge wie nach einem Bau");
+
+  /* Die gepflegten Einträge hat niemand angefasst: keine Datumsmarke, und
+     ihre Adressen stehen noch. */
+  assert.equal(dom.liste.children[0].getAttribute("data-aus-show"), null,
+    "ein gepflegter Eintrag wurde als automatischer markiert");
+  assert.equal(dom.liste.children[0].querySelector("a").getAttribute("href"),
+    "https://fremder-club.example/programm", "eine gepflegte Adresse wurde überschrieben");
+
+  /* Gegenprobe zum alten Verhalten: schlichtes Anhängen ergäbe
+     …, "Alt Neun", "Alt August", "Frisch", "Aeltest", "Mitte" — der frische
+     Auftritt stünde hinter dem aus dem August. */
+  assert.ok(namen().indexOf("Frisch") < namen().indexOf("Alt August"),
+    "der jüngere Auftritt steht hinter dem älteren (altes appendChild-Verhalten)");
+});
+
+test("Befund 3: ohne Knopf wird nichts eingeklappt — sonst wäre der Auftritt unsichtbar", (t) => {
+  /* Bei höchstens vier Referenzen baut der Generator KEINEN Knopf
+     „N weitere anzeigen". Wird hier der fünfte Eintrag nachgetragen und
+     bekäme `data-extra`, wäre er auf dem Handy verborgen — und nichts könnte
+     ihn hervorholen. Eine Zeile mehr ist kein Schaden, ein unsichtbarer
+     Auftritt schon. */
+  const dom = stubDom({ anzahl: 4 });
+  assert.equal(dom.knopf, null, "der Stub baut bei vier Referenzen einen Knopf");
+
+  nachtragen(dom)(zeile({ "data-name": "Der Fuenfte", "data-city": "Herisau", "data-date": "2026-09-16" }));
+
+  assert.equal(dom.liste.children.length, 5, "der fünfte Auftritt wurde nicht nachgetragen");
+  const neu = dom.liste.children[4];
+  assert.equal(neu.querySelector(".venue-name").textContent, "Der Fuenfte", "der Name fehlt");
+  assert.equal(neu.getAttribute("data-extra"), null,
+    "der fünfte Eintrag ist eingeklappt, obwohl es keinen Knopf gibt — auf dem Handy unsichtbar");
+  assert.equal(dom.liste.querySelectorAll("li[data-extra]").length, 0,
+    "ohne Knopf wurde überhaupt etwas eingeklappt");
+
+  /* Mit Knopf gilt weiterhin das Gegenteil: dann wird eingeklappt UND
+     mitgezählt. */
+  const mit = stubDom({ anzahl: 4, mitKnopf: true });
+  nachtragen(mit)(zeile({ "data-name": "Der Fuenfte", "data-city": "Herisau", "data-date": "2026-09-16" }));
+  assert.equal(mit.liste.children[4].getAttribute("data-extra"), "true",
+    "mit Knopf wird der fünfte Eintrag nicht eingeklappt");
+  assert.equal(mit.knopf.getAttribute("data-more"), "1 weitere anzeigen",
+    "der Knopf nennt die falsche Zahl");
+});
+
+test("Befund 3: eine anfangs LEERE Referenzliste kann nachtragen — und wird sichtbar", (t) => {
+  /* Steht noch keine einzige Referenz im CMS, gibt der Generator die Liste
+     trotzdem aus — leer und `hidden`. Ohne Behälter hätte der Browser keine
+     Stelle, an die er den ersten Auftritt überhaupt hängen könnte. */
+  const dom = stubDom({ anzahl: 0, mitKnopf: false, leerVerborgen: true });
+  assert.equal(dom.liste.hasAttribute("hidden"), true, "die leere Liste steht gar nicht verborgen da");
+
+  nachtragen(dom)(zeile({ "data-name": "Der Allererste", "data-city": "Herisau", "data-date": "2026-09-16" }));
+
+  assert.equal(dom.liste.children.length, 1, "in die leere Liste wurde nichts nachgetragen");
+  assert.equal(dom.liste.hasAttribute("hidden"), false,
+    "die Liste bleibt verborgen, obwohl sie jetzt einen Auftritt enthält");
+  assert.equal(dom.liste.children[0].querySelector(".venue-name").textContent, "Der Allererste", "der Name fehlt");
+  assert.equal(dom.liste.children[0].querySelector("a").getAttribute("href"), "/booking/#booking-form",
+    "der erste Auftritt überhaupt führt nirgendwohin");
+  assert.equal(dom.liste.children[0].getAttribute("data-extra"), null, "der einzige Eintrag ist eingeklappt");
+});
+
+test("Befund 3: der Generator gibt den Behälter auch leer aus — und verbirgt ihn wirklich", (t) => {
+  /* Was oben im Stub vorausgesetzt wird, muss der Generator auch tun: die
+     Liste mit `data-booking` ausgeben, leer mit `hidden` — und das CSS muss
+     dieses `hidden` gegen sein eigenes `display:grid` durchsetzen. */
+  const bau = readFileSync(join(ROOT, "scripts/build.mjs"), "utf8");
+  const i = bau.indexOf('<ul class="venue-list rv" id="venue-list"');
+  assert.ok(i > 0, "die Referenzliste wird nicht mehr so ausgegeben");
+  const block = bau.slice(i, i + 400);
+  assert.match(block, /data-booking="\$\{esc\(/, "das Booking-Ziel steht nicht am Behälter");
+  assert.match(block, /alle\.length \? "" : " hidden"/, "die leere Liste wird nicht verborgen");
+
+  const css = readFileSync(join(ROOT, "assets/site.css"), "utf8");
+  assert.match(css, /\.venue-list\[hidden\]\{display:none;\}/,
+    "eine leere Referenzliste bliebe trotz `hidden` sichtbar (display:grid gewinnt)");
+});
+
+test("Befund 3: gebaut mit LEERER Referenzliste steht der Behälter trotzdem da", async (t) => {
+  /* Nicht nur im Quelltext nachgesehen, sondern wirklich gebaut: ohne eine
+     einzige Referenz und ohne vergangenen Termin muss die Seite den leeren,
+     verborgenen Behälter enthalten — sonst hätte der Browser beim nächsten
+     Datumswechsel keine Stelle für den allerersten Auftritt. */
+  const dir = await repoKopie();
+  t.after(() => rm(dir, { recursive: true, force: true }));
+  await mitStand(dir, (s) => {
+    s.sections.references.items = [];
+    s.sections.shows.items = [
+      { date: "2026-12-24", name: "Kommt noch", city: "Chur", country: "CH", status: "confirmed" },
+    ];
+    return s;
+  });
+  const bau = await baue(dir);
+  assert.equal(bau.status, 0, `der Bau ist gescheitert:\n${bau.stderr}`);
+
+  const html = readFileSync(join(dir, "index.html"), "utf8");
+  const ul = html.match(/<ul class="venue-list rv"[^>]*>/);
+  assert.ok(ul, "ohne Referenzen fehlt der Behälter ganz — der erste Auftritt hätte keine Stelle");
+  assert.match(ul[0], /\bhidden\b/, "der leere Behälter steht sichtbar auf der Seite");
+  assert.match(ul[0], /data-booking="[^"]+"/, "am leeren Behälter fehlt das Booking-Ziel");
+  assert.deepEqual(referenzen(dir, "index.html"), [], "die leere Liste enthält Einträge");
+
+  /* Kein Knopf „N weitere anzeigen", wenn es nichts zu zeigen gibt. */
+  assert.ok(!/class="venue-more/.test(html), "zu einer leeren Liste steht ein Mehr-Knopf");
 });

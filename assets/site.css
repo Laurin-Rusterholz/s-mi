@@ -836,6 +836,10 @@ blockquote.lede footer{
    Klein heisst wirklich klein: so passen auch fuenfundzwanzig Adressen ins Bild,
    ohne die Seite zu einer Namensliste zu machen. Das Raster fuellt sich selbst,
    je Breite kommen mehr Spalten dazu. */
+/* Die Referenzliste steht auch leer im HTML — assets/site.js traegt dort
+   zwischen zwei Builds vergangene Auftritte nach. Leer ist sie `hidden`; ohne
+   diese Regel gewinnt das `display` der Liste gegen das Attribut. */
+.venue-list[hidden]{display:none;}
 .venue-list{
   list-style:none;display:grid;gap:8px;
   grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));

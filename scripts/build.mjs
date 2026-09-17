@@ -2247,8 +2247,23 @@ function renderReferences(n, s, bookingTarget, shows) {
      JavaScript hat, sieht die vollstaendige Liste (`html.js` fehlt dann). */
   const MOBIL_SICHTBAR = 4;
   const versteckt = Math.max(0, alle.length - MOBIL_SICHTBAR);
-  const liste = alle.length
-    ? `<ul class="venue-list rv" id="venue-list" data-mobil="${MOBIL_SICHTBAR}">
+  /* Das Ziel fuer einen Eintrag OHNE eigene Adresse — dasselbe, das linkOf als
+     Rueckfall nimmt. Es steht am Behaelter, damit assets/site.js es beim
+     Nachtragen zwischen zwei Builds nehmen kann.
+
+     REVIEW-BEFUND 17.09.2026: Vorher hat das Nachtragen die Adresse des ERSTEN
+     vorhandenen Eintrags abgeschrieben. Das kann die eigene Website eines
+     fremden Clubs sein — ein neu nachgetragener Auftritt haette dann dorthin
+     verlinkt. Eine falsche Adresse ist schlimmer als gar keine. */
+  const refRueckfall = anchor("#booking");
+  /* Die Liste steht auch dann im HTML, wenn sie LEER ist (dann `hidden`).
+     Grund: verstreicht ein Datum zwischen zwei Builds, traegt der Browser den
+     Auftritt hier nach — ohne Behaelter gaebe es dafuer keine Stelle, und der
+     erste Auftritt ueberhaupt bliebe bis zum naechsten Bau unsichtbar. */
+  const liste = list(s.items).length || alle.length || s?.enabled !== false
+    ? `<ul class="venue-list rv" id="venue-list" data-mobil="${MOBIL_SICHTBAR}" data-booking="${esc(
+        refRueckfall
+      )}"${alle.length ? "" : " hidden"}>
         ${alle
           .map((v, i) => {
             const { url, ext } = linkOf(v);

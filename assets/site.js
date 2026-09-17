@@ -1085,6 +1085,7 @@
       var name = (zeile.getAttribute("data-name") || "").trim();
       if (!name) return;
       var ort = (zeile.getAttribute("data-city") || "").trim();
+      var datum = zeile.getAttribute("data-date") || "";
       var liste = document.getElementById("venue-list");
       if (!liste) return;
 
@@ -1097,17 +1098,18 @@
       });
       if (schonDa) return;
 
-      /* Aufgebaut wie die uebrigen Eintraege — dieselbe Huelle, damit Gestalt
-         und Verhalten stimmen. Das Ziel ist dasselbe wie bei einer Referenz
-         ohne eigene Adresse: der Weg zum Booking. */
-      var vorbild = liste.querySelector("li a");
-      var ziel = vorbild ? vorbild.getAttribute("href") : "#booking";
+      /* DAS ZIEL STEHT AM BEHAELTER, nicht beim Nachbarn.
+         Bis zum Review am 17.09.2026 wurde hier die Adresse des ERSTEN
+         Eintrags abgeschrieben. Die kann die eigene Website eines fremden
+         Clubs sein — ein neuer Auftritt haette dorthin verlinkt. Der Generator
+         gibt deshalb `data-booking` mit: dasselbe Ziel, das er selbst fuer
+         einen Eintrag ohne eigene Adresse nimmt. */
+      var ziel = liste.getAttribute("data-booking") || "#booking";
+
       var li = document.createElement("li");
-      var mobil = Number(liste.getAttribute("data-mobil") || 4);
-      if (liste.children.length >= mobil) li.setAttribute("data-extra", "true");
-      li.setAttribute("data-aus-show", zeile.getAttribute("data-date") || "");
+      li.setAttribute("data-aus-show", datum);
       var a = document.createElement("a");
-      a.setAttribute("href", ziel || "#booking");
+      a.setAttribute("href", ziel);
       var sn = document.createElement("span");
       sn.className = "venue-name";
       sn.textContent = name;
@@ -1117,12 +1119,47 @@
       a.appendChild(sn);
       a.appendChild(so);
       li.appendChild(a);
-      liste.appendChild(li);
 
-      /* Der Knopf nennt eine Zahl — die muss stimmen, sonst verspricht er
-         mehr oder weniger, als dahinter steckt. */
+      /* EINSORTIERT, NICHT ANGEHAENGT — aber nur unter den automatischen.
+         Der Generator reiht die nachgetragenen Auftritte nach Datum, das
+         Juengste zuerst. Wer hier einfach anhaengt, stellt einen frischen
+         Auftritt hinter aeltere automatische; nach dem naechsten Bau saesse er
+         woanders. Die GEPFLEGTEN Eintraege bleiben unberuehrt: gesucht wird
+         nur unter denen mit `data-aus-show`. */
+      var davor = null;
+      Array.prototype.slice.call(liste.children).forEach(function (vorhanden) {
+        if (davor) return;
+        var d = vorhanden.getAttribute("data-aus-show");
+        if (d !== null && String(d) < datum) davor = vorhanden;
+      });
+      if (davor) liste.insertBefore(li, davor);
+      else liste.appendChild(li);
+
+      /* Die Liste steht leer und `hidden` im HTML (siehe renderReferences) —
+         jetzt hat sie etwas zu zeigen. */
+      if (liste.hasAttribute("hidden")) liste.removeAttribute("hidden");
+
+      /* DIE HANDY-STUFE: alles ab dem fuenften Eintrag traegt `data-extra` und
+         ist auf schmalen Bildschirmen verborgen — sichtbar wird es erst ueber
+         den Knopf "N weitere anzeigen".
+
+         REVIEW-BEFUND 17.09.2026: Stehen zunaechst hoechstens vier Referenzen
+         da, gibt es diesen Knopf GAR NICHT. Ein hier nachgetragener fuenfter
+         Eintrag waere dann auf dem Handy verborgen, ohne dass ihn irgendetwas
+         wieder hervorholen koennte. Deshalb: Verbergen nur, wenn es den Knopf
+         wirklich gibt. Ohne Knopf bleibt der Eintrag sichtbar — eine Zeile
+         mehr ist kein Schaden, ein unsichtbarer Auftritt schon.
+
+         Neu beschriften laesst sich der Knopf hier, weil seine Aufschrift eine
+         Zahl enthaelt; einen neuen Knopf baut der Browser NICHT: dessen
+         Beschriftung steht in der Sprache der Seite und gehoert dem Generator. */
       var knopf = document.querySelector(".venue-more");
       if (knopf) {
+        var stufe = Number(liste.getAttribute("data-mobil") || 4);
+        Array.prototype.slice.call(liste.children).forEach(function (kind, i) {
+          if (i >= stufe) kind.setAttribute("data-extra", "true");
+          else kind.removeAttribute("data-extra");
+        });
         var verborgen = liste.querySelectorAll("li[data-extra]").length;
         var vorlage = knopf.getAttribute("data-more") || "";
         var neuText = vorlage.replace(/\d+/, String(verborgen));
