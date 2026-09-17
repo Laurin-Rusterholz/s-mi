@@ -75,9 +75,19 @@ test("die Auskunft sagt, ob der SCHLÜSSEL gesetzt ist — nicht nur die Adresse
   /* Und der Hinweis sagt, was ein `false` bedeutet — sonst ist die Angabe
      zwar da, aber niemand weiss, was zu tun ist. */
   assert.match(mit.hinweis, /INBOX_API_TOKEN/, "der Hinweis nennt die Variable nicht");
-  assert.match(mit.hinweis, /401/, "der Hinweis nennt die Folge (HTTP 401) nicht");
-  assert.match(mit.hinweis, /E-Mail geht\s+trotzdem raus|E-Mail geht trotzdem raus/,
-    "der Hinweis sagt nicht, dass die E-Mail davon unberührt bleibt");
+  assert.match(mit.hinweis, /Mailweg haengt nicht\s+daran|Mailweg haengt nicht daran/,
+    "der Hinweis sagt nicht, dass der Mailweg an einem anderen Schlüssel hängt");
+  assert.match(mit.hinweis, /AUDIT\.md/, "der Hinweis sagt nicht, wo das Ganze steht");
+
+  /* REVIEW 17.09.2026: der Hinweis darf NICHT mehr sagen, als gemessen ist.
+     Gemessen ist ein abgewiesener Pfad (der Zähler). „Jeder Schreibzugriff“
+     und „die E-Mail geht trotzdem raus“ gingen darüber hinaus — das eine ist
+     für Anfragen und Bestellungen nie gemessen worden, das andere verwechselt
+     eine gesetzte Variable mit einer Zustellung. */
+  assert.ok(!/jeden Schreibzugriff/.test(mit.hinweis),
+    "der Hinweis behauptet wieder, JEDER Schreibzugriff werde abgewiesen");
+  assert.ok(!/trotzdem raus/.test(mit.hinweis),
+    "der Hinweis behauptet wieder, die E-Mail gehe trotzdem raus");
 });
 
 test("ein abgewiesener Schreibzugriff wird im Klartext gemeldet", () => {
@@ -181,4 +191,105 @@ test("gezählt wird weiterhin nur, was gezählt werden darf", () => {
   }
   assert.ok(!/localStorage|document\.cookie|kennung|userId/i.test(block),
     "es wird mehr mitgeschickt als die vier Angaben");
+});
+
+test("die Anleitung trennt Gemessenes von Vermutetem — und sagt nicht mehr „nein“", () => {
+  /* RESTABNAHME 17.09.2026: In AUDIT.md stand `INBOX_API_TOKEN` in der Spalte
+     „Pflicht" auf **nein**, mit der Begründung „falls der Eingang später nicht
+     mehr öffentlich beschreibbar sein soll". Genau das ist er aber längst
+     nicht mehr — die Datenbank weist seit dem 13.08./01.09.2026 jeden nicht
+     angemeldeten Schreibzugriff ab. Wer nach dem 401 in dieser Tabelle
+     nachsah, las das Gegenteil dessen, was der Code meldet.
+
+     Geprüft wird die Zeile, nicht die Wortwahl drumherum. */
+  const audit = readFileSync(join(ROOT, "AUDIT.md"), "utf8");
+  const zeile = audit.split("\n").find((z) => z.startsWith("| `INBOX_API_TOKEN`"));
+  assert.ok(zeile, "die Zeile zu INBOX_API_TOKEN fehlt in AUDIT.md");
+
+  const spalten = zeile.split("|").map((x) => x.trim());
+  assert.ok(!/^\**nein\**$/i.test(spalten[2]), "die Pflicht-Spalte steht wieder auf „nein“");
+  assert.match(zeile, /401/, "die Zeile nennt den gemessenen Befund (HTTP 401) nicht");
+  /* Und sie verspricht nicht, dass es mit dieser einen Variablen getan wäre. */
+  assert.match(zeile, /nicht getan|offen/i, "die Zeile tut so, als genüge die Variable");
+
+  /* Und die Frage, die beim 401 wirklich zu klären ist, steht im Dokument:
+     welches Anmeldeverfahren überhaupt unterstützt wird — und dass ein
+     dauerhafter Dienstzugang mit kleinsten Rechten heute NICHT vorgesehen
+     ist. Ohne diesen Absatz endet die Suche wieder bei „Token setzen". */
+  assert.match(audit, /Server-Zugang zur Datenbank/, "der Abschnitt zum Server-Zugang fehlt");
+  assert.match(audit, /Implementierungslücke/, "die fehlende Erneuerung steht nicht als Lücke im Code da");
+  assert.match(audit, /Legacy-Datenbankgeheimnis/, "die Anmeldeverfahren sind nicht benannt");
+  assert.match(audit, /Rules Playground|Regelsimulation/, "die Regelsimulation fehlt als Beleg");
+
+  /* REVIEW 17.09.2026, drei Punkte — jeder davon war im Text falsch oder zu
+     weit gefasst. Sie stehen hier, weil so etwas beim nächsten Umformulieren
+     sonst unbemerkt zurückkommt. */
+
+  // (a) Die beiden Wege der REST-Schnittstelle gehören auseinandergehalten:
+  //     OAuth2 läuft NICHT über ?auth=, sondern über Authorization: Bearer
+  //     bzw. ?access_token=.
+  assert.match(audit, /access_token=/, "der OAuth2-Weg wird nicht genannt");
+  assert.match(audit, /Authorization: Bearer/, "der Kopfzeilen-Weg wird nicht genannt");
+  const oauthZeile = audit.split("\n").find((z) => /OAuth2-Zugriffstoken/.test(z) && z.startsWith("|"));
+  assert.ok(oauthZeile, "die Zeile zum OAuth2-Token fehlt");
+  assert.ok(!/\?auth=/.test(oauthZeile),
+    "AUDIT.md behauptet wieder, ein OAuth2-Token gehöre in ?auth=");
+
+  // (b) Ein Dienstkonto wird durch Regeln nicht automatisch eingegrenzt.
+  assert.match(audit, /IAM/, "IAM und Sicherheitsregeln werden nicht getrennt");
+  assert.match(audit, /kein Zugangsschutz/, "ein Regelentwurf wird als Schutz verkauft");
+
+  // (c) Gemessenes, Gefolgertes und Unbelegtes stehen getrennt da.
+  assert.match(audit, /gemessen wurde es nicht|nicht gemessen/,
+    "es steht nicht da, was NICHT gemessen wurde");
+  assert.ok(!/E-Mails gehen raus/.test(audit), "AUDIT.md behauptet wieder, es gingen E-Mails raus");
+  assert.match(audit, /nicht belegt/, "der ungeprüfte Mailversand wird nicht als solcher benannt");
+
+  /* LIVESTAND 17.09.2026 (Firebase Console, nur gelesen): unter `samsparking`
+     stehen `.read`/`.write` auf "auth != null", dazu `content` und `media`
+     öffentlich lesbar — und sonst nichts. Keine Unterregeln, keine
+     `.validate`. Die Vorlage im anderen Repository beschreibt das NICHT.
+     Diese vier Prüfungen halten fest, dass die Doku vom Livestand ausgeht
+     und nicht von der Vorlage. */
+  assert.match(audit, /auth != null/, "der Livestand der Regeln steht nicht da");
+  assert.match(audit, /beschreibt den Livezustand NICHT/,
+    "die abgelegte Regelvorlage wird wieder als Livezustand geführt");
+  for (const pfad of ["stats", "stripeEvents", "inquiries"]) {
+    assert.ok(audit.includes(pfad), `der Pfad „${pfad}“ kommt nicht vor`);
+  }
+  assert.ok(!/kein Knoten|standardmässig verboten/.test(audit),
+    "es wird wieder behauptet, für stats fehle ein Knoten — live gilt die Elternregel");
+
+  /* Und die beiden Sätze, ohne die jemand doch „nur schnell einen Token“
+     setzt: das Projekt ist gemeinsam, und ein einmal gesetzter Wert genügt
+     nicht, weil beide brauchbaren Merkmale ablaufen. */
+  assert.match(audit, /mehr als Sämis Daten/, "die Reichweite im gemeinsamen Projekt fehlt");
+  assert.match(audit, /erneuern/, "es steht nicht da, dass der Betrieb erneuern muss");
+  assert.match(audit, /ohne\s+ausdrückliche Freigabe|ausdrückliche Freigabe/,
+    "es steht nicht da, dass das eine Freigabe braucht");
+
+  /* Der ausgearbeitete Vorschlag (17.09.2026) — drei Sätze daraus dürfen nicht
+     verloren gehen, weil ohne sie der bequemste Weg gewählt würde. */
+  assert.match(audit, /Vorschlag: dauerhaft erneuerter Serverzugriff/, "der Vorschlag fehlt");
+  assert.match(audit, /erfüllt die Anforderung nicht/,
+    "es steht nicht da, dass der bequemste Weg die Anforderung verfehlt");
+  assert.match(audit, /Nichts davon ist\s+umgesetzt|Nichts davon ist umgesetzt/,
+    "der Vorschlag liest sich, als wäre er schon umgesetzt");
+  assert.match(audit, /erneuern/, "die Erneuerung fehlt im Vorschlag");
+
+  /* REVIEW 17.09.2026: eine zweite Datenbank-Instanz im SELBEN Projekt ist
+     keine Grenze — IAM wirkt projektweit, und dieselbe Firebase-Anmeldung
+     liefert dieselben Identitäten. Sauber ist nur ein eigenes Projekt, oder
+     eine Instanz-Abgrenzung mit nachgewiesenem IAM- und Regelmodell. */
+  assert.match(audit, /Eigenes Firebase-\/GCP-Projekt/,
+    "der saubere Weg ist nicht als eigenes Projekt benannt");
+  assert.match(audit, /IAM-Rollen wirken projektweit/,
+    "es steht nicht da, warum eine zweite Instanz allein nicht genügt");
+  assert.match(audit, /nachgewiesen/, "die Instanz-Abgrenzung wird ohne Nachweis zugelassen");
+  assert.ok(!/ist der einzige, der/.test(audit),
+    "ein Weg wird wieder als „der einzige“ ausgegeben");
+
+  /* KEIN Geheimnis im Dokument — weder echt noch als Beispiel. */
+  assert.ok(!/AIza[0-9A-Za-z_-]{20,}/.test(audit), "in AUDIT.md steht ein Schlüssel");
+  assert.ok(!/-----BEGIN [A-Z ]*PRIVATE KEY-----/.test(audit), "in AUDIT.md steht ein privater Schlüssel");
 });

@@ -143,13 +143,22 @@ export const zustand = () => ({
      der Stripe-Beleg gehen denselben Weg. Deshalb steht das jetzt hier, in
      Sekunden von aussen ablesbar und ohne je einen Wert zu zeigen. */
   eingangSchluesselGesetzt: !!(process.env.INBOX_API_TOKEN || "").trim(),
+  /* REVIEW 17.09.2026: Hier stand, ohne INBOX_API_TOKEN werde JEDER
+     Schreibzugriff mit 401 abgewiesen und die E-Mail gehe trotzdem raus.
+     Beides ging weiter, als gemessen ist. Belegt ist ein abgewiesener Pfad
+     (der Zaehler, drei Protokollzeilen); fuer Anfragen und Bestellungen liegt
+     keine Messung vor, und ob eine E-Mail wirklich ankommt, sagt eine
+     gesetzte Variable nicht. Was hier steht, ist deshalb nur noch das, was
+     diese Angaben wirklich hergeben. */
   hinweis:
-    "Diese Angaben sind bewusst nur ja/nein. Steht mailSchluesselGesetzt auf " +
-    "false, fehlt RESEND_API_KEY in den Netlify-Variablen der Produktion. " +
-    "Steht eingangSchluesselGesetzt auf false, fehlt INBOX_API_TOKEN — dann " +
-    "weist die Datenbank jeden Schreibzugriff mit HTTP 401 ab: Anfragen, " +
-    "Bestellungen und Seitenaufrufe werden nicht abgelegt (die E-Mail geht " +
-    "trotzdem raus, sie haengt an RESEND_API_KEY).",
+    "Diese Angaben sind bewusst nur ja/nein — sie sagen, WAS GESETZT ist, " +
+    "nicht, dass es funktioniert. Ohne RESEND_API_KEY wird gar keine E-Mail " +
+    "verschickt; ist er gesetzt, ist damit noch keine Zustellung belegt. " +
+    "INBOX_API_TOKEN ist die einzige Anmeldung, die dieser Code fuer die " +
+    "Datenbank kennt (?auth=): fehlt er, ist der Schreibzugriff nicht " +
+    "angemeldet, und die Regeln entscheiden je Pfad. Der Mailweg haengt nicht " +
+    "daran — er laeuft ueber RESEND_API_KEY. Siehe AUDIT.md, Abschnitt " +
+    "\"Server-Zugang zur Datenbank\".",
 });
 
 /**
@@ -172,7 +181,9 @@ export function dbFehler(status, token) {
       + `oder die Regeln erlauben diesen Pfad nicht.`
     : `${basis} — die Datenbank weist den Schreibzugriff ab. Es ist KEIN `
       + `INBOX_API_TOKEN gesetzt, der Zugriff war also nicht angemeldet. `
-      + `In den Netlify-Variablen der Produktion hinterlegen.`;
+      + `Er gehoert in die Netlify-Variablen der Produktion — womit es aber `
+      + `nicht in jedem Fall getan ist, siehe AUDIT.md "Server-Zugang zur `
+      + `Datenbank".`;
 }
 
 /**

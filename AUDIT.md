@@ -223,8 +223,250 @@ zusammenbringt.
 | `STRIPE_PAYMENT_LINK_URL` | **ja** für Bezahlung | der echte Payment Link, siehe unten |
 | `STRIPE_WEBHOOK_SECRET` | **ja** für Zahlungsbestätigung | `whsec_…` aus dem Stripe-Dashboard |
 | `INBOX_API_URL` | nein | Eingang, Vorgabe ist der bisherige `…/samsparking/inquiries.json` |
-| `INBOX_API_TOKEN` | nein | falls der Eingang später nicht mehr öffentlich beschreibbar sein soll |
+| `INBOX_API_TOKEN` | **offen — nicht „nein“** | die einzige Anmeldung, die der Server-Code kennt (`?auth=…`); ohne ihn ist der Schreibzugriff nicht angemeldet. Der **Zähler** wird live mit **HTTP 401** abgewiesen; für die übrigen Pfade liegt keine Messung vor. Was wirklich zu tun ist, steht unter „Server-Zugang zur Datenbank“ — mit ihm allein ist es nicht getan. Die Angabe „nein“ stand hier bis zum 17.09.2026 und war falsch |
 | `CONTENT_API_URL` | schon gesetzt | Inhaltsquelle für den Build (steht in `netlify.toml`) |
+
+### Server-Zugang zur Datenbank — Stand 17.09.2026
+
+**Befund (Netlify, Production, Functions/zaehler, 17.09.2026):**
+
+```
+14:46:15  ERROR  [zaehler] nicht gezaehlt: HTTP 401
+14:48:10  ERROR  [zaehler] nicht gezaehlt: HTTP 401
+14:48:23  ERROR  [zaehler] nicht gezaehlt: HTTP 401
+```
+
+Der Aufruf kam an; abgewiesen hat die Realtime Database.
+
+**Der Livestand der Regeln** (Firebase Console, 17.09.2026, nur **gelesen**,
+nichts geändert). Unter `samsparking` steht:
+
+```
+samsparking
+  .read   "auth != null"
+  .write  "auth != null"
+  content   { .read: true }
+  media     { .read: true }
+```
+
+Mehr nicht — **keine** Unterregeln für `inquiries`, `stats` oder
+`stripeEvents`, **keine** `.validate`. In der Realtime Database gilt eine Regel
+für den ganzen Teilbaum darunter; Kinder können sie nicht zurücknehmen. Damit
+gilt `auth != null` für **alle** diese Pfade.
+
+> **Die Regeldatei im Repository beschreibt den Livezustand NICHT.**
+> `verwaltung-djsamsparkling/firebase/database.rules.json` ist eine Vorlage, die
+> laut ihrem eigenen Kommentar von Hand ausgerollt werden muss — das ist nicht
+> geschehen. Alles, was dort an Feinheiten steht (Sitzungsnachweis je Pfad,
+> `.validate`, Anlegen ohne Anmeldung), gilt live **nicht**.
+
+**Was daraus folgt — belegt, nicht gefolgert.** Unsere Functions schicken ohne
+`INBOX_API_TOKEN` gar keine Anmeldung mit. `auth` ist dann `null`, und die
+Live-Regel verlangt `auth != null`:
+
+| Aussage | Stand |
+|---|---|
+| Der Server schreibt **unangemeldet** | **belegt** — der Code hängt nur `?auth=` an, und zwar nur, wenn die Variable gesetzt ist |
+| Die Live-Regel verlangt eine Anmeldung für `inquiries`, `stats`, `stripeEvents` | **belegt** — Konsolenstand oben |
+| Der **Zähler** wird abgewiesen, HTTP 401 | **gemessen** — die drei Protokollzeilen oben |
+| Ein unangemeldeter Schreibzugriff auf `stats` wird abgelehnt | **in der Regelsimulation belegt** — siehe unten |
+| Ein unangemeldeter Schreibzugriff auf `inquiries` wird abgelehnt | **in der Regelsimulation belegt** — auch mit vollständigem Eintrag |
+| Anfragen und Bestellungen scheitern **in der Produktion** | **nicht gemessen.** Die Regel lässt nichts anderes zu, ein Protokoll dazu gibt es aber nicht |
+| Es geht eine **E-Mail** raus | **nicht belegt.** `RESEND_API_KEY` und `MAIL_FROM` sind gesetzt und der Weg ist im Mock geprüft — ein echter Versand wurde bis heute nicht ausgelöst |
+| Eine **Zahlung** läuft durch | **nicht belegt.** Es wurde keine ausgelöst |
+
+**Regelsimulation** (Firebase Rules Playground, 17.09.2026 — reine Simulation,
+es wurde **kein** Datensatz angelegt):
+
+```
+set /samsparking/stats/__codex_rules_simulation__          ohne Anmeldung
+  → Simulated write denied   (Regel Zeile 70: /samsparking  .write  auth != null)
+
+set /samsparking/inquiries/__codex_rules_simulation__      ohne Anmeldung,
+    mit name / email / createdAt
+  → Simulated write denied
+```
+
+Damit ist die fehlende Anmeldung **auch für die Anfragen-Ablage** an den heute
+geltenden Regeln belegt — nicht nur für den Zähler. Was damit weiterhin **nicht**
+belegt ist: ein echter Mailversand und eine echte Zahlung.
+
+**Welche Anmeldung die REST-Schnittstelle kennt.** Laut
+[Firebase-Doku](https://firebase.google.com/docs/database/rest/auth) sind das
+zwei verschiedene Wege — der Code kennt nur den ersten:
+
+| Weg | wie mitgegeben | was hineingehört | Lebensdauer |
+|---|---|---|---|
+| `?auth=…` | Adresszeile | ein **Firebase-ID-Token** oder ein **Legacy-Datenbankgeheimnis** | ID-Token rund eine Stunde; Geheimnis dauerhaft |
+| OAuth2-Zugriffstoken | `Authorization: Bearer …` **oder** `?access_token=…` | Zugriffstoken eines **Dienstkontos** | rund eine Stunde |
+
+Ein Dienstkonto-Token gehört **nicht** in `?auth=`.
+
+**Die Implementierungslücke.** `netlify/functions/_lib.mjs`, `zaehler.mjs` und
+`stripe-webhook.mjs` hängen einen **festen** Wert aus der Umgebung an und haben
+keinerlei Mechanismus, ein kurzlebiges Anmeldemerkmal zu beschaffen oder zu
+erneuern. Beide brauchbaren Merkmale laufen aber nach rund einer Stunde ab. Ein
+dauerhaft laufender Betrieb muss also **erneuern** — sonst funktioniert eine
+einmal eingetragene Variable höchstens bis zum nächsten Ablauf.
+
+Dauerhaft überdauert in `?auth=` nur das Legacy-Datenbankgeheimnis. Das ist
+hier die schlechteste aller Möglichkeiten: es hat **alle** Rechte am ganzen
+Projekt und hebelt jede Regel aus.
+
+Das ist **nicht bloss Konfiguration.** Solange dieser Mechanismus fehlt, lässt
+sich ein tragfähiger Serverzugang gar nicht einrichten. Die Lücke sitzt im
+Code; sie zu schliessen braucht Code — zusätzlich zu den Entscheidungen, die
+ausserhalb dieses Repositorys fallen.
+
+**Warum hier nichts blind gesetzt werden darf — gemeinsames Projekt.** Die
+Datenbank gehört nicht allein zu dieser Website. Weitere **private Bereiche
+desselben Projekts** stehen ebenfalls auf `auth != null`. Eine gewöhnliche
+Firebase-Server-Identität erfüllt diese Bedingung überall — sie käme damit an
+**mehr als Sämis Daten**. Ein Token einzutragen, „damit der Zähler wieder
+läuft“, vergrössert also den Zugriff weit über diese Website hinaus.
+
+**IAM und Sicherheitsregeln sind zweierlei.** Ein Dienstkonto, das sich per
+OAuth2 anmeldet, wird **nicht** automatisch durch die Regeln der Realtime
+Database beschränkt. Was es darf, entscheidet seine **IAM-Rolle**; mit
+Datenbank-Administrationsrechten geht der Zugriff an den Regeln vorbei — wie
+beim Admin-SDK. Ein Regelentwurf ist deshalb **kein Zugangsschutz**, solange
+das Identitätsmodell nicht dazu passt.
+
+**Was zu klären ist — in dieser Reihenfolge, und nichts davon ohne
+ausdrückliche Freigabe:**
+
+1. **Rechtemodell entscheiden, bevor irgendetwas gesetzt wird.** Welche
+   Identität darf was, und wie wird sie auf `samsparking` begrenzt, ohne die
+   übrigen Bereiche des gemeinsamen Projekts zu öffnen? Ohne diese Antwort ist
+   jeder Token zu weitreichend.
+2. **Erst danach** die passenden Regeln formulieren und von Hand ausrollen
+   (vollständige Regeldatei des Projekts). Öffentlich beschreibbar darf keiner
+   der Pfade werden.
+3. **Den Code um Beschaffung und Erneuerung des Anmeldemerkmals ergänzen** —
+   siehe „Implementierungslücke“. Ein einmal eingetragener Wert genügt nicht.
+4. **Die Variable nur in der Produktion setzen** (Netlify → Environment
+   variables), nicht in Vorschau-Deploys.
+5. **Nachsehen:** `GET /api/booking` meldet `eingangSchluesselGesetzt` als
+   ja/nein — nie einen Wert.
+
+**Kein neuer weitreichender Zugang ist freigegeben, und Regeländerungen sind es
+ebenfalls nicht.** Bis Punkt 1 und 2 entschieden sind, bleibt der Zustand, wie
+er ist: der Zähler zählt nicht, und für die übrigen Ablagen gilt dieselbe
+Regel.
+
+**Was die Vorlage zusätzlich enthielte, falls sie je ausgerollt wird:** eine
+`.validate` am Eingang, die für jeden Eintrag `name` (mindestens zwei Zeichen),
+eine E-Mail-Adresse und `createdAt` verlangt. Der Stripe-Beleg füllt `name` und
+`email` aus `customer_details`; liefert Stripe keinen Namen, stünde dort ein
+leerer Text und der Eintrag fiele durch. Live gibt es diese Prüfung **nicht** —
+vermerkt, damit es beim Ausrollen nicht übersehen wird.
+
+### Vorschlag: dauerhaft erneuerter Serverzugriff, ausschliesslich auf `samsparking`
+
+Ausgearbeitet am 17.09.2026 auf Bitte des Betreibers. **Nichts davon ist
+umgesetzt**, und nichts davon lässt sich ohne ausdrückliche Freigabe umsetzen:
+es wurden keine Zugangsdaten erzeugt oder gelesen, keine Rechte vergeben und
+keine Regel geändert.
+
+**Was erreicht werden soll:** die drei Server-Schreibwege (`inquiries`,
+`stats`, `stripeEvents`) sollen dauerhaft funktionieren, das Anmeldemerkmal
+soll sich von selbst erneuern, und der Zugriff soll **ausschliesslich**
+`samsparking` erreichen — nicht die übrigen Bereiche des gemeinsamen
+Firebase-Projekts.
+
+#### Die Sperre, die zuerst entschieden werden muss
+
+Die beiden Teilziele hängen an verschiedenen Stellen:
+
+* **Erneuern** ist eine Frage des Codes (siehe „Implementierungslücke“) und
+  lässt sich hier lösen.
+* **Beschränken** ist es **nicht.** Die Nachbarbereiche desselben Projekts
+  stehen auf `auth != null`. Diese Bedingung erfüllt **jede** angemeldete
+  Identität — auch eine neue, eigens für die Website angelegte. Eine Identität
+  allein kann sich also nicht auf `samsparking` beschränken; die Beschränkung
+  müsste dort stehen, wo die Nachbarbereiche beschrieben sind.
+
+Solange das so ist, gilt: **jeder funktionierende Serverzugang erreicht heute
+mehr als `samsparking`.** Das ist keine Eigenschaft des gewählten Verfahrens,
+sondern des Regelstands — und es ist der Grund, warum hier nichts „schnell
+gesetzt“ werden kann.
+
+#### Vier Wege, mit ihren Kosten
+
+| Weg | erneuert sich | erreicht **nur** `samsparking` | was es braucht |
+|---|---|---|---|
+| **1 · Eigene Dienst-Identität** (Custom Token → ID-Token) | ja | **nein**, solange die Nachbarregeln `auth != null` lauten | Schlüssel eines Dienstkontos, Code zum Signieren und Eintauschen, **und** eine Verschärfung der Nachbarregeln |
+| **2 · Dienstkonto per OAuth2** (`Authorization: Bearer`) | ja | **nein** — Regeln gelten für ein solches Konto gar nicht, und IAM greift auf Projekt- bzw. Datenbankebene, nicht auf einzelne Pfade | Schlüssel eines Dienstkontos, Code für den Token-Tausch |
+| **3 · Eigenes Firebase-/GCP-Projekt für `samsparking`** | ja | **ja, wenn es ein eigenes Projekt ist** — dann hat es eigene IAM-Rollen und eine eigene Anmeldung. Eine zusätzliche Datenbank-Instanz im **selben** Projekt genügt dafür **nicht** ohne Nachweis (siehe unten) | Umzug der Daten, neues Projekt, neue Adressen in `CONTENT_API_URL`/`INBOX_API_URL` und in der Verwaltung |
+| **4 · Weniger Schreibwege** | entfällt teilweise | verkleinert nur die Fläche | Zähler und Stripe-Vermerk woanders ablegen; die Verwaltung müsste die Statistik von dort lesen |
+
+**Weg 2 erfüllt die Anforderung nicht** und steht hier nur, damit er nicht
+versehentlich als die einfache Lösung gewählt wird: ein Dienstkonto mit
+Datenbankrechten geht an den Regeln vorbei und ist pfadblind.
+
+**Weg 1** ist der technisch saubere, wenn die Daten im gemeinsamen Projekt
+bleiben sollen: die Identität bekommt eine feste `uid`, und die Regeln können
+ihr genau die drei Pfade erlauben. Sie löst die Sperre aber nicht von selbst —
+die Nachbarbereiche müssten von „irgendwer ist angemeldet“ auf „diese Identität
+darf“ umgestellt werden. Das ist eine Änderung an fremden Bereichen und
+**nicht** von hier aus zu entscheiden.
+
+**Weg 3** kommt ohne eine Änderung an fremden Regeln aus — aber nur in der
+Fassung „**eigenes Projekt**“. Dort gelten eigene IAM-Rollen und eine eigene
+Firebase-Anmeldung; was dort zugelassen ist, kann die Bereiche des heutigen
+Projekts gar nicht erreichen.
+
+> **Nicht verwechseln (Review-Hinweis 17.09.2026):** eine zusätzliche
+> **Datenbank-Instanz im selben Projekt** ist **keine** Grenze für sich.
+> IAM-Rollen wirken projektweit und können mehrere Instanzen umfassen, und
+> dieselbe Firebase-Anmeldung liefert dieselben Identitäten. Eine Abgrenzung
+> auf Instanz-Ebene zählt erst, wenn ein konkretes IAM- und Regelmodell dafür
+> **nachgewiesen** ist — hier ist es das nicht.
+
+Ob Weg 3 der beste ist, ist damit **nicht** entschieden, und „der einzige Weg“
+ist er auch nicht: Weg 1 führt ebenfalls zum Ziel, wenn die Nachbarbereiche
+mitziehen. Was hier steht, sind die Kosten — die Wahl trifft, wem das Projekt
+gehört.
+
+**Weg 4** ist kein Ersatz, aber er verkleinert die Frage: von den drei Pfaden
+muss nur der **Eingang** dort liegen, wo die Verwaltung ihn liest. Zähler und
+Stripe-Vermerk sind Betriebsdaten der Website.
+
+#### Was der Code in jedem Fall lernen muss
+
+Unabhängig vom gewählten Weg fehlt dieselbe Mechanik. Sie gehört in
+`netlify/functions/_lib.mjs`, wo heute nur `?auth=<fester Wert>` steht:
+
+1. **Beschaffen:** aus dem hinterlegten Schlüssel ein kurzlebiges Merkmal
+   erzeugen (signieren und eintauschen) — nicht bei jedem Aufruf neu, sondern
+2. **halten:** im Speicher der Function-Instanz, mit dem Ablaufzeitpunkt,
+3. **erneuern:** kurz **vor** Ablauf (z. B. ab einer Restlaufzeit von fünf
+   Minuten), damit kein Aufruf in einen abgelaufenen Zustand läuft,
+4. **nachfassen:** antwortet die Datenbank trotzdem mit 401, **einmal** neu
+   beschaffen und den Schreibzugriff wiederholen — danach aufgeben und
+   protokollieren.
+
+Dazu drei Regeln, die nicht verhandelbar sind:
+
+* Der Schlüssel und das Merkmal gehören **nie** ins Protokoll, nie in eine
+  Antwort und nie in `zustand()`. Dort steht weiterhin nur ja/nein.
+* Fällt die Beschaffung aus, verhält sich alles wie heute: die Seite läuft
+  weiter, der Zähler antwortet 202, eine Anfrage gilt als angekommen, sobald
+  **ein** Weg geklappt hat.
+* Der Mailweg bleibt unberührt — er hängt an `RESEND_API_KEY` und hat mit der
+  Datenbank nichts zu tun.
+
+#### Reihenfolge
+
+1. Entscheiden, welcher der vier Wege gegangen wird — **das ist eine
+   Eigentümer-Entscheidung über ein gemeinsames Projekt**, keine technische.
+2. Erst danach: Regeln bzw. Instanz einrichten.
+3. Erst danach: die Mechanik oben bauen, mit Tests gegen einen abgelaufenen und
+   einen abgewiesenen Zustand.
+4. Erst danach: die Variable in der Produktion setzen.
+
+Wird die Reihenfolge umgedreht, entsteht genau das, was hier vermieden werden
+soll: ein Zugang, der funktioniert und dabei zu viel erreicht.
 
 ### Provider-Setup
 
