@@ -603,10 +603,10 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
   /* Vergangene Shows wandern NICHT mehr automatisch in die Referenzen.
 
      Bis zum 07.09.2026 legte showsNachReferenzen fuer jeden vergangenen Termin
-     einen Referenz-Eintrag an. Seit die Termine im Rueckblick stehen, war das
-     eine Doppelnennung auf ein und derselben Seite. Die Funktion ist weg —
-     geprueft wird, dass sie nicht durch die Hintertuer zurueckkommt: der
-     Generator laesst die Referenzliste in Ruhe. */
+     einen Referenz-Eintrag an — und erzeugte damit Doppelnennungen. Die
+     Funktion ist weg; geprueft wird, dass sie nicht durch die Hintertuer
+     zurueckkommt: die Referenzliste kommt ausschliesslich aus der Verwaltung,
+     der Generator ergaenzt dort nichts und streicht dort nichts. */
   const db = JSON.parse(JSON.stringify(template));
   db.sections.references.items = [
     { name: "Kugl", city: "St. Gallen", highlight: true },
@@ -1010,18 +1010,22 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
 }
 
 {
-  /* Was publiziert wurde, bleibt sichtbar — auch nach dem Datum.
+  /* Unter "Shows" steht nur, was kommt — und der Abschnitt bleibt trotzdem.
 
-     Am 27.08.2026 war der aufklappbare Rueckblick unter den Shows entfernt
-     worden, weil vergangene Termine ueber showsNachReferenzen ohnehin bei den
-     Referenzen landen. Die Abnahme am 07.09.2026 hat gezeigt, was das
-     tatsaechlich heisst: als der letzte Termin vorbei war, verschwand der
-     ganze Abschnitt samt Menuepunkt, und keine der publizierten Shows war im
-     Frontend noch zu finden.
+     Drei Runden an derselben Stelle, darum hier festgehalten:
+     27.08.2026 — der aufklappbare Rueckblick unter den Shows wurde entfernt.
+     07.09.2026 — die Abnahme zeigte, was das heisst: als der letzte Termin
+                  vorbei war, verschwand der ganze Abschnitt samt Menuepunkt.
+                  Der Rueckblick kam offen sichtbar zurueck.
+     15.09.2026 — der Kunde hat entschieden: "PLAYED BEFORE" gehoert nicht unter
+                  "Shows". Dort steht, was bevorsteht; wo Sam gespielt hat,
+                  steht bei den Referenzen.
 
-     Die Regel lautet jetzt: kommende Termine oben, vergangene darunter im
-     Rueckblick — offen sichtbar, nicht zugeklappt —, und der Abschnitt steht,
-     solange ueberhaupt ein Termin mit Namen da ist.
+     Die Regel lautet jetzt: nur kommende Termine, aufsteigend — und der
+     Abschnitt steht, solange ueberhaupt ein Termin mit Namen da ist, auch wenn
+     alle vorbei sind (dann mit dem Hinweis "gerade nichts angekuendigt").
+     Geloescht wird dabei nichts: die vergangenen Termine stehen weiter in den
+     Daten, sie werden hier nur nicht gezeigt.
 
      Geprueft an den GEBAUTEN Seiten. Welche Seite die Shows traegt, entscheidet
      der Kunde in der Verwaltung (Einseiter oder eigene Seite) — die Pruefung
@@ -1037,39 +1041,38 @@ const korr = JSON.parse(await readFile(resolve(ROOT, "content/korrekturen.json")
     meckern("keine einzige gebaute Seite traegt den Shows-Abschnitt");
 
   for (const [datei, html] of showSeiten) {
-    /* Jeder vergangene Termin steht im Rueckblick — mit Namen. */
-    const rueckblick = html.match(/<ul class="show-list past" id="past-show-list">[\s\S]*?<\/ul>/);
-    if (vergangene.length && !rueckblick)
-      meckern(`${datei}: der Rueckblick auf vergangene Shows fehlt`);
+    const abschnitt = (html.match(/<section class="[^"]*shows-sec"[\s\S]*?<\/section>/) || [""])[0];
+    if (!abschnitt) meckern(`${datei}: der Shows-Abschnitt ist nicht zu finden`);
+
+    /* Kein Rueckblick — in keiner Form. */
+    if (/past-show|past-title|PLAYED BEFORE/i.test(html))
+      meckern(`${datei}: unter "Shows" steht wieder ein Rueckblick auf vergangene Termine`);
+
+    /* Und kein vergangener Termin, weder nach Namen noch nach Datum. */
     for (const sh of vergangene) {
-      if (!rueckblick || !rueckblick[0].includes(String(sh.name).trim()))
-        meckern(`${datei}: der vergangene Termin "${sh.name}" fehlt im Rueckblick`);
+      if (abschnitt.includes(String(sh.name).trim()))
+        meckern(`${datei}: der vergangene Termin "${sh.name}" steht unter "Shows"`);
     }
-    if (vergangene.length && /id="past-shows"[^>]*\shidden/.test(html))
-      meckern(`${datei}: der Rueckblick ist versteckt, obwohl vergangene Termine da sind`);
-
-    /* Und er steht NUR dort — nicht zusaetzlich unter den kommenden. */
     const oben = html.match(/<ul class="show-list rv" id="show-list">[\s\S]*?<\/ul>/);
-    const obenVergangen = oben
-      ? [...oben[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]).filter((d) => d < heute)
-      : [];
+    const obenDaten = oben ? [...oben[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]) : [];
+    const obenVergangen = obenDaten.filter((d) => showVorbei({ date: d }, heute));
     if (obenVergangen.length)
-      meckern(`${datei}: vergangene Termine stehen unter den kommenden: ${obenVergangen.join(", ")}`);
+      meckern(`${datei}: vergangene Termine stehen in der Terminliste: ${obenVergangen.join(", ")}`);
 
-    /* Beide Listen chronologisch: oben aufsteigend, im Rueckblick absteigend. */
-    const daten = (block) =>
-      block ? [...block[0].matchAll(/data-date="([^"]*)"/g)].map((m) => m[1]) : [];
-    const obenDaten = daten(oben);
+    /* Chronologisch, aufsteigend — der naechste Termin zuerst. */
     if (obenDaten.join(",") !== [...obenDaten].sort().join(","))
       meckern(`${datei}: kommende Termine nicht aufsteigend: ${obenDaten.join(", ")}`);
-    const untenDaten = daten(rueckblick);
-    if (untenDaten.join(",") !== [...untenDaten].sort().reverse().join(","))
-      meckern(`${datei}: vergangene Termine nicht absteigend: ${untenDaten.join(", ")}`);
 
-    /* Kein Ticket-Knopf an einem Termin, der vorbei ist. */
-    for (const zeile of rueckblick ? rueckblick[0].split("<li ").slice(1) : []) {
-      if (/<a class="btn btn-sm"/.test(zeile))
-        meckern(`${datei}: ein vergangener Termin traegt noch einen Ticket-Knopf`);
+    /* Der Leerzustand: ohne kommenden Termin ist der Hinweis zu sehen und
+       keine leere Liste zu finden — mit Termin steht er versteckt bereit,
+       denn assets/site.js blendet ihn ein, wenn der letzte Termin verstreicht. */
+    if (!kommende.length) {
+      if (/id="show-empty"[^>]*\shidden/.test(abschnitt))
+        meckern(`${datei}: ohne kommenden Termin fehlt der Hinweis "gerade nichts angekuendigt"`);
+      if (abschnitt.includes('id="show-list"'))
+        meckern(`${datei}: eine leere Terminliste steht im Abschnitt`);
+    } else if (!/id="show-empty"[^>]*\shidden/.test(abschnitt)) {
+      meckern(`${datei}: der versteckte Hinweis "keine Termine" fehlt — site.js braucht ihn`);
     }
 
     /* Das Terminblatt speist den Booking-Kalender — dort gehoert nur die
@@ -1097,7 +1100,7 @@ if (fehler) {
   console.error(`\n${fehler} Fehler.`);
   process.exit(1);
 }
-console.log("Shows: kommende Termine oben (aufsteigend), vergangene darunter im offenen Rueckblick\n       (absteigend, ohne Ticket-Knopf) — der Abschnitt bleibt, solange es Termine gibt.");
+console.log("Shows: nur kommende Termine (aufsteigend), kein Rueckblick — der Abschnitt bleibt\n       stehen, solange es Termine gibt, und sagt sonst, dass nichts ansteht.");
 console.log("adoptTexts: Orte, Kanäle und Einträge bleiben unangetastet; gleich lange Listen werden weiter übernommen.");
 console.log("localize: Kanal-Namen bleiben in jeder Sprache stehen, auch bei veralteten Übersetzungen.");
 console.log("nachziehen: Schreibweise immer; Listen, Kanaele und Bilder nur solange sie in der\n            Verwaltung unangetastet sind. Schalter und eigene Eintraege bleiben unberuehrt.");

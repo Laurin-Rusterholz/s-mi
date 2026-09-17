@@ -1041,21 +1041,24 @@
     bcal.hidden = false;
   } catch (e) { /* Kalender ist Komfort — das Datumsfeld bleibt benutzbar */ }
 
-  /* --------------------------------- Shows: abgelaufene in den Rueckblick */
+  /* ------------------------------------ Shows: abgelaufene Zeilen entfernen */
   /* Die Seite ist statisch gebaut. Verstreicht ein Termin zwischen zwei Builds,
-     stand er bis zum 07.09.2026 weiter unter "kommend" — und wurde deshalb hier
-     AUSGEBLENDET. Damit war er im Frontend weg, bis irgendwann neu gebaut wurde.
+     stuende er sonst weiter unter "kommend".
 
-     Er wandert jetzt stattdessen in den Rueckblick: dieselbe Zeile, nur eine
-     Liste tiefer, oben eingefuegt (dort steht das Juengste zuerst). Der Kasten
-     dafuer steht immer im HTML — leer und `hidden`, bis hier etwas hineinkommt.
+     Bis zum 15.09.2026 wanderte er hier in einen Rueckblick ("PLAYED BEFORE").
+     Den gibt es nicht mehr: unter "Shows" steht nur noch, was bevorsteht. Wo
+     Sam schon gespielt hat, steht bei den Referenzen. Die Zeile wird darum aus
+     der bereits ausgelieferten Seite genommen — an den Daten aendert das
+     nichts, die vergangenen Termine bleiben in der Verwaltung stehen.
 
-     Tageswechsel in der Zeitzone der Website (Europe/Zurich), wie im Generator.
-     Vorher stand hier die UTC-Zeit: zwischen Mitternacht und 02:00 Ortszeit war
-     "heute" noch der Vortag. */
+     Bleibt danach nichts uebrig, tritt derselbe Leerzustand ein, den auch der
+     Generator setzt: Liste weg, Hinweis sichtbar. Der Abschnitt selbst bleibt.
+
+     Tageswechsel in der Zeitzone der Website (Europe/Zurich), wie im Generator:
+     ein Termin von HEUTE gilt den ganzen Tag als kommend und verschwindet nicht
+     um Mitternacht UTC. Vorher stand hier die UTC-Zeit — zwischen Mitternacht
+     und 02:00 Ortszeit war "heute" noch der Vortag. */
   var showList = document.getElementById("show-list");
-  var pastBox = document.getElementById("past-shows");
-  var pastList = document.getElementById("past-show-list");
   if (showList) {
     var todayStr;
     try {
@@ -1066,29 +1069,12 @@
     var visible = 0;
     Array.prototype.slice.call(showList.children).forEach(function (li) {
       var d = li.getAttribute("data-date");
+      // Ohne Datum ("irgendwann") bleibt die Zeile stehen — sie ist nicht vorbei.
       if (!d || d >= todayStr) {
         visible++;
         return;
       }
-      if (pastList) {
-        li.classList.add("vorbei");
-        li.classList.remove("booked", "soldout");
-        var cta = li.querySelector(".show-cta");
-        if (cta) cta.textContent = ""; // abgelaufener Ticket-Link fuehrt ins Leere
-        // Einsortieren: das Juengste zuerst, also vor den aelteren Zeilen.
-        var davor = null;
-        Array.prototype.slice.call(pastList.children).forEach(function (alt) {
-          if (davor) return;
-          var ad = alt.getAttribute("data-date") || "";
-          if (ad < d) davor = alt;
-        });
-        pastList.insertBefore(li, davor);
-        if (pastBox) pastBox.hidden = false;
-      } else {
-        // Kein Rueckblick auf dieser Seite: dann lieber stehen lassen als
-        // verschwinden — sichtbar ist besser als spurlos.
-        visible++;
-      }
+      li.remove();
     });
     if (!visible) {
       showList.hidden = true;

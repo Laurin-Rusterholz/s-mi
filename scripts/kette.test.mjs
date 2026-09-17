@@ -159,6 +159,18 @@ function zeilen(html, listenId) {
   ]);
 }
 
+/**
+ * Nur der Shows-Abschnitt einer Seite.
+ *
+ * Gebraucht, seit dort ausschliesslich Kommendes stehen darf: ein vergangener
+ * Auftritt DARF weiter auf der Seite vorkommen — bei den Referenzen. Geprueft
+ * wird deshalb dieser Ausschnitt, nicht die ganze Seite.
+ */
+function showsAbschnitt(html) {
+  const m = html.match(/<section class="[^"]*shows-sec"[\s\S]*?<\/section>/);
+  return m ? m[0] : "";
+}
+
 const VERGANGENER_TERMIN = {
   date: "2026-07-04",
   name: "Sommerfest Rueckblick",
@@ -169,7 +181,7 @@ const VERGANGENER_TERMIN = {
   ticketUrl: "https://tickets.example/sommerfest",
 };
 
-test("kommende und vergangene Shows stehen auf allen Sprachseiten", async (t) => {
+test("unter Shows steht nur, was kommt — auf allen Sprachseiten", async (t) => {
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
 
   /* So sieht der Stand aus, nachdem jemand in der Verwaltung zwei Termine
@@ -211,37 +223,32 @@ test("kommende und vergangene Shows stehen auf allen Sprachseiten", async (t) =>
     assert.ok(kommend[1].includes(NEUER_TERMIN.city), `${seite}: beim kommenden Termin steht ein fremder Ort`);
     assert.match(kommend[1], /<a class="btn btn-sm"/, `${seite}: der Ticket-Knopf fehlt am kommenden Termin`);
 
-    /* Der vergangene Termin steht im Rueckblick — sichtbar, nicht zugeklappt,
-       und ohne Ticket-Knopf. Das ist die Anforderung vom 07.09.2026: was
-       publiziert wurde, bleibt sichtbar. */
-    const unten = zeilen(html, "past-show-list");
-    assert.ok(unten, `${seite}: der Rueckblick auf vergangene Shows fehlt`);
-    const vorbei = unten.find(([d]) => d === VERGANGENER_TERMIN.date);
-    assert.ok(vorbei, `${seite}: der vergangene Termin "${VERGANGENER_TERMIN.name}" fehlt im Rueckblick`);
-    assert.ok(vorbei[1].includes(VERGANGENER_TERMIN.name), `${seite}: der Name des vergangenen Termins fehlt`);
-    assert.ok(vorbei[1].includes(VERGANGENER_TERMIN.city), `${seite}: beim vergangenen Termin steht ein fremder Ort`);
-    assert.doesNotMatch(vorbei[1], /<a class="btn btn-sm"/, `${seite}: vergangener Termin mit Ticket-Knopf`);
-    assert.doesNotMatch(
-      html,
-      /id="past-shows"[^>]*\shidden/,
-      `${seite}: der Rueckblick ist versteckt, obwohl vergangene Termine da sind`
+    /* KUNDENENTSCHEID 15.09.2026: Der vergangene Termin steht NICHT unter
+       "Shows" — weder in der Liste noch in einem Rueckblick darunter. Auf dem
+       veroeffentlichten Stand stand dort "PLAYED BEFORE" mit NOX CLUB
+       (05.09.2026) und AFTERSUN FESTIVAL (29.08.2026), noch dazu unter dem
+       Hinweis, es sei gerade nichts angekuendigt. Wo Sam gespielt hat, steht
+       bei den Referenzen. */
+    const abschnitt = showsAbschnitt(html);
+    assert.ok(abschnitt, `${seite}: der Shows-Abschnitt ist nicht zu finden`);
+    assert.ok(
+      !abschnitt.includes(VERGANGENER_TERMIN.name),
+      `${seite}: der vergangene Termin "${VERGANGENER_TERMIN.name}" steht unter "Shows"`
     );
-    assert.doesNotMatch(html, /<details[^>]*class="[^"]*past-shows/, `${seite}: der Rueckblick ist wieder zugeklappt`);
+    assert.ok(
+      !abschnitt.includes(VERGANGENER_TERMIN.date),
+      `${seite}: ein vergangenes Datum steht unter "Shows"`
+    );
+    assert.ok(!/past-show|past-title|PLAYED BEFORE/i.test(html), `${seite}: der Rueckblick ist wieder da`);
 
-    /* Keine Vermischung, beide Listen chronologisch: oben aufsteigend, unten
-       das Juengste zuerst. */
+    /* Und die Liste selbst: chronologisch, ohne ein einziges vergangenes
+       Datum — auch nicht am Ende. */
     const obenDaten = oben.map(([d]) => d).filter(Boolean);
     assert.ok(
       obenDaten.every((d) => d >= HEUTE),
-      `${seite}: unter den kommenden Terminen steht Vergangenes: ${obenDaten.join(", ")}`
+      `${seite}: unter den Terminen steht Vergangenes: ${obenDaten.join(", ")}`
     );
     assert.deepEqual(obenDaten, [...obenDaten].sort(), `${seite}: kommende Termine nicht aufsteigend`);
-    const untenDaten = unten.map(([d]) => d).filter(Boolean);
-    assert.ok(
-      untenDaten.every((d) => d < HEUTE),
-      `${seite}: im Rueckblick steht Kommendes: ${untenDaten.join(", ")}`
-    );
-    assert.deepEqual(untenDaten, [...untenDaten].sort().reverse(), `${seite}: Rueckblick nicht absteigend`);
 
     assert.ok(html.includes('id="shows"'), `${seite}: der Shows-Abschnitt fehlt ganz`);
   }
@@ -275,11 +282,18 @@ test("kommende und vergangene Shows stehen auf allen Sprachseiten", async (t) =>
   );
 });
 
-test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", async (t) => {
-  /* Das ist der Befund der Abnahme vom 07.09.2026, eins zu eins: Nox Club
-     (05.09.) und Aftersun (29.08.) waren vorbei — und damit verschwanden der
-     ganze Shows-Bereich und sein Menuepunkt. Publizierte Shows waren im
-     Frontend nirgends mehr zu finden. */
+test("sind alle Termine vorbei, bleibt der Abschnitt — leer, ohne Rueckblick", async (t) => {
+  /* Zwei Befunde an derselben Stelle, beide muessen gleichzeitig gelten:
+
+     07.09.2026 — Nox Club (05.09.) und Aftersun (29.08.) waren vorbei, und
+     damit verschwanden der ganze Shows-Bereich und sein Menuepunkt. Der
+     Abschnitt muss also stehen bleiben.
+
+     15.09.2026 — die Loesung von damals war ein "PLAYED BEFORE"-Rueckblick;
+     der stand dann unter dem Hinweis "gerade nichts angekuendigt" und zeigte
+     genau diese beiden vergangenen Abende. Unter "Shows" gehoert nur, was
+     bevorsteht. Also: Abschnitt und Menuepunkt bleiben, der Leerzustand ist zu
+     sehen — und kein vergangener Termin steht darin. */
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
   stand.sections.shows.items = [
     { ...VERGANGENER_TERMIN },
@@ -303,12 +317,20 @@ test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", asy
   );
 
   for (const [seite, html] of seiten) {
-    const unten = zeilen(html, "past-show-list");
-    assert.ok(unten && unten.length === 2, `${seite}: nicht beide vergangenen Termine im Rueckblick`);
+    const abschnitt = showsAbschnitt(html);
+    assert.ok(abschnitt, `${seite}: der Shows-Abschnitt ist nicht zu finden`);
+
+    /* Der Leerzustand ist SICHTBAR — nicht `hidden`. */
+    assert.doesNotMatch(abschnitt, /id="show-empty"[^>]*\shidden/, `${seite}: der Hinweis "keine Termine" fehlt`);
+
+    /* Und darunter steht nichts mehr: kein Rueckblick, keine Terminliste,
+       keiner der beiden vergangenen Abende. */
+    assert.ok(!/past-show|past-title|PLAYED BEFORE/i.test(html), `${seite}: der Rueckblick ist wieder da`);
+    assert.ok(!abschnitt.includes('id="show-list"'), `${seite}: eine leere Terminliste steht im Abschnitt`);
     for (const name of [VERGANGENER_TERMIN.name, "Aftersun Rueckblick"])
-      assert.ok(html.includes(name), `${seite}: "${name}" fehlt`);
-    /* Und der Hinweis, dass gerade nichts ansteht, statt einer leeren Liste. */
-    assert.doesNotMatch(html, /id="show-empty"[^>]*\shidden/, `${seite}: der Hinweis "keine Termine" fehlt`);
+      assert.ok(!abschnitt.includes(name), `${seite}: der vergangene Termin "${name}" steht unter "Shows"`);
+    for (const datum of [VERGANGENER_TERMIN.date, "2026-08-29"])
+      assert.ok(!abschnitt.includes(datum), `${seite}: das vergangene Datum ${datum} steht unter "Shows"`);
   }
 
   /* Der Menuepunkt fuehrt weiterhin zu den Shows. */
@@ -318,25 +340,165 @@ test("auch wenn ALLE Termine vorbei sind, bleiben Abschnitt und Menuepunkt", asy
     /href="[^"]*(#shows|\/shows\/)"/,
     "Die Startseite verlinkt die Shows nicht mehr im Menue"
   );
+
+  /* Und die Daten sind unberuehrt: beide vergangenen Termine stehen weiter im
+     Schnappschuss. Nicht gezeigt heisst nicht geloescht. */
+  const schnappschuss = JSON.parse(readFileSync(join(dir, "content/site.json"), "utf8"));
+  const gespeichert = (schnappschuss.sections.shows.items || []).map((i) => String(i.name).trim());
+  assert.deepEqual(
+    gespeichert,
+    [VERGANGENER_TERMIN.name, "Aftersun Rueckblick"],
+    "Vergangene Termine wurden aus den Daten entfernt"
+  );
 });
 
-test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
-  /* Abnahme 07.09.2026: "Aftersun Festival" stand im Rueckblick der Shows und
-     zwei Bloecke tiefer noch einmal bei den Referenzen. Zwei Ursachen:
-     der Generator trug vergangene Termine automatisch in die Referenzliste ein
-     (weg seit 07.09.), und der Kunde pflegt manche Auftritte selbst in BEIDEN
-     Listen — "Nox Club " steht als Referenz, "Nox Club" als Termin.
+test("der Screenshot vom 15.09.2026: kein PLAYED BEFORE, Referenz bleibt dritte", async (t) => {
+  /* Der gemeldete Stand, eins zu eins nachgestellt — mit dem Tag, an dem er
+     entstanden ist (15.09.2026), damit beide Abende wirklich vorbei sind:
 
-     Geloescht wird deshalb nichts: die Referenz bleibt in der Verwaltung, sie
-     wird nur nicht ein zweites Mal auf dieselbe Seite gedruckt. */
+       Shows      NOX CLUB 05.09.2026, AFTERSUN FESTIVAL 29.08.2026
+       darunter   "No dates announced right now."
+       und dann   PLAYED BEFORE mit genau diesen beiden Abenden
+
+     Verlangt ist: der Rueckblick verschwindet, der Hinweis bleibt — und die
+     Referenz "NOX CLUB", die in der Verwaltung an dritter Stelle gepflegt ist,
+     steht weiterhin an dritter Stelle. Auf dem Handy zaehlt genau das: dort
+     sind zuerst nur die obersten vier zu sehen. */
+  const HEUTE_SCREENSHOT = "2026-09-15";
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
-  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN }];
+  stand.sections.shows.items = [
+    { date: "2026-09-05", name: "NOX CLUB", city: "Chur", country: "CH", status: "confirmed" },
+    { date: "2026-08-29", name: "AFTERSUN FESTIVAL", city: "Luzern", country: "CH", status: "confirmed" },
+  ];
+  stand.sections.references.items = [
+    { name: "Kugl", city: "St. Gallen" },
+    { name: "Sektor 11", city: "Zurich" },
+    { name: "NOX CLUB ", city: "Chur" },
+    { name: "Eden", city: "St. Gallen" },
+    { name: "BBC", city: "Buchs" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, {
+    BUILD_DATE: HEUTE_SCREENSHOT,
+    CONTENT_API_URL: db.contentUrl,
+    CONTENT_API_REQUIRED: "1",
+  });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  const seiten = seitenMitShows(dir);
+  assert.ok(seiten.length >= 3, "Der Shows-Abschnitt fehlt auf mindestens einer Sprachseite");
+
+  for (const [seite, html] of seiten) {
+    const abschnitt = showsAbschnitt(html);
+    assert.ok(abschnitt, `${seite}: der Shows-Abschnitt ist nicht zu finden`);
+
+    /* 1. Keine vergangenen Shows — in keiner Form. */
+    assert.ok(!/PLAYED BEFORE|past-show|past-title/i.test(html), `${seite}: "PLAYED BEFORE" steht noch da`);
+    for (const name of ["NOX CLUB", "AFTERSUN FESTIVAL"])
+      assert.ok(!abschnitt.includes(name), `${seite}: "${name}" steht unter "Shows"`);
+    for (const datum of ["2026-09-05", "2026-08-29"])
+      assert.ok(!abschnitt.includes(datum), `${seite}: das vergangene Datum ${datum} steht unter "Shows"`);
+
+    /* 2. Der Leerzustand stimmt: sichtbarer Hinweis, keine leere Liste. */
+    assert.doesNotMatch(abschnitt, /id="show-empty"[^>]*\shidden/, `${seite}: der Hinweis "keine Termine" fehlt`);
+    assert.ok(!abschnitt.includes('id="show-list"'), `${seite}: eine leere Terminliste steht im Abschnitt`);
+
+    /* 3. Die Referenzen bleiben — und "NOX CLUB" an dritter Stelle. */
+    const refBlock = (html.match(/<ul class="venue-list rv" id="venue-list">[\s\S]*?<\/ul>/) || [""])[0];
+    if (!refBlock) continue; // Referenzen stehen auf dieser Seite nicht
+    const namen = Array.from(refBlock.matchAll(/class="venue-name">([^<]+)</g)).map((m) => m[1].trim());
+    assert.deepEqual(
+      namen,
+      ["Kugl", "Sektor 11", "NOX CLUB", "Eden", "BBC"],
+      `${seite}: die Referenzen stehen nicht so da wie in der Verwaltung`
+    );
+    assert.equal(namen[2], "NOX CLUB", `${seite}: NOX CLUB ist nicht mehr die dritte Referenz`);
+    assert.ok(
+      namen.slice(0, 4).includes("NOX CLUB"),
+      `${seite}: NOX CLUB fehlt unter den ersten vier — auf dem Handy waere er damit weg`
+    );
+  }
+
+  /* Die Termine selbst sind unberuehrt: nicht gezeigt heisst nicht geloescht. */
+  const schnappschuss = JSON.parse(readFileSync(join(dir, "content/site.json"), "utf8"));
+  assert.deepEqual(
+    (schnappschuss.sections.shows.items || []).map((i) => `${String(i.name).trim()} ${i.date}`),
+    ["NOX CLUB 2026-09-05", "AFTERSUN FESTIVAL 2026-08-29"],
+    "Die vergangenen Termine wurden aus den Daten entfernt"
+  );
+});
+
+test("ein Termin von HEUTE bleibt den ganzen Tag stehen (Europe/Zurich)", async (t) => {
+  /* Die Tagesgrenze ist die der Website, nicht die von UTC — und sie liegt am
+     Ende des Tages. Ein Abend, der heute stattfindet, darf nicht schon am
+     Morgen aus der Liste fallen; eine Show endet ohnehin erst nach Mitternacht.
+     Gegenprobe im selben Lauf: der Vortag ist weg. */
+  const HEUTE_TEST = "2026-09-15";
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [
+    { date: HEUTE_TEST, name: "Heute Abend", city: "Chur", country: "CH", status: "confirmed" },
+    { date: "2026-09-14", name: "Gestern Abend", city: "Chur", country: "CH", status: "confirmed" },
+  ];
+
+  const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
+  const dir = await repoKopie();
+  t.after(async () => {
+    await db.stop();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  const lauf = await baue(dir, {
+    BUILD_DATE: HEUTE_TEST,
+    CONTENT_API_URL: db.contentUrl,
+    CONTENT_API_REQUIRED: "1",
+  });
+  assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
+
+  for (const [seite, html] of seitenMitShows(dir)) {
+    const abschnitt = showsAbschnitt(html);
+    assert.ok(abschnitt.includes("Heute Abend"), `${seite}: der heutige Termin wurde zu frueh ausgeblendet`);
+    assert.ok(!abschnitt.includes("Gestern Abend"), `${seite}: der Termin von gestern steht noch unter "Shows"`);
+  }
+});
+
+test("gepflegte Referenzen bleiben vollstaendig — auch bei einem kommenden Auftritt", async (t) => {
+  /* ABNAHME 07.09.2026: "Aftersun Festival" stand im Rueckblick der Shows und
+     zwei Bloecke tiefer noch einmal bei den Referenzen. Daraufhin liess der
+     Generator jeden Auftritt weg, der auf derselben Seite schon als Termin
+     stand.
+
+     KUNDENBEFUND 15.09.2026: Genau das nimmt eine gepflegte Referenz weg.
+     "Nox Club" steht in der Verwaltung an dritter Stelle; weil derselbe Abend
+     als Termin gefuehrt wird, verschwand er aus der Liste — und auf dem Handy,
+     wo zuerst nur die obersten vier stehen, rutschte ein anderer Club an seinen
+     Platz. Die Anweisung dazu ist eindeutig: "auch ein erneuter kommender
+     Auftritt darf die Referenz nicht entfernen".
+
+     Also wird hier GAR NICHT mehr gegen die Termine gefiltert — weder gegen
+     vergangene noch gegen kommende. Doppelt steht trotzdem nichts: unter
+     "Shows" ist nur Kommendes, bei den Referenzen nur Gewesenes. Was bleibt:
+     eine echte Dublette INNERHALB der Referenzliste erscheint einmal. */
+  const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
+  stand.sections.shows.items = [{ ...VERGANGENER_TERMIN }, { ...NEUER_TERMIN }];
   stand.sections.references.items = [
     { city: "St. Gallen", name: "Kugl" },
-    // Derselbe Auftritt wie der Termin oben — andere Schreibweise, Leerzeichen.
+    { city: "Zurich", name: "Sektor 11" },
+    // Derselbe Abend wie der VERGANGENE Termin — andere Schreibweise, Leerzeichen.
     { city: "Herisau", name: "Sommerfest Rueckblick " },
+    { city: "St. Gallen", name: "Eden" },
     // Gleicher Name, anderer Ort: ein anderer Auftritt, der bleiben muss.
     { city: "Wattwil", name: "Sommerfest Rueckblick" },
+    // Derselbe Ort wie der KOMMENDE Termin — die Referenz bleibt trotzdem.
+    { city: "Winterthur", name: "Testhalle Regressionsfest" },
+    // Echte Dublette in DIESER Liste: einmal drucken, erster Platz gilt.
+    { city: "St. Gallen", name: "Kugl" },
   ];
 
   const db = await starteDatenbank({ inhalt: wieDatenbank(stand) });
@@ -352,20 +514,40 @@ test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
   for (const [seite, html] of seitenMitShows(dir)) {
     const refBlock = (html.match(/<ul class="venue-list rv" id="venue-list">[\s\S]*?<\/ul>/) || [""])[0];
     if (!refBlock) continue; // Referenzen stehen auf dieser Seite nicht
-    const rueckblick = (html.match(/<ul class="show-list past" id="past-show-list">[\s\S]*?<\/ul>/) || [""])[0];
+    const namen = Array.from(refBlock.matchAll(/class="venue-name">([^<]+)</g)).map((m) => m[1].trim());
 
+    /* Der vergangene Abend steht NICHT unter "Shows" — aber die gepflegte
+       Referenz dazu steht an ihrem Platz. */
     assert.ok(
-      rueckblick.includes(VERGANGENER_TERMIN.name),
-      `${seite}: der vergangene Termin fehlt im Rueckblick`
+      !showsAbschnitt(html).includes(VERGANGENER_TERMIN.name),
+      `${seite}: der vergangene Termin steht unter "Shows"`
     );
-    /* Herisau steht oben als Termin — nicht noch einmal als Referenz. */
+    assert.ok(/Herisau/.test(refBlock),
+      `${seite}: eine gepflegte Referenz verschwindet, weil der Abend vorbei ist`);
+
+    /* Die Liste steht vollstaendig und in der Reihenfolge der Verwaltung — nur
+       die echte Dublette ("Kugl" zweimal) erscheint einmal. */
+    assert.deepEqual(
+      namen,
+      ["Kugl", "Sektor 11", "Sommerfest Rueckblick", "Eden", "Sommerfest Rueckblick", "Testhalle Regressionsfest"],
+      `${seite}: die Referenzen stehen nicht in der Reihenfolge der Verwaltung`
+    );
+    // Die dritte Stelle gehoert dem Eintrag, der in der Verwaltung dritter ist.
+    assert.equal(namen[2], "Sommerfest Rueckblick", `${seite}: der dritte Eintrag ist nicht der dritte der Verwaltung`);
+
+    /* DIE NEUE REGEL: ein KOMMENDER Auftritt am selben Ort nimmt die Referenz
+       nicht weg. "Testhalle Regressionsfest" steht als Termin UND als Referenz —
+       beides ist gepflegt, beides bleibt. */
+    assert.ok(/Winterthur/.test(refBlock),
+      `${seite}: ein kommender Termin entfernt die gepflegte Referenz`);
     assert.ok(
-      !/Herisau/.test(refBlock),
-      `${seite}: der Auftritt steht doppelt — im Rueckblick und bei den Referenzen`
+      showsAbschnitt(html).includes(NEUER_TERMIN.name),
+      `${seite}: der kommende Termin fehlt unter "Shows"`
     );
-    /* Wattwil ist ein anderer Auftritt und bleibt. */
+
+    /* Und die echte Dublette erscheint genau einmal. */
+    assert.equal(namen.filter((n) => n === "Kugl").length, 1, `${seite}: dieselbe Referenz steht zweimal da`);
     assert.ok(refBlock.includes("Wattwil"), `${seite}: eine echte Referenz wurde mit weggeraeumt`);
-    assert.ok(refBlock.includes("Kugl"), `${seite}: eine manuelle Referenz fehlt`);
   }
 
   /* Und der Generator hat die Liste in der Datenquelle NICHT angefasst — nur
@@ -374,7 +556,7 @@ test("kein Auftritt steht zweimal auf derselben Seite", async (t) => {
   const namen = (schnappschuss.sections.references.items || []).map((r) => String(r.name).trim());
   assert.deepEqual(
     namen,
-    ["Kugl", "Sommerfest Rueckblick", "Sommerfest Rueckblick"],
+    ["Kugl", "Sektor 11", "Sommerfest Rueckblick", "Eden", "Sommerfest Rueckblick", "Testhalle Regressionsfest", "Kugl"],
     "Die Referenzliste in den Daten wurde veraendert"
   );
   assert.doesNotMatch(
@@ -433,15 +615,15 @@ test("die Kennzahl \"Shows\" wird aus den Daten gezaehlt", async (t) => {
   }
 });
 
-test("der Rueckblick-Kasten steht auch leer im HTML", async (t) => {
-  /* Der Vertrag, auf den sich assets/site.js stuetzt: verstreicht ein Termin
-     zwischen zwei Builds, schiebt der Browser ihn aus der oberen Liste in den
-     Rueckblick — dafuer muss es den Kasten geben, auch wenn beim Bauen noch
-     nichts drin war. Dasselbe fuer den Hinweis "keine Termine": er wird
-     eingeblendet, sobald der letzte kommende Termin weggerutscht ist.
+test("der leere Hinweis steht versteckt im HTML — der Vertrag mit site.js", async (t) => {
+  /* Die Seite ist statisch gebaut. Verstreicht ein Termin zwischen zwei Builds,
+     nimmt assets/site.js die Zeile im Browser aus der Liste — und wenn danach
+     nichts mehr uebrig ist, blendet es den Hinweis "keine Termine" ein. Dafuer
+     muss dieser Hinweis im HTML stehen, auch wenn beim Bauen noch Termine da
+     waren: `hidden`, aber vorhanden.
 
-     Ohne diese beiden Huellen faellt site.js auf seinen alten Weg zurueck und
-     blendet den Termin einfach aus — dann ist er wieder verschwunden. */
+     Einen Rueckblick-Kasten gibt es dagegen NICHT mehr (Kundenentscheid
+     15.09.2026) — auch keinen leeren, in den etwas hineinrutschen koennte. */
   const stand = JSON.parse(await readFile(resolve(ROOT, "content/site.json"), "utf8"));
   stand.sections.shows.items = [{ ...NEUER_TERMIN }];
 
@@ -456,9 +638,9 @@ test("der Rueckblick-Kasten steht auch leer im HTML", async (t) => {
   assert.equal(lauf.status, 0, `Build fehlgeschlagen:\n${lauf.stdout}\n${lauf.stderr}`);
 
   for (const [seite, html] of seitenMitShows(dir)) {
-    assert.match(html, /id="past-shows"[^>]*\shidden/, `${seite}: der leere Rueckblick fehlt oder ist nicht versteckt`);
-    assert.match(html, /id="past-show-list"/, `${seite}: die Liste im Rueckblick fehlt`);
     assert.match(html, /id="show-empty"[^>]*\shidden/, `${seite}: der versteckte Hinweis "keine Termine" fehlt`);
+    assert.match(html, /id="show-list"/, `${seite}: die Terminliste fehlt`);
+    assert.ok(!/past-show|past-title|PLAYED BEFORE/i.test(html), `${seite}: ein Rueckblick-Kasten steht wieder im HTML`);
   }
 });
 
@@ -630,7 +812,10 @@ test("mit richtiger Zuordnung stehen Auftritte auf der Startseite UND auf /shows
   assert.ok(start.includes('id="shows"'), "Die Shows stehen trotz Zuordnung nicht auf der Startseite");
   assert.ok(start.includes('id="references"'), "Die Referenzen stehen trotz Zuordnung nicht auf der Startseite");
   assert.ok(start.includes("Testhalle Regressionsfest"), "Der kommende Termin fehlt auf der Startseite");
-  assert.ok(start.includes("Sommerfest Rueckblick"), "Der Rueckblick fehlt auf der Startseite");
+  assert.ok(
+    !showsAbschnitt(start).includes("Sommerfest Rueckblick"),
+    "Ein vergangener Termin steht unter \"Shows\" auf der Startseite"
+  );
   assert.ok(start.includes("Beispielhalle"), "Die Referenzen fehlen auf der Startseite");
   assert.ok(
     start.indexOf('id="shows"') < start.indexOf('id="shop"'),

@@ -279,10 +279,9 @@ const refSchluessel = (name, city) =>
  * Wie viele Auftritte kennt die Website?
  *
  * Gezaehlt wird, was der Kunde in der Verwaltung pflegt — die Termine unter
- * "Shows" UND die Referenzen —, ohne Dubletten. Beides sind Auftritte: ein
- * Termin, der vorbei ist, steht im Rueckblick; aeltere stehen (wenn ueberhaupt)
- * nur noch als Referenz. "Nox Club — Chur" in beiden Listen ist derselbe
- * Auftritt und zaehlt einmal.
+ * "Shows" UND die Referenzen —, ohne Dubletten. Beides sind Auftritte: unter
+ * "Shows" steht, was bevorsteht, bei den Referenzen, wo Sam gespielt hat.
+ * "Nox Club — Chur" in beiden Listen ist derselbe Auftritt und zaehlt einmal.
  *
  * Unterschieden wird ueber Name UND Ort, nicht ueber den Namen allein:
  * "Jugendopenair" gibt es in St. Gallen und in Wattwil, das sind zwei
@@ -334,7 +333,8 @@ export const showVorbei = (show, heute) => {
    bei jedem Build neu. Wer ein vergangenes Event ZUSAETZLICH als Referenz will,
    traegt es in der Verwaltung ein.
 
-   showVorbei() bleibt: es entscheidet, was in den Rueckblick gehoert. */
+   showVorbei() bleibt die eine Stelle, an der "vorbei" definiert ist: seit
+   dem 15.09.2026 entscheidet es, was unter "Shows" NICHT mehr steht. */
 
 /**
  * Fehlendes aus der Vorlage ergänzen — der Stand aus der Verwaltung gewinnt,
@@ -1917,7 +1917,7 @@ function renderExperience(n, s) {
   </section>`;
 }
 
-function showRow(sh, idx, vorbei = false) {
+function showRow(sh) {
   const date = isoDate(sh.date);
   const booked = sh.status === "booked";
   const d = date ? new Date(date + "T12:00:00Z") : null;
@@ -1943,15 +1943,15 @@ function showRow(sh, idx, vorbei = false) {
      dort, was zutrifft: "Ausverkauft", ein freier Hinweis aus dem Ticket-Feld
      ("DM for friendlist") oder — wenn es nichts zu sagen gibt — nichts. Eine
      leere Beschriftung stand vorher als leeres Feld in der Zeile. */
-  /* Vorbei heisst: nichts mehr zu holen. Ein "Tickets"-Knopf an einem Termin
-     von letzter Woche fuehrt ins Leere und macht den Rueckblick unglaubwuerdig
-     — dort steht darum nur, was war. */
-  const kasse = !vorbei && safeUrl(sh.ticketUrl) && !soldOut;
+  /* Seit dem 15.09.2026 kommt hier nur noch Kommendes an (renderShows filtert
+     Vergangenes heraus) — einen Sonderfall "vorbei" mit abgeschaltetem
+     Ticket-Knopf braucht diese Zeile darum nicht mehr. */
+  const kasse = safeUrl(sh.ticketUrl) && !soldOut;
   const freierHinweis = !safeUrl(sh.ticketUrl) ? str(sh.ticketUrl).trim() : "";
   const label = soldOut ? UI.soldOut : str(sh.ticketLabel, UI.tickets);
-  const hinweis = vorbei ? "" : soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
-  return `<li class="show${vorbei ? " vorbei" : ""}${soldOut && !vorbei ? " soldout" : ""}${
-    booked && !vorbei ? " booked" : ""
+  const hinweis = soldOut ? UI.soldOut : freierHinweis || (booked ? UI.booked : "");
+  return `<li class="show${soldOut ? " soldout" : ""}${
+    booked ? " booked" : ""
   }"${date ? ` data-date="${esc(date)}"` : ""}>
           <span class="show-date"><b>${esc(day)}</b><span class="mono">${esc(month)} ${esc(
     year
@@ -1997,39 +1997,27 @@ function renderShows(n, s) {
     if (da !== db) return da < db ? -1 : 1;
     return zeit(a) - zeit(b);
   };
-  const upcoming = items
-    .filter((i) => !isoDate(i.date) || isoDate(i.date) >= t)
-    .sort(chronologisch);
-  /* Vergangene Termine stehen wieder da — und zwar hier, unter "Shows".
+  const upcoming = items.filter((i) => !showVorbei(i, t)).sort(chronologisch);
+  /* NUR ZUKUENFTIGES. Unter "Shows" steht, was kommt — und sonst nichts.
 
-     Kurze Geschichte, damit das nicht ein drittes Mal hin und her geht:
-     bis zum 27.08.2026 hing unter der Liste ein AUFKLAPPBARER Rueckblick. Der
-     war zugeklappt und zeigte dieselben Termine, die ueber showsNachReferenzen
-     auch bei den Referenzen stehen — er wurde darum entfernt. Am 07.09.2026
-     fiel bei der Abnahme auf, was das wirklich bedeutet: sobald der letzte
-     Termin vorbei ist, verschwindet der ganze Abschnitt samt Menuepunkt, und
-     eine in der Verwaltung publizierte Show ist im Frontend nirgends mehr zu
-     sehen. Das ist die Anforderung, die zaehlt: was publiziert wurde, bleibt
-     sichtbar.
+     Kurze Geschichte, damit das nicht ein viertes Mal hin und her geht:
+     bis 27.08.2026 hing unter der Liste ein aufklappbarer Rueckblick; er wurde
+     entfernt, weil er dieselben Auftritte zeigte wie die Referenzen. Am
+     07.09.2026 kam er offen zurueck, weil ohne ihn der ganze Abschnitt samt
+     Menuepunkt verschwand, sobald der letzte Termin vorbei war. Am 15.09.2026
+     hat der Kunde entschieden: Shows sind Termine, die noch bevorstehen —
+     "PLAYED BEFORE" gehoert dort nicht hin. Wo Sam schon gespielt hat, steht
+     bei den Referenzen, und die pflegt er selbst.
 
-     Also: zwei getrennte Listen, beide chronologisch. Oben, was kommt
-     (aufsteigend — der naechste Termin zuerst). Darunter, offen sichtbar und
-     mit eigener Ueberschrift, was war (absteigend — das Juengste zuerst).
-     Nicht mehr zugeklappt: ein Rueckblick, den man erst aufklappen muss, ist
-     fuer den Besucher dasselbe wie keiner. */
-  const past = items
-    .filter((i) => isoDate(i.date) && isoDate(i.date) < t)
-    .sort((a, b) => -chronologisch(a, b));
+     Verloren geht dabei nichts: die vergangenen Termine bleiben in der
+     Verwaltung stehen (hier wird nur nicht gezeigt), und ohne kommenden Termin
+     bleibt der Abschnitt mit seinem Hinweis stehen — er verschwindet nicht
+     mehr samt Menuepunkt.
 
-  /* Die Aufschrift kommt aus der Verwaltung (uebersetzbar), sonst aus den
-     Oberflaechentexten der jeweiligen Sprache. */
-  const pastTitel = str(s.pastLabel, UI.pastShows);
+     Die Tagesgrenze ist die der Website (Europe/Zurich, siehe today()): ein
+     Termin von HEUTE gilt den ganzen Tag als kommend und faellt nicht um
+     Mitternacht UTC aus der Liste. */
 
-  /* Der Rueckblick-Kasten steht IMMER im HTML, auch leer (dann `hidden`).
-     Grund: die Seite ist statisch gebaut. Verstreicht ein Termin zwischen zwei
-     Builds, schiebt assets/site.js ihn im Browser aus der oberen Liste hierher
-     — dafuer muss es hier etwas zum Hineinschieben geben. Frueher wurde er
-     schlicht ausgeblendet und war bis zum naechsten Build weg. */
   return `
   <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
     <div class="wrap">${sectionHead(n, s, "shows")}
@@ -2043,12 +2031,6 @@ function renderShows(n, s) {
       <div class="empty-state rv" id="show-empty"${upcoming.length ? " hidden" : ""}><span class="mono">${esc(
         UI.calShow
       )}</span><p>${inline(str(s.emptyText, "No dates announced right now."))}</p></div>
-      <div class="past-shows rv" id="past-shows"${past.length ? "" : " hidden"}>
-        <h3 class="past-title mono" id="past-shows-h">${esc(pastTitel)}</h3>
-        <ul class="show-list past" id="past-show-list">
-        ${past.map((sh) => showRow(sh, 0, true)).join("\n        ")}
-        </ul>
-      </div>
     </div>
   </section>`;
 }
@@ -2071,22 +2053,30 @@ function renderShows(n, s) {
  * buendelt nichts mehr — eine Liste bleibt eine Liste.
  */
 function renderReferences(n, s, bookingTarget) {
-  /* Was schon im Rueckblick der Shows auf DERSELBEN Seite steht, kommt hier
-     nicht ein zweites Mal.
+  /* Hier wird NICHTS gegen die Termine gefiltert (Kundenentscheid 15.09.2026):
+     der Shows-Abschnitt zeigt nur Kommendes, die Referenzen sind die gepflegte
+     Auswahl des Gewesenen. Ein erneuter Auftritt im selben Club nimmt die
+     Referenz nicht weg.
 
-     Anlass (07.09.2026): "Nox Club" stand als Termin im Rueckblick und zwei
-     Bloecke tiefer noch einmal bei den Referenzen — der Kunde pflegt beides,
-     und beides ist richtig. Geloescht wird darum NICHTS: der Eintrag bleibt in
-     der Verwaltung und taucht wieder auf, sobald die Shows nicht mehr auf
-     derselben Seite stehen. Nur die Doppelnennung auf einer Seite faellt weg.
+     Anlass (Kundenbefund 15.09.2026): "Nox Club" stand in der Verwaltung an
+     dritter Stelle der Referenzen und fiel auf der Seite trotzdem weg, weil
+     derselbe Club als Termin gefuehrt war. Auf dem Handy, wo zuerst nur die
+     obersten vier stehen, rutschte damit ein anderer Club an seinen Platz.
+     Die Reihenfolge der Verwaltung gilt jetzt eins zu eins.
 
-     Verglichen wird ueber Name UND Ort (refSchluessel, unabhaengig von
-     Gross/Klein und Leerzeichen — die Referenz heisst "Nox Club " mit
-     Leerzeichen am Ende). Gleicher Name an einem anderen Ort ist ein anderer
-     Auftritt und bleibt stehen. */
+     Geloescht wird ohnehin nichts — weder hier noch in der Verwaltung. */
+  const gesehen = new Set();
   const items = list(s.items)
     .filter((i) => str(i?.name))
-    .filter((i) => !SHOWS_AUF_SEITE.has(refSchluessel(i.name, i.city)));
+    /* Steht derselbe Auftritt zweimal in DIESER Liste, erscheint er einmal —
+       der erste Platz gilt, die Reihenfolge bleibt. Angefasst wird dabei
+       nichts: in der Verwaltung stehen weiterhin beide Eintraege. */
+    .filter((i) => {
+      const key = refSchluessel(i.name, i.city);
+      if (gesehen.has(key)) return false;
+      gesehen.add(key);
+      return true;
+    });
 
   const linkOf = (v) => {
     const url = safeUrl(v.url) || anchor("#booking");
@@ -3013,7 +3003,6 @@ const UI_DEFAULTS = {
   soldOut: "Ausverkauft",
   booked: "Gebucht",
   calShow: "Termin",
-  pastShows: "Vergangene Shows",
   language: "Sprache",
   buy: "Kaufen",
   bookDay: "Diesen Tag anfragen",
@@ -3100,7 +3089,6 @@ const UI_DEFAULTS = {
 const UI_SPRACHE = {
   en: {
     buy: "Buy",
-    pastShows: "Past shows",
     orderByMail: "Order by e-mail",
     showMoreVenues: "Show {n} more",
     showLessVenues: "Show less",
@@ -3129,7 +3117,6 @@ const UI_SPRACHE = {
   },
   fr: {
     buy: "Acheter",
-    pastShows: "Concerts passés",
     orderByMail: "Commander par e-mail",
     showMoreVenues: "Afficher {n} de plus",
     showLessVenues: "Afficher moins",
@@ -3400,11 +3387,6 @@ const slugify = (v) =>
    anderen Seite liegt, und damit Links in der Sprache bleiben. */
 let CTX = { page: null, pages: [], prefix: "" };
 
-/* Die Auftritte, die auf DER GERADE GEBAUTEN SEITE unter "Shows" stehen —
-   damit die Referenzen darunter sie nicht wiederholen (siehe
-   renderReferences). Wird je Seite in renderPage gesetzt. */
-let SHOWS_AUF_SEITE = new Set();
-
 /** Adresse einer Seite in der aktuellen Sprache: "/", "/shows/", "/en/shows/" */
 const pagePath = (slug) => `${CTX.prefix}${slug ? `/${slug}/` : "/"}`;
 
@@ -3492,16 +3474,13 @@ function renderPage(c, page, pages, lang, langs) {
   const base = site.domain.replace(/\/+$/, "");
   const sections = c.sections || {};
   const isHome = !page.slug;
-  // Shows gehoeren nur dann auf die Seite — und damit ins Menue —, wenn noch
-  // ein Termin aussteht. Steht in der Verwaltung nur Vergangenes, fuehrte der
-  // Menuepunkt bisher auf eine Seite, die nichts als "keine Termine" sagt.
-
   const heute = today();
   /* Der Abschnitt steht, sobald ueberhaupt EIN Termin mit Namen da ist — auch
      wenn alle vorbei sind. Bis zum 07.09.2026 verlangte diese Stelle einen
      KOMMENDEN Termin; als der letzte verstrichen war, verschwanden Abschnitt
-     und Menuepunkt, und alles je Publizierte war im Frontend weg. Was vorbei
-     ist, steht jetzt im Rueckblick (siehe renderShows). */
+     und Menuepunkt aus dem Frontend. Jetzt bleibt beides stehen, der Abschnitt
+     sagt "keine Termine" — und gezeigt wird darin nur Kommendes (siehe
+     renderShows). Vergangene Auftritte stehen bei den Referenzen. */
   const hasShows = list(sections.shows?.items).some((item) => str(item?.name));
   /* Welche Abschnitte eine Seite wirklich baut. Als Funktion, weil das Menue
      dieselbe Rechnung fuer die STARTSEITE braucht — nicht nur fuer die Seite,
@@ -3517,17 +3496,17 @@ function renderPage(c, page, pages, lang, langs) {
   const order = baubareAbschnitte(page);
   const effectivePage = { ...page, sections: order };
   CTX = { page: effectivePage, pages, hideHead: null, prefix: navPrefix(lang, master) };
-  /* Stehen Shows und Referenzen auf derselben Seite, gehoert jeder Auftritt nur
-     einmal darauf. Auf einer Seite ohne Shows bleibt die Referenzliste
-     vollstaendig. */
-  SHOWS_AUF_SEITE =
-    order.includes("shows") && order.includes("references")
-      ? new Set(
-          list(sections.shows?.items)
-            .filter((i) => str(i?.name).trim())
-            .map((i) => refSchluessel(i.name, i.city))
-        )
-      : new Set();
+  /* REFERENZEN WERDEN NICHT GEGEN TERMINE GEFILTERT — Kundenentscheid
+     15.09.2026. Bis zum 07.09. nahm der Generator einen Auftritt aus der
+     Referenzliste, wenn er auf derselben Seite schon als Termin stand; seit
+     dem 15.09. galt das nur noch fuer kommende Termine. Jetzt gar nicht mehr:
+     die Referenzliste ist eine gepflegte Auswahl, und ein erneuter Auftritt im
+     selben Club darf die Referenz nicht wegnehmen. Doppelt steht dadurch
+     nichts mehr: der Shows-Abschnitt zeigt nur noch Kommendes, die Referenzen
+     nur Gewesenes.
+
+     Echte Dubletten INNERHALB der Referenzliste faengt renderReferences ab. */
+
   // Das Formular haengt nicht mehr an einer in der Verwaltung hinterlegten
   // Adresse: es sendet immer an den eigenen Endpunkt /api/booking. Abschalten
   // laesst es sich weiterhin in der Verwaltung (form.enabled).
