@@ -1248,18 +1248,46 @@
         neu: neuerBesuch,
       });
       /* sendBeacon geht auch noch raus, wenn die Seite gerade verlassen wird —
-         und blockiert nichts. Ohne sendBeacon ein normaler Aufruf, dem der
-         Fehlerfall bewusst gleichgueltig ist. */
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon("/api/zaehler", new Blob([zaehlDaten], { type: "application/json" }));
-      } else {
-        fetch("/api/zaehler", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: zaehlDaten,
-          keepalive: true,
-        }).catch(function () {});
-      }
+         und blockiert nichts.
+
+         ABER: sendBeacon kann NEIN sagen. Es gibt `false` zurueck, wenn der
+         Browser den Aufruf nicht in die Warteschlange nimmt, und es kann
+         werfen. Bis zum 17.09.2026 wurde beides nicht angesehen — dann ging
+         schlicht nichts raus, ohne dass irgendwo etwas fehlte.
+
+         Das ist KEINE Behauptung darueber, warum die Statistik heute 0 zeigt;
+         dafuer fehlt der Livebeleg. Es ist die Luecke im Ablauf: ein Weg, der
+         fehlschlagen kann, ohne dass ein zweiter uebernimmt. Sagt sendBeacon
+         nein, versucht es jetzt `fetch` mit `keepalive` — derselbe Aufruf,
+         dieselben vier Angaben, dieselbe Adresse.
+
+         `zaehlSenden` gibt zurueck, WELCHER Weg genommen wurde ("beacon",
+         "fetch" oder "" fuer keinen). Damit laesst sich die Weiche pruefen,
+         ohne dass die Seite etwas anderes tut. */
+      window.zaehlSenden = function (daten) {
+        var adresse = "/api/zaehler";
+        if (navigator.sendBeacon) {
+          var angenommen = false;
+          try {
+            angenommen = navigator.sendBeacon(adresse, new Blob([daten], { type: "application/json" }));
+          } catch (e) {
+            angenommen = false;
+          }
+          if (angenommen) return "beacon";
+        }
+        try {
+          fetch(adresse, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: daten,
+            keepalive: true,
+          }).catch(function () {});
+          return "fetch";
+        } catch (e) {
+          return "";
+        }
+      };
+      window.zaehlSenden(zaehlDaten);
     }
   } catch (e) {
     /* Nichts. Ein Zaehler ist nie ein Grund, dass eine Seite nicht laeuft. */

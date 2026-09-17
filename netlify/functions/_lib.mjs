@@ -104,7 +104,7 @@ export async function inEingang(eintrag, versuche = 2) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify(eintrag),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) throw new Error(dbFehler(res.status, token));
       const out = await res.json().catch(() => ({}));
       return { ok: true, id: out?.name || "" };
     } catch (err) {
@@ -132,10 +132,48 @@ export const zustand = () => ({
   mailFromGesetzt: !!(process.env.MAIL_FROM || "").trim(),
   mailAn: MAIL_TO(),
   eingangGesetzt: !!(process.env.INBOX_API_URL || "").trim(),
+  /* BEFUND 17.09.2026: In den Netlify-Protokollen stand dreimal
+     „[zaehler] nicht gezaehlt: HTTP 401". Der Aufruf kam also an — die
+     Datenbank hat den Schreibzugriff abgewiesen. Geschrieben wird mit
+     `?auth=<INBOX_API_TOKEN>`; fehlt der, ist der Zugriff nicht angemeldet und
+     die Regeln lehnen ab. Genau das stand bisher in keiner Auskunft: hier
+     wurde nur die ADRESSE gemeldet (INBOX_API_URL), nicht der SCHLUESSEL.
+
+     Betroffen ist nicht nur der Zaehler — Booking-Anfragen, Bestellungen und
+     der Stripe-Beleg gehen denselben Weg. Deshalb steht das jetzt hier, in
+     Sekunden von aussen ablesbar und ohne je einen Wert zu zeigen. */
+  eingangSchluesselGesetzt: !!(process.env.INBOX_API_TOKEN || "").trim(),
   hinweis:
     "Diese Angaben sind bewusst nur ja/nein. Steht mailSchluesselGesetzt auf " +
-    "false, fehlt RESEND_API_KEY in den Netlify-Variablen der Produktion.",
+    "false, fehlt RESEND_API_KEY in den Netlify-Variablen der Produktion. " +
+    "Steht eingangSchluesselGesetzt auf false, fehlt INBOX_API_TOKEN — dann " +
+    "weist die Datenbank jeden Schreibzugriff mit HTTP 401 ab: Anfragen, " +
+    "Bestellungen und Seitenaufrufe werden nicht abgelegt (die E-Mail geht " +
+    "trotzdem raus, sie haengt an RESEND_API_KEY).",
 });
+
+/**
+ * Was ein abgewiesener Schreibzugriff bedeutet — im Klartext statt „HTTP 401".
+ *
+ * Ein nackter Statuscode im Protokoll sagt nicht, was zu tun ist. 401 und 403
+ * von der Realtime Database heissen praktisch immer dasselbe: der Zugriff war
+ * nicht angemeldet oder der Schluessel stimmt nicht. Ist gar keiner gesetzt,
+ * steht das hier auch so da.
+ *
+ * Geraten wird dabei nichts: gemeldet wird der Statuscode UND ob ueberhaupt
+ * ein Schluessel mitgeschickt wurde. Beides ist bekannt, nicht vermutet.
+ */
+export function dbFehler(status, token) {
+  const basis = `HTTP ${status}`;
+  if (status !== 401 && status !== 403) return basis;
+  return token
+    ? `${basis} — die Datenbank weist den Schreibzugriff ab. Es wurde ein `
+      + `INBOX_API_TOKEN mitgeschickt; er passt nicht (abgelaufen, falsches Projekt) `
+      + `oder die Regeln erlauben diesen Pfad nicht.`
+    : `${basis} — die Datenbank weist den Schreibzugriff ab. Es ist KEIN `
+      + `INBOX_API_TOKEN gesetzt, der Zugriff war also nicht angemeldet. `
+      + `In den Netlify-Variablen der Produktion hinterlegen.`;
+}
 
 /**
  * E-Mail verschicken. Ueber Resend, weil das eine reine HTTP-Schnittstelle
