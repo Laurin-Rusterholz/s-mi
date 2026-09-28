@@ -2364,12 +2364,12 @@
           "url": ""
         },
         {
-          "city": "St. Gallen",
-          "name": "Eden"
-        },
-        {
           "city": "Gossau",
           "name": "BBC"
+        },
+        {
+          "city": "St. Gallen",
+          "name": "Eden"
         },
         {
           "city": "St. Gallen",
@@ -2542,6 +2542,39 @@
           "name": "Aftersun Festival",
           "status": "booked",
           "ticketUrl": "https://events.beyond-tickets.com/de/events/979ac8d6-7d4e-4d05-9375-b4bf34984272?utm_source=ig&utm_medium=social&utm_content=link_in_bio"
+        },
+        {
+          "city": "chur",
+          "country": "CH",
+          "date": "2026-10-24",
+          "name": "Nox Club",
+          "status": "confirmed",
+          "ticketLabel": "",
+          "ticketUrl": "DM for Fiendlist ",
+          "time": "",
+          "venue": " Club"
+        },
+        {
+          "city": "Sirnach",
+          "country": "CH",
+          "date": "2026-11-06",
+          "name": "Turnunterhaltung",
+          "status": "confirmed",
+          "ticketLabel": "Tickets",
+          "ticketUrl": "",
+          "time": "",
+          "venue": "Turnhalle"
+        },
+        {
+          "city": "Sirnach",
+          "country": "CH",
+          "date": "2026-11-07",
+          "name": "Turnunterhaltung",
+          "status": "confirmed",
+          "ticketLabel": "Tickets",
+          "ticketUrl": "",
+          "time": "",
+          "venue": "Turnhalle"
         }
       ],
       "navLabel": "Shows",
@@ -2713,6 +2746,6 @@
     "twintSend": "Pay by TWINT to",
     "weekdays": "Mo,Di,Mi,Do,Fr,Sa,So"
   },
-  "updatedAt": "2026-09-17T12:22:43.752Z",
+  "updatedAt": "2026-09-28T06:40:13.226Z",
   "updatedBy": "Verwaltung"
 }

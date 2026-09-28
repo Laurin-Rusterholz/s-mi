@@ -147,6 +147,66 @@
           }
         ]
       }
+    },
+    {
+      "@type": "MusicEvent",
+      "name": "Sam Sparking @ Nox Club",
+      "startDate": "2026-10-24",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "location": {
+        "@type": "Place",
+        "name": " Club",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "chur",
+          "addressCountry": "CH"
+        }
+      },
+      "performer": {
+        "@id": "https://djsamsparkling.netlify.app/#artist"
+      },
+      "url": "https://djsamsparkling.netlify.app/shows/#shows"
+    },
+    {
+      "@type": "MusicEvent",
+      "name": "Sam Sparking @ Turnunterhaltung",
+      "startDate": "2026-11-06",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "location": {
+        "@type": "Place",
+        "name": "Turnhalle",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Sirnach",
+          "addressCountry": "CH"
+        }
+      },
+      "performer": {
+        "@id": "https://djsamsparkling.netlify.app/#artist"
+      },
+      "url": "https://djsamsparkling.netlify.app/shows/#shows"
+    },
+    {
+      "@type": "MusicEvent",
+      "name": "Sam Sparking @ Turnunterhaltung",
+      "startDate": "2026-11-07",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "location": {
+        "@type": "Place",
+        "name": "Turnhalle",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Sirnach",
+          "addressCountry": "CH"
+        }
+      },
+      "performer": {
+        "@id": "https://djsamsparkling.netlify.app/#artist"
+      },
+      "url": "https://djsamsparkling.netlify.app/shows/#shows"
     }
   ]
 }
@@ -207,8 +267,33 @@
 
   <section class="pad shows-sec" id="shows" aria-labelledby="shows-h">
     <div class="wrap">
-      
-      <div class="empty-state rv" id="show-empty"><span class="mono">Termin</span><p>No dates announced right now. New shows land here first — or get in touch to book one.</p></div>
+      <ul class="show-list rv" id="show-list">
+        <li class="show" data-date="2026-10-24" data-name="Nox Club" data-city="chur">
+          <span class="show-date"><b>24</b><span class="mono">OCT 2026</span></span>
+          <span class="show-main">
+            <span class="show-name">Nox Club</span>
+            <span class="mono show-where"> Club · chur · CH</span>
+          </span>
+          <span class="show-cta"><span class="mono">DM for Fiendlist</span></span>
+        </li>
+        <li class="show" data-date="2026-11-06" data-name="Turnunterhaltung" data-city="Sirnach">
+          <span class="show-date"><b>06</b><span class="mono">NOV 2026</span></span>
+          <span class="show-main">
+            <span class="show-name">Turnunterhaltung</span>
+            <span class="mono show-where">Turnhalle · Sirnach · CH</span>
+          </span>
+          <span class="show-cta"></span>
+        </li>
+        <li class="show" data-date="2026-11-07" data-name="Turnunterhaltung" data-city="Sirnach">
+          <span class="show-date"><b>07</b><span class="mono">NOV 2026</span></span>
+          <span class="show-main">
+            <span class="show-name">Turnunterhaltung</span>
+            <span class="mono show-where">Turnhalle · Sirnach · CH</span>
+          </span>
+          <span class="show-cta"></span>
+        </li>
+      </ul>
+      <div class="empty-state rv" id="show-empty" hidden><span class="mono">Termin</span><p>No dates announced right now. New shows land here first — or get in touch to book one.</p></div>
     </div>
   </section>
 
@@ -224,8 +309,8 @@
         <li><a href="/booking/#booking"><span class="venue-name">Sektor 11</span><span class="venue-city">Zürich</span></a></li>
         <li><a href="/booking/#booking"><span class="venue-name">Nox Club </span><span class="venue-city">Chur</span></a></li>
         <li><a href="/booking/#booking"><span class="venue-name">Aftersun Festival</span><span class="venue-city">Luzern</span></a></li>
-        <li data-extra="true"><a href="/booking/#booking"><span class="venue-name">Eden</span><span class="venue-city">St. Gallen</span></a></li>
         <li data-extra="true"><a href="/booking/#booking"><span class="venue-name">BBC</span><span class="venue-city">Gossau</span></a></li>
+        <li data-extra="true"><a href="/booking/#booking"><span class="venue-name">Eden</span><span class="venue-city">St. Gallen</span></a></li>
         <li data-extra="true"><a href="/booking/#booking"><span class="venue-name">B9</span><span class="venue-city">St. Gallen</span></a></li>
         <li data-extra="true"><a href="/booking/#booking"><span class="venue-name">Ultrawild Festival</span><span class="venue-city">St. Gallen</span></a></li>
         <li data-extra="true"><a href="/booking/#booking"><span class="venue-name">Maiaiaiparty</span><span class="venue-city">AR</span></a></li>
@@ -314,7 +399,32 @@
     </div>
   </footer>
 
-  <script type="application/json" id="shows-data">[]</script>
+  <script type="application/json" id="shows-data">[
+  {
+    "date": "2026-10-24",
+    "name": "Nox Club",
+    "venue": " Club",
+    "city": "chur",
+    "url": "",
+    "status": "confirmed"
+  },
+  {
+    "date": "2026-11-06",
+    "name": "Turnunterhaltung",
+    "venue": "Turnhalle",
+    "city": "Sirnach",
+    "url": "",
+    "status": "confirmed"
+  },
+  {
+    "date": "2026-11-07",
+    "name": "Turnunterhaltung",
+    "venue": "Turnhalle",
+    "city": "Sirnach",
+    "url": "",
+    "status": "confirmed"
+  }
+]</script>
   <script src="/assets/site.js" defer></script>
 </body>
 </html>
